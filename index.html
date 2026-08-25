@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#14532D">
+  <meta name="description" content="Sistema de controle financeiro pessoal e empresarial">
+
+  <title>Controle Financeiro</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- MENU -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">₣</div>
+        <div>
+          <strong>FinControl</strong>
+          <span>Gestão Financeira</span>
+        </div>
+      </div>
+
+      <nav>
+        <button class="menu-item active" data-section="dashboard">
+          🏠 Dashboard
+        </button>
+
+        <button class="menu-item" data-section="movimentacoes">
+          💰 Movimentações
+        </button>
+
+        <button class="menu-item" data-section="receitas">
+          📈 Receitas
+        </button>
+
+        <button class="menu-item" data-section="despesas">
+          📉 Despesas
+        </button>
+
+        <button class="menu-item" data-section="empresa">
+          🏢 Empresa
+        </button>
+
+        <button class="menu-item" data-section="pessoal">
+          👤 Pessoal
+        </button>
+
+        <button class="menu-item" data-section="relatorios">
+          📊 Relatórios
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button id="themeButton" class="theme-button">
+          🌙 Tema escuro
+        </button>
+      </div>
+    </aside>
+
+
+    <!-- CONTEÚDO -->
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <button id="mobileMenu" class="mobile-menu">☰</button>
+
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="currentDate"></p>
+        </div>
+
+        <button id="newTransactionButton" class="primary-button">
+          + Nova movimentação
+        </button>
+      </header>
+
+
+      <!-- DASHBOARD -->
+      <section id="dashboardSection" class="section active">
+
+        <div class="filter-bar">
+          <div>
+            <label for="dashboardMonth">Período</label>
+            <input type="month" id="dashboardMonth">
+          </div>
+
+          <div>
+            <label for="dashboardType">Tipo</label>
+            <select id="dashboardType">
+              <option value="todos">Todos</option>
+              <option value="pessoal">Pessoal</option>
+              <option value="empresa">Empresa</option>
+            </select>
+          </div>
+        </div>
+
+
+        <div class="cards">
+
+          <div class="card balance-card">
+            <div class="card-icon">💰</div>
+            <div>
+              <span>Saldo</span>
+              <strong id="balance">R$ 0,00</strong>
+            </div>
+          </div>
+
+          <div class="card income-card">
+            <div class="card-icon">📈</div>
+            <div>
+              <span>Receitas</span>
+              <strong id="income">R$ 0,00</strong>
+            </div>
+          </div>
+
+          <div class="card expense-card">
+            <div class="card-icon">📉</div>
+            <div>
+              <span>Despesas</span>
+              <strong id="expense">R$ 0,00</strong>
+            </div>
+          </div>
+
+          <div class="card result-card">
+            <div class="card-icon">📊</div>
+            <div>
+              <span>Resultado</span>
+              <strong id="result">R$ 0,00</strong>
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="dashboard-grid">
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Resumo financeiro</h2>
+                <p>Receitas x despesas</p>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <div class="chart-bar-group">
+                <span>Receitas</span>
+                <div class="chart-track">
+                  <div id="incomeBar" class="chart-bar income-bar"></div>
+                </div>
+                <strong id="incomePercent">0%</strong>
+              </div>
+
+              <div class="chart-bar-group">
+                <span>Despesas</span>
+                <div class="chart-track">
+                  <div id="expenseBar" class="chart-bar expense-bar"></div>
+                </div>
+                <strong id="expensePercent">0%</strong>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Últimas movimentações</h2>
+                <p>Seus lançamentos recentes</p>
+              </div>
+
+              <button class="text-button" data-section="movimentacoes">
+                Ver todas
+              </button>
+            </div>
+
+            <div id="recentTransactions" class="recent-transactions">
+              <div class="empty">
+                Nenhuma movimentação cadastrada.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- MOVIMENTAÇÕES -->
+      <section id="movimentacoesSection" class="section">
+
+        <div class="section-header">
+          <div>
+            <h2>Movimentações</h2>
+            <p>Controle todas as entradas e saídas.</p>
+          </div>
+
+          <button id="newTransactionButton2" class="primary-button">
+            + Nova movimentação
+          </button>
+        </div>
+
+        <div class="filter-bar">
+
+          <div>
+            <label for="searchTransaction">Pesquisar</label>
+            <input
+              type="text"
+              id="searchTransaction"
+              placeholder="Descrição..."
+            >
+          </div>
+
+          <div>
+            <label for="filterType">Tipo</label>
+            <select id="filterType">
+              <option value="todos">Todos</option>
+              <option value="receita">Receitas</option>
+              <option value="despesa">Despesas</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="filterAccount">Conta</label>
+            <select id="filterAccount">
+              <option value="todos">Todas</option>
+              <option value="pessoal">Pessoal</option>
+              <option value="empresa">Empresa</option>
+            </select>
+          </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Categoria</th>
+                <th>Tipo</th>
+                <th>Conta</th>
+                <th>Valor</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody id="transactionsTable"></tbody>
+          </table>
+
+        </div>
+
+      </section>
+
+
+      <!-- RECEITAS -->
+      <section id="receitasSection" class="section">
+
+        <div class="section-header">
+          <div>
+            <h2>Receitas</h2>
+            <p>Visualize suas entradas financeiras.</p>
+          </div>
+        </div>
+
+        <div id="incomeList" class="transaction-list"></div>
+
+      </section>
+
+
+      <!-- DESPESAS -->
+      <section id="despesasSection" class="section">
+
+        <div class="section-header">
+          <div>
+            <h2>Despesas</h2>
+            <p>Visualize seus gastos.</p>
+          </div>
+        </div>
+
+        <div id="expenseList" class="transaction-list"></div>
+
+      </section>
+
+
+      <!-- EMPRESA -->
+      <section id="empresaSection" class="section">
+
+        <div class="company-banner">
+          <div>
+            <span>🏢</span>
+            <div>
+              <h2>Financeiro da Empresa</h2>
+              <p>Controle separado das finanças empresariais.</p>
+            </div>
+          </div>
+
+          <strong id="companyBalance">R$ 0,00</strong>
+        </div>
+
+        <div class="cards small-cards">
+
+          <div class="card">
+            <span>Receitas</span>
+            <strong id="companyIncome">R$ 0,00</strong>
+          </div>
+
+          <div class="card">
+            <span>Despesas</span>
+            <strong id="companyExpense">R$ 0,00</strong>
+          </div>
+
+          <div class="card">
+            <span>Resultado</span>
+            <strong id="companyResult">R$ 0,00</strong>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- PESSOAL -->
+      <section id="pessoalSection" class="section">
+
+        <div class="company-banner personal-banner">
+          <div>
+            <div>
+              <h2>👤 Financeiro Pessoal</h2>
+              <p>Controle suas finanças pessoais separadamente.</p>
+            </div>
+          </div>
+
+          <strong id="personalBalance">R$ 0,00</strong>
+        </div>
+
+        <div class="cards small-cards">
+
+          <div class="card">
+            <span>Receitas</span>
+            <strong id="personalIncome">R$ 0,00</strong>
+          </div>
+
+          <div class="card">
+            <span>Despesas</span>
+            <strong id="personalExpense">R$ 0,00</strong>
+          </div>
+
+          <div class="card">
+            <span>Resultado</span>
+            <strong id="personalResult">R$ 0,00</strong>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- RELATÓRIOS -->
+      <section id="relatoriosSection" class="section">
+
+        <div class="section-header">
+          <div>
+            <h2>Relatórios</h2>
+            <p>Resumo geral das suas movimentações.</p>
+          </div>
+        </div>
+
+        <div id="reportContent" class="report-content"></div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- MODAL -->
+  <div id="transactionModal" class="modal">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <div>
+          <h2 id="modalTitle">Nova movimentação</h2>
+          <p>Preencha os dados abaixo.</p>
+        </div>
+
+        <button id="closeModal" class="close-button">
+          ×
+        </button>
+      </div>
+
+
+      <form id="transactionForm">
+
+        <input type="hidden" id="transactionId">
+
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="transactionDescription">
+              Descrição
+            </label>
+
+            <input
+              type="text"
+              id="transactionDescription"
+              placeholder="Ex.: Salário"
+              required
+            >
+          </div>
+
+
+          <div class="form-group">
+            <label for="transactionValue">
+              Valor
+            </label>
+
+            <input
+              type="number"
+              id="transactionValue"
+              placeholder="0,00"
+              step="0.01"
+              min="0"
+              required
+            >
+          </div>
+
+
+          <div class="form-group">
+            <label for="transactionDate">
+              Data
+            </label>
+
+            <input
+              type="date"
+              id="transactionDate"
+              required
+            >
+          </div>
+
+
+          <div class="form-group">
+            <label for="transactionType">
+              Tipo
+            </label>
+
+            <select id="transactionType" required>
+              <option value="receita">Receita</option>
+              <option value="despesa">Despesa</option>
+            </select>
+          </div>
+
+
+          <div class="form-group">
+            <label for="transactionAccount">
+              Conta
+            </label>
+
+            <select id="transactionAccount" required>
+              <option value="pessoal">Pessoal</option>
+              <option value="empresa">Empresa</option>
+            </select>
+          </div>
+
+
+          <div class="form-group">
+            <label for="transactionCategory">
+              Categoria
+            </label>
+
+            <select id="transactionCategory" required>
+
+              <option value="salario">Salário</option>
+              <option value="vendas">Vendas</option>
+              <option value="servicos">Serviços</option>
+              <option value="alimentacao">Alimentação</option>
+              <option value="moradia">Moradia</option>
+              <option value="transporte">Transporte</option>
+              <option value="saude">Saúde</option>
+              <option value="educacao">Educação</option>
+              <option value="lazer">Lazer</option>
+              <option value="compras">Compras</option>
+              <option value="impostos">Impostos</option>
+              <option value="fornecedores">Fornecedores</option>
+              <option value="marketing">Marketing</option>
+              <option value="outros">Outros</option>
+
+            </select>
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+          <label for="transactionNotes">
+            Observações
+          </label>
+
+          <textarea
+            id="transactionNotes"
+            rows="3"
+            placeholder="Observações opcionais..."
+          ></textarea>
+        </div>
+
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            id="cancelModal"
+            class="secondary-button"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="primary-button"
+          >
+            Salvar movimentação
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <script src="script.js"></script>
+
+</body>
+</html>
