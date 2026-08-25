@@ -1,538 +1,404 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <meta name="theme-color" content="#14532D">
-  <meta name="description" content="Sistema de controle financeiro pessoal e empresarial">
+  <meta
+    name="description"
+    content="FinControl - Controle financeiro pessoal e empresarial"
+  >
 
-  <title>Controle Financeiro</title>
+  <title>FinControl</title>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <div class="app">
+  <!-- =====================================
+       TELA DE AUTENTICAÇÃO
+  ====================================== -->
 
-    <!-- MENU -->
-    <aside class="sidebar">
-      <div class="logo">
-        <div class="logo-icon">₣</div>
+  <div id="authScreen" class="auth-screen">
+
+    <div class="auth-visual">
+
+      <div class="visual-logo">
+        <div class="logo-mark">F</div>
+
         <div>
           <strong>FinControl</strong>
-          <span>Gestão Financeira</span>
+          <span>Gestão financeira inteligente</span>
         </div>
       </div>
 
-      <nav>
-        <button class="menu-item active" data-section="dashboard">
-          🏠 Dashboard
-        </button>
 
-        <button class="menu-item" data-section="movimentacoes">
-          💰 Movimentações
-        </button>
+      <div class="visual-content">
 
-        <button class="menu-item" data-section="receitas">
-          📈 Receitas
-        </button>
+        <span class="eyebrow">SUA VIDA FINANCEIRA</span>
 
-        <button class="menu-item" data-section="despesas">
-          📉 Despesas
-        </button>
+        <h1>
+          Controle seu dinheiro.
+          <span>Planeje seu futuro.</span>
+        </h1>
 
-        <button class="menu-item" data-section="empresa">
-          🏢 Empresa
-        </button>
-
-        <button class="menu-item" data-section="pessoal">
-          👤 Pessoal
-        </button>
-
-        <button class="menu-item" data-section="relatorios">
-          📊 Relatórios
-        </button>
-      </nav>
-
-      <div class="sidebar-bottom">
-        <button id="themeButton" class="theme-button">
-          🌙 Tema escuro
-        </button>
-      </div>
-    </aside>
+        <p>
+          Organize suas finanças pessoais e empresariais
+          em um único lugar.
+        </p>
 
 
-    <!-- CONTEÚDO -->
-    <main class="main">
+        <!-- ILUSTRAÇÃO GERADA POR CSS -->
+        <div class="finance-illustration">
 
-      <header class="topbar">
-        <div>
-          <button id="mobileMenu" class="mobile-menu">☰</button>
-
-          <h1 id="pageTitle">Dashboard</h1>
-          <p id="currentDate"></p>
-        </div>
-
-        <button id="newTransactionButton" class="primary-button">
-          + Nova movimentação
-        </button>
-      </header>
-
-
-      <!-- DASHBOARD -->
-      <section id="dashboardSection" class="section active">
-
-        <div class="filter-bar">
-          <div>
-            <label for="dashboardMonth">Período</label>
-            <input type="month" id="dashboardMonth">
+          <div class="floating-card card-one">
+            <small>Saldo</small>
+            <strong>R$ 12.850</strong>
+            <span>+ 8,4%</span>
           </div>
 
-          <div>
-            <label for="dashboardType">Tipo</label>
-            <select id="dashboardType">
-              <option value="todos">Todos</option>
-              <option value="pessoal">Pessoal</option>
-              <option value="empresa">Empresa</option>
-            </select>
-          </div>
-        </div>
-
-
-        <div class="cards">
-
-          <div class="card balance-card">
-            <div class="card-icon">💰</div>
-            <div>
-              <span>Saldo</span>
-              <strong id="balance">R$ 0,00</strong>
+          <div class="floating-card card-two">
+            <small>Receitas</small>
+            <strong>R$ 8.420</strong>
+            <div class="mini-bars">
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
             </div>
           </div>
 
-          <div class="card income-card">
-            <div class="card-icon">📈</div>
-            <div>
-              <span>Receitas</span>
-              <strong id="income">R$ 0,00</strong>
-            </div>
+          <div class="chart-visual">
+
+            <div class="chart-line"></div>
+
+            <div class="chart-dot dot-1"></div>
+            <div class="chart-dot dot-2"></div>
+            <div class="chart-dot dot-3"></div>
+            <div class="chart-dot dot-4"></div>
+
           </div>
 
-          <div class="card expense-card">
-            <div class="card-icon">📉</div>
-            <div>
-              <span>Despesas</span>
-              <strong id="expense">R$ 0,00</strong>
-            </div>
-          </div>
-
-          <div class="card result-card">
-            <div class="card-icon">📊</div>
-            <div>
-              <span>Resultado</span>
-              <strong id="result">R$ 0,00</strong>
-            </div>
-          </div>
+          <div class="coin coin-one">R$</div>
+          <div class="coin coin-two">+</div>
+          <div class="coin coin-three">₿</div>
 
         </div>
 
-
-        <div class="dashboard-grid">
-
-          <div class="panel">
-            <div class="panel-header">
-              <div>
-                <h2>Resumo financeiro</h2>
-                <p>Receitas x despesas</p>
-              </div>
-            </div>
-
-            <div class="chart-container">
-              <div class="chart-bar-group">
-                <span>Receitas</span>
-                <div class="chart-track">
-                  <div id="incomeBar" class="chart-bar income-bar"></div>
-                </div>
-                <strong id="incomePercent">0%</strong>
-              </div>
-
-              <div class="chart-bar-group">
-                <span>Despesas</span>
-                <div class="chart-track">
-                  <div id="expenseBar" class="chart-bar expense-bar"></div>
-                </div>
-                <strong id="expensePercent">0%</strong>
-              </div>
-            </div>
-          </div>
-
-
-          <div class="panel">
-            <div class="panel-header">
-              <div>
-                <h2>Últimas movimentações</h2>
-                <p>Seus lançamentos recentes</p>
-              </div>
-
-              <button class="text-button" data-section="movimentacoes">
-                Ver todas
-              </button>
-            </div>
-
-            <div id="recentTransactions" class="recent-transactions">
-              <div class="empty">
-                Nenhuma movimentação cadastrada.
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- MOVIMENTAÇÕES -->
-      <section id="movimentacoesSection" class="section">
-
-        <div class="section-header">
-          <div>
-            <h2>Movimentações</h2>
-            <p>Controle todas as entradas e saídas.</p>
-          </div>
-
-          <button id="newTransactionButton2" class="primary-button">
-            + Nova movimentação
-          </button>
-        </div>
-
-        <div class="filter-bar">
-
-          <div>
-            <label for="searchTransaction">Pesquisar</label>
-            <input
-              type="text"
-              id="searchTransaction"
-              placeholder="Descrição..."
-            >
-          </div>
-
-          <div>
-            <label for="filterType">Tipo</label>
-            <select id="filterType">
-              <option value="todos">Todos</option>
-              <option value="receita">Receitas</option>
-              <option value="despesa">Despesas</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="filterAccount">Conta</label>
-            <select id="filterAccount">
-              <option value="todos">Todas</option>
-              <option value="pessoal">Pessoal</option>
-              <option value="empresa">Empresa</option>
-            </select>
-          </div>
-
-        </div>
-
-
-        <div class="table-container">
-
-          <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Descrição</th>
-                <th>Categoria</th>
-                <th>Tipo</th>
-                <th>Conta</th>
-                <th>Valor</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-
-            <tbody id="transactionsTable"></tbody>
-          </table>
-
-        </div>
-
-      </section>
-
-
-      <!-- RECEITAS -->
-      <section id="receitasSection" class="section">
-
-        <div class="section-header">
-          <div>
-            <h2>Receitas</h2>
-            <p>Visualize suas entradas financeiras.</p>
-          </div>
-        </div>
-
-        <div id="incomeList" class="transaction-list"></div>
-
-      </section>
-
-
-      <!-- DESPESAS -->
-      <section id="despesasSection" class="section">
-
-        <div class="section-header">
-          <div>
-            <h2>Despesas</h2>
-            <p>Visualize seus gastos.</p>
-          </div>
-        </div>
-
-        <div id="expenseList" class="transaction-list"></div>
-
-      </section>
-
-
-      <!-- EMPRESA -->
-      <section id="empresaSection" class="section">
-
-        <div class="company-banner">
-          <div>
-            <span>🏢</span>
-            <div>
-              <h2>Financeiro da Empresa</h2>
-              <p>Controle separado das finanças empresariais.</p>
-            </div>
-          </div>
-
-          <strong id="companyBalance">R$ 0,00</strong>
-        </div>
-
-        <div class="cards small-cards">
-
-          <div class="card">
-            <span>Receitas</span>
-            <strong id="companyIncome">R$ 0,00</strong>
-          </div>
-
-          <div class="card">
-            <span>Despesas</span>
-            <strong id="companyExpense">R$ 0,00</strong>
-          </div>
-
-          <div class="card">
-            <span>Resultado</span>
-            <strong id="companyResult">R$ 0,00</strong>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- PESSOAL -->
-      <section id="pessoalSection" class="section">
-
-        <div class="company-banner personal-banner">
-          <div>
-            <div>
-              <h2>👤 Financeiro Pessoal</h2>
-              <p>Controle suas finanças pessoais separadamente.</p>
-            </div>
-          </div>
-
-          <strong id="personalBalance">R$ 0,00</strong>
-        </div>
-
-        <div class="cards small-cards">
-
-          <div class="card">
-            <span>Receitas</span>
-            <strong id="personalIncome">R$ 0,00</strong>
-          </div>
-
-          <div class="card">
-            <span>Despesas</span>
-            <strong id="personalExpense">R$ 0,00</strong>
-          </div>
-
-          <div class="card">
-            <span>Resultado</span>
-            <strong id="personalResult">R$ 0,00</strong>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- RELATÓRIOS -->
-      <section id="relatoriosSection" class="section">
-
-        <div class="section-header">
-          <div>
-            <h2>Relatórios</h2>
-            <p>Resumo geral das suas movimentações.</p>
-          </div>
-        </div>
-
-        <div id="reportContent" class="report-content"></div>
-
-      </section>
-
-    </main>
-
-  </div>
-
-
-  <!-- MODAL -->
-  <div id="transactionModal" class="modal">
-
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <div>
-          <h2 id="modalTitle">Nova movimentação</h2>
-          <p>Preencha os dados abaixo.</p>
-        </div>
-
-        <button id="closeModal" class="close-button">
-          ×
-        </button>
       </div>
 
 
-      <form id="transactionForm">
+      <div class="visual-footer">
+        <span>●</span>
+        Simples
+        <span>●</span>
+        Seguro
+        <span>●</span>
+        Inteligente
+      </div>
 
-        <input type="hidden" id="transactionId">
-
-
-        <div class="form-grid">
-
-          <div class="form-group">
-            <label for="transactionDescription">
-              Descrição
-            </label>
-
-            <input
-              type="text"
-              id="transactionDescription"
-              placeholder="Ex.: Salário"
-              required
-            >
-          </div>
+    </div>
 
 
-          <div class="form-group">
-            <label for="transactionValue">
-              Valor
-            </label>
+    <!-- FORMULÁRIOS -->
 
-            <input
-              type="number"
-              id="transactionValue"
-              placeholder="0,00"
-              step="0.01"
-              min="0"
-              required
-            >
-          </div>
+    <div class="auth-panel">
+
+      <div class="mobile-brand">
+        <div class="logo-mark">F</div>
+        <strong>FinControl</strong>
+      </div>
 
 
-          <div class="form-group">
-            <label for="transactionDate">
-              Data
-            </label>
+      <!-- LOGIN -->
 
-            <input
-              type="date"
-              id="transactionDate"
-              required
-            >
-          </div>
+      <form id="loginForm" class="auth-form active">
 
+        <div class="form-heading">
 
-          <div class="form-group">
-            <label for="transactionType">
-              Tipo
-            </label>
+          <span class="mobile-eyebrow">
+            BEM-VINDO DE VOLTA
+          </span>
 
-            <select id="transactionType" required>
-              <option value="receita">Receita</option>
-              <option value="despesa">Despesa</option>
-            </select>
-          </div>
+          <h2>Entrar na sua conta</h2>
 
-
-          <div class="form-group">
-            <label for="transactionAccount">
-              Conta
-            </label>
-
-            <select id="transactionAccount" required>
-              <option value="pessoal">Pessoal</option>
-              <option value="empresa">Empresa</option>
-            </select>
-          </div>
-
-
-          <div class="form-group">
-            <label for="transactionCategory">
-              Categoria
-            </label>
-
-            <select id="transactionCategory" required>
-
-              <option value="salario">Salário</option>
-              <option value="vendas">Vendas</option>
-              <option value="servicos">Serviços</option>
-              <option value="alimentacao">Alimentação</option>
-              <option value="moradia">Moradia</option>
-              <option value="transporte">Transporte</option>
-              <option value="saude">Saúde</option>
-              <option value="educacao">Educação</option>
-              <option value="lazer">Lazer</option>
-              <option value="compras">Compras</option>
-              <option value="impostos">Impostos</option>
-              <option value="fornecedores">Fornecedores</option>
-              <option value="marketing">Marketing</option>
-              <option value="outros">Outros</option>
-
-            </select>
-          </div>
+          <p>
+            Acesse seu controle financeiro.
+          </p>
 
         </div>
 
 
-        <div class="form-group">
-          <label for="transactionNotes">
-            Observações
+        <div class="input-group">
+
+          <label for="loginEmail">
+            E-mail
           </label>
 
-          <textarea
-            id="transactionNotes"
-            rows="3"
-            placeholder="Observações opcionais..."
-          ></textarea>
+          <div class="input-wrap">
+
+            <span>✉</span>
+
+            <input
+              type="email"
+              id="loginEmail"
+              placeholder="seu@email.com"
+              autocomplete="email"
+              required
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="input-group">
+
+          <div class="label-row">
+
+            <label for="loginPassword">
+              Senha
+            </label>
+
+            <button
+              type="button"
+              class="link-button"
+              id="forgotPassword"
+            >
+              Esqueci minha senha
+            </button>
+
+          </div>
+
+
+          <div class="input-wrap">
+
+            <span>●</span>
+
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+              required
+            >
+
+            <button
+              type="button"
+              class="eye-button"
+              data-target="loginPassword"
+            >
+              👁
+            </button>
+
+          </div>
+
         </div>
 
 
-        <div class="modal-actions">
+        <button
+          type="submit"
+          class="auth-button"
+        >
+          Entrar
+        </button>
 
-          <button
-            type="button"
-            id="cancelModal"
-            class="secondary-button"
-          >
-            Cancelar
-          </button>
 
-          <button
-            type="submit"
-            class="primary-button"
-          >
-            Salvar movimentação
-          </button>
+        <div class="auth-divider">
+          <span>ou</span>
+        </div>
+
+
+        <button
+          type="button"
+          class="outline-button"
+          id="showRegister"
+        >
+          Criar uma conta
+        </button>
+
+
+        <p class="auth-message" id="loginMessage"></p>
+
+      </form>
+
+
+      <!-- CADASTRO -->
+
+      <form id="registerForm" class="auth-form">
+
+        <div class="form-heading">
+
+          <span class="mobile-eyebrow">
+            COMECE AGORA
+          </span>
+
+          <h2>Criar sua conta</h2>
+
+          <p>
+            Organize suas finanças gratuitamente.
+          </p>
 
         </div>
+
+
+        <div class="input-group">
+
+          <label for="registerName">
+            Nome
+          </label>
+
+          <div class="input-wrap">
+
+            <span>👤</span>
+
+            <input
+              type="text"
+              id="registerName"
+              placeholder="Seu nome"
+              required
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label for="registerEmail">
+            E-mail
+          </label>
+
+          <div class="input-wrap">
+
+            <span>✉</span>
+
+            <input
+              type="email"
+              id="registerEmail"
+              placeholder="seu@email.com"
+              required
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label for="registerPassword">
+            Senha
+          </label>
+
+          <div class="input-wrap">
+
+            <span>●</span>
+
+            <input
+              type="password"
+              id="registerPassword"
+              placeholder="Mínimo de 6 caracteres"
+              minlength="6"
+              required
+            >
+
+            <button
+              type="button"
+              class="eye-button"
+              data-target="registerPassword"
+            >
+              👁
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="auth-button"
+        >
+          Criar minha conta
+        </button>
+
+
+        <button
+          type="button"
+          class="back-login"
+          id="showLogin"
+        >
+          ← Já tenho uma conta
+        </button>
+
+
+        <p class="auth-message" id="registerMessage"></p>
+
+      </form>
+
+
+      <!-- RECUPERAÇÃO -->
+
+      <form id="recoveryForm" class="auth-form">
+
+        <div class="form-heading">
+
+          <h2>Recuperar senha</h2>
+
+          <p>
+            Digite seu e-mail e enviaremos
+            as instruções de recuperação.
+          </p>
+
+        </div>
+
+
+        <div class="input-group">
+
+          <label for="recoveryEmail">
+            E-mail
+          </label>
+
+          <div class="input-wrap">
+
+            <span>✉</span>
+
+            <input
+              type="email"
+              id="recoveryEmail"
+              placeholder="seu@email.com"
+              required
+            >
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="auth-button"
+        >
+          Enviar recuperação
+        </button>
+
+
+        <button
+          type="button"
+          class="back-login"
+          id="backToLogin"
+        >
+          ← Voltar para login
+        </button>
+
+
+        <p class="auth-message" id="recoveryMessage"></p>
 
       </form>
 
@@ -541,7 +407,242 @@
   </div>
 
 
-  <script src="script.js"></script>
+  <!-- =====================================
+       SISTEMA
+  ====================================== -->
 
-</body>
-</html>
+  <div id="appScreen" class="app-screen">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar" id="sidebar">
+
+      <div class="brand">
+
+        <div class="logo-mark">F</div>
+
+        <div>
+          <strong>FinControl</strong>
+          <span>Gestão Financeira</span>
+        </div>
+
+      </div>
+
+
+      <div class="profile-mini">
+
+        <div class="avatar" id="userAvatar">
+          U
+        </div>
+
+        <div>
+          <strong id="userName">
+            Usuário
+          </strong>
+
+          <span id="userEmail">
+            usuario@email.com
+          </span>
+        </div>
+
+      </div>
+
+
+      <nav class="main-nav">
+
+        <button
+          class="nav-item active"
+          data-page="dashboard"
+        >
+          <span>⌂</span>
+          Dashboard
+        </button>
+
+
+        <button
+          class="nav-item"
+          data-page="movimentacoes"
+        >
+          <span>↕</span>
+          Movimentações
+        </button>
+
+
+        <button
+          class="nav-item"
+          data-page="receitas"
+        >
+          <span>↗</span>
+          Receitas
+        </button>
+
+
+        <button
+          class="nav-item"
+          data-page="despesas"
+        >
+          <span>↘</span>
+          Despesas
+        </button>
+
+
+        <div class="nav-label">
+          ORGANIZAÇÃO
+        </div>
+
+
+        <button
+          class="nav-item"
+          data-page="contas"
+        >
+          <span>▣</span>
+          Contas e cartões
+        </button>
+
+
+        <button
+          class="nav-item"
+          data-page="planejamento"
+        >
+          <span>◷</span>
+          Planejamento
+        </button>
+
+
+        <button
+          class="nav-item"
+          data-page="metas"
+        >
+          <span>◎</span>
+          Metas
+        </button>
+
+
+        <div class="nav-label">
+          AMBIENTES
+        </div>
+
+
+        <button
+          class="nav-item"
+          data-page="pessoal"
+        >
+          <span>♙</span>
+          Pessoal
+        </button>
+
+
+        <button
+          class="nav-item"
+          data-page="empresa"
+        >
+          <span>▥</span>
+          Empresa
+        </button>
+
+
+        <button
+          class="nav-item"
+          data-page="relatorios"
+        >
+          <span>▤</span>
+          Relatórios
+        </button>
+
+      </nav>
+
+
+      <div class="sidebar-bottom">
+
+        <button
+          class="sidebar-action"
+          id="themeButton"
+        >
+          ☾
+          <span>Tema escuro</span>
+        </button>
+
+
+        <button
+          class="sidebar-action logout"
+          id="logoutButton"
+        >
+          ⇥
+          <span>Sair</span>
+        </button>
+
+      </div>
+
+    </aside>
+
+
+    <!-- CONTEÚDO -->
+
+    <main class="main-content">
+
+      <header class="top-header">
+
+        <div class="header-left">
+
+          <button
+            class="mobile-menu"
+            id="mobileMenu"
+          >
+            ☰
+          </button>
+
+          <div>
+            <h1 id="pageTitle">
+              Dashboard
+            </h1>
+
+            <p id="pageSubtitle">
+              Visão geral das suas finanças
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="header-actions">
+
+          <button
+            class="icon-button"
+            title="Notificações"
+          >
+            ♧
+          </button>
+
+          <button
+            class="new-button"
+            id="newTransaction"
+          >
+            <span>+</span>
+            Nova movimentação
+          </button>
+
+        </div>
+
+      </header>
+
+
+      <!-- ===============================
+           DASHBOARD
+      ================================ -->
+
+      <section
+        class="page active"
+        id="page-dashboard"
+      >
+
+        <div class="welcome">
+
+          <div>
+
+            <span>
+              RESUMO FINANCEIRO
+            </span>
+
+            <h2>
+              Olá, <strong id="welcomeName">
+                usuário
