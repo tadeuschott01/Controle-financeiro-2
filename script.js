@@ -1,450 +1,1022 @@
-// ==========================================
+// =============================================
 // FINCONTROL
-// Sistema Financeiro Pessoal e Empresarial
-// ==========================================
+// =============================================
+
+// COLOQUE AQUI OS DADOS DO SEU PROJETO SUPABASE
+
+const SUPABASE_URL = "COLE_AQUI_A_PROJECT_URL";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "COLE_AQUI_A_PUBLISHABLE_KEY";
 
 
-// BANCO LOCAL
-let transactions = JSON.parse(
-  localStorage.getItem("fincontrol_transactions")
-) || [];
+const { createClient } = window.supabase;
+
+const supabaseClient = createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
 
 
+// =============================================
+// ESTADO
+// =============================================
+
+let currentUser = null;
+
+let transactions = [];
+
+
+// =============================================
 // ELEMENTOS
-const modal = document.getElementById("transactionModal");
-const form = document.getElementById("transactionForm");
+// =============================================
 
-const transactionId = document.getElementById("transactionId");
-const descriptionInput = document.getElementById("transactionDescription");
-const valueInput = document.getElementById("transactionValue");
-const dateInput = document.getElementById("transactionDate");
-const typeInput = document.getElementById("transactionType");
-const accountInput = document.getElementById("transactionAccount");
-const categoryInput = document.getElementById("transactionCategory");
-const notesInput = document.getElementById("transactionNotes");
+const authScreen =
+  document.getElementById("authScreen");
+
+const appScreen =
+  document.getElementById("appScreen");
+
+const loginForm =
+  document.getElementById("loginForm");
+
+const registerForm =
+  document.getElementById("registerForm");
+
+const recoveryForm =
+  document.getElementById("recoveryForm");
+
+const transactionModal =
+  document.getElementById("transactionModal");
+
+const transactionForm =
+  document.getElementById("transactionForm");
 
 
-// ==========================================
+// =============================================
 // INICIALIZAÇÃO
-// ==========================================
+// =============================================
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(
+  "DOMContentLoaded",
+  initialize
+);
 
-  setCurrentDate();
 
-  setDefaultDate();
-
-  setDefaultMonth();
-
-  renderAll();
+async function initialize() {
 
   setupEvents();
 
-});
+  setToday();
+
+  setCurrentMonth();
+
+  const {
+    data
+  } = await supabaseClient.auth.getSession();
 
 
-// ==========================================
-// DATA ATUAL
-// ==========================================
+  if (data.session) {
 
-function setCurrentDate() {
+    await startApplication(
+      data.session.user
+    );
 
-  const element = document.getElementById("currentDate");
+  } else {
 
-  const date = new Date();
+    showAuth();
 
-  element.textContent = date.toLocaleDateString("pt-BR", {
-    weekday: "long",
-    day: "2-digit",
-    month: "long",
-    year: "numeric"
-  });
+  }
+
+
+  supabaseClient.auth.onAuthStateChange(
+    async (event, session) => {
+
+      if (
+        event === "SIGNED_IN" &&
+        session
+      ) {
+
+        await startApplication(
+          session.user
+        );
+
+      }
+
+
+      if (
+        event === "SIGNED_OUT"
+      ) {
+
+        showAuth();
+
+      }
+
+    }
+  );
 
 }
 
 
-function setDefaultDate() {
-
-  const today = new Date();
-
-  dateInput.value = today.toISOString().split("T")[0];
-
-}
-
-
-function setDefaultMonth() {
-
-  const today = new Date();
-
-  const month =
-    today.getFullYear() +
-    "-" +
-    String(today.getMonth() + 1).padStart(2, "0");
-
-  document.getElementById("dashboardMonth").value = month;
-
-}
-
-
-// ==========================================
+// =============================================
 // EVENTOS
-// ==========================================
+// =============================================
 
 function setupEvents() {
 
-  // MENU
-  document.querySelectorAll(".menu-item").forEach(button => {
+  loginForm.addEventListener(
+    "submit",
+    handleLogin
+  );
 
-    button.addEventListener("click", () => {
 
-      changeSection(button.dataset.section);
+  registerForm.addEventListener(
+    "submit",
+    handleRegister
+  );
 
-      document.querySelector(".sidebar").classList.remove("open");
+
+  recoveryForm.addEventListener(
+    "submit",
+    handleRecovery
+  );
+
+
+  document
+    .getElementById("showRegister")
+    .addEventListener(
+      "click",
+      () => showAuthForm("register")
+    );
+
+
+  document
+    .getElementById("showLogin")
+    .addEventListener(
+      "click",
+      () => showAuthForm("login")
+    );
+
+
+  document
+    .getElementById("forgotPassword")
+    .addEventListener(
+      "click",
+      () => showAuthForm("recovery")
+    );
+
+
+  document
+    .getElementById("backToLogin")
+    .addEventListener(
+      "click",
+      () => showAuthForm("login")
+    );
+
+
+  document
+    .querySelectorAll(".eye-button")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => togglePassword(
+          button.dataset.target
+        )
+      );
 
     });
 
-  });
 
-
-  // BOTÕES DE SEÇÃO
-  document.querySelectorAll("[data-section]").forEach(button => {
-
-    if (!button.classList.contains("menu-item")) {
-
-      button.addEventListener("click", () => {
-        changeSection(button.dataset.section);
-      });
-
-    }
-
-  });
-
-
-  // NOVA MOVIMENTAÇÃO
   document
-    .getElementById("newTransactionButton")
-    .addEventListener("click", openNewTransaction);
+    .querySelectorAll(".nav-item")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          navigate(
+            button.dataset.page
+          );
+
+        }
+      );
+
+    });
 
 
   document
-    .getElementById("newTransactionButton2")
-    .addEventListener("click", openNewTransaction);
+    .querySelectorAll("[data-page]")
+    .forEach(button => {
+
+      if (
+        !button.classList.contains(
+          "nav-item"
+        )
+      ) {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            navigate(
+              button.dataset.page
+            );
+
+          }
+        );
+
+      }
+
+    });
 
 
-  // FECHAR MODAL
+  document
+    .getElementById("logoutButton")
+    .addEventListener(
+      "click",
+      logout
+    );
+
+
+  document
+    .getElementById("themeButton")
+    .addEventListener(
+      "click",
+      toggleTheme
+    );
+
+
+  document
+    .getElementById("newTransaction")
+    .addEventListener(
+      "click",
+      openTransactionModal
+    );
+
+
+  document
+    .getElementById("newTransaction2")
+    .addEventListener(
+      "click",
+      openTransactionModal
+    );
+
+
   document
     .getElementById("closeModal")
-    .addEventListener("click", closeModal);
+    .addEventListener(
+      "click",
+      closeTransactionModal
+    );
 
 
   document
     .getElementById("cancelModal")
-    .addEventListener("click", closeModal);
-
-
-  // FORMULÁRIO
-  form.addEventListener("submit", saveTransaction);
-
-
-  // FILTROS
-  document
-    .getElementById("dashboardMonth")
-    .addEventListener("change", renderDashboard);
-
-
-  document
-    .getElementById("dashboardType")
-    .addEventListener("change", renderDashboard);
-
-
-  document
-    .getElementById("searchTransaction")
-    .addEventListener("input", renderTransactionsTable);
-
-
-  document
-    .getElementById("filterType")
-    .addEventListener("change", renderTransactionsTable);
-
-
-  document
-    .getElementById("filterAccount")
-    .addEventListener("change", renderTransactionsTable);
-
-
-  // TEMA
-  document
-    .getElementById("themeButton")
-    .addEventListener("click", toggleTheme);
-
-
-  // MENU MOBILE
-  document
-    .getElementById("mobileMenu")
-    .addEventListener("click", () => {
-
-      document.querySelector(".sidebar").classList.toggle("open");
-
-    });
-
-}
-
-
-// ==========================================
-// NAVEGAÇÃO
-// ==========================================
-
-function changeSection(section) {
-
-  document.querySelectorAll(".section").forEach(element => {
-    element.classList.remove("active");
-  });
-
-
-  const target = document.getElementById(
-    section + "Section"
-  );
-
-  if (target) {
-    target.classList.add("active");
-  }
-
-
-  document.querySelectorAll(".menu-item").forEach(button => {
-
-    button.classList.toggle(
-      "active",
-      button.dataset.section === section
+    .addEventListener(
+      "click",
+      closeTransactionModal
     );
 
-  });
+
+  transactionForm.addEventListener(
+    "submit",
+    saveTransaction
+  );
 
 
-  const titles = {
-
-    dashboard: "Dashboard",
-
-    movimentacoes: "Movimentações",
-
-    receitas: "Receitas",
-
-    despesas: "Despesas",
-
-    empresa: "Financeiro da Empresa",
-
-    pessoal: "Financeiro Pessoal",
-
-    relatorios: "Relatórios"
-
-  };
+  document
+    .getElementById("dashboardMonth")
+    .addEventListener(
+      "change",
+      renderDashboard
+    );
 
 
-  document.getElementById("pageTitle").textContent =
-    titles[section] || "Dashboard";
+  document
+    .getElementById("searchInput")
+    .addEventListener(
+      "input",
+      renderTransactionsTable
+    );
 
 
-  renderAll();
-
-}
-
-
-// ==========================================
-// MODAL
-// ==========================================
-
-function openNewTransaction() {
-
-  form.reset();
-
-  transactionId.value = "";
-
-  document.getElementById("modalTitle").textContent =
-    "Nova movimentação";
-
-  setDefaultDate();
-
-  modal.classList.add("active");
-
-}
+  document
+    .getElementById("typeFilter")
+    .addEventListener(
+      "change",
+      renderTransactionsTable
+    );
 
 
-function closeModal() {
+  document
+    .getElementById("accountFilter")
+    .addEventListener(
+      "change",
+      renderTransactionsTable
+    );
 
-  modal.classList.remove("active");
+
+  document
+    .getElementById("mobileMenu")
+    .addEventListener(
+      "click",
+      () => {
+
+        document
+          .getElementById("sidebar")
+          .classList.toggle("open");
+
+      }
+    );
 
 }
 
 
-// ==========================================
-// SALVAR
-// ==========================================
+// =============================================
+// AUTH
+// =============================================
 
-function saveTransaction(event) {
+async function handleLogin(event) {
 
   event.preventDefault();
 
-
-  const id = transactionId.value;
-
-  const transaction = {
-
-    id: id || Date.now().toString(),
-
-    description: descriptionInput.value.trim(),
-
-    value: Number(valueInput.value),
-
-    date: dateInput.value,
-
-    type: typeInput.value,
-
-    account: accountInput.value,
-
-    category: categoryInput.value,
-
-    notes: notesInput.value.trim()
-
-  };
+  const email =
+    document.getElementById(
+      "loginEmail"
+    ).value.trim();
 
 
-  if (!transaction.description || !transaction.value) {
+  const password =
+    document.getElementById(
+      "loginPassword"
+    ).value;
 
-    alert("Preencha a descrição e o valor.");
+
+  setMessage(
+    "loginMessage",
+    "Entrando...",
+    "success"
+  );
+
+
+  const {
+    error
+  } =
+    await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+
+  if (error) {
+
+    setMessage(
+      "loginMessage",
+      getAuthError(error),
+      "error"
+    );
 
     return;
 
   }
 
 
-  if (id) {
+  loginForm.reset();
 
-    transactions = transactions.map(item =>
-      item.id === id ? transaction : item
+}
+
+
+async function handleRegister(event) {
+
+  event.preventDefault();
+
+
+  const name =
+    document.getElementById(
+      "registerName"
+    ).value.trim();
+
+
+  const email =
+    document.getElementById(
+      "registerEmail"
+    ).value.trim();
+
+
+  const password =
+    document.getElementById(
+      "registerPassword"
+    ).value;
+
+
+  if (password.length < 6) {
+
+    setMessage(
+      "registerMessage",
+      "A senha precisa ter pelo menos 6 caracteres.",
+      "error"
     );
 
-  } else {
-
-    transactions.push(transaction);
+    return;
 
   }
 
 
-  saveData();
+  setMessage(
+    "registerMessage",
+    "Criando sua conta...",
+    "success"
+  );
 
-  closeModal();
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth.signUp({
+
+      email,
+      password,
+
+      options: {
+
+        data: {
+          name
+        }
+
+      }
+
+    });
+
+
+  if (error) {
+
+    setMessage(
+      "registerMessage",
+      getAuthError(error),
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (data.session) {
+
+    setMessage(
+      "registerMessage",
+      "Conta criada com sucesso!",
+      "success"
+    );
+
+  } else {
+
+    setMessage(
+      "registerMessage",
+      "Conta criada! Confira seu e-mail para confirmar o cadastro.",
+      "success"
+    );
+
+  }
+
+}
+
+
+async function handleRecovery(event) {
+
+  event.preventDefault();
+
+
+  const email =
+    document.getElementById(
+      "recoveryEmail"
+    ).value.trim();
+
+
+  const redirectUrl =
+    window.location.origin +
+    window.location.pathname;
+
+
+  const {
+    error
+  } =
+    await supabaseClient.auth.resetPasswordForEmail(
+      email,
+      {
+        redirectTo: redirectUrl
+      }
+    );
+
+
+  if (error) {
+
+    setMessage(
+      "recoveryMessage",
+      getAuthError(error),
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  setMessage(
+    "recoveryMessage",
+    "Enviamos as instruções para seu e-mail.",
+    "success"
+  );
+
+}
+
+
+async function logout() {
+
+  await supabaseClient.auth.signOut();
+
+}
+
+
+// =============================================
+// APLICAÇÃO
+// =============================================
+
+async function startApplication(user) {
+
+  currentUser = user;
+
+  authScreen.style.display = "none";
+
+  appScreen.classList.add("active");
+
+
+  const name =
+    user.user_metadata?.name ||
+    user.email?.split("@")[0] ||
+    "Usuário";
+
+
+  document.getElementById(
+    "userName"
+  ).textContent = name;
+
+
+  document.getElementById(
+    "welcomeName"
+  ).textContent = name;
+
+
+  document.getElementById(
+    "userEmail"
+  ).textContent = user.email;
+
+
+  document.getElementById(
+    "userAvatar"
+  ).textContent =
+    name.charAt(0).toUpperCase();
+
+
+  await loadTransactions();
 
   renderAll();
 
 }
 
 
-// ==========================================
-// EDITAR
-// ==========================================
+function showAuth() {
 
-function editTransaction(id) {
+  currentUser = null;
 
-  const transaction = transactions.find(
-    item => item.id === id
-  );
+  transactions = [];
+
+  appScreen.classList.remove("active");
+
+  authScreen.style.display = "grid";
+
+  showAuthForm("login");
+
+}
+
+
+function showAuthForm(formName) {
+
+  document
+    .querySelectorAll(".auth-form")
+    .forEach(form => {
+
+      form.classList.remove("active");
+
+    });
+
+
+  const target =
+    document.getElementById(
+      formName + "Form"
+    );
+
+
+  if (target) {
+    target.classList.add("active");
+  }
+
+}
+
+
+// =============================================
+// BANCO
+// =============================================
+
+async function loadTransactions() {
+
+  if (!currentUser) return;
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("transactions")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "date",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      "Não foi possível carregar suas movimentações."
+    );
+
+    return;
+
+  }
+
+
+  transactions = data || [];
+
+}
+
+
+async function saveTransaction(event) {
+
+  event.preventDefault();
+
+
+  if (!currentUser) return;
+
+
+  const id =
+    document.getElementById(
+      "transactionId"
+    ).value;
+
+
+  const type =
+    document.querySelector(
+      'input[name="transactionType"]:checked'
+    ).value;
+
+
+  const transaction = {
+
+    user_id:
+      currentUser.id,
+
+    description:
+      document.getElementById(
+        "transactionDescription"
+      ).value.trim(),
+
+    value:
+      Number(
+        document.getElementById(
+          "transactionValue"
+        ).value
+      ),
+
+    date:
+      document.getElementById(
+        "transactionDate"
+      ).value,
+
+    type,
+
+    category:
+      document.getElementById(
+        "transactionCategory"
+      ).value,
+
+    account:
+      document.getElementById(
+        "transactionAccount"
+      ).value,
+
+    wallet:
+      document.getElementById(
+        "transactionWallet"
+      ).value,
+
+    notes:
+      document.getElementById(
+        "transactionNotes"
+      ).value.trim()
+
+  };
+
+
+  let result;
+
+
+  if (id) {
+
+    result =
+      await supabaseClient
+        .from("transactions")
+        .update(transaction)
+        .eq("id", id)
+        .eq(
+          "user_id",
+          currentUser.id
+        );
+
+  } else {
+
+    result =
+      await supabaseClient
+        .from("transactions")
+        .insert(transaction);
+
+  }
+
+
+  if (result.error) {
+
+    console.error(result.error);
+
+    alert(
+      "Não foi possível salvar a movimentação."
+    );
+
+    return;
+
+  }
+
+
+  closeTransactionModal();
+
+  transactionForm.reset();
+
+  setToday();
+
+  await loadTransactions();
+
+  renderAll();
+
+}
+
+
+async function deleteTransaction(id) {
+
+  if (!currentUser) return;
+
+
+  const confirmed =
+    confirm(
+      "Deseja excluir esta movimentação?"
+    );
+
+
+  if (!confirmed) return;
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("transactions")
+      .delete()
+      .eq("id", id)
+      .eq(
+        "user_id",
+        currentUser.id
+      );
+
+
+  if (error) {
+
+    alert(
+      "Não foi possível excluir."
+    );
+
+    return;
+
+  }
+
+
+  await loadTransactions();
+
+  renderAll();
+
+}
+
+
+async function editTransaction(id) {
+
+  const transaction =
+    transactions.find(
+      item => item.id === id
+    );
 
 
   if (!transaction) return;
 
 
-  transactionId.value = transaction.id;
-
-  descriptionInput.value = transaction.description;
-
-  valueInput.value = transaction.value;
-
-  dateInput.value = transaction.date;
-
-  typeInput.value = transaction.type;
-
-  accountInput.value = transaction.account;
-
-  categoryInput.value = transaction.category;
-
-  notesInput.value = transaction.notes || "";
+  document.getElementById(
+    "transactionId"
+  ).value = transaction.id;
 
 
-  document.getElementById("modalTitle").textContent =
+  document.getElementById(
+    "transactionDescription"
+  ).value =
+    transaction.description;
+
+
+  document.getElementById(
+    "transactionValue"
+  ).value =
+    transaction.value;
+
+
+  document.getElementById(
+    "transactionDate"
+  ).value =
+    transaction.date;
+
+
+  document.getElementById(
+    "transactionCategory"
+  ).value =
+    transaction.category;
+
+
+  document.getElementById(
+    "transactionAccount"
+  ).value =
+    transaction.account;
+
+
+  document.getElementById(
+    "transactionWallet"
+  ).value =
+    transaction.wallet || "principal";
+
+
+  document.getElementById(
+    "transactionNotes"
+  ).value =
+    transaction.notes || "";
+
+
+  const radio =
+    document.querySelector(
+      `input[name="transactionType"][value="${transaction.type}"]`
+    );
+
+
+  if (radio) {
+    radio.checked = true;
+  }
+
+
+  document.getElementById(
+    "modalTitle"
+  ).textContent =
     "Editar movimentação";
 
 
-  modal.classList.add("active");
-
-}
-
-
-// ==========================================
-// EXCLUIR
-// ==========================================
-
-function deleteTransaction(id) {
-
-  const transaction = transactions.find(
-    item => item.id === id
-  );
-
-
-  if (!transaction) return;
-
-
-  const confirmation = confirm(
-    `Excluir "${transaction.description}"?`
-  );
-
-
-  if (!confirmation) return;
-
-
-  transactions = transactions.filter(
-    item => item.id !== id
-  );
-
-
-  saveData();
-
-  renderAll();
-
-}
-
-
-// ==========================================
-// LOCAL STORAGE
-// ==========================================
-
-function saveData() {
-
-  localStorage.setItem(
-    "fincontrol_transactions",
-    JSON.stringify(transactions)
+  transactionModal.classList.add(
+    "active"
   );
 
 }
 
 
-// ==========================================
-// CÁLCULOS
-// ==========================================
+// =============================================
+// DASHBOARD
+// =============================================
+
+function renderDashboard() {
+
+  const month =
+    document.getElementById(
+      "dashboardMonth"
+    ).value;
+
+
+  let data =
+    transactions;
+
+
+  if (month) {
+
+    data =
+      transactions.filter(
+        item =>
+          item.date.startsWith(month)
+      );
+
+  }
+
+
+  const summary =
+    calculate(data);
+
+
+  document.getElementById(
+    "balanceValue"
+  ).textContent =
+    formatCurrency(
+      summary.balance
+    );
+
+
+  document.getElementById(
+    "incomeValue"
+  ).textContent =
+    formatCurrency(
+      summary.income
+    );
+
+
+  document.getElementById(
+    "expenseValue"
+  ).textContent =
+    formatCurrency(
+      summary.expense
+    );
+
+
+  document.getElementById(
+    "resultValue"
+  ).textContent =
+    formatCurrency(
+      summary.result
+    );
+
+
+  renderRecent(data);
+
+  renderCategories(data);
+
+}
+
 
 function calculate(data) {
 
   let income = 0;
+
   let expense = 0;
 
 
-  data.forEach(transaction => {
+  data.forEach(item => {
 
-    if (transaction.type === "receita") {
+    if (
+      item.type === "receita"
+    ) {
 
-      income += transaction.value;
+      income += Number(
+        item.value
+      );
 
     } else {
 
-      expense += transaction.value;
+      expense += Number(
+        item.value
+      );
 
     }
 
@@ -457,644 +1029,825 @@ function calculate(data) {
 
     expense,
 
-    balance: income - expense,
+    balance:
+      income - expense,
 
-    result: income - expense
+    result:
+      income - expense
 
   };
 
 }
 
 
-// ==========================================
-// DASHBOARD
-// ==========================================
+// =============================================
+// RECENTES
+// =============================================
 
-function renderDashboard() {
-
-  const month =
-    document.getElementById("dashboardMonth").value;
-
-  const account =
-    document.getElementById("dashboardType").value;
-
-
-  let filtered = transactions;
-
-
-  if (month) {
-
-    filtered = filtered.filter(transaction =>
-      transaction.date.startsWith(month)
-    );
-
-  }
-
-
-  if (account !== "todos") {
-
-    filtered = filtered.filter(transaction =>
-      transaction.account === account
-    );
-
-  }
-
-
-  const data = calculate(filtered);
-
-
-  document.getElementById("balance").textContent =
-    formatCurrency(data.balance);
-
-
-  document.getElementById("income").textContent =
-    formatCurrency(data.income);
-
-
-  document.getElementById("expense").textContent =
-    formatCurrency(data.expense);
-
-
-  document.getElementById("result").textContent =
-    formatCurrency(data.result);
-
-
-  renderChart(data);
-
-  renderRecentTransactions(filtered);
-
-}
-
-
-// ==========================================
-// GRÁFICO
-// ==========================================
-
-function renderChart(data) {
-
-  const total = data.income + data.expense;
-
-
-  let incomePercent = 0;
-  let expensePercent = 0;
-
-
-  if (total > 0) {
-
-    incomePercent =
-      Math.round((data.income / total) * 100);
-
-    expensePercent =
-      Math.round((data.expense / total) * 100);
-
-  }
-
-
-  document.getElementById("incomeBar").style.width =
-    incomePercent + "%";
-
-
-  document.getElementById("expenseBar").style.width =
-    expensePercent + "%";
-
-
-  document.getElementById("incomePercent").textContent =
-    incomePercent + "%";
-
-
-  document.getElementById("expensePercent").textContent =
-    expensePercent + "%";
-
-}
-
-
-// ==========================================
-// ÚLTIMAS MOVIMENTAÇÕES
-// ==========================================
-
-function renderRecentTransactions(data) {
+function renderRecent(data) {
 
   const container =
-    document.getElementById("recentTransactions");
+    document.getElementById(
+      "recentTransactions"
+    );
 
 
-  const recent = [...data]
-    .sort((a, b) =>
-      new Date(b.date) - new Date(a.date)
-    )
-    .slice(0, 5);
+  const recent =
+    [...data]
+      .sort(
+        (a, b) =>
+          new Date(b.date) -
+          new Date(a.date)
+      )
+      .slice(0, 6);
 
 
   if (!recent.length) {
 
-    container.innerHTML =
-      `<div class="empty">
-        Nenhuma movimentação cadastrada.
-      </div>`;
+    container.innerHTML = `
+
+      <div class="empty-state">
+
+        <span>◎</span>
+
+        <strong>
+          Nenhuma movimentação
+        </strong>
+
+        <p>
+          Comece adicionando sua primeira
+          receita ou despesa.
+        </p>
+
+      </div>
+
+    `;
 
     return;
 
   }
 
 
-  container.innerHTML = recent.map(transaction => {
+  container.innerHTML =
+    recent.map(item => {
 
-    const isIncome =
-      transaction.type === "receita";
+      const income =
+        item.type === "receita";
 
 
-    return `
+      return `
 
-      <div class="transaction-item">
+        <div class="recent-item">
 
-        <div class="transaction-info">
+          <div class="recent-icon ${
+            income
+              ? "income"
+              : "expense"
+          }">
 
-          <div class="transaction-icon">
-            ${isIncome ? "📈" : "📉"}
+            ${income ? "↗" : "↘"}
+
           </div>
+
 
           <div>
 
-            <div class="transaction-description">
-              ${escapeHTML(transaction.description)}
+            <div class="recent-description">
+
+              ${escapeHTML(
+                item.description
+              )}
+
             </div>
 
-            <div class="transaction-category">
-              ${formatCategory(transaction.category)}
+            <div class="recent-meta">
+
+              ${formatDate(item.date)}
+              ·
+              ${formatCategory(
+                item.category
+              )}
+
             </div>
+
+          </div>
+
+
+          <div class="recent-value ${
+            income
+              ? "income"
+              : "expense"
+          }">
+
+            ${income ? "+" : "-"}
+
+            ${formatCurrency(
+              item.value
+            )}
 
           </div>
 
         </div>
 
-        <div class="transaction-value ${isIncome ? "income" : "expense"}">
+      `;
 
-          ${isIncome ? "+" : "-"}
-          ${formatCurrency(transaction.value)}
-
-        </div>
-
-      </div>
-
-    `;
-
-  }).join("");
+    }).join("");
 
 }
 
 
-// ==========================================
+// =============================================
+// CATEGORIAS
+// =============================================
+
+function renderCategories(data) {
+
+  const container =
+    document.getElementById(
+      "categoryChart"
+    );
+
+
+  const expenses =
+    data.filter(
+      item =>
+        item.type === "despesa"
+    );
+
+
+  if (!expenses.length) {
+
+    container.innerHTML = `
+      <div class="empty-small">
+        Nenhuma despesa cadastrada.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  const categories = {};
+
+
+  expenses.forEach(item => {
+
+    categories[item.category] =
+      (categories[item.category] || 0) +
+      Number(item.value);
+
+  });
+
+
+  const ordered =
+    Object.entries(categories)
+      .sort(
+        (a, b) =>
+          b[1] - a[1]
+      )
+      .slice(0, 5);
+
+
+  const max =
+    ordered[0]?.[1] || 1;
+
+
+  container.innerHTML =
+    ordered.map(
+      ([category, value]) => `
+
+        <div class="category-row">
+
+          <span class="category-name">
+
+            ${formatCategory(
+              category
+            )}
+
+          </span>
+
+          <div class="category-track">
+
+            <div
+              class="category-fill"
+              style="
+                width:${(value / max) * 100}%;
+              "
+            ></div>
+
+          </div>
+
+          <span class="category-value">
+
+            ${formatCurrency(
+              value
+            )}
+
+          </span>
+
+        </div>
+
+      `
+    ).join("");
+
+}
+
+
+// =============================================
 // TABELA
-// ==========================================
+// =============================================
 
 function renderTransactionsTable() {
 
-  const table =
-    document.getElementById("transactionsTable");
+  const tbody =
+    document.getElementById(
+      "transactionsTable"
+    );
 
 
   const search =
-    document
-      .getElementById("searchTransaction")
-      .value
+    document.getElementById(
+      "searchInput"
+    ).value
       .toLowerCase();
 
 
   const type =
-    document.getElementById("filterType").value;
+    document.getElementById(
+      "typeFilter"
+    ).value;
 
 
   const account =
-    document.getElementById("filterAccount").value;
+    document.getElementById(
+      "accountFilter"
+    ).value;
 
 
-  let filtered = [...transactions];
+  let data =
+    [...transactions];
 
 
   if (search) {
 
-    filtered = filtered.filter(transaction =>
-      transaction.description
-        .toLowerCase()
-        .includes(search)
-    );
+    data =
+      data.filter(
+        item =>
+          item.description
+            .toLowerCase()
+            .includes(search)
+      );
 
   }
 
 
   if (type !== "todos") {
 
-    filtered = filtered.filter(transaction =>
-      transaction.type === type
-    );
+    data =
+      data.filter(
+        item =>
+          item.type === type
+      );
 
   }
 
 
   if (account !== "todos") {
 
-    filtered = filtered.filter(transaction =>
-      transaction.account === account
-    );
+    data =
+      data.filter(
+        item =>
+          item.account === account
+      );
 
   }
 
-
-  filtered.sort(
-    (a, b) =>
-      new Date(b.date) - new Date(a.date)
-  );
-
-
-  if (!filtered.length) {
-
-    table.innerHTML = `
-
-      <tr>
-        <td colspan="7">
-          <div class="empty">
-            Nenhuma movimentação encontrada.
-          </div>
-        </td>
-      </tr>
-
-    `;
-
-    return;
-
-  }
-
-
-  table.innerHTML = filtered.map(transaction => {
-
-    const isIncome =
-      transaction.type === "receita";
-
-
-    return `
-
-      <tr>
-
-        <td>
-          ${formatDate(transaction.date)}
-        </td>
-
-        <td>
-          <strong>
-            ${escapeHTML(transaction.description)}
-          </strong>
-        </td>
-
-        <td>
-          ${formatCategory(transaction.category)}
-        </td>
-
-        <td>
-
-          <span class="badge ${
-            isIncome
-              ? "badge-income"
-              : "badge-expense"
-          }">
-
-            ${isIncome ? "Receita" : "Despesa"}
-
-          </span>
-
-        </td>
-
-        <td>
-          ${transaction.account === "empresa"
-            ? "🏢 Empresa"
-            : "👤 Pessoal"}
-        </td>
-
-        <td class="${isIncome ? "income" : "expense"}">
-
-          <strong>
-            ${isIncome ? "+" : "-"}
-            ${formatCurrency(transaction.value)}
-          </strong>
-
-        </td>
-
-        <td>
-
-          <button
-            class="action-button"
-            onclick="editTransaction('${transaction.id}')"
-            title="Editar"
-          >
-            ✏️
-          </button>
-
-          <button
-            class="action-button"
-            onclick="deleteTransaction('${transaction.id}')"
-            title="Excluir"
-          >
-            🗑️
-          </button>
-
-        </td>
-
-      </tr>
-
-    `;
-
-  }).join("");
-
-}
-
-
-// ==========================================
-// RECEITAS
-// ==========================================
-
-function renderIncomeList() {
-
-  const container =
-    document.getElementById("incomeList");
-
-
-  const data = transactions
-    .filter(transaction =>
-      transaction.type === "receita"
-    )
-    .sort((a, b) =>
-      new Date(b.date) - new Date(a.date)
-    );
-
-
-  renderSimpleList(container, data);
-
-}
-
-
-// ==========================================
-// DESPESAS
-// ==========================================
-
-function renderExpenseList() {
-
-  const container =
-    document.getElementById("expenseList");
-
-
-  const data = transactions
-    .filter(transaction =>
-      transaction.type === "despesa"
-    )
-    .sort((a, b) =>
-      new Date(b.date) - new Date(a.date)
-    );
-
-
-  renderSimpleList(container, data);
-
-}
-
-
-// ==========================================
-// LISTA SIMPLES
-// ==========================================
-
-function renderSimpleList(container, data) {
 
   if (!data.length) {
 
-    container.innerHTML =
-      `<div class="panel">
-        <div class="empty">
-          Nenhum lançamento encontrado.
-        </div>
-      </div>`;
+    tbody.innerHTML = `
+
+      <tr>
+
+        <td colspan="7">
+
+          <div class="empty-state">
+
+            Nenhuma movimentação encontrada.
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `;
 
     return;
 
   }
 
 
-  container.innerHTML = `
+  tbody.innerHTML =
+    data.map(item => {
 
-    <div class="panel">
-
-      ${data.map(transaction => {
-
-        const isIncome =
-          transaction.type === "receita";
+      const income =
+        item.type === "receita";
 
 
-        return `
+      return `
 
-          <div class="transaction-item">
+        <tr>
 
-            <div class="transaction-info">
+          <td>
+            ${formatDate(item.date)}
+          </td>
 
-              <div class="transaction-icon">
-                ${isIncome ? "📈" : "📉"}
-              </div>
 
-              <div>
+          <td>
 
-                <div class="transaction-description">
-                  ${escapeHTML(transaction.description)}
-                </div>
+            <strong>
+              ${escapeHTML(
+                item.description
+              )}
+            </strong>
 
-                <div class="transaction-category">
-                  ${formatDate(transaction.date)}
-                  •
-                  ${formatCategory(transaction.category)}
-                </div>
+          </td>
 
-              </div>
 
-            </div>
+          <td>
+            ${formatCategory(
+              item.category
+            )}
+          </td>
 
-            <div
-              class="transaction-value ${
-                isIncome ? "income" : "expense"
-              }"
+
+          <td>
+            ${
+              item.account === "empresa"
+                ? "🏢 Empresa"
+                : "👤 Pessoal"
+            }
+          </td>
+
+
+          <td>
+
+            <span class="badge ${
+              income
+                ? "income"
+                : "expense"
+            }">
+
+              ${
+                income
+                  ? "Receita"
+                  : "Despesa"
+              }
+
+            </span>
+
+          </td>
+
+
+          <td>
+
+            <strong>
+
+              ${income ? "+" : "-"}
+
+              ${formatCurrency(
+                item.value
+              )}
+
+            </strong>
+
+          </td>
+
+
+          <td>
+
+            <button
+              class="table-action"
+              onclick="editTransaction('${item.id}')"
             >
-
-              ${isIncome ? "+" : "-"}
-              ${formatCurrency(transaction.value)}
-
-            </div>
-
-          </div>
-
-        `;
-
-      }).join("")}
-
-    </div>
-
-  `;
-
-}
+              ✏️
+            </button>
 
 
-// ==========================================
-// EMPRESA
-// ==========================================
+            <button
+              class="table-action"
+              onclick="deleteTransaction('${item.id}')"
+            >
+              🗑️
+            </button>
 
-function renderCompany() {
+          </td>
 
-  const data = calculate(
-    transactions.filter(
-      transaction =>
-        transaction.account === "empresa"
-    )
-  );
+        </tr>
 
+      `;
 
-  document.getElementById("companyBalance").textContent =
-    formatCurrency(data.balance);
-
-
-  document.getElementById("companyIncome").textContent =
-    formatCurrency(data.income);
-
-
-  document.getElementById("companyExpense").textContent =
-    formatCurrency(data.expense);
-
-
-  document.getElementById("companyResult").textContent =
-    formatCurrency(data.result);
+    }).join("");
 
 }
 
 
-// ==========================================
-// PESSOAL
-// ==========================================
+// =============================================
+// NAVEGAÇÃO
+// =============================================
 
-function renderPersonal() {
+function navigate(page) {
 
-  const data = calculate(
-    transactions.filter(
-      transaction =>
-        transaction.account === "pessoal"
-    )
-  );
+  document
+    .querySelectorAll(".page")
+    .forEach(section => {
 
-
-  document.getElementById("personalBalance").textContent =
-    formatCurrency(data.balance);
-
-
-  document.getElementById("personalIncome").textContent =
-    formatCurrency(data.income);
-
-
-  document.getElementById("personalExpense").textContent =
-    formatCurrency(data.expense);
-
-
-  document.getElementById("personalResult").textContent =
-    formatCurrency(data.result);
-
-}
-
-
-// ==========================================
-// RELATÓRIO
-// ==========================================
-
-function renderReport() {
-
-  const container =
-    document.getElementById("reportContent");
-
-
-  const data = calculate(transactions);
-
-
-  const categories = {};
-
-
-  transactions
-    .filter(transaction =>
-      transaction.type === "despesa"
-    )
-    .forEach(transaction => {
-
-      if (!categories[transaction.category]) {
-        categories[transaction.category] = 0;
-      }
-
-      categories[transaction.category] +=
-        transaction.value;
+      section.classList.remove(
+        "active"
+      );
 
     });
 
 
-  const sortedCategories =
-    Object.entries(categories)
-      .sort((a, b) => b[1] - a[1]);
+  const target =
+    document.getElementById(
+      "page-" + page
+    );
+
+
+  if (target) {
+
+    target.classList.add(
+      "active"
+    );
+
+  }
+
+
+  document
+    .querySelectorAll(".nav-item")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.page === page
+      );
+
+    });
+
+
+  const titles = {
+
+    dashboard: [
+      "Dashboard",
+      "Visão geral das suas finanças"
+    ],
+
+    movimentacoes: [
+      "Movimentações",
+      "Controle suas entradas e saídas"
+    ],
+
+    receitas: [
+      "Receitas",
+      "Suas entradas financeiras"
+    ],
+
+    despesas: [
+      "Despesas",
+      "Seus gastos"
+    ],
+
+    contas: [
+      "Contas e cartões",
+      "Organize seus bancos e cartões"
+    ],
+
+    planejamento: [
+      "Planejamento",
+      "Planeje seu futuro financeiro"
+    ],
+
+    metas: [
+      "Metas",
+      "Objetivos para seu dinheiro"
+    ],
+
+    pessoal: [
+      "Financeiro pessoal",
+      "Sua vida financeira"
+    ],
+
+    empresa: [
+      "Financeiro empresarial",
+      "Sua empresa"
+    ],
+
+    relatorios: [
+      "Relatórios",
+      "Análise financeira"
+    ]
+
+  };
+
+
+  const title =
+    titles[page] ||
+    titles.dashboard;
+
+
+  document.getElementById(
+    "pageTitle"
+  ).textContent = title[0];
+
+
+  document.getElementById(
+    "pageSubtitle"
+  ).textContent = title[1];
+
+
+  document
+    .getElementById("sidebar")
+    .classList.remove("open");
+
+
+  renderPageData(page);
+
+}
+
+
+function renderPageData(page) {
+
+  if (
+    page === "dashboard"
+  ) {
+
+    renderDashboard();
+
+  }
+
+
+  if (
+    page === "movimentacoes"
+  ) {
+
+    renderTransactionsTable();
+
+  }
+
+
+  if (
+    page === "receitas"
+  ) {
+
+    renderSimpleList(
+      "incomeList",
+      "receita"
+    );
+
+  }
+
+
+  if (
+    page === "despesas"
+  ) {
+
+    renderSimpleList(
+      "expenseList",
+      "despesa"
+    );
+
+  }
+
+
+  if (
+    page === "pessoal"
+  ) {
+
+    renderEnvironment(
+      "pessoal",
+      "personalBalance"
+    );
+
+  }
+
+
+  if (
+    page === "empresa"
+  ) {
+
+    renderEnvironment(
+      "empresa",
+      "companyBalance"
+    );
+
+  }
+
+
+  if (
+    page === "relatorios"
+  ) {
+
+    renderReports();
+
+  }
+
+}
+
+
+// =============================================
+// LISTAS
+// =============================================
+
+function renderSimpleList(
+  elementId,
+  type
+) {
+
+  const container =
+    document.getElementById(
+      elementId
+    );
+
+
+  const data =
+    transactions.filter(
+      item =>
+        item.type === type
+    );
+
+
+  if (!data.length) {
+
+    container.innerHTML = `
+
+      <div class="coming-card">
+
+        <span>
+          ${type === "receita" ? "↗" : "↘"}
+        </span>
+
+        <h3>
+          Nenhum lançamento
+        </h3>
+
+        <p>
+          Ainda não existem registros nesta categoria.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    data.map(item => `
+
+      <div class="simple-item">
+
+        <div>
+
+          <strong>
+            ${escapeHTML(
+              item.description
+            )}
+          </strong>
+
+          <small>
+
+            ${formatDate(item.date)}
+            ·
+            ${formatCategory(
+              item.category
+            )}
+
+          </small>
+
+        </div>
+
+
+        <strong
+          style="
+            color:${
+              type === "receita"
+                ? "var(--green)"
+                : "var(--red)"
+            }
+          "
+        >
+
+          ${type === "receita" ? "+" : "-"}
+
+          ${formatCurrency(
+            item.value
+          )}
+
+        </strong>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+// =============================================
+// AMBIENTES
+// =============================================
+
+function renderEnvironment(
+  account,
+  elementId
+) {
+
+  const data =
+    transactions.filter(
+      item =>
+        item.account === account
+    );
+
+
+  const summary =
+    calculate(data);
+
+
+  document.getElementById(
+    elementId
+  ).textContent =
+    formatCurrency(
+      summary.balance
+    );
+
+}
+
+
+// =============================================
+// RELATÓRIOS
+// =============================================
+
+function renderReports() {
+
+  const container =
+    document.getElementById(
+      "reportContent"
+    );
+
+
+  const summary =
+    calculate(
+      transactions
+    );
 
 
   container.innerHTML = `
 
-    <div class="cards small-cards">
+    <div class="report-card">
 
-      <div class="card">
-        <span>Total de receitas</span>
-        <strong>${formatCurrency(data.income)}</strong>
-      </div>
+      <span>
+        Receitas
+      </span>
 
-      <div class="card">
-        <span>Total de despesas</span>
-        <strong>${formatCurrency(data.expense)}</strong>
-      </div>
-
-      <div class="card">
-        <span>Resultado</span>
-        <strong>${formatCurrency(data.result)}</strong>
-      </div>
+      <strong>
+        ${formatCurrency(
+          summary.income
+        )}
+      </strong>
 
     </div>
 
 
-    <div class="panel">
+    <div class="report-card">
 
-      <div class="panel-header">
+      <span>
+        Despesas
+      </span>
 
-        <div>
-          <h2>Despesas por categoria</h2>
-          <p>Onde seu dinheiro está sendo gasto.</p>
-        </div>
+      <strong>
+        ${formatCurrency(
+          summary.expense
+        )}
+      </strong>
 
-      </div>
+    </div>
 
 
-      ${
-        sortedCategories.length
-          ? sortedCategories.map(item => `
+    <div class="report-card">
 
-              <div class="transaction-item">
+      <span>
+        Resultado
+      </span>
 
-                <div>
-                  <strong>
-                    ${formatCategory(item[0])}
-                  </strong>
-                </div>
-
-                <strong>
-                  ${formatCurrency(item[1])}
-                </strong>
-
-              </div>
-
-            `).join("")
-          : `
-            <div class="empty">
-              Nenhuma despesa cadastrada.
-            </div>
-          `
-      }
+      <strong>
+        ${formatCurrency(
+          summary.result
+        )}
+      </strong>
 
     </div>
 
@@ -1103,39 +1856,166 @@ function renderReport() {
 }
 
 
-// ==========================================
-// RENDER GERAL
-// ==========================================
+// =============================================
+// MODAL
+// =============================================
 
-function renderAll() {
+function openTransactionModal() {
 
-  renderDashboard();
+  transactionForm.reset();
 
-  renderTransactionsTable();
+  document.getElementById(
+    "transactionId"
+  ).value = "";
 
-  renderIncomeList();
 
-  renderExpenseList();
+  document.getElementById(
+    "modalTitle"
+  ).textContent =
+    "Nova movimentação";
 
-  renderCompany();
 
-  renderPersonal();
+  document.querySelector(
+    'input[name="transactionType"][value="receita"]'
+  ).checked = true;
 
-  renderReport();
+
+  setToday();
+
+
+  transactionModal.classList.add(
+    "active"
+  );
 
 }
 
 
-// ==========================================
-// FORMATAÇÃO
-// ==========================================
+function closeTransactionModal() {
+
+  transactionModal.classList.remove(
+    "active"
+  );
+
+}
+
+
+// =============================================
+// TEMA
+// =============================================
+
+function toggleTheme() {
+
+  document.body.classList.toggle(
+    "dark"
+  );
+
+
+  const dark =
+    document.body.classList.contains(
+      "dark"
+    );
+
+
+  localStorage.setItem(
+    "fincontrol_theme",
+    dark
+      ? "dark"
+      : "light"
+  );
+
+
+  document.getElementById(
+    "themeButton"
+  ).innerHTML =
+    dark
+      ? "☀ <span>Tema claro</span>"
+      : "☾ <span>Tema escuro</span>";
+
+}
+
+
+function loadTheme() {
+
+  const theme =
+    localStorage.getItem(
+      "fincontrol_theme"
+    );
+
+
+  if (theme === "dark") {
+
+    document.body.classList.add(
+      "dark"
+    );
+
+  }
+
+}
+
+
+// =============================================
+// UTILIDADES
+// =============================================
+
+function setToday() {
+
+  const today =
+    new Date()
+      .toISOString()
+      .split("T")[0];
+
+
+  const input =
+    document.getElementById(
+      "transactionDate"
+    );
+
+
+  if (input) {
+    input.value = today;
+  }
+
+}
+
+
+function setCurrentMonth() {
+
+  const date =
+    new Date();
+
+
+  const month =
+    date.getFullYear() +
+    "-" +
+    String(
+      date.getMonth() + 1
+    ).padStart(2, "0");
+
+
+  const input =
+    document.getElementById(
+      "dashboardMonth"
+    );
+
+
+  if (input) {
+    input.value = month;
+  }
+
+}
+
 
 function formatCurrency(value) {
 
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL"
-  }).format(value);
+  return new Intl.NumberFormat(
+    "pt-BR",
+    {
+      style: "currency",
+      currency: "BRL"
+    }
+  ).format(
+    Number(value) || 0
+  );
 
 }
 
@@ -1144,9 +2024,12 @@ function formatDate(date) {
 
   if (!date) return "-";
 
+
   return new Date(
     date + "T00:00:00"
-  ).toLocaleDateString("pt-BR");
+  ).toLocaleDateString(
+    "pt-BR"
+  );
 
 }
 
@@ -1156,83 +2039,160 @@ function formatCategory(category) {
   const categories = {
 
     salario: "Salário",
+
     vendas: "Vendas",
+
     servicos: "Serviços",
+
     alimentacao: "Alimentação",
+
     moradia: "Moradia",
+
     transporte: "Transporte",
+
     saude: "Saúde",
+
     educacao: "Educação",
+
     lazer: "Lazer",
+
     compras: "Compras",
+
     impostos: "Impostos",
+
     fornecedores: "Fornecedores",
+
     marketing: "Marketing",
+
     outros: "Outros"
 
   };
 
 
-  return categories[category] || category;
+  return (
+    categories[category] ||
+    category ||
+    "Outros"
+  );
 
 }
 
-
-// ==========================================
-// SEGURANÇA
-// ==========================================
 
 function escapeHTML(value) {
 
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }
 
 
-// ==========================================
-// TEMA
-// ==========================================
+function togglePassword(id) {
 
-function toggleTheme() {
-
-  document.body.classList.toggle("dark");
-
-
-  const dark =
-    document.body.classList.contains("dark");
+  const input =
+    document.getElementById(
+      id
+    );
 
 
-  localStorage.setItem(
-    "fincontrol_theme",
-    dark ? "dark" : "light"
-  );
-
-
-  document.getElementById("themeButton").textContent =
-    dark
-      ? "☀️ Tema claro"
-      : "🌙 Tema escuro";
+  input.type =
+    input.type === "password"
+      ? "text"
+      : "password";
 
 }
 
 
-// RESTAURAR TEMA
-if (
-  localStorage.getItem("fincontrol_theme") === "dark"
+function setMessage(
+  id,
+  message,
+  type
 ) {
 
-  document.body.classList.add("dark");
+  const element =
+    document.getElementById(
+      id
+    );
 
-  const button =
-    document.getElementById("themeButton");
 
-  if (button) {
-    button.textContent = "☀️ Tema claro";
-  }
+  element.textContent =
+    message;
+
+
+  element.className =
+    "auth-message " +
+    type;
 
 }
+
+
+function getAuthError(error) {
+
+  const message =
+    error?.message || "";
+
+
+  if (
+    message.includes(
+      "Invalid login credentials"
+    )
+  ) {
+
+    return "E-mail ou senha incorretos.";
+
+  }
+
+
+  if (
+    message.includes(
+      "User already registered"
+    )
+  ) {
+
+    return "Este e-mail já está cadastrado.";
+
+  }
+
+
+  if (
+    message.includes(
+      "Password should be at least"
+    )
+  ) {
+
+    return "A senha precisa ter pelo menos 6 caracteres.";
+
+  }
+
+
+  return message ||
+    "Ocorreu um erro. Tente novamente.";
+
+}
+
+
+// Carregar tema
+loadTheme();
