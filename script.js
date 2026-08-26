@@ -1,3 +1,55 @@
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ==========================================
+    // TELA DE LOGIN E CADASTRO
+    // ==========================================
+
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+
+    const showRegisterButton =
+        document.getElementById("showRegisterButton");
+
+    const showLoginButton =
+        document.getElementById("showLoginButton");
+
+
+    // ==========================================
+    // ABRIR CADASTRO
+    // ==========================================
+
+    if (showRegisterButton) {
+
+        showRegisterButton.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            loginForm.classList.add("hidden");
+            registerForm.classList.remove("hidden");
+
+        });
+
+    }
+
+
+    // ==========================================
+    // VOLTAR PARA LOGIN
+    // ==========================================
+
+    if (showLoginButton) {
+
+        showLoginButton.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            registerForm.classList.add("hidden");
+            loginForm.classList.remove("hidden");
+
+        });
+
+    }
+
+});
 /* =========================================================
    CONTROLE FINANCEIRO
    JavaScript principal
