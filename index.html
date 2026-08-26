@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
 
@@ -12,18 +13,19 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- Supabase -->
+  <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Chart.js -->
+  <!-- CHART.JS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
 
-  <!-- =================================================
+  <!-- =====================================================
        LOGIN / CADASTRO
-       ================================================= -->
+       ===================================================== -->
 
   <div id="authScreen" class="auth-screen">
 
@@ -44,7 +46,9 @@
       </div>
 
 
-      <!-- LOGIN -->
+      <!-- =================================================
+           LOGIN
+           ================================================= -->
 
       <div id="loginForm">
 
@@ -65,7 +69,6 @@
           autocomplete="email"
         >
 
-
         <label for="loginPassword">
           Senha
         </label>
@@ -77,20 +80,18 @@
           autocomplete="current-password"
         >
 
-
         <div
           id="loginMessage"
           class="message"
         ></div>
 
-
         <button
           id="loginButton"
           class="primary-button"
+          type="button"
         >
           Entrar
         </button>
-
 
         <div class="switch-auth">
 
@@ -108,7 +109,9 @@
       </div>
 
 
-      <!-- CADASTRO -->
+      <!-- =================================================
+           CADASTRO
+           ================================================= -->
 
       <div
         id="registerForm"
@@ -121,7 +124,6 @@
           Cadastre-se para começar seu controle financeiro.
         </p>
 
-
         <label for="registerName">
           Nome
         </label>
@@ -132,7 +134,6 @@
           placeholder="Seu nome"
           autocomplete="name"
         >
-
 
         <label for="registerEmail">
           E-mail
@@ -145,7 +146,6 @@
           autocomplete="email"
         >
 
-
         <label for="registerPassword">
           Senha
         </label>
@@ -156,7 +156,6 @@
           placeholder="Mínimo de 6 caracteres"
           autocomplete="new-password"
         >
-
 
         <label for="registerAccountType">
           Tipo de controle
@@ -178,7 +177,6 @@
 
         </select>
 
-
         <div
           id="companyField"
           class="hidden"
@@ -196,20 +194,18 @@
 
         </div>
 
-
         <div
           id="registerMessage"
           class="message"
         ></div>
 
-
         <button
           id="registerButton"
           class="primary-button"
+          type="button"
         >
           Criar minha conta
         </button>
-
 
         <div class="switch-auth">
 
@@ -231,17 +227,18 @@
   </div>
 
 
-  <!-- =================================================
+  <!-- =====================================================
        APLICAÇÃO
-       ================================================= -->
+       ===================================================== -->
 
   <div
     id="appScreen"
     class="app-screen hidden"
   >
 
-
-    <!-- SIDEBAR -->
+    <!-- =================================================
+         SIDEBAR
+         ================================================= -->
 
     <aside class="sidebar">
 
@@ -265,39 +262,39 @@
 
       </div>
 
-
       <nav class="menu">
 
         <button
           class="menu-item active"
           data-section="dashboard"
+          type="button"
         >
           <span>📊</span>
           Dashboard
         </button>
 
-
         <button
           class="menu-item"
           data-section="transactions"
+          type="button"
         >
           <span>💰</span>
           Lançamentos
         </button>
 
-
         <button
           class="menu-item"
           data-section="reports"
+          type="button"
         >
           <span>📈</span>
           Relatórios
         </button>
 
-
         <button
           class="menu-item"
           data-section="profile"
+          type="button"
         >
           <span>👤</span>
           Meu perfil
@@ -305,12 +302,12 @@
 
       </nav>
 
-
       <div class="sidebar-bottom">
 
         <button
           id="logoutButton"
           class="logout-button"
+          type="button"
         >
           <span>🚪</span>
           Sair
@@ -321,10 +318,11 @@
     </aside>
 
 
-    <!-- CONTEÚDO -->
+    <!-- =================================================
+         CONTEÚDO PRINCIPAL
+         ================================================= -->
 
     <main class="main-content">
-
 
       <!-- TOPBAR -->
 
@@ -335,6 +333,7 @@
           <button
             id="mobileMenuButton"
             class="mobile-menu-button"
+            type="button"
           >
             ☰
           </button>
@@ -349,12 +348,12 @@
 
         </div>
 
-
         <div class="topbar-actions">
 
           <button
             id="quickIncomeButton"
             class="quick-income"
+            type="button"
           >
             + Receita
           </button>
@@ -362,6 +361,7 @@
           <button
             id="quickExpenseButton"
             class="quick-expense"
+            type="button"
           >
             − Despesa
           </button>
@@ -398,7 +398,6 @@
 
           </div>
 
-
           <div class="period-selector">
 
             <label for="dashboardPeriod">
@@ -415,4 +414,664 @@
                 Este ano
               </option>
 
-             
+              <option value="all">
+                Todo o período
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- CARDS -->
+
+        <div class="summary-cards">
+
+          <div class="summary-card">
+
+            <div class="card-icon">
+              💰
+            </div>
+
+            <div>
+
+              <span>
+                Receitas
+              </span>
+
+              <strong id="totalIncome">
+                R$ 0,00
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="summary-card">
+
+            <div class="card-icon">
+              💸
+            </div>
+
+            <div>
+
+              <span>
+                Despesas
+              </span>
+
+              <strong id="totalExpense">
+                R$ 0,00
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="summary-card">
+
+            <div class="card-icon">
+              📊
+            </div>
+
+            <div>
+
+              <span>
+                Saldo
+              </span>
+
+              <strong id="totalBalance">
+                R$ 0,00
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="summary-card">
+
+            <div class="card-icon">
+              🧾
+            </div>
+
+            <div>
+
+              <span>
+                Lançamentos
+              </span>
+
+              <strong id="totalTransactions">
+                0
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- GRÁFICO -->
+
+        <div class="dashboard-grid">
+
+          <div class="panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  Evolução financeira
+                </h3>
+
+                <p>
+                  Receitas x despesas
+                </p>
+
+              </div>
+
+            </div>
+
+            <div class="chart-container">
+
+              <canvas id="financeChart"></canvas>
+
+            </div>
+
+          </div>
+
+
+          <!-- ÚLTIMOS LANÇAMENTOS -->
+
+          <div class="panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  Últimos lançamentos
+                </h3>
+
+                <p>
+                  Movimentações recentes
+                </p>
+
+              </div>
+
+              <button
+                id="viewTransactionsButton"
+                type="button"
+              >
+                Ver todos
+              </button>
+
+            </div>
+
+            <div
+              id="recentTransactions"
+              class="transactions-list"
+            >
+
+              <div class="empty-state">
+
+                <div>
+                  📋
+                </div>
+
+                <p>
+                  Nenhum lançamento cadastrado.
+                </p>
+
+                <span>
+                  Adicione sua primeira receita ou despesa.
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           LANÇAMENTOS
+           ================================================= -->
+
+      <section
+        id="transactions"
+        class="content-section"
+      >
+
+        <div class="page-heading">
+
+          <div>
+
+            <p class="section-label">
+              MOVIMENTAÇÕES
+            </p>
+
+            <h1>
+              Lançamentos
+            </h1>
+
+            <p>
+              Registre tudo que entra e sai.
+            </p>
+
+          </div>
+
+          <button
+            id="newTransactionButton"
+            class="primary-button"
+            type="button"
+          >
+            + Novo lançamento
+          </button>
+
+        </div>
+
+
+        <div class="panel">
+
+          <div class="filters">
+
+            <input
+              type="text"
+              id="transactionSearch"
+              placeholder="Pesquisar lançamento..."
+            >
+
+            <select id="transactionTypeFilter">
+
+              <option value="all">
+                Todos
+              </option>
+
+              <option value="income">
+                Receitas
+              </option>
+
+              <option value="expense">
+                Despesas
+              </option>
+
+            </select>
+
+            <select id="transactionCategoryFilter">
+
+              <option value="all">
+                Todas as categorias
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="table-container">
+
+            <table>
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Data
+                  </th>
+
+                  <th>
+                    Descrição
+                  </th>
+
+                  <th>
+                    Categoria
+                  </th>
+
+                  <th>
+                    Tipo
+                  </th>
+
+                  <th>
+                    Valor
+                  </th>
+
+                  <th>
+                    Ações
+                  </th>
+
+                </tr>
+
+              </thead>
+
+              <tbody id="transactionsTableBody">
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           RELATÓRIOS
+           ================================================= -->
+
+      <section
+        id="reports"
+        class="content-section"
+      >
+
+        <div class="page-heading">
+
+          <div>
+
+            <p class="section-label">
+              ANÁLISES
+            </p>
+
+            <h1>
+              Relatórios
+            </h1>
+
+            <p>
+              Veja como seu dinheiro está sendo utilizado.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="dashboard-grid">
+
+          <div class="panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  Despesas por categoria
+                </h3>
+
+              </div>
+
+            </div>
+
+            <div class="chart-container">
+
+              <canvas id="categoryChart"></canvas>
+
+            </div>
+
+          </div>
+
+
+          <div class="panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  Resumo
+                </h3>
+
+              </div>
+
+            </div>
+
+            <div id="reportSummary">
+
+              <p>
+                Ainda não existem dados suficientes para gerar o relatório.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           PERFIL
+           ================================================= -->
+
+      <section
+        id="profile"
+        class="content-section"
+      >
+
+        <div class="page-heading">
+
+          <div>
+
+            <p class="section-label">
+              CONTA
+            </p>
+
+            <h1>
+              Meu perfil
+            </h1>
+
+            <p>
+              Informações da sua conta.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="panel profile-panel">
+
+          <div class="profile-avatar">
+            👤
+          </div>
+
+          <div>
+
+            <h3 id="profileName">
+              Usuário
+            </h3>
+
+            <p id="profileEmail">
+              —
+            </p>
+
+          </div>
+
+          <div class="profile-info">
+
+            <div>
+
+              <span>
+                Tipo de controle
+              </span>
+
+              <strong id="profileAccountType">
+                Pessoal
+              </strong>
+
+            </div>
+
+            <div>
+
+              <span>
+                Empresa
+              </span>
+
+              <strong id="profileCompany">
+                —
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- =====================================================
+       MODAL DE LANÇAMENTO
+       ===================================================== -->
+
+  <div
+    id="transactionModal"
+    class="modal hidden"
+  >
+
+    <div class="modal-card">
+
+      <div class="modal-header">
+
+        <div>
+
+          <h2>
+            Novo lançamento
+          </h2>
+
+          <p>
+            Informe uma receita ou despesa.
+          </p>
+
+        </div>
+
+        <button
+          id="closeTransactionModal"
+          type="button"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <label for="transactionType">
+        Tipo
+      </label>
+
+      <select id="transactionType">
+
+        <option value="income">
+          Receita
+        </option>
+
+        <option value="expense">
+          Despesa
+        </option>
+
+      </select>
+
+
+      <label for="transactionDescription">
+        Descrição
+      </label>
+
+      <input
+        type="text"
+        id="transactionDescription"
+        placeholder="Ex.: Salário, aluguel, mercado..."
+      >
+
+
+      <label for="transactionAmount">
+        Valor
+      </label>
+
+      <input
+        type="number"
+        id="transactionAmount"
+        placeholder="0,00"
+        min="0"
+        step="0.01"
+      >
+
+
+      <label for="transactionCategory">
+        Categoria
+      </label>
+
+      <select id="transactionCategory">
+
+        <option value="salario">
+          Salário
+        </option>
+
+        <option value="alimentacao">
+          Alimentação
+        </option>
+
+        <option value="moradia">
+          Moradia
+        </option>
+
+        <option value="transporte">
+          Transporte
+        </option>
+
+        <option value="saude">
+          Saúde
+        </option>
+
+        <option value="educacao">
+          Educação
+        </option>
+
+        <option value="lazer">
+          Lazer
+        </option>
+
+        <option value="contas">
+          Contas
+        </option>
+
+        <option value="compras">
+          Compras
+        </option>
+
+        <option value="empresa">
+          Empresa
+        </option>
+
+        <option value="outros">
+          Outros
+        </option>
+
+      </select>
+
+
+      <label for="transactionDate">
+        Data
+      </label>
+
+      <input
+        type="date"
+        id="transactionDate"
+      >
+
+
+      <div
+        id="transactionMessage"
+        class="message"
+      ></div>
+
+
+      <div class="modal-actions">
+
+        <button
+          id="cancelTransactionButton"
+          type="button"
+        >
+          Cancelar
+        </button>
+
+        <button
+          id="saveTransactionButton"
+          class="primary-button"
+          type="button"
+        >
+          Salvar lançamento
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+       IMPORTANTE: fica antes do </body>
+       ===================================================== -->
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
