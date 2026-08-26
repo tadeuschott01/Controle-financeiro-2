@@ -1,75 +1,49 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   // ==========================================================
-  // SUPABASE
+  // CONFIGURAÇÃO DO SUPABASE
   // ==========================================================
 
-  const SUPABASE_URL = "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
+  const SUPABASE_URL =
+    "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
 
-  let accessToken = localStorage.getItem("controleFinanceiroAccessToken");
+  const SUPABASE_KEY =
+    "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
+
+
+  // ==========================================================
+  // SESSÃO
+  // ==========================================================
+
+  let accessToken =
+    localStorage.getItem(
+      "controleFinanceiroAccessToken"
+    );
+
   let currentUser = null;
 
-  async function supabaseFetch(path, options = {}) {
-    const headers = {
-      "apikey": SUPABASE_KEY,
-      "Content-Type": "application/json",
-      ...(options.headers || {})
-    };
-
-    if (accessToken) {
-      headers["Authorization"] = "Bearer " + accessToken;
-    }
-
-    const response = await fetch(SUPABASE_URL + path, {
-      ...options,
-      headers
-    });
-
-    const text = await response.text();
-
-    let data = null;
-
-    try {
-      data = text ? JSON.parse(text) : null;
-    } catch (_) {
-      data = text;
-    }
-
-    if (!response.ok) {
-      const message =
-        data?.message ||
-        data?.error_description ||
-        data?.error ||
-        "Erro ao comunicar com o Supabase.";
-
-      throw new Error(message);
-    }
-
-    return data;
-  }
 
   // ==========================================================
-  // ELEMENTOS
+  // ELEMENTOS DA TELA
   // ==========================================================
 
-  const authScreen = document.getElementById("authScreen");
-  const appScreen = document.getElementById("appScreen");
+  const authScreen =
+    document.getElementById("authScreen");
 
-  const loginForm = document.getElementById("loginForm");
-  const registerForm = document.getElementById("registerForm");
+  const appScreen =
+    document.getElementById("appScreen");
 
-  const showRegisterButton =
-    document.getElementById("showRegisterButton");
+  const loginForm =
+    document.getElementById("loginForm");
 
-  const showLoginButton =
-    document.getElementById("showLoginButton");
-
-  const registerButton =
-    document.getElementById("registerButton");
+  const registerForm =
+    document.getElementById("registerForm");
 
   const loginButton =
     document.getElementById("loginButton");
+
+  const registerButton =
+    document.getElementById("registerButton");
 
   const logoutButton =
     document.getElementById("logoutButton");
@@ -80,43 +54,208 @@ document.addEventListener("DOMContentLoaded", function () {
   const registerMessage =
     document.getElementById("registerMessage");
 
+
   // ==========================================================
-  // AUXILIARES
+  // COMUNICAÇÃO COM SUPABASE
   // ==========================================================
 
-  function mostrarMensagem(elemento, mensagem, sucesso = false) {
-    if (!elemento) return;
+  async function supabaseFetch(path, options = {}) {
 
-    elemento.textContent = mensagem;
-    elemento.style.color = sucesso ? "#1f513d" : "#d94b4b";
+    const headers = {
+      "apikey": SUPABASE_KEY,
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    };
+
+
+    if (accessToken) {
+      headers["Authorization"] =
+        "Bearer " + accessToken;
+    }
+
+
+    let response;
+
+
+    try {
+
+      response = await fetch(
+        SUPABASE_URL + path,
+        {
+          ...options,
+          headers
+        }
+      );
+
+    } catch (erro) {
+
+      console.error(
+        "ERRO DE CONEXÃO COM SUPABASE:",
+        erro
+      );
+
+      throw new Error(
+        "Não foi possível conectar ao Supabase. Verifique a conexão e a configuração do projeto."
+      );
+    }
+
+
+    const text =
+      await response.text();
+
+
+    let data = null;
+
+
+    try {
+
+      data =
+        text
+          ? JSON.parse(text)
+          : null;
+
+    } catch (erro) {
+
+      data = text;
+    }
+
+
+    if (!response.ok) {
+
+      console.error(
+        "ERRO SUPABASE:",
+        {
+          status:
+            response.status,
+
+          statusText:
+            response.statusText,
+
+          data:
+            data,
+
+          url:
+            SUPABASE_URL + path
+        }
+      );
+
+
+      const message =
+
+        data?.message ||
+
+        data?.error_description ||
+
+        data?.error ||
+
+        data?.msg ||
+
+        (
+          "Erro HTTP " +
+          response.status +
+          ": " +
+          response.statusText
+        );
+
+
+      throw new Error(message);
+    }
+
+
+    return data;
   }
 
+
+  // ==========================================================
+  // MENSAGENS
+  // ==========================================================
+
+  function mostrarMensagem(
+    elemento,
+    mensagem,
+    sucesso = false
+  ) {
+
+    if (!elemento) {
+      return;
+    }
+
+
+    elemento.textContent =
+      mensagem;
+
+
+    elemento.style.color =
+      sucesso
+        ? "#1f513d"
+        : "#d94b4b";
+  }
+
+
+  // ==========================================================
+  // FORMATAÇÃO DE DINHEIRO
+  // ==========================================================
+
   function dinheiro(valor) {
-    const numero = Number(valor);
+
+    const numero =
+      Number(valor);
+
 
     if (isNaN(numero)) {
       return "R$ 0,00";
     }
 
-    return numero.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL"
-    });
+
+    return numero.toLocaleString(
+      "pt-BR",
+      {
+        style:
+          "currency",
+
+        currency:
+          "BRL"
+      }
+    );
   }
 
-  function formatarData(data) {
-    if (!data) return "";
 
-    const partes = data.split("-");
+  // ==========================================================
+  // FORMATAÇÃO DE DATA
+  // ==========================================================
+
+  function formatarData(data) {
+
+    if (!data) {
+      return "";
+    }
+
+
+    const partes =
+      String(data).split("-");
+
 
     if (partes.length !== 3) {
       return data;
     }
 
-    return partes[2] + "/" + partes[1] + "/" + partes[0];
+
+    return (
+      partes[2] +
+      "/" +
+      partes[1] +
+      "/" +
+      partes[0]
+    );
   }
 
+
+  // ==========================================================
+  // SEGURANÇA HTML
+  // ==========================================================
+
   function escaparHTML(texto) {
+
     return String(texto || "")
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -125,26 +264,62 @@ document.addEventListener("DOMContentLoaded", function () {
       .replace(/'/g, "&#039;");
   }
 
-  function nomeCategoria(categoria) {
-    const categorias = {
-      salario: "Salário",
-      alimentacao: "Alimentação",
-      moradia: "Moradia",
-      transporte: "Transporte",
-      saude: "Saúde",
-      educacao: "Educação",
-      lazer: "Lazer",
-      contas: "Contas",
-      compras: "Compras",
-      empresa: "Empresa",
-      outros: "Outros"
-    };
-
-    return categorias[categoria] || categoria || "Outros";
-  }
 
   // ==========================================================
-  // USUÁRIO
+  // CATEGORIAS
+  // ==========================================================
+
+  function nomeCategoria(
+    categoria
+  ) {
+
+    const categorias = {
+
+      salario:
+        "Salário",
+
+      alimentacao:
+        "Alimentação",
+
+      moradia:
+        "Moradia",
+
+      transporte:
+        "Transporte",
+
+      saude:
+        "Saúde",
+
+      educacao:
+        "Educação",
+
+      lazer:
+        "Lazer",
+
+      contas:
+        "Contas",
+
+      compras:
+        "Compras",
+
+      empresa:
+        "Empresa",
+
+      outros:
+        "Outros"
+    };
+
+
+    return (
+      categorias[categoria] ||
+      categoria ||
+      "Outros"
+    );
+  }
+
+
+  // ==========================================================
+  // PEGAR USUÁRIO LOGADO
   // ==========================================================
 
   async function pegarUsuarioAtual() {
@@ -153,29 +328,41 @@ document.addEventListener("DOMContentLoaded", function () {
       return null;
     }
 
+
     try {
 
       const authUser =
-        await supabaseFetch("/auth/v1/user");
+        await supabaseFetch(
+          "/auth/v1/user"
+        );
+
 
       if (!authUser?.id) {
+
         return null;
       }
+
 
       const profiles =
         await supabaseFetch(
           "/rest/v1/profiles?id=eq." +
-          encodeURIComponent(authUser.id) +
+          encodeURIComponent(
+            authUser.id
+          ) +
           "&select=*"
         );
+
 
       const profile =
         Array.isArray(profiles)
           ? profiles[0]
           : null;
 
+
       currentUser = {
-        id: authUser.id,
+
+        id:
+          authUser.id,
 
         email:
           authUser.email ||
@@ -198,7 +385,9 @@ document.addEventListener("DOMContentLoaded", function () {
           ""
       };
 
+
       return currentUser;
+
 
     } catch (erro) {
 
@@ -207,209 +396,133 @@ document.addEventListener("DOMContentLoaded", function () {
         erro
       );
 
+
       accessToken = null;
+
+      currentUser = null;
+
 
       localStorage.removeItem(
         "controleFinanceiroAccessToken"
       );
 
+
       localStorage.removeItem(
         "controleFinanceiroLogado"
       );
 
-      currentUser = null;
 
-      return null;
+      throw erro;
     }
   }
+
 
   // ==========================================================
-  // LANÇAMENTOS
+  // SALVAR / ATUALIZAR PERFIL
   // ==========================================================
 
-  async function pegarLancamentos() {
-
-    if (!currentUser) {
-      return [];
-    }
-
-    try {
-
-      const dados =
-        await supabaseFetch(
-          "/rest/v1/transactions?user_id=eq." +
-          encodeURIComponent(currentUser.id) +
-          "&select=*&order=data.desc,created_at.desc"
-        );
-
-      return (
-        Array.isArray(dados)
-          ? dados
-          : []
-      ).map(function (item) {
-
-        return {
-
-          id: item.id,
-
-          tipo: item.tipo,
-
-          descricao: item.descricao,
-
-          valor:
-            Number(item.valor) || 0,
-
-          categoria:
-            item.categoria,
-
-          dataISO:
-            item.data_iso || item.data,
-
-          data:
-            item.data
-              ? formatarData(item.data)
-              : formatarData(item.data_iso),
-
-          criadoEm:
-            item.created_at
-        };
-
-      });
-
-    } catch (erro) {
-
-      console.error(
-        "Erro ao buscar lançamentos:",
-        erro
-      );
-
-      return [];
-    }
-  }
-
-  async function salvarLancamento(dados) {
-
-    return supabaseFetch(
-      "/rest/v1/transactions",
-      {
-        method: "POST",
-
-        headers: {
-          "Prefer": "return=representation"
-        },
-
-        body: JSON.stringify({
-
-          user_id:
-            currentUser.id,
-
-          tipo:
-            dados.tipo,
-
-          descricao:
-            dados.descricao,
-
-          valor:
-            dados.valor,
-
-          categoria:
-            dados.categoria,
-
-          data:
-            dados.dataISO
-        })
-      }
-    );
-  }
-
-  async function atualizarLancamento(
-    id,
-    dados
+  async function salvarPerfil(
+    usuario
   ) {
 
-    return supabaseFetch(
-      "/rest/v1/transactions?id=eq." +
-      encodeURIComponent(id),
-
+    return await supabaseFetch(
+      "/rest/v1/profiles?on_conflict=id",
       {
-        method: "PATCH",
+
+        method:
+          "POST",
 
         headers: {
+
           "Prefer":
-            "return=representation"
+            "resolution=merge-duplicates,return=representation"
         },
 
-        body: JSON.stringify({
+        body:
+          JSON.stringify({
 
-          tipo:
-            dados.tipo,
+            id:
+              usuario.id,
 
-          descricao:
-            dados.descricao,
+            email:
+              usuario.email,
 
-          valor:
-            dados.valor,
+            nome:
+              usuario.nome,
 
-          categoria:
-            dados.categoria,
+            tipo:
+              usuario.tipo,
 
-          data:
-            dados.dataISO
-        })
+            empresa:
+              usuario.empresa || ""
+          })
       }
     );
   }
 
-  async function excluirLancamento(id) {
 
-    return supabaseFetch(
-      "/rest/v1/transactions?id=eq." +
-      encodeURIComponent(id),
+  // ==========================================================
+  // CADASTRO
+  // ==========================================================
 
-      {
-        method: "DELETE"
-      }
+  const showRegisterButton =
+    document.getElementById(
+      "showRegisterButton"
     );
-  }
 
-  // ==========================================================
-  // MOSTRAR CADASTRO
-  // ==========================================================
 
   showRegisterButton?.addEventListener(
     "click",
     function () {
 
-      loginForm?.classList.add("hidden");
+      loginForm?.classList.add(
+        "hidden"
+      );
 
-      registerForm?.classList.remove("hidden");
+      registerForm?.classList.remove(
+        "hidden"
+      );
+
 
       if (registerMessage) {
-        registerMessage.textContent = "";
+
+        registerMessage.textContent =
+          "";
       }
     }
   );
 
-  // ==========================================================
-  // MOSTRAR LOGIN
-  // ==========================================================
+
+  const showLoginButton =
+    document.getElementById(
+      "showLoginButton"
+    );
+
 
   showLoginButton?.addEventListener(
     "click",
     function () {
 
-      registerForm?.classList.add("hidden");
+      registerForm?.classList.add(
+        "hidden"
+      );
 
-      loginForm?.classList.remove("hidden");
+      loginForm?.classList.remove(
+        "hidden"
+      );
+
 
       if (loginMessage) {
-        loginMessage.textContent = "";
+
+        loginMessage.textContent =
+          "";
       }
     }
   );
 
+
   // ==========================================================
-  // CADASTRO
+  // CRIAR CONTA
   // ==========================================================
 
   registerButton?.addEventListener(
@@ -418,35 +531,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
       event.preventDefault();
 
+
       const nome =
-        document
-          .getElementById("registerName")
-          ?.value
-          .trim();
+        document.getElementById(
+          "registerName"
+        )?.value.trim();
+
 
       const email =
-        document
-          .getElementById("registerEmail")
-          ?.value
-          .trim();
+        document.getElementById(
+          "registerEmail"
+        )?.value.trim();
+
 
       const senha =
-        document
-          .getElementById("registerPassword")
-          ?.value;
+        document.getElementById(
+          "registerPassword"
+        )?.value;
+
 
       const tipo =
-        document
-          .getElementById("registerAccountType")
-          ?.value ||
+        document.getElementById(
+          "registerAccountType"
+        )?.value ||
         "pessoal";
 
+
       const empresa =
-        document
-          .getElementById("registerCompany")
-          ?.value
-          .trim() ||
+        document.getElementById(
+          "registerCompany"
+        )?.value.trim() ||
         "";
+
 
       if (!nome) {
 
@@ -457,6 +573,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return;
       }
+
 
       if (
         !email ||
@@ -471,6 +588,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
+
       if (
         !senha ||
         senha.length < 6
@@ -484,10 +602,14 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      registerButton.disabled = true;
+
+      registerButton.disabled =
+        true;
+
 
       registerButton.textContent =
         "Criando...";
+
 
       try {
 
@@ -495,52 +617,68 @@ document.addEventListener("DOMContentLoaded", function () {
           await supabaseFetch(
             "/auth/v1/signup",
             {
-              method: "POST",
 
-              body: JSON.stringify({
+              method:
+                "POST",
 
-                email:
-                  email,
+              body:
+                JSON.stringify({
 
-                password:
-                  senha,
+                  email:
+                    email,
 
-                data: {
+                  password:
+                    senha,
 
-                  nome:
-                    nome,
+                  data: {
 
-                  tipo:
-                    tipo,
+                    nome:
+                      nome,
 
-                  empresa:
-                    empresa
-                }
-              })
+                    tipo:
+                      tipo,
+
+                    empresa:
+                      empresa
+                  }
+                })
             }
           );
 
-        if (!resultado?.user?.id) {
+
+        if (
+          !resultado?.user?.id
+        ) {
 
           throw new Error(
-            "Não foi possível criar a conta."
+            "O Supabase não retornou o usuário criado."
           );
         }
 
-        if (resultado.access_token) {
+
+        // ------------------------------------------------------
+        // CASO O SUPABASE JÁ RETORNE TOKEN
+        // ------------------------------------------------------
+
+        if (
+          resultado.access_token
+        ) {
 
           accessToken =
             resultado.access_token;
+
 
           localStorage.setItem(
             "controleFinanceiroAccessToken",
             accessToken
           );
 
+
           localStorage.setItem(
             "controleFinanceiroLogado",
             "true"
           );
+
 
           currentUser = {
 
@@ -561,15 +699,11 @@ document.addEventListener("DOMContentLoaded", function () {
               empresa
           };
 
-          await criarOuAtualizarPerfil(
+
+          await salvarPerfil(
             currentUser
           );
 
-          mostrarMensagem(
-            registerMessage,
-            "Conta criada com sucesso!",
-            true
-          );
 
           authScreen?.classList.add(
             "hidden"
@@ -579,65 +713,79 @@ document.addEventListener("DOMContentLoaded", function () {
             "hidden"
           );
 
+
           abrirSistema(
             currentUser
           );
 
-        } else {
 
-          mostrarMensagem(
-            registerMessage,
-
-            "Conta criada! Verifique seu e-mail para confirmar a conta.",
-
-            true
-          );
-
-          const loginEmail =
-            document.getElementById(
-              "loginEmail"
-            );
-
-          if (loginEmail) {
-            loginEmail.value =
-              email;
-          }
-
-          setTimeout(
-            function () {
-
-              registerForm?.classList.add(
-                "hidden"
-              );
-
-              loginForm?.classList.remove(
-                "hidden"
-              );
-
-              if (registerMessage) {
-                registerMessage.textContent =
-                  "";
-              }
-
-            },
-            1500
-          );
+          return;
         }
 
-      } catch (erro) {
 
-        console.error(erro);
+        // ------------------------------------------------------
+        // CASO EXIJA CONFIRMAÇÃO DE E-MAIL
+        // ------------------------------------------------------
 
         mostrarMensagem(
           registerMessage,
 
-          "Não foi possível criar a conta: " +
-          erro.message
+          "Conta criada com sucesso! Verifique seu e-mail para confirmar a conta.",
+
+          true
         );
+
+
+        const loginEmail =
+          document.getElementById(
+            "loginEmail"
+          );
+
+
+        if (loginEmail) {
+
+          loginEmail.value =
+            email;
+        }
+
+
+        setTimeout(
+          function () {
+
+            registerForm?.classList.add(
+              "hidden"
+            );
+
+            loginForm?.classList.remove(
+              "hidden"
+            );
+
+          },
+          1500
+        );
+
+
+      } catch (erro) {
+
+        console.error(
+          "ERRO NO CADASTRO:",
+          erro
+        );
+
+
+        mostrarMensagem(
+          registerMessage,
+
+          erro.message ||
+          "Erro ao criar conta."
+        );
+
 
       } finally {
 
-        registerButton.disabled = false;
+        registerButton.disabled =
+          false;
+
 
         registerButton.textContent =
           "Criar minha conta";
@@ -645,57 +793,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   );
 
-  // ==========================================================
-  // PERFIL
-  // ==========================================================
-
-  async function criarOuAtualizarPerfil(
-    usuario
-  ) {
-
-    try {
-
-      await supabaseFetch(
-        "/rest/v1/profiles?on_conflict=id",
-        {
-          method: "POST",
-
-          headers: {
-
-            "Prefer":
-              "resolution=merge-duplicates,return=representation"
-          },
-
-          body: JSON.stringify({
-
-            id:
-              usuario.id,
-
-            email:
-              usuario.email,
-
-            nome:
-              usuario.nome,
-
-            tipo:
-              usuario.tipo,
-
-            empresa:
-              usuario.empresa || ""
-          })
-        }
-      );
-
-    } catch (erro) {
-
-      console.error(
-        "Erro ao salvar perfil:",
-        erro
-      );
-
-      throw erro;
-    }
-  }
 
   // ==========================================================
   // LOGIN
@@ -707,16 +804,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
       event.preventDefault();
 
+
       const email =
-        document
-          .getElementById("loginEmail")
-          ?.value
-          .trim();
+        document.getElementById(
+          "loginEmail"
+        )?.value.trim();
+
 
       const senha =
-        document
-          .getElementById("loginPassword")
-          ?.value;
+        document.getElementById(
+          "loginPassword"
+        )?.value;
+
 
       if (!email || !senha) {
 
@@ -728,88 +827,124 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      loginButton.disabled = true;
+
+      loginButton.disabled =
+        true;
+
 
       loginButton.textContent =
         "Entrando...";
 
+
       try {
+
+        console.log(
+          "Tentando fazer login no Supabase..."
+        );
+
 
         const resultado =
           await supabaseFetch(
             "/auth/v1/token?grant_type=password",
             {
-              method: "POST",
 
-              body: JSON.stringify({
+              method:
+                "POST",
 
-                email:
-                  email,
+              body:
+                JSON.stringify({
 
-                password:
-                  senha
-              })
+                  email:
+                    email,
+
+                  password:
+                    senha
+                })
             }
           );
+
+
+        console.log(
+          "Resposta do login:",
+          resultado
+        );
+
 
         if (
           !resultado?.access_token
         ) {
 
           throw new Error(
-            "E-mail ou senha incorretos."
+            "O Supabase não retornou um token de acesso."
           );
         }
 
+
         accessToken =
           resultado.access_token;
+
 
         localStorage.setItem(
           "controleFinanceiroAccessToken",
           accessToken
         );
 
+
         localStorage.setItem(
           "controleFinanceiroLogado",
           "true"
         );
 
+
         const usuario =
           await pegarUsuarioAtual();
+
 
         if (!usuario) {
 
           throw new Error(
-            "Não foi possível carregar sua conta."
+            "Login realizado, mas não foi possível carregar o perfil."
           );
         }
+
 
         authScreen?.classList.add(
           "hidden"
         );
 
+
         appScreen?.classList.remove(
           "hidden"
         );
+
 
         abrirSistema(
           usuario
         );
 
+
       } catch (erro) {
 
-        console.error(erro);
+        console.error(
+          "ERRO NO LOGIN:",
+          erro
+        );
+
 
         mostrarMensagem(
+
           loginMessage,
 
           erro.message ||
-          "E-mail ou senha incorretos."
+          "Não foi possível fazer login."
         );
+
 
       } finally {
 
-        loginButton.disabled = false;
+        loginButton.disabled =
+          false;
+
 
         loginButton.textContent =
           "Entrar";
@@ -817,80 +952,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   );
 
-  // ==========================================================
-  // ABRIR SISTEMA
-  // ==========================================================
-
-  function abrirSistema(usuario) {
-
-    const userName =
-      document.getElementById(
-        "userName"
-      );
-
-    if (userName) {
-      userName.textContent =
-        usuario.nome;
-    }
-
-    const profileName =
-      document.getElementById(
-        "profileName"
-      );
-
-    if (profileName) {
-      profileName.textContent =
-        usuario.nome;
-    }
-
-    const profileEmail =
-      document.getElementById(
-        "profileEmail"
-      );
-
-    if (profileEmail) {
-      profileEmail.textContent =
-        usuario.email;
-    }
-
-    const profileAccountType =
-      document.getElementById(
-        "profileAccountType"
-      );
-
-    if (profileAccountType) {
-
-      const tipos = {
-
-        pessoal:
-          "Pessoal",
-
-        empresa:
-          "Empresa",
-
-        ambos:
-          "Pessoal + Empresa"
-      };
-
-      profileAccountType.textContent =
-        tipos[usuario.tipo] ||
-        "Pessoal";
-    }
-
-    const profileCompany =
-      document.getElementById(
-        "profileCompany"
-      );
-
-    if (profileCompany) {
-
-      profileCompany.textContent =
-        usuario.empresa ||
-        "—";
-    }
-
-    atualizarTudo();
-  }
 
   // ==========================================================
   // LOGOUT
@@ -907,7 +968,8 @@ document.addEventListener("DOMContentLoaded", function () {
           await supabaseFetch(
             "/auth/v1/logout",
             {
-              method: "POST"
+              method:
+                "POST"
             }
           );
         }
@@ -920,35 +982,346 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
 
-      accessToken = null;
 
-      currentUser = null;
+      accessToken =
+        null;
+
+      currentUser =
+        null;
+
 
       localStorage.removeItem(
         "controleFinanceiroAccessToken"
       );
 
+
       localStorage.removeItem(
         "controleFinanceiroLogado"
       );
+
 
       appScreen?.classList.add(
         "hidden"
       );
 
+
       authScreen?.classList.remove(
         "hidden"
       );
 
+
       registerForm?.classList.add(
         "hidden"
       );
+
 
       loginForm?.classList.remove(
         "hidden"
       );
     }
   );
+
+
+  // ==========================================================
+  // ABRIR SISTEMA
+  // ==========================================================
+
+  function abrirSistema(
+    usuario
+  ) {
+
+    const userName =
+      document.getElementById(
+        "userName"
+      );
+
+
+    if (userName) {
+
+      userName.textContent =
+        usuario.nome;
+    }
+
+
+    const profileName =
+      document.getElementById(
+        "profileName"
+      );
+
+
+    if (profileName) {
+
+      profileName.textContent =
+        usuario.nome;
+    }
+
+
+    const profileEmail =
+      document.getElementById(
+        "profileEmail"
+      );
+
+
+    if (profileEmail) {
+
+      profileEmail.textContent =
+        usuario.email;
+    }
+
+
+    const profileAccountType =
+      document.getElementById(
+        "profileAccountType"
+      );
+
+
+    if (profileAccountType) {
+
+      const tipos = {
+
+        pessoal:
+          "Pessoal",
+
+        empresa:
+          "Empresa",
+
+        ambos:
+          "Pessoal + Empresa"
+      };
+
+
+      profileAccountType.textContent =
+        tipos[usuario.tipo] ||
+        "Pessoal";
+    }
+
+
+    const profileCompany =
+      document.getElementById(
+        "profileCompany"
+      );
+
+
+    if (profileCompany) {
+
+      profileCompany.textContent =
+        usuario.empresa ||
+        "—";
+    }
+
+
+    atualizarTudo();
+  }
+
+
+  // ==========================================================
+  // LANÇAMENTOS
+  // ==========================================================
+
+  async function pegarLancamentos() {
+
+    if (!currentUser) {
+      return [];
+    }
+
+
+    try {
+
+      const dados =
+        await supabaseFetch(
+
+          "/rest/v1/transactions" +
+
+          "?user_id=eq." +
+
+          encodeURIComponent(
+            currentUser.id
+          ) +
+
+          "&select=*" +
+
+          "&order=data.desc,created_at.desc"
+        );
+
+
+      if (
+        !Array.isArray(dados)
+      ) {
+
+        return [];
+      }
+
+
+      return dados.map(
+        function (item) {
+
+          return {
+
+            id:
+              item.id,
+
+            tipo:
+              item.tipo,
+
+            descricao:
+              item.descricao,
+
+            valor:
+              Number(
+                item.valor
+              ) || 0,
+
+            categoria:
+              item.categoria,
+
+            dataISO:
+              item.data ||
+              item.data_iso ||
+              "",
+
+            data:
+              formatarData(
+                item.data ||
+                item.data_iso
+              ),
+
+            criadoEm:
+              item.created_at
+          };
+        }
+      );
+
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao buscar lançamentos:",
+        erro
+      );
+
+
+      return [];
+    }
+  }
+
+
+  // ==========================================================
+  // SALVAR LANÇAMENTO
+  // ==========================================================
+
+  async function salvarLancamento(
+    dados
+  ) {
+
+    return await supabaseFetch(
+      "/rest/v1/transactions",
+      {
+
+        method:
+          "POST",
+
+        headers: {
+
+          "Prefer":
+            "return=representation"
+        },
+
+        body:
+          JSON.stringify({
+
+            user_id:
+              currentUser.id,
+
+            tipo:
+              dados.tipo,
+
+            descricao:
+              dados.descricao,
+
+            valor:
+              dados.valor,
+
+            categoria:
+              dados.categoria,
+
+            data:
+              dados.dataISO
+          })
+      }
+    );
+  }
+
+
+  // ==========================================================
+  // ATUALIZAR LANÇAMENTO
+  // ==========================================================
+
+  async function atualizarLancamento(
+    id,
+    dados
+  ) {
+
+    return await supabaseFetch(
+
+      "/rest/v1/transactions?id=eq." +
+
+      encodeURIComponent(id),
+
+      {
+
+        method:
+          "PATCH",
+
+        headers: {
+
+          "Prefer":
+            "return=representation"
+        },
+
+        body:
+          JSON.stringify({
+
+            tipo:
+              dados.tipo,
+
+            descricao:
+              dados.descricao,
+
+            valor:
+              dados.valor,
+
+            categoria:
+              dados.categoria,
+
+            data:
+              dados.dataISO
+          })
+      }
+    );
+  }
+
+
+  // ==========================================================
+  // EXCLUIR LANÇAMENTO
+  // ==========================================================
+
+  async function excluirLancamento(
+    id
+  ) {
+
+    return await supabaseFetch(
+
+      "/rest/v1/transactions?id=eq." +
+
+      encodeURIComponent(id),
+
+      {
+        method:
+          "DELETE"
+      }
+    );
+  }
+
 
   // ==========================================================
   // MENU
@@ -959,10 +1332,12 @@ document.addEventListener("DOMContentLoaded", function () {
       ".menu-item"
     );
 
+
   const sections =
     document.querySelectorAll(
       ".content-section"
     );
+
 
   menuItems.forEach(
     function (button) {
@@ -974,6 +1349,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const sectionName =
             button.dataset.section;
 
+
           menuItems.forEach(
             function (item) {
 
@@ -983,9 +1359,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           );
 
+
           button.classList.add(
             "active"
           );
+
 
           sections.forEach(
             function (section) {
@@ -996,10 +1374,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           );
 
+
           const section =
             document.getElementById(
               sectionName
             );
+
 
           if (section) {
 
@@ -1008,14 +1388,6 @@ document.addEventListener("DOMContentLoaded", function () {
             );
           }
 
-          const sidebar =
-            document.querySelector(
-              ".sidebar"
-            );
-
-          sidebar?.classList.remove(
-            "mobile-open"
-          );
 
           if (
             sectionName ===
@@ -1024,6 +1396,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             renderizarTabela();
           }
+
 
           if (
             sectionName ===
@@ -1037,6 +1410,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   );
 
+
   // ==========================================================
   // MENU MOBILE
   // ==========================================================
@@ -1046,10 +1420,12 @@ document.addEventListener("DOMContentLoaded", function () {
       "mobileMenuButton"
     );
 
+
   const sidebar =
     document.querySelector(
       ".sidebar"
     );
+
 
   mobileMenuButton?.addEventListener(
     "click",
@@ -1061,6 +1437,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   );
 
+
   // ==========================================================
   // MODAL
   // ==========================================================
@@ -1070,59 +1447,101 @@ document.addEventListener("DOMContentLoaded", function () {
       "transactionModal"
     );
 
+
   const closeTransactionModal =
     document.getElementById(
       "closeTransactionModal"
     );
+
 
   const cancelTransactionButton =
     document.getElementById(
       "cancelTransactionButton"
     );
 
+
   const saveTransactionButton =
     document.getElementById(
       "saveTransactionButton"
     );
 
-  let idEditando = null;
+
+  let idEditando =
+    null;
+
+
+  function fecharModal() {
+
+    transactionModal?.classList.add(
+      "hidden"
+    );
+
+
+    idEditando =
+      null;
+  }
+
+
+  closeTransactionModal?.addEventListener(
+    "click",
+    fecharModal
+  );
+
+
+  cancelTransactionButton?.addEventListener(
+    "click",
+    fecharModal
+  );
+
+
+  // ==========================================================
+  // ABRIR MODAL
+  // ==========================================================
 
   async function abrirModal(
     tipo = "income",
     id = null
   ) {
 
-    idEditando = id;
+    idEditando =
+      id;
+
 
     const type =
       document.getElementById(
         "transactionType"
       );
 
+
     const description =
       document.getElementById(
         "transactionDescription"
       );
+
 
     const amount =
       document.getElementById(
         "transactionAmount"
       );
 
+
     const category =
       document.getElementById(
         "transactionCategory"
       );
+
 
     const date =
       document.getElementById(
         "transactionDate"
       );
 
+
     if (id) {
 
       const lancamentos =
         await pegarLancamentos();
+
 
       const item =
         lancamentos.find(
@@ -1133,6 +1552,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         );
 
+
       if (!item) {
 
         alert(
@@ -1142,20 +1562,24 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
+
       if (type) {
         type.value =
           item.tipo;
       }
+
 
       if (description) {
         description.value =
           item.descricao || "";
       }
 
+
       if (amount) {
         amount.value =
           item.valor || "";
       }
+
 
       if (category) {
         category.value =
@@ -1163,10 +1587,12 @@ document.addEventListener("DOMContentLoaded", function () {
           "outros";
       }
 
+
       if (date) {
         date.value =
           item.dataISO || "";
       }
+
 
     } else {
 
@@ -1175,20 +1601,24 @@ document.addEventListener("DOMContentLoaded", function () {
           tipo;
       }
 
+
       if (description) {
         description.value =
           "";
       }
+
 
       if (amount) {
         amount.value =
           "";
       }
 
+
       if (category) {
         category.value =
-          "salario";
+          "outros";
       }
+
 
       if (date) {
 
@@ -1197,47 +1627,18 @@ document.addEventListener("DOMContentLoaded", function () {
             .toISOString()
             .split("T")[0];
 
+
         date.value =
           hoje;
       }
     }
 
-    const titulo =
-      transactionModal?.querySelector(
-        "h2"
-      );
-
-    if (titulo) {
-
-      titulo.textContent =
-        id
-          ? "Editar lançamento"
-          : "Novo lançamento";
-    }
 
     transactionModal?.classList.remove(
       "hidden"
     );
   }
 
-  function fecharModal() {
-
-    transactionModal?.classList.add(
-      "hidden"
-    );
-
-    idEditando = null;
-  }
-
-  closeTransactionModal?.addEventListener(
-    "click",
-    fecharModal
-  );
-
-  cancelTransactionButton?.addEventListener(
-    "click",
-    fecharModal
-  );
 
   // ==========================================================
   // BOTÕES DE LANÇAMENTO
@@ -1251,9 +1652,12 @@ document.addEventListener("DOMContentLoaded", function () {
       "click",
       function () {
 
-        abrirModal("income");
+        abrirModal(
+          "income"
+        );
       }
     );
+
 
   document
     .getElementById(
@@ -1263,9 +1667,12 @@ document.addEventListener("DOMContentLoaded", function () {
       "click",
       function () {
 
-        abrirModal("expense");
+        abrirModal(
+          "expense"
+        );
       }
     );
+
 
   document
     .getElementById(
@@ -1275,12 +1682,15 @@ document.addEventListener("DOMContentLoaded", function () {
       "click",
       function () {
 
-        abrirModal("income");
+        abrirModal(
+          "income"
+        );
       }
     );
 
+
   // ==========================================================
-  // SALVAR LANÇAMENTO
+  // SALVAR TRANSAÇÃO
   // ==========================================================
 
   saveTransactionButton?.addEventListener(
@@ -1296,48 +1706,46 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
+
       const tipo =
-        document
-          .getElementById(
-            "transactionType"
-          )
-          ?.value;
+        document.getElementById(
+          "transactionType"
+        )?.value;
+
 
       const descricao =
-        document
-          .getElementById(
-            "transactionDescription"
-          )
-          ?.value
-          .trim();
+        document.getElementById(
+          "transactionDescription"
+        )?.value.trim();
+
 
       const valorCampo =
-        document
-          .getElementById(
-            "transactionAmount"
-          )
-          ?.value;
+        document.getElementById(
+          "transactionAmount"
+        )?.value;
+
 
       const categoria =
-        document
-          .getElementById(
-            "transactionCategory"
-          )
-          ?.value;
+        document.getElementById(
+          "transactionCategory"
+        )?.value;
+
 
       const data =
-        document
-          .getElementById(
-            "transactionDate"
-          )
-          ?.value;
+        document.getElementById(
+          "transactionDate"
+        )?.value;
+
 
       const valor =
         Number(
-          String(valorCampo || "")
+          String(
+            valorCampo || ""
+          )
             .replace(/\./g, "")
             .replace(",", ".")
         );
+
 
       if (!descricao) {
 
@@ -1347,6 +1755,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return;
       }
+
 
       if (
         !valor ||
@@ -1360,6 +1769,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
+
       if (!data) {
 
         alert(
@@ -1368,6 +1778,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return;
       }
+
 
       const dados = {
 
@@ -1387,11 +1798,14 @@ document.addEventListener("DOMContentLoaded", function () {
           data
       };
 
+
       saveTransactionButton.disabled =
         true;
 
+
       saveTransactionButton.textContent =
         "Salvando...";
+
 
       try {
 
@@ -1411,23 +1825,32 @@ document.addEventListener("DOMContentLoaded", function () {
           );
         }
 
+
         fecharModal();
+
 
         await atualizarTudo();
 
+
       } catch (erro) {
 
-        console.error(erro);
+        console.error(
+          "Erro ao salvar lançamento:",
+          erro
+        );
+
 
         alert(
           "Não foi possível salvar: " +
           erro.message
         );
 
+
       } finally {
 
         saveTransactionButton.disabled =
           false;
+
 
         saveTransactionButton.textContent =
           "Salvar lançamento";
@@ -1435,8 +1858,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   );
 
+
   // ==========================================================
-  // TABELA
+  // TABELA DE LANÇAMENTOS
   // ==========================================================
 
   async function renderizarTabela() {
@@ -1446,38 +1870,38 @@ document.addEventListener("DOMContentLoaded", function () {
         "transactionsTableBody"
       );
 
+
     if (!tbody) {
       return;
     }
 
+
     let lancamentos =
       await pegarLancamentos();
 
+
     const pesquisa =
-      document
-        .getElementById(
-          "transactionSearch"
-        )
-        ?.value
-        .toLowerCase()
-        .trim() ||
+      document.getElementById(
+        "transactionSearch"
+      )?.value
+      .toLowerCase()
+      .trim() ||
       "";
 
+
     const filtroTipo =
-      document
-        .getElementById(
-          "transactionTypeFilter"
-        )
-        ?.value ||
+      document.getElementById(
+        "transactionTypeFilter"
+      )?.value ||
       "all";
 
+
     const filtroCategoria =
-      document
-        .getElementById(
-          "transactionCategoryFilter"
-        )
-        ?.value ||
+      document.getElementById(
+        "transactionCategoryFilter"
+      )?.value ||
       "all";
+
 
     lancamentos =
       lancamentos.filter(
@@ -1496,6 +1920,7 @@ document.addEventListener("DOMContentLoaded", function () {
               )
             ).toLowerCase();
 
+
           if (
             pesquisa &&
             !texto.includes(
@@ -1506,6 +1931,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return false;
           }
 
+
           if (
             filtroTipo !== "all" &&
             item.tipo !== filtroTipo
@@ -1514,36 +1940,49 @@ document.addEventListener("DOMContentLoaded", function () {
             return false;
           }
 
+
           if (
             filtroCategoria !== "all" &&
             item.categoria !==
-              filtroCategoria
+            filtroCategoria
           ) {
 
             return false;
           }
 
+
           return true;
         }
       );
 
+
     if (
-      lancamentos.length === 0
+      lancamentos.length ===
+      0
     ) {
 
       tbody.innerHTML = `
+
         <tr>
+
           <td
             colspan="6"
-            style="text-align:center;padding:30px;"
+            style="
+              text-align:center;
+              padding:30px;
+            "
           >
+
             Nenhum lançamento encontrado.
+
           </td>
+
         </tr>
       `;
 
       return;
     }
+
 
     tbody.innerHTML =
       lancamentos
@@ -1551,21 +1990,21 @@ document.addEventListener("DOMContentLoaded", function () {
           function (item) {
 
             const tipoTexto =
-              item.tipo === "income"
+              item.tipo ===
+              "income"
                 ? "Receita"
                 : "Despesa";
 
+
             const sinal =
-              item.tipo === "income"
+              item.tipo ===
+              "income"
                 ? "+"
                 : "-";
 
-            const valor =
-              dinheiro(
-                item.valor
-              );
 
             return `
+
               <tr>
 
                 <td>
@@ -1577,6 +2016,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   }
                 </td>
 
+
                 <td>
                   ${
                     escaparHTML(
@@ -1584,6 +2024,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     )
                   }
                 </td>
+
 
                 <td>
                   ${
@@ -1593,16 +2034,30 @@ document.addEventListener("DOMContentLoaded", function () {
                   }
                 </td>
 
+
                 <td>
-                  ${tipoTexto}
+                  ${
+                    tipoTexto
+                  }
                 </td>
+
 
                 <td
                   class="${item.tipo}"
                 >
-                  ${sinal}
-                  ${valor}
+
+                  ${
+                    sinal
+                  }
+
+                  ${
+                    dinheiro(
+                      item.valor
+                    )
+                  }
+
                 </td>
+
 
                 <td>
 
@@ -1610,16 +2065,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     type="button"
                     class="edit-transaction-button"
                     data-id="${item.id}"
-                    title="Editar"
                   >
                     ✏️
                   </button>
+
 
                   <button
                     type="button"
                     class="delete-transaction-button"
                     data-id="${item.id}"
-                    title="Excluir"
                   >
                     🗑️
                   </button>
@@ -1633,6 +2087,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .join("");
   }
 
+
   // ==========================================================
   // EDITAR / EXCLUIR
   // ==========================================================
@@ -1642,68 +2097,67 @@ document.addEventListener("DOMContentLoaded", function () {
       "transactionsTableBody"
     );
 
+
   transactionsTableBody?.addEventListener(
     "click",
     async function (event) {
 
-      const botaoEditar =
+      const editar =
         event.target.closest(
           ".edit-transaction-button"
         );
 
-      const botaoExcluir =
+
+      const excluir =
         event.target.closest(
           ".delete-transaction-button"
         );
 
-      if (botaoEditar) {
+
+      if (editar) {
 
         const id =
-          botaoEditar.getAttribute(
+          editar.getAttribute(
             "data-id"
           );
 
-        if (!id) {
 
-          alert(
-            "ID do lançamento não encontrado."
+        if (id) {
+
+          await abrirModal(
+            null,
+            id
           );
-
-          return;
         }
 
-        await abrirModal(
-          null,
-          id
-        );
 
         return;
       }
 
-      if (botaoExcluir) {
+
+      if (excluir) {
 
         const id =
-          botaoExcluir.getAttribute(
+          excluir.getAttribute(
             "data-id"
           );
 
+
         if (!id) {
-
-          alert(
-            "ID do lançamento não encontrado."
-          );
-
           return;
         }
+
 
         const confirmou =
           confirm(
             "Tem certeza que deseja excluir este lançamento?"
           );
 
+
         if (!confirmou) {
           return;
         }
+
 
         try {
 
@@ -1711,15 +2165,16 @@ document.addEventListener("DOMContentLoaded", function () {
             id
           );
 
+
           await atualizarTudo();
 
-          alert(
-            "Lançamento excluído com sucesso."
-          );
 
         } catch (erro) {
 
-          console.error(erro);
+          console.error(
+            erro
+          );
+
 
           alert(
             "Não foi possível excluir: " +
@@ -1729,6 +2184,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   );
+
 
   // ==========================================================
   // FILTROS
@@ -1743,6 +2199,7 @@ document.addEventListener("DOMContentLoaded", function () {
       renderizarTabela
     );
 
+
   document
     .getElementById(
       "transactionTypeFilter"
@@ -1751,6 +2208,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "change",
       renderizarTabela
     );
+
 
   document
     .getElementById(
@@ -1761,8 +2219,9 @@ document.addEventListener("DOMContentLoaded", function () {
       renderizarTabela
     );
 
+
   // ==========================================================
-  // CATEGORIAS
+  // FILTRO DE CATEGORIAS
   // ==========================================================
 
   function atualizarFiltroCategorias() {
@@ -1772,52 +2231,83 @@ document.addEventListener("DOMContentLoaded", function () {
         "transactionCategoryFilter"
       );
 
+
     if (!select) {
       return;
     }
 
+
     const categorias = [
 
-      ["salario", "Salário"],
+      [
+        "salario",
+        "Salário"
+      ],
 
       [
         "alimentacao",
         "Alimentação"
       ],
 
-      ["moradia", "Moradia"],
+      [
+        "moradia",
+        "Moradia"
+      ],
 
       [
         "transporte",
         "Transporte"
       ],
 
-      ["saude", "Saúde"],
+      [
+        "saude",
+        "Saúde"
+      ],
 
       [
         "educacao",
         "Educação"
       ],
 
-      ["lazer", "Lazer"],
+      [
+        "lazer",
+        "Lazer"
+      ],
 
-      ["contas", "Contas"],
+      [
+        "contas",
+        "Contas"
+      ],
 
-      ["compras", "Compras"],
+      [
+        "compras",
+        "Compras"
+      ],
 
-      ["empresa", "Empresa"],
+      [
+        "empresa",
+        "Empresa"
+      ],
 
-      ["outros", "Outros"]
+      [
+        "outros",
+        "Outros"
+      ]
     ];
+
 
     const valorAtual =
       select.value;
 
+
     select.innerHTML = `
+
       <option value="all">
         Todas as categorias
       </option>
+
     `;
+
 
     categorias.forEach(
       function (categoria) {
@@ -1827,11 +2317,14 @@ document.addEventListener("DOMContentLoaded", function () {
             "option"
           );
 
+
         option.value =
           categoria[0];
 
+
         option.textContent =
           categoria[1];
+
 
         select.appendChild(
           option
@@ -1839,10 +2332,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     );
 
+
     select.value =
       valorAtual ||
       "all";
   }
+
 
   // ==========================================================
   // DASHBOARD
@@ -1853,15 +2348,23 @@ document.addEventListener("DOMContentLoaded", function () {
     const lancamentos =
       await pegarLancamentos();
 
-    let receitas = 0;
-    let despesas = 0;
+
+    let receitas =
+      0;
+
+
+    let despesas =
+      0;
+
 
     lancamentos.forEach(
       function (item) {
 
         const valor =
-          Number(item.valor) ||
-          0;
+          Number(
+            item.valor
+          ) || 0;
+
 
         if (
           item.tipo ===
@@ -1871,6 +2374,7 @@ document.addEventListener("DOMContentLoaded", function () {
           receitas +=
             valor;
         }
+
 
         if (
           item.tipo ===
@@ -1883,29 +2387,35 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     );
 
+
     const saldo =
       receitas -
       despesas;
+
 
     const totalIncome =
       document.getElementById(
         "totalIncome"
       );
 
+
     const totalExpense =
       document.getElementById(
         "totalExpense"
       );
+
 
     const totalBalance =
       document.getElementById(
         "totalBalance"
       );
 
+
     const totalTransactions =
       document.getElementById(
         "totalTransactions"
       );
+
 
     if (totalIncome) {
 
@@ -1915,6 +2425,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
+
     if (totalExpense) {
 
       totalExpense.textContent =
@@ -1922,6 +2433,7 @@ document.addEventListener("DOMContentLoaded", function () {
           despesas
         );
     }
+
 
     if (totalBalance) {
 
@@ -1931,14 +2443,17 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
+
     if (totalTransactions) {
 
       totalTransactions.textContent =
         lancamentos.length;
     }
 
+
     await atualizarLancamentosRecentes();
   }
+
 
   // ==========================================================
   // LANÇAMENTOS RECENTES
@@ -1951,12 +2466,15 @@ document.addEventListener("DOMContentLoaded", function () {
         "recentTransactions"
       );
 
+
     if (!container) {
       return;
     }
 
+
     const lancamentos =
       await pegarLancamentos();
+
 
     if (
       lancamentos.length ===
@@ -1964,6 +2482,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
 
       container.innerHTML = `
+
         <div class="empty-state">
 
           <div>📋</div>
@@ -1979,30 +2498,33 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
       `;
 
+
       return;
     }
 
-    const recentes =
-      lancamentos
-        .slice()
-        .slice(0, 5);
 
     container.innerHTML =
-      recentes
+      lancamentos
+        .slice(0, 5)
         .map(
           function (item) {
 
             const classe =
-              item.tipo === "income"
+              item.tipo ===
+              "income"
                 ? "income"
                 : "expense";
 
+
             const sinal =
-              item.tipo === "income"
+              item.tipo ===
+              "income"
                 ? "+"
                 : "-";
 
+
             return `
+
               <div
                 class="transaction-row"
               >
@@ -2022,40 +2544,52 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                   </div>
 
+
                   <div>
 
                     <div
                       class="transaction-description"
                     >
+
                       ${
                         escaparHTML(
                           item.descricao
                         )
                       }
+
                     </div>
+
 
                     <div
                       class="transaction-date"
                     >
+
                       ${
                         item.data ||
                         ""
                       }
+
                     </div>
 
                   </div>
 
                 </div>
 
+
                 <div
                   class="transaction-value ${classe}"
                 >
-                  ${sinal}
+
+                  ${
+                    sinal
+                  }
+
                   ${
                     dinheiro(
                       item.valor
                     )
                   }
+
                 </div>
 
               </div>
@@ -2064,6 +2598,7 @@ document.addEventListener("DOMContentLoaded", function () {
         )
         .join("");
   }
+
 
   // ==========================================================
   // RELATÓRIO
@@ -2076,22 +2611,32 @@ document.addEventListener("DOMContentLoaded", function () {
         "reportSummary"
       );
 
+
     if (!container) {
       return;
     }
 
+
     const lancamentos =
       await pegarLancamentos();
 
-    let receitas = 0;
-    let despesas = 0;
+
+    let receitas =
+      0;
+
+
+    let despesas =
+      0;
+
 
     lancamentos.forEach(
       function (item) {
 
         const valor =
-          Number(item.valor) ||
-          0;
+          Number(
+            item.valor
+          ) || 0;
+
 
         if (
           item.tipo ===
@@ -2101,6 +2646,7 @@ document.addEventListener("DOMContentLoaded", function () {
           receitas +=
             valor;
         }
+
 
         if (
           item.tipo ===
@@ -2113,16 +2659,18 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     );
 
+
     const saldo =
       receitas -
       despesas;
 
+
     container.innerHTML = `
-      <div
-        style="padding:10px 0;"
-      >
+
+      <div>
 
         <p>
+
           <strong>
             Receitas:
           </strong>
@@ -2132,9 +2680,12 @@ document.addEventListener("DOMContentLoaded", function () {
               receitas
             )
           }
+
         </p>
 
+
         <p>
+
           <strong>
             Despesas:
           </strong>
@@ -2144,9 +2695,12 @@ document.addEventListener("DOMContentLoaded", function () {
               despesas
             )
           }
+
         </p>
 
+
         <p>
+
           <strong>
             Saldo:
           </strong>
@@ -2156,9 +2710,12 @@ document.addEventListener("DOMContentLoaded", function () {
               saldo
             )
           }
+
         </p>
 
+
         <p>
+
           <strong>
             Lançamentos:
           </strong>
@@ -2166,29 +2723,35 @@ document.addEventListener("DOMContentLoaded", function () {
           ${
             lancamentos.length
           }
+
         </p>
 
       </div>
     `;
   }
 
+
   // ==========================================================
-  // ATUALIZAR TUDO
+  // ATUALIZAR SISTEMA
   // ==========================================================
 
   async function atualizarTudo() {
 
     atualizarFiltroCategorias();
 
+
     await atualizarDashboard();
 
+
     await renderizarTabela();
+
 
     await atualizarRelatorio();
   }
 
+
   // ==========================================================
-  // VER TODOS
+  // VER LANÇAMENTOS
   // ==========================================================
 
   document
@@ -2204,9 +2767,11 @@ document.addEventListener("DOMContentLoaded", function () {
             '.menu-item[data-section="transactions"]'
           );
 
+
         menu?.click();
       }
     );
+
 
   // ==========================================================
   // INICIALIZAÇÃO
@@ -2214,54 +2779,102 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function iniciar() {
 
+    console.log(
+      "ControleS iniciando..."
+    );
+
+
+    console.log(
+      "Supabase:",
+      SUPABASE_URL
+    );
+
+
     if (
       !SUPABASE_URL ||
       !SUPABASE_KEY
     ) {
 
-      console.error(
-        "Supabase não configurado."
-      );
-
       mostrarMensagem(
         loginMessage,
-        "Supabase não configurado."
+        "Supabase não está configurado."
       );
 
       return;
     }
 
+
+    // --------------------------------------------------------
+    // SE JÁ EXISTE SESSÃO
+    // --------------------------------------------------------
+
     if (accessToken) {
 
-      const usuario =
-        await pegarUsuarioAtual();
+      try {
 
-      if (usuario) {
+        const usuario =
+          await pegarUsuarioAtual();
 
-        authScreen?.classList.add(
-          "hidden"
+
+        if (usuario) {
+
+          authScreen?.classList.add(
+            "hidden"
+          );
+
+
+          appScreen?.classList.remove(
+            "hidden"
+          );
+
+
+          abrirSistema(
+            usuario
+          );
+
+
+          return;
+        }
+
+
+      } catch (erro) {
+
+        console.error(
+          "Sessão inválida:",
+          erro
         );
 
-        appScreen?.classList.remove(
-          "hidden"
+
+        accessToken =
+          null;
+
+
+        localStorage.removeItem(
+          "controleFinanceiroAccessToken"
         );
 
-        abrirSistema(
-          usuario
-        );
 
-        return;
+        localStorage.removeItem(
+          "controleFinanceiroLogado"
+        );
       }
     }
+
+
+    // --------------------------------------------------------
+    // MOSTRAR LOGIN
+    // --------------------------------------------------------
 
     authScreen?.classList.remove(
       "hidden"
     );
 
+
     appScreen?.classList.add(
       "hidden"
     );
   }
+
 
   iniciar();
 
