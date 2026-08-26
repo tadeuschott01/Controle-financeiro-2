@@ -13,10 +13,7 @@
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- SUPABASE -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- CHART.JS -->
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
@@ -236,9 +233,7 @@
     class="app-screen hidden"
   >
 
-    <!-- =================================================
-         SIDEBAR
-         ================================================= -->
+    <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
@@ -318,9 +313,7 @@
     </aside>
 
 
-    <!-- =================================================
-         CONTEÚDO PRINCIPAL
-         ================================================= -->
+    <!-- CONTEÚDO -->
 
     <main class="main-content">
 
@@ -546,7 +539,7 @@
           </div>
 
 
-          <!-- ÚLTIMOS LANÇAMENTOS -->
+          <!-- RECENTES -->
 
           <div class="panel">
 
@@ -789,7 +782,7 @@
               <div>
 
                 <h3>
-                  Resumo
+                  Resumo financeiro
                 </h3>
 
               </div>
@@ -799,7 +792,7 @@
             <div id="reportSummary">
 
               <p>
-                Ainda não existem dados suficientes para gerar o relatório.
+                Ainda não existem dados suficientes.
               </p>
 
             </div>
@@ -897,7 +890,7 @@
 
 
   <!-- =====================================================
-       MODAL DE LANÇAMENTO
+       MODAL
        ===================================================== -->
 
   <div
@@ -911,7 +904,7 @@
 
         <div>
 
-          <h2>
+          <h2 id="transactionModalTitle">
             Novo lançamento
           </h2>
 
@@ -963,12 +956,15 @@
         Valor
       </label>
 
+      <!-- IMPORTANTE:
+           TEXT para aceitar 2.200 e 2.200,50 -->
+
       <input
-        type="number"
+        type="text"
         id="transactionAmount"
         placeholder="0,00"
-        min="0"
-        step="0.01"
+        inputmode="decimal"
+        autocomplete="off"
       >
 
 
@@ -1067,7 +1063,6 @@
 
   <!-- =====================================================
        JAVASCRIPT
-       IMPORTANTE: fica antes do </body>
        ===================================================== -->
 
   <script src="script.js"></script>
