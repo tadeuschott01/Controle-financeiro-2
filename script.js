@@ -1,13 +1,8 @@
-/* =========================================================
-   CONTROLE FINANCEIRO
-   SCRIPT PRINCIPAL COMPLETO
-   ========================================================= */
-
 document.addEventListener("DOMContentLoaded", function () {
 
-  /* =======================================================
-     ELEMENTOS PRINCIPAIS
-     ======================================================= */
+  // ==========================================================
+  // AUTENTICAÇÃO
+  // ==========================================================
 
   const authScreen = document.getElementById("authScreen");
   const appScreen = document.getElementById("appScreen");
@@ -15,43 +10,27 @@ document.addEventListener("DOMContentLoaded", function () {
   const loginForm = document.getElementById("loginForm");
   const registerForm = document.getElementById("registerForm");
 
-  const showRegisterButton =
-    document.getElementById("showRegisterButton");
+  const showRegisterButton = document.getElementById("showRegisterButton");
+  const showLoginButton = document.getElementById("showLoginButton");
 
-  const showLoginButton =
-    document.getElementById("showLoginButton");
+  const registerButton = document.getElementById("registerButton");
+  const loginButton = document.getElementById("loginButton");
+  const logoutButton = document.getElementById("logoutButton");
 
-  const loginButton =
-    document.getElementById("loginButton");
-
-  const registerButton =
-    document.getElementById("registerButton");
-
-  const logoutButton =
-    document.getElementById("logoutButton");
-
-  const loginMessage =
-    document.getElementById("loginMessage");
-
-  const registerMessage =
-    document.getElementById("registerMessage");
-
-  const transactionMessage =
-    document.getElementById("transactionMessage");
+  const loginMessage = document.getElementById("loginMessage");
+  const registerMessage = document.getElementById("registerMessage");
 
 
-  /* =======================================================
-     UTILIDADES
-     ======================================================= */
+  // ==========================================================
+  // FUNÇÕES AUXILIARES
+  // ==========================================================
 
   function mostrarMensagem(elemento, mensagem, sucesso = false) {
 
     if (!elemento) return;
 
     elemento.textContent = mensagem;
-
-    elemento.style.color =
-      sucesso ? "#1f513d" : "#d94b4b";
+    elemento.style.color = sucesso ? "#1f513d" : "#d94b4b";
   }
 
 
@@ -59,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const numero = Number(valor);
 
-    if (!Number.isFinite(numero)) {
+    if (isNaN(numero)) {
       return "R$ 0,00";
     }
 
@@ -70,41 +49,24 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  function escaparHTML(texto) {
-
-    if (texto === null || texto === undefined) {
-      return "";
-    }
-
-    return String(texto)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-
   function gerarId() {
 
-    return Date.now() + Math.floor(Math.random() * 1000);
+    return Date.now().toString() +
+      Math.random().toString(36).substring(2, 9);
   }
 
 
-  /* =======================================================
-     USUÁRIO
-     ======================================================= */
+  // ==========================================================
+  // USUÁRIO
+  // ==========================================================
 
   function pegarUsuario() {
 
-    const dados =
-      localStorage.getItem(
-        "controleFinanceiroUsuario"
-      );
+    const dados = localStorage.getItem(
+      "controleFinanceiroUsuario"
+    );
 
-    if (!dados) {
-      return null;
-    }
+    if (!dados) return null;
 
     try {
 
@@ -112,43 +74,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     } catch (erro) {
 
-      console.error(
-        "Erro ao ler usuário:",
-        erro
-      );
-
-      localStorage.removeItem(
-        "controleFinanceiroUsuario"
-      );
+      console.error("Erro ao ler usuário:", erro);
 
       return null;
     }
   }
 
 
-  function salvarUsuario(usuario) {
-
-    localStorage.setItem(
-      "controleFinanceiroUsuario",
-      JSON.stringify(usuario)
-    );
-  }
-
-
-  /* =======================================================
-     LANÇAMENTOS
-     ======================================================= */
+  // ==========================================================
+  // LANÇAMENTOS
+  // ==========================================================
 
   function pegarLancamentos() {
 
-    const dados =
-      localStorage.getItem(
-        "controleFinanceiroLancamentos"
-      );
+    const dados = localStorage.getItem(
+      "controleFinanceiroLancamentos"
+    );
 
-    if (!dados) {
-      return [];
-    }
+    if (!dados) return [];
 
     try {
 
@@ -162,10 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     } catch (erro) {
 
-      console.error(
-        "Erro ao ler lançamentos:",
-        erro
-      );
+      console.error("Erro ao ler lançamentos:", erro);
 
       return [];
     }
@@ -181,423 +121,251 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  /* =======================================================
-     LOGIN / CADASTRO
-     ======================================================= */
+  // ==========================================================
+  // LOGIN / CADASTRO
+  // ==========================================================
 
-  function mostrarLogin() {
-
-    loginForm?.classList.remove("hidden");
-    registerForm?.classList.add("hidden");
-
-    if (loginMessage) {
-      loginMessage.textContent = "";
-    }
-
-    if (registerMessage) {
-      registerMessage.textContent = "";
-    }
-  }
-
-
-  function mostrarCadastro() {
+  showRegisterButton?.addEventListener("click", function () {
 
     loginForm?.classList.add("hidden");
     registerForm?.classList.remove("hidden");
 
-    if (loginMessage) {
-      loginMessage.textContent = "";
-    }
-
     if (registerMessage) {
       registerMessage.textContent = "";
     }
-  }
+  });
 
 
-  showRegisterButton?.addEventListener(
-    "click",
-    function (event) {
+  showLoginButton?.addEventListener("click", function () {
 
-      event.preventDefault();
+    registerForm?.classList.add("hidden");
+    loginForm?.classList.remove("hidden");
 
-      mostrarCadastro();
-
+    if (loginMessage) {
+      loginMessage.textContent = "";
     }
-  );
+  });
 
 
-  showLoginButton?.addEventListener(
-    "click",
-    function (event) {
+  registerButton?.addEventListener("click", function (event) {
 
-      event.preventDefault();
+    event.preventDefault();
 
-      mostrarLogin();
+    const nome =
+      document.getElementById("registerName")?.value.trim();
 
+    const email =
+      document.getElementById("registerEmail")?.value.trim();
+
+    const senha =
+      document.getElementById("registerPassword")?.value;
+
+    const tipo =
+      document.getElementById("registerAccountType")?.value ||
+      "pessoal";
+
+    const empresa =
+      document.getElementById("registerCompany")?.value.trim() ||
+      "";
+
+
+    if (!nome) {
+      mostrarMensagem(
+        registerMessage,
+        "Digite seu nome."
+      );
+      return;
     }
-  );
 
 
-  /* =======================================================
-     TIPO DE CONTA
-     ======================================================= */
-
-  const registerAccountType =
-    document.getElementById(
-      "registerAccountType"
-    );
-
-  const companyField =
-    document.getElementById(
-      "companyField"
-    );
-
-
-  registerAccountType?.addEventListener(
-    "change",
-    function () {
-
-      if (
-        this.value === "empresa" ||
-        this.value === "ambos"
-      ) {
-
-        companyField?.classList.remove("hidden");
-
-      } else {
-
-        companyField?.classList.add("hidden");
-
-      }
-
+    if (!email || !email.includes("@")) {
+      mostrarMensagem(
+        registerMessage,
+        "Digite um e-mail válido."
+      );
+      return;
     }
-  );
 
 
-  /* =======================================================
-     CADASTRAR CONTA
-     ======================================================= */
-
-  registerButton?.addEventListener(
-    "click",
-    function (event) {
-
-      event.preventDefault();
-
-      const nome =
-        document
-          .getElementById("registerName")
-          ?.value
-          .trim();
-
-      const email =
-        document
-          .getElementById("registerEmail")
-          ?.value
-          .trim();
-
-      const senha =
-        document
-          .getElementById("registerPassword")
-          ?.value;
-
-      const tipo =
-        document
-          .getElementById("registerAccountType")
-          ?.value || "pessoal";
-
-      const empresa =
-        document
-          .getElementById("registerCompany")
-          ?.value
-          .trim() || "";
+    if (!senha || senha.length < 6) {
+      mostrarMensagem(
+        registerMessage,
+        "A senha precisa ter pelo menos 6 caracteres."
+      );
+      return;
+    }
 
 
-      if (!nome) {
-
-        mostrarMensagem(
-          registerMessage,
-          "Digite seu nome."
-        );
-
-        return;
-      }
-
-
-      if (!email) {
-
-        mostrarMensagem(
-          registerMessage,
-          "Digite seu e-mail."
-        );
-
-        return;
-      }
+    const usuario = {
+      nome,
+      email,
+      senha,
+      tipo,
+      empresa,
+      criadoEm: new Date().toISOString()
+    };
 
 
-      if (!email.includes("@")) {
+    try {
 
-        mostrarMensagem(
-          registerMessage,
-          "Digite um e-mail válido."
-        );
+      localStorage.setItem(
+        "controleFinanceiroUsuario",
+        JSON.stringify(usuario)
+      );
 
-        return;
-      }
+      localStorage.setItem(
+        "controleFinanceiroLancamentos",
+        JSON.stringify([])
+      );
 
+    } catch (erro) {
 
-      if (!senha) {
-
-        mostrarMensagem(
-          registerMessage,
-          "Digite uma senha."
-        );
-
-        return;
-      }
-
-
-      if (senha.length < 6) {
-
-        mostrarMensagem(
-          registerMessage,
-          "A senha precisa ter pelo menos 6 caracteres."
-        );
-
-        return;
-      }
-
-
-      const usuarioExistente =
-        pegarUsuario();
-
-
-      if (
-        usuarioExistente &&
-        usuarioExistente.email &&
-        usuarioExistente.email.toLowerCase() ===
-        email.toLowerCase()
-      ) {
-
-        mostrarMensagem(
-          registerMessage,
-          "Este e-mail já possui uma conta."
-        );
-
-        return;
-      }
-
-
-      const usuario = {
-
-        nome: nome,
-
-        email: email,
-
-        senha: senha,
-
-        tipo: tipo,
-
-        empresa: empresa,
-
-        criadoEm:
-          new Date().toISOString()
-
-      };
-
-
-      try {
-
-        salvarUsuario(usuario);
-
-        salvarLancamentos([]);
-
-      } catch (erro) {
-
-        console.error(
-          "Erro ao criar conta:",
-          erro
-        );
-
-        mostrarMensagem(
-          registerMessage,
-          "Não foi possível salvar a conta."
-        );
-
-        return;
-      }
-
+      console.error(erro);
 
       mostrarMensagem(
         registerMessage,
-        "Conta criada com sucesso!",
-        true
+        "Não foi possível salvar a conta."
       );
 
-
-      const loginEmail =
-        document.getElementById(
-          "loginEmail"
-        );
-
-      if (loginEmail) {
-        loginEmail.value = email;
-      }
-
-
-      setTimeout(
-        function () {
-
-          mostrarLogin();
-
-          if (loginEmail) {
-            loginEmail.value = email;
-          }
-
-        },
-        1000
-      );
-
+      return;
     }
-  );
 
 
-  /* =======================================================
-     LOGIN
-     ======================================================= */
-
-  loginButton?.addEventListener(
-    "click",
-    function (event) {
-
-      event.preventDefault();
-
-      const email =
-        document
-          .getElementById("loginEmail")
-          ?.value
-          .trim();
-
-      const senha =
-        document
-          .getElementById("loginPassword")
-          ?.value;
+    mostrarMensagem(
+      registerMessage,
+      "Conta criada com sucesso!",
+      true
+    );
 
 
-      if (!email || !senha) {
+    const loginEmail =
+      document.getElementById("loginEmail");
 
-        mostrarMensagem(
-          loginMessage,
-          "Digite seu e-mail e sua senha."
-        );
+    if (loginEmail) {
+      loginEmail.value = email;
+    }
 
-        return;
+
+    setTimeout(function () {
+
+      registerForm?.classList.add("hidden");
+      loginForm?.classList.remove("hidden");
+
+      if (registerMessage) {
+        registerMessage.textContent = "";
       }
 
+    }, 1000);
 
-      const usuario =
-        pegarUsuario();
-
-
-      if (!usuario) {
-
-        mostrarMensagem(
-          loginMessage,
-          "Nenhuma conta cadastrada. Clique em Criar conta."
-        );
-
-        return;
-      }
+  });
 
 
-      if (
-        email.toLowerCase() !==
-        usuario.email.toLowerCase() ||
-        senha !== usuario.senha
-      ) {
+  loginButton?.addEventListener("click", function (event) {
 
-        mostrarMensagem(
-          loginMessage,
-          "E-mail ou senha incorretos."
-        );
+    event.preventDefault();
 
-        return;
-      }
+    const email =
+      document.getElementById("loginEmail")?.value.trim();
+
+    const senha =
+      document.getElementById("loginPassword")?.value;
 
 
-      localStorage.setItem(
-        "controleFinanceiroLogado",
-        "true"
+    if (!email || !senha) {
+
+      mostrarMensagem(
+        loginMessage,
+        "Digite seu e-mail e sua senha."
       );
 
-
-      abrirSistema(usuario);
-
+      return;
     }
-  );
 
 
-  /* =======================================================
-     ABRIR SISTEMA
-     ======================================================= */
+    const usuario = pegarUsuario();
 
-  function abrirSistema(usuario) {
+
+    if (!usuario) {
+
+      mostrarMensagem(
+        loginMessage,
+        "Nenhuma conta cadastrada."
+      );
+
+      return;
+    }
+
+
+    if (
+      email.toLowerCase() !==
+      String(usuario.email).toLowerCase() ||
+      senha !== usuario.senha
+    ) {
+
+      mostrarMensagem(
+        loginMessage,
+        "E-mail ou senha incorretos."
+      );
+
+      return;
+    }
+
+
+    localStorage.setItem(
+      "controleFinanceiroLogado",
+      "true"
+    );
+
 
     authScreen?.classList.add("hidden");
     appScreen?.classList.remove("hidden");
 
 
+    abrirSistema(usuario);
+
+  });
+
+
+  // ==========================================================
+  // ABRIR SISTEMA
+  // ==========================================================
+
+  function abrirSistema(usuario) {
+
     const userName =
-      document.getElementById(
-        "userName"
-      );
+      document.getElementById("userName");
 
     if (userName) {
-      userName.textContent =
-        usuario.nome;
+      userName.textContent = usuario.nome;
     }
 
 
     const profileName =
-      document.getElementById(
-        "profileName"
-      );
+      document.getElementById("profileName");
 
     if (profileName) {
-      profileName.textContent =
-        usuario.nome;
+      profileName.textContent = usuario.nome;
     }
 
 
     const profileEmail =
-      document.getElementById(
-        "profileEmail"
-      );
+      document.getElementById("profileEmail");
 
     if (profileEmail) {
-      profileEmail.textContent =
-        usuario.email;
+      profileEmail.textContent = usuario.email;
     }
 
 
-    const tipos = {
-
-      pessoal: "Pessoal",
-
-      empresa: "Empresa",
-
-      ambos: "Pessoal + Empresa"
-
-    };
-
-
     const profileAccountType =
-      document.getElementById(
-        "profileAccountType"
-      );
+      document.getElementById("profileAccountType");
 
     if (profileAccountType) {
+
+      const tipos = {
+        pessoal: "Pessoal",
+        empresa: "Empresa",
+        ambos: "Pessoal + Empresa"
+      };
 
       profileAccountType.textContent =
         tipos[usuario.tipo] || "Pessoal";
@@ -605,12 +373,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     const profileCompany =
-      document.getElementById(
-        "profileCompany"
-      );
+      document.getElementById("profileCompany");
 
     if (profileCompany) {
-
       profileCompany.textContent =
         usuario.empresa || "—";
     }
@@ -620,344 +385,232 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  /* =======================================================
-     LOGOUT
-     ======================================================= */
+  // ==========================================================
+  // LOGOUT
+  // ==========================================================
 
-  logoutButton?.addEventListener(
-    "click",
-    function () {
+  logoutButton?.addEventListener("click", function () {
 
-      localStorage.removeItem(
-        "controleFinanceiroLogado"
-      );
+    localStorage.removeItem(
+      "controleFinanceiroLogado"
+    );
 
-      appScreen?.classList.add("hidden");
-      authScreen?.classList.remove("hidden");
+    appScreen?.classList.add("hidden");
+    authScreen?.classList.remove("hidden");
 
-      mostrarLogin();
+    registerForm?.classList.add("hidden");
+    loginForm?.classList.remove("hidden");
 
-    }
-  );
+  });
 
 
-  /* =======================================================
-     MENU
-     ======================================================= */
+  // ==========================================================
+  // MENU
+  // ==========================================================
 
   const menuItems =
-    document.querySelectorAll(
-      ".menu-item"
-    );
+    document.querySelectorAll(".menu-item");
 
   const sections =
-    document.querySelectorAll(
-      ".content-section"
-    );
+    document.querySelectorAll(".content-section");
 
 
-  menuItems.forEach(
-    function (button) {
+  menuItems.forEach(function (button) {
 
-      button.addEventListener(
-        "click",
-        function () {
+    button.addEventListener("click", function () {
 
-          const sectionName =
-            button.dataset.section;
+      const sectionName =
+        button.dataset.section;
 
 
-          menuItems.forEach(
-            function (item) {
-
-              item.classList.remove(
-                "active"
-              );
-
-            }
-          );
+      menuItems.forEach(function (item) {
+        item.classList.remove("active");
+      });
 
 
-          button.classList.add(
-            "active"
-          );
+      button.classList.add("active");
 
 
-          sections.forEach(
-            function (section) {
-
-              section.classList.remove(
-                "active-section"
-              );
-
-            }
-          );
+      sections.forEach(function (section) {
+        section.classList.remove("active-section");
+      });
 
 
-          const section =
-            document.getElementById(
-              sectionName
-            );
+      const section =
+        document.getElementById(sectionName);
 
 
-          if (section) {
-
-            section.classList.add(
-              "active-section"
-            );
-
-          }
+      if (section) {
+        section.classList.add("active-section");
+      }
 
 
-          /* Fecha menu no celular */
+      // Fecha menu no celular
+      const sidebar =
+        document.querySelector(".sidebar");
 
-          const sidebar =
-            document.querySelector(
-              ".sidebar"
-            );
-
-          sidebar?.classList.remove(
-            "mobile-open"
-          );
+      sidebar?.classList.remove("mobile-open");
 
 
-          if (
-            sectionName === "transactions"
-          ) {
+      if (sectionName === "transactions") {
+        renderizarTabela();
+      }
 
-            atualizarTabela();
+      if (sectionName === "reports") {
+        atualizarRelatorio();
+      }
 
-          }
+    });
 
-
-          if (
-            sectionName === "reports"
-          ) {
-
-            atualizarRelatorios();
-
-          }
-
-        }
-      );
-
-    }
-  );
+  });
 
 
-  /* =======================================================
-     MENU MOBILE
-     ======================================================= */
+  // ==========================================================
+  // MENU MOBILE
+  // ==========================================================
 
   const mobileMenuButton =
-    document.getElementById(
-      "mobileMenuButton"
-    );
+    document.getElementById("mobileMenuButton");
 
   const sidebar =
-    document.querySelector(
-      ".sidebar"
-    );
+    document.querySelector(".sidebar");
 
 
-  mobileMenuButton?.addEventListener(
-    "click",
-    function () {
+  mobileMenuButton?.addEventListener("click", function () {
 
-      sidebar?.classList.toggle(
-        "mobile-open"
-      );
+    sidebar?.classList.toggle("mobile-open");
 
-    }
-  );
+  });
 
 
-  /* =======================================================
-     MODAL
-     ======================================================= */
+  // ==========================================================
+  // MODAL
+  // ==========================================================
 
   const transactionModal =
-    document.getElementById(
-      "transactionModal"
-    );
+    document.getElementById("transactionModal");
 
   const closeTransactionModal =
-    document.getElementById(
-      "closeTransactionModal"
-    );
+    document.getElementById("closeTransactionModal");
 
   const cancelTransactionButton =
-    document.getElementById(
-      "cancelTransactionButton"
-    );
+    document.getElementById("cancelTransactionButton");
 
   const saveTransactionButton =
-    document.getElementById(
-      "saveTransactionButton"
-    );
+    document.getElementById("saveTransactionButton");
 
 
-  let editandoId = null;
+  let idEditando = null;
 
 
   function abrirModal(tipo = "income", id = null) {
 
-    if (!transactionModal) {
-      return;
-    }
+    idEditando = id;
 
 
-    editandoId =
-      id !== null
-        ? Number(id)
-        : null;
+    const type =
+      document.getElementById("transactionType");
+
+    const description =
+      document.getElementById("transactionDescription");
+
+    const amount =
+      document.getElementById("transactionAmount");
+
+    const category =
+      document.getElementById("transactionCategory");
+
+    const date =
+      document.getElementById("transactionDate");
 
 
-    const titulo =
-      transactionModal.querySelector(
-        "h2"
-      );
-
-
-    if (titulo) {
-
-      titulo.textContent =
-        editandoId !== null
-          ? "Editar lançamento"
-          : "Novo lançamento";
-
-    }
-
-
-    const transactionType =
-      document.getElementById(
-        "transactionType"
-      );
-
-    const transactionDescription =
-      document.getElementById(
-        "transactionDescription"
-      );
-
-    const transactionAmount =
-      document.getElementById(
-        "transactionAmount"
-      );
-
-    const transactionCategory =
-      document.getElementById(
-        "transactionCategory"
-      );
-
-    const transactionDate =
-      document.getElementById(
-        "transactionDate"
-      );
-
-
-    if (editandoId === null) {
-
-      if (transactionType) {
-        transactionType.value =
-          tipo || "income";
-      }
-
-      if (transactionDescription) {
-        transactionDescription.value = "";
-      }
-
-      if (transactionAmount) {
-        transactionAmount.value = "";
-      }
-
-      if (transactionCategory) {
-        transactionCategory.value = "salario";
-      }
-
-      if (transactionDate) {
-
-        transactionDate.value =
-          new Date()
-            .toISOString()
-            .split("T")[0];
-
-      }
-
-    } else {
+    if (id) {
 
       const lancamentos =
         pegarLancamentos();
 
       const item =
-        lancamentos.find(
-          function (lancamento) {
-
-            return Number(lancamento.id) ===
-              editandoId;
-
-          }
-        );
+        lancamentos.find(function (l) {
+          return String(l.id) === String(id);
+        });
 
 
       if (!item) {
-
-        alert(
-          "Lançamento não encontrado."
-        );
-
+        alert("Lançamento não encontrado.");
         return;
       }
 
 
-      if (transactionType) {
-        transactionType.value =
-          item.tipo;
+      if (type) {
+        type.value = item.tipo;
       }
 
-      if (transactionDescription) {
-        transactionDescription.value =
-          item.descricao || "";
+      if (description) {
+        description.value = item.descricao || "";
       }
 
-      if (transactionAmount) {
-
-        transactionAmount.value =
-          Number(item.valor);
-
+      if (amount) {
+        amount.value = item.valor || "";
       }
 
-      if (transactionCategory) {
-        transactionCategory.value =
-          item.categoria || "outros";
+      if (category) {
+        category.value = item.categoria || "outros";
       }
 
-      if (transactionDate) {
-        transactionDate.value =
-          item.data || "";
+      if (date) {
+        date.value = item.dataISO || "";
+      }
+
+    } else {
+
+      if (type) {
+        type.value = tipo;
+      }
+
+      if (description) {
+        description.value = "";
+      }
+
+      if (amount) {
+        amount.value = "";
+      }
+
+      if (category) {
+        category.value = "salario";
+      }
+
+      if (date) {
+
+        const hoje =
+          new Date().toISOString().split("T")[0];
+
+        date.value = hoje;
       }
 
     }
 
 
-    if (transactionMessage) {
-      transactionMessage.textContent = "";
+    const titulo =
+      transactionModal?.querySelector("h2");
+
+    if (titulo) {
+      titulo.textContent =
+        id ? "Editar lançamento" : "Novo lançamento";
     }
 
 
-    transactionModal.classList.remove(
-      "hidden"
-    );
+    if (transactionModal) {
+      transactionModal.classList.remove("hidden");
+    }
 
   }
 
 
   function fecharModal() {
 
-    transactionModal?.classList.add(
-      "hidden"
-    );
+    transactionModal?.classList.add("hidden");
 
-    editandoId = null;
+    idEditando = null;
 
   }
 
@@ -974,134 +627,83 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
 
-  /* =======================================================
-     BOTÕES DE RECEITA / DESPESA
-     ======================================================= */
+  // ==========================================================
+  // BOTÕES NOVO LANÇAMENTO
+  // ==========================================================
 
   document
     .getElementById("quickIncomeButton")
-    ?.addEventListener(
-      "click",
-      function () {
+    ?.addEventListener("click", function () {
 
-        abrirModal("income");
+      abrirModal("income");
 
-      }
-    );
+    });
 
 
   document
     .getElementById("quickExpenseButton")
-    ?.addEventListener(
-      "click",
-      function () {
+    ?.addEventListener("click", function () {
 
-        abrirModal("expense");
+      abrirModal("expense");
 
-      }
-    );
+    });
 
 
   document
     .getElementById("newTransactionButton")
-    ?.addEventListener(
-      "click",
-      function () {
+    ?.addEventListener("click", function () {
 
-        abrirModal("income");
+      abrirModal("income");
 
-      }
-    );
+    });
 
 
-  /* =======================================================
-     SALVAR / EDITAR LANÇAMENTO
-     ======================================================= */
+  // ==========================================================
+  // SALVAR / EDITAR LANÇAMENTO
+  // ==========================================================
 
   saveTransactionButton?.addEventListener(
     "click",
     function () {
 
       const tipo =
-        document.getElementById(
-          "transactionType"
-        )?.value;
-
+        document.getElementById("transactionType")?.value;
 
       const descricao =
-        document.getElementById(
-          "transactionDescription"
-        )?.value
-        .trim();
-
+        document
+          .getElementById("transactionDescription")
+          ?.value.trim();
 
       const valorCampo =
-        document.getElementById(
-          "transactionAmount"
-        )?.value;
-
+        document
+          .getElementById("transactionAmount")
+          ?.value;
 
       const categoria =
-        document.getElementById(
-          "transactionCategory"
-        )?.value;
-
+        document.getElementById("transactionCategory")?.value;
 
       const data =
-        document.getElementById(
-          "transactionDate"
-        )?.value;
+        document.getElementById("transactionDate")?.value;
 
-
-      if (!descricao) {
-
-        mostrarMensagem(
-          transactionMessage,
-          "Digite uma descrição."
-        );
-
-        return;
-      }
-
-
-      if (
-        valorCampo === "" ||
-        valorCampo === null ||
-        valorCampo === undefined
-      ) {
-
-        mostrarMensagem(
-          transactionMessage,
-          "Digite um valor."
-        );
-
-        return;
-      }
-
-
-      /*
-       * Corrige valores digitados.
-       * Exemplo:
-       * 2200 -> R$ 2.200,00
-       * 2.2  -> R$ 2,20
-       */
 
       const valor =
         Number(
-          String(valorCampo)
+          String(valorCampo || "")
             .replace(",", ".")
         );
 
 
-      if (
-        !Number.isFinite(valor) ||
-        valor <= 0
-      ) {
+      if (!descricao) {
 
-        mostrarMensagem(
-          transactionMessage,
-          "Digite um valor válido maior que zero."
-        );
+        alert("Digite uma descrição.");
+
+        return;
+      }
+
+
+      if (!valor || valor <= 0) {
+
+        alert("Digite um valor válido.");
 
         return;
       }
@@ -1109,10 +711,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (!data) {
 
-        mostrarMensagem(
-          transactionMessage,
-          "Informe a data."
-        );
+        alert("Escolha uma data.");
 
         return;
       }
@@ -1122,29 +721,24 @@ document.addEventListener("DOMContentLoaded", function () {
         pegarLancamentos();
 
 
-      /* ===================================================
-         EDITAR
-         =================================================== */
+      // ======================================================
+      // EDITAR
+      // ======================================================
 
-      if (editandoId !== null) {
+      if (idEditando !== null) {
 
         const indice =
-          lancamentos.findIndex(
-            function (item) {
+          lancamentos.findIndex(function (item) {
 
-              return Number(item.id) ===
-                Number(editandoId);
+            return String(item.id) ===
+              String(idEditando);
 
-            }
-          );
+          });
 
 
         if (indice === -1) {
 
-          mostrarMensagem(
-            transactionMessage,
-            "Lançamento não encontrado."
-          );
+          alert("Lançamento não encontrado.");
 
           return;
         }
@@ -1162,59 +756,47 @@ document.addEventListener("DOMContentLoaded", function () {
 
           categoria: categoria,
 
-          data: data
+          dataISO: data,
+
+          data: formatarData(data)
 
         };
 
 
-        salvarLancamentos(
-          lancamentos
-        );
+      } else {
 
+        // ====================================================
+        // NOVO
+        // ====================================================
 
-        fecharModal();
+        lancamentos.push({
 
-        atualizarTudo();
+          id: gerarId(),
 
-        return;
+          tipo: tipo,
+
+          descricao: descricao,
+
+          valor: valor,
+
+          categoria: categoria,
+
+          dataISO: data,
+
+          data: formatarData(data),
+
+          criadoEm: new Date().toISOString()
+
+        });
+
       }
 
 
-      /* ===================================================
-         NOVO LANÇAMENTO
-         =================================================== */
-
-      const novoLancamento = {
-
-        id: gerarId(),
-
-        tipo: tipo,
-
-        descricao: descricao,
-
-        valor: valor,
-
-        categoria: categoria,
-
-        data: data,
-
-        criadoEm:
-          new Date().toISOString()
-
-      };
-
-
-      lancamentos.push(
-        novoLancamento
-      );
-
-
-      salvarLancamentos(
-        lancamentos
-      );
+      salvarLancamentos(lancamentos);
 
 
       fecharModal();
+
 
       atualizarTudo();
 
@@ -1222,317 +804,20 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
 
-  /* =======================================================
-     EXCLUIR LANÇAMENTO
-     ======================================================= */
-
-  window.excluirLancamento =
-    function (id) {
-
-      const idNumerico =
-        Number(id);
-
-
-      if (!Number.isFinite(idNumerico)) {
-
-        alert(
-          "ID do lançamento inválido."
-        );
-
-        return;
-      }
-
-
-      const confirmar =
-        window.confirm(
-          "Tem certeza que deseja excluir este lançamento?"
-        );
-
-
-      if (!confirmar) {
-        return;
-      }
-
-
-      try {
-
-        const lancamentos =
-          pegarLancamentos();
-
-
-        const quantidadeAntes =
-          lancamentos.length;
-
-
-        const novosLancamentos =
-          lancamentos.filter(
-            function (item) {
-
-              return Number(item.id) !==
-                idNumerico;
-
-            }
-          );
-
-
-        if (
-          novosLancamentos.length ===
-          quantidadeAntes
-        ) {
-
-          alert(
-            "Não foi possível encontrar este lançamento."
-          );
-
-          return;
-        }
-
-
-        salvarLancamentos(
-          novosLancamentos
-        );
-
-
-        atualizarTudo();
-
-      } catch (erro) {
-
-        console.error(
-          "Erro ao excluir:",
-          erro
-        );
-
-        alert(
-          "Erro ao excluir o lançamento."
-        );
-
-      }
-
-    };
-
-
-  /* =======================================================
-     EDITAR LANÇAMENTO
-     ======================================================= */
-
-  window.editarLancamento =
-    function (id) {
-
-      abrirModal(
-        "income",
-        Number(id)
-      );
-
-    };
-
-
-  /* =======================================================
-     TABELA DE LANÇAMENTOS
-     ======================================================= */
-
-  function atualizarTabela() {
-
-    const tbody =
-      document.getElementById(
-        "transactionsTableBody"
-      );
-
-
-    if (!tbody) {
-      return;
-    }
-
-
-    const busca =
-      document.getElementById(
-        "transactionSearch"
-      )?.value
-      .trim()
-      .toLowerCase() || "";
-
-
-    const filtroTipo =
-      document.getElementById(
-        "transactionTypeFilter"
-      )?.value || "all";
-
-
-    const filtroCategoria =
-      document.getElementById(
-        "transactionCategoryFilter"
-      )?.value || "all";
-
-
-    let lancamentos =
-      pegarLancamentos();
-
-
-    lancamentos =
-      lancamentos.filter(
-        function (item) {
-
-          const correspondeBusca =
-            !busca ||
-            String(item.descricao || "")
-              .toLowerCase()
-              .includes(busca) ||
-            String(item.categoria || "")
-              .toLowerCase()
-              .includes(busca);
-
-
-          const correspondeTipo =
-            filtroTipo === "all" ||
-            item.tipo === filtroTipo;
-
-
-          const correspondeCategoria =
-            filtroCategoria === "all" ||
-            item.categoria === filtroCategoria;
-
-
-          return (
-            correspondeBusca &&
-            correspondeTipo &&
-            correspondeCategoria
-          );
-
-        }
-      );
-
-
-    lancamentos.sort(
-      function (a, b) {
-
-        return Number(b.id) -
-          Number(a.id);
-
-      }
-    );
-
-
-    if (lancamentos.length === 0) {
-
-      tbody.innerHTML = `
-
-        <tr>
-
-          <td colspan="6"
-              style="text-align:center;padding:30px;">
-
-            Nenhum lançamento encontrado.
-
-          </td>
-
-        </tr>
-
-      `;
-
-      return;
-    }
-
-
-    tbody.innerHTML =
-      lancamentos
-        .map(
-          function (item) {
-
-            const tipoTexto =
-              item.tipo === "income"
-                ? "Receita"
-                : "Despesa";
-
-
-            const sinal =
-              item.tipo === "income"
-                ? "+"
-                : "-";
-
-
-            const classe =
-              item.tipo === "income"
-                ? "income"
-                : "expense";
-
-
-            return `
-
-              <tr>
-
-                <td>
-                  ${escaparHTML(
-                    formatarData(item.data)
-                  )}
-                </td>
-
-                <td>
-                  ${escaparHTML(
-                    item.descricao
-                  )}
-                </td>
-
-                <td>
-                  ${escaparHTML(
-                    nomeCategoria(
-                      item.categoria
-                    )
-                  )}
-                </td>
-
-                <td>
-                  ${tipoTexto}
-                </td>
-
-                <td class="${classe}">
-                  ${sinal} ${dinheiro(item.valor)}
-                </td>
-
-                <td>
-
-                  <button
-                    type="button"
-                    title="Editar"
-                    onclick="editarLancamento(${Number(item.id)})"
-                  >
-                    ✏️
-                  </button>
-
-                  <button
-                    type="button"
-                    title="Excluir"
-                    onclick="excluirLancamento(${Number(item.id)})"
-                  >
-                    🗑️
-                  </button>
-
-                </td>
-
-              </tr>
-
-            `;
-
-          }
-        )
-        .join("");
-
-  }
-
+  // ==========================================================
+  // FORMATAR DATA
+  // ==========================================================
 
   function formatarData(data) {
 
-    if (!data) {
-      return "";
-    }
-
+    if (!data) return "";
 
     const partes =
-      String(data).split("-");
-
+      data.split("-");
 
     if (partes.length !== 3) {
       return data;
     }
-
 
     return (
       partes[2] +
@@ -1545,30 +830,205 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
+  // ==========================================================
+  // TABELA
+  // ==========================================================
+
+  function renderizarTabela() {
+
+    const tbody =
+      document.getElementById(
+        "transactionsTableBody"
+      );
+
+
+    if (!tbody) return;
+
+
+    let lancamentos =
+      pegarLancamentos();
+
+
+    const pesquisa =
+      document
+        .getElementById("transactionSearch")
+        ?.value
+        .toLowerCase()
+        .trim() || "";
+
+
+    const filtroTipo =
+      document
+        .getElementById("transactionTypeFilter")
+        ?.value || "all";
+
+
+    const filtroCategoria =
+      document
+        .getElementById("transactionCategoryFilter")
+        ?.value || "all";
+
+
+    lancamentos =
+      lancamentos.filter(function (item) {
+
+        const texto =
+          (
+            String(item.descricao || "") +
+            " " +
+            String(item.categoria || "")
+          ).toLowerCase();
+
+
+        if (
+          pesquisa &&
+          !texto.includes(pesquisa)
+        ) {
+          return false;
+        }
+
+
+        if (
+          filtroTipo !== "all" &&
+          item.tipo !== filtroTipo
+        ) {
+          return false;
+        }
+
+
+        if (
+          filtroCategoria !== "all" &&
+          item.categoria !== filtroCategoria
+        ) {
+          return false;
+        }
+
+
+        return true;
+
+      });
+
+
+    if (lancamentos.length === 0) {
+
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align:center;padding:30px;">
+            Nenhum lançamento encontrado.
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+
+    tbody.innerHTML =
+      lancamentos.map(function (item) {
+
+        const tipoTexto =
+          item.tipo === "income"
+            ? "Receita"
+            : "Despesa";
+
+
+        const sinal =
+          item.tipo === "income"
+            ? "+"
+            : "-";
+
+
+        const valor =
+          dinheiro(item.valor);
+
+
+        return `
+          <tr>
+
+            <td>
+              ${item.data || formatarData(item.dataISO)}
+            </td>
+
+            <td>
+              ${escaparHTML(item.descricao)}
+            </td>
+
+            <td>
+              ${nomeCategoria(item.categoria)}
+            </td>
+
+            <td>
+              ${tipoTexto}
+            </td>
+
+            <td class="${item.tipo}">
+              ${sinal} ${valor}
+            </td>
+
+            <td>
+
+              <button
+                type="button"
+                class="edit-transaction-button"
+                data-id="${item.id}"
+                title="Editar"
+              >
+                ✏️
+              </button>
+
+              <button
+                type="button"
+                class="delete-transaction-button"
+                data-id="${item.id}"
+                title="Excluir"
+              >
+                🗑️
+              </button>
+
+            </td>
+
+          </tr>
+        `;
+
+      }).join("");
+
+  }
+
+
+  // ==========================================================
+  // ESCAPAR HTML
+  // ==========================================================
+
+  function escaparHTML(texto) {
+
+    return String(texto || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  // ==========================================================
+  // CATEGORIAS
+  // ==========================================================
+
   function nomeCategoria(categoria) {
 
     const categorias = {
 
       salario: "Salário",
-
       alimentacao: "Alimentação",
-
       moradia: "Moradia",
-
       transporte: "Transporte",
-
       saude: "Saúde",
-
       educacao: "Educação",
-
       lazer: "Lazer",
-
       contas: "Contas",
-
       compras: "Compras",
-
       empresa: "Empresa",
-
       outros: "Outros"
 
     };
@@ -1581,43 +1041,162 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  /* =======================================================
-     FILTROS
-     ======================================================= */
+  // ==========================================================
+  // EDITAR E EXCLUIR
+  // ==========================================================
+  //
+  // IMPORTANTE:
+  // Usamos EVENT DELEGATION.
+  // Isso faz os botões funcionarem mesmo depois
+  // que a tabela é recriada pelo JavaScript.
+  // ==========================================================
+
+  const transactionsTableBody =
+    document.getElementById(
+      "transactionsTableBody"
+    );
+
+
+  transactionsTableBody?.addEventListener(
+    "click",
+    function (event) {
+
+      const botaoEditar =
+        event.target.closest(
+          ".edit-transaction-button"
+        );
+
+
+      const botaoExcluir =
+        event.target.closest(
+          ".delete-transaction-button"
+        );
+
+
+      // ======================================================
+      // EDITAR
+      // ======================================================
+
+      if (botaoEditar) {
+
+        const id =
+          botaoEditar.getAttribute("data-id");
+
+
+        if (!id) {
+          alert("ID do lançamento não encontrado.");
+          return;
+        }
+
+
+        abrirModal(null, id);
+
+        return;
+      }
+
+
+      // ======================================================
+      // EXCLUIR
+      // ======================================================
+
+      if (botaoExcluir) {
+
+        const id =
+          botaoExcluir.getAttribute("data-id");
+
+
+        if (!id) {
+          alert("ID do lançamento não encontrado.");
+          return;
+        }
+
+
+        const confirmou =
+          confirm(
+            "Tem certeza que deseja excluir este lançamento?"
+          );
+
+
+        if (!confirmou) {
+          return;
+        }
+
+
+        let lancamentos =
+          pegarLancamentos();
+
+
+        const quantidadeAntes =
+          lancamentos.length;
+
+
+        lancamentos =
+          lancamentos.filter(function (item) {
+
+            return String(item.id) !==
+              String(id);
+
+          });
+
+
+        if (
+          lancamentos.length ===
+          quantidadeAntes
+        ) {
+
+          alert(
+            "Não foi possível encontrar o lançamento para excluir."
+          );
+
+          return;
+        }
+
+
+        salvarLancamentos(lancamentos);
+
+
+        atualizarTudo();
+
+
+        alert("Lançamento excluído com sucesso.");
+
+      }
+
+    }
+  );
+
+
+  // ==========================================================
+  // FILTROS
+  // ==========================================================
 
   document
-    .getElementById(
-      "transactionSearch"
-    )
+    .getElementById("transactionSearch")
     ?.addEventListener(
       "input",
-      atualizarTabela
+      renderizarTabela
     );
 
 
   document
-    .getElementById(
-      "transactionTypeFilter"
-    )
+    .getElementById("transactionTypeFilter")
     ?.addEventListener(
       "change",
-      atualizarTabela
+      renderizarTabela
     );
 
 
   document
-    .getElementById(
-      "transactionCategoryFilter"
-    )
+    .getElementById("transactionCategoryFilter")
     ?.addEventListener(
       "change",
-      atualizarTabela
+      renderizarTabela
     );
 
 
-  /* =======================================================
-     ATUALIZAR FILTRO DE CATEGORIAS
-     ======================================================= */
+  // ==========================================================
+  // CATEGORIAS DO FILTRO
+  // ==========================================================
 
   function atualizarFiltroCategorias() {
 
@@ -1627,80 +1206,62 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
 
-    if (!select) {
-      return;
-    }
+    if (!select) return;
+
+
+    const categorias = [
+
+      ["salario", "Salário"],
+      ["alimentacao", "Alimentação"],
+      ["moradia", "Moradia"],
+      ["transporte", "Transporte"],
+      ["saude", "Saúde"],
+      ["educacao", "Educação"],
+      ["lazer", "Lazer"],
+      ["contas", "Contas"],
+      ["compras", "Compras"],
+      ["empresa", "Empresa"],
+      ["outros", "Outros"]
+
+    ];
 
 
     const valorAtual =
       select.value;
 
 
-    const categorias =
-      [...new Set(
-        pegarLancamentos()
-          .map(
-            function (item) {
-              return item.categoria;
-            }
-          )
-          .filter(Boolean)
-      )];
-
-
     select.innerHTML = `
-
       <option value="all">
         Todas as categorias
       </option>
-
     `;
 
 
-    categorias.forEach(
-      function (categoria) {
+    categorias.forEach(function (categoria) {
 
-        const option =
-          document.createElement(
-            "option"
-          );
+      const option =
+        document.createElement("option");
 
-        option.value =
-          categoria;
+      option.value =
+        categoria[0];
 
-        option.textContent =
-          nomeCategoria(categoria);
+      option.textContent =
+        categoria[1];
 
-        select.appendChild(
-          option
-        );
+      select.appendChild(option);
 
-      }
-    );
+    });
 
 
-    if (
-      categorias.includes(
-        valorAtual
-      )
-    ) {
-
-      select.value =
-        valorAtual;
-
-    } else {
-
-      select.value =
-        "all";
-
-    }
+    select.value =
+      valorAtual || "all";
 
   }
 
 
-  /* =======================================================
-     DASHBOARD
-     ======================================================= */
+  // ==========================================================
+  // DASHBOARD
+  // ==========================================================
 
   function atualizarDashboard() {
 
@@ -1712,28 +1273,22 @@ document.addEventListener("DOMContentLoaded", function () {
     let despesas = 0;
 
 
-    lancamentos.forEach(
-      function (item) {
+    lancamentos.forEach(function (item) {
 
-        const valor =
-          Number(item.valor) || 0;
-
-
-        if (item.tipo === "income") {
-
-          receitas += valor;
-
-        }
+      const valor =
+        Number(item.valor) || 0;
 
 
-        if (item.tipo === "expense") {
-
-          despesas += valor;
-
-        }
-
+      if (item.tipo === "income") {
+        receitas += valor;
       }
-    );
+
+
+      if (item.tipo === "expense") {
+        despesas += valor;
+      }
+
+    });
 
 
     const saldo =
@@ -1741,24 +1296,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     const totalIncome =
-      document.getElementById(
-        "totalIncome"
-      );
+      document.getElementById("totalIncome");
 
     const totalExpense =
-      document.getElementById(
-        "totalExpense"
-      );
+      document.getElementById("totalExpense");
 
     const totalBalance =
-      document.getElementById(
-        "totalBalance"
-      );
+      document.getElementById("totalBalance");
 
     const totalTransactions =
-      document.getElementById(
-        "totalTransactions"
-      );
+      document.getElementById("totalTransactions");
 
 
     if (totalIncome) {
@@ -1787,14 +1334,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     atualizarLancamentosRecentes();
 
-    atualizarGraficoFinanceiro();
-
   }
 
 
-  /* =======================================================
-     LANÇAMENTOS RECENTES
-     ======================================================= */
+  // ==========================================================
+  // LANÇAMENTOS RECENTES
+  // ==========================================================
 
   function atualizarLancamentosRecentes() {
 
@@ -1804,627 +1349,204 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
 
-    if (!container) {
-      return;
-    }
+    if (!container) return;
 
 
     const lancamentos =
-      pegarLancamentos()
-        .slice()
-        .sort(
-          function (a, b) {
-
-            return Number(b.id) -
-              Number(a.id);
-
-          }
-        )
-        .slice(0, 5);
+      pegarLancamentos();
 
 
     if (lancamentos.length === 0) {
 
       container.innerHTML = `
-
         <div class="empty-state">
-
           <div>📋</div>
-
-          <p>
-            Nenhum lançamento cadastrado.
-          </p>
-
+          <p>Nenhum lançamento cadastrado.</p>
           <span>
             Adicione sua primeira receita ou despesa.
           </span>
-
         </div>
-
       `;
 
       return;
     }
 
 
-    container.innerHTML =
+    const recentes =
       lancamentos
-        .map(
-          function (item) {
-
-            const income =
-              item.tipo === "income";
+        .slice()
+        .reverse()
+        .slice(0, 5);
 
 
-            const sinal =
-              income ? "+" : "-";
+    container.innerHTML =
+      recentes.map(function (item) {
+
+        const classe =
+          item.tipo === "income"
+            ? "income"
+            : "expense";
 
 
-            const classe =
-              income
-                ? "income"
-                : "expense";
+        const sinal =
+          item.tipo === "income"
+            ? "+"
+            : "-";
 
 
-            return `
+        return `
+          <div class="transaction-row">
 
-              <div class="transaction-row">
+            <div class="transaction-info">
 
-                <div class="transaction-info">
+              <div class="transaction-icon ${classe}">
+                ${item.tipo === "income" ? "↑" : "↓"}
+              </div>
 
-                  <div class="transaction-icon ${classe}">
-                    ${income ? "↑" : "↓"}
-                  </div>
+              <div>
 
-                  <div>
-
-                    <div class="transaction-description">
-                      ${escaparHTML(
-                        item.descricao
-                      )}
-                    </div>
-
-                    <div class="transaction-date">
-                      ${escaparHTML(
-                        formatarData(item.data)
-                      )}
-                    </div>
-
-                  </div>
-
+                <div class="transaction-description">
+                  ${escaparHTML(item.descricao)}
                 </div>
 
-                <div class="transaction-value ${classe}">
-                  ${sinal} ${dinheiro(item.valor)}
+                <div class="transaction-date">
+                  ${item.data || ""}
                 </div>
 
               </div>
 
-            `;
+            </div>
 
-          }
-        )
-        .join("");
+            <div class="transaction-value ${classe}">
+              ${sinal} ${dinheiro(item.valor)}
+            </div>
+
+          </div>
+        `;
+
+      }).join("");
 
   }
 
 
-  /* =======================================================
-     GRÁFICO FINANCEIRO
-     ======================================================= */
+  // ==========================================================
+  // RELATÓRIO
+  // ==========================================================
 
-  let financeChart = null;
-  let categoryChart = null;
+  function atualizarRelatorio() {
 
-
-  function atualizarGraficoFinanceiro() {
-
-    const canvas =
-      document.getElementById(
-        "financeChart"
-      );
-
-
-    if (!canvas) {
-      return;
-    }
-
-
-    if (
-      typeof Chart ===
-      "undefined"
-    ) {
-
-      return;
-    }
-
-
-    const lancamentos =
-      pegarLancamentos();
-
-
-    const meses = [
-      "Jan",
-      "Fev",
-      "Mar",
-      "Abr",
-      "Mai",
-      "Jun",
-      "Jul",
-      "Ago",
-      "Set",
-      "Out",
-      "Nov",
-      "Dez"
-    ];
-
-
-    const receitas =
-      new Array(12).fill(0);
-
-    const despesas =
-      new Array(12).fill(0);
-
-
-    lancamentos.forEach(
-      function (item) {
-
-        if (!item.data) {
-          return;
-        }
-
-
-        const data =
-          new Date(
-            item.data + "T12:00:00"
-          );
-
-
-        const mes =
-          data.getMonth();
-
-
-        const valor =
-          Number(item.valor) || 0;
-
-
-        if (
-          item.tipo ===
-          "income"
-        ) {
-
-          receitas[mes] +=
-            valor;
-
-        } else {
-
-          despesas[mes] +=
-            valor;
-
-        }
-
-      }
-    );
-
-
-    if (financeChart) {
-
-      financeChart.destroy();
-
-    }
-
-
-    financeChart =
-      new Chart(
-        canvas,
-        {
-          type: "line",
-
-          data: {
-
-            labels: meses,
-
-            datasets: [
-
-              {
-                label: "Receitas",
-                data: receitas,
-                tension: 0.3
-              },
-
-              {
-                label: "Despesas",
-                data: despesas,
-                tension: 0.3
-              }
-
-            ]
-
-          },
-
-          options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            plugins: {
-
-              legend: {
-                display: true
-              }
-
-            },
-
-            scales: {
-
-              y: {
-
-                beginAtZero: true,
-
-                ticks: {
-
-                  callback:
-                    function (value) {
-
-                      return dinheiro(
-                        value
-                      );
-
-                    }
-
-                }
-
-              }
-
-            }
-
-          }
-
-        }
-      );
-
-  }
-
-
-  /* =======================================================
-     RELATÓRIOS
-     ======================================================= */
-
-  function atualizarRelatorios() {
-
-    const lancamentos =
-      pegarLancamentos();
-
-
-    const despesasPorCategoria = {};
-
-
-    let totalReceitas = 0;
-    let totalDespesas = 0;
-
-
-    lancamentos.forEach(
-      function (item) {
-
-        const valor =
-          Number(item.valor) || 0;
-
-
-        if (
-          item.tipo ===
-          "income"
-        ) {
-
-          totalReceitas +=
-            valor;
-
-        }
-
-
-        if (
-          item.tipo ===
-          "expense"
-        ) {
-
-          totalDespesas +=
-            valor;
-
-
-          const categoria =
-            item.categoria ||
-            "outros";
-
-
-          if (
-            !despesasPorCategoria[
-              categoria
-            ]
-          ) {
-
-            despesasPorCategoria[
-              categoria
-            ] = 0;
-
-          }
-
-
-          despesasPorCategoria[
-            categoria
-          ] += valor;
-
-        }
-
-      }
-    );
-
-
-    const saldo =
-      totalReceitas -
-      totalDespesas;
-
-
-    const reportSummary =
+    const container =
       document.getElementById(
         "reportSummary"
       );
 
 
-    if (reportSummary) {
+    if (!container) return;
 
-      reportSummary.innerHTML = `
 
-        <div style="display:grid;gap:15px;">
+    const lancamentos =
+      pegarLancamentos();
 
-          <div>
-            <strong>Receitas</strong>
-            <p>${dinheiro(totalReceitas)}</p>
-          </div>
 
-          <div>
-            <strong>Despesas</strong>
-            <p>${dinheiro(totalDespesas)}</p>
-          </div>
+    let receitas = 0;
+    let despesas = 0;
 
-          <div>
-            <strong>Saldo</strong>
-            <p>${dinheiro(saldo)}</p>
-          </div>
 
-          <div>
-            <strong>Total de lançamentos</strong>
-            <p>${lancamentos.length}</p>
-          </div>
+    lancamentos.forEach(function (item) {
 
-        </div>
+      const valor =
+        Number(item.valor) || 0;
 
-      `;
 
-    }
-
-
-    atualizarGraficoCategorias(
-      despesasPorCategoria
-    );
-
-  }
-
-
-  function atualizarGraficoCategorias(
-    dados
-  ) {
-
-    const canvas =
-      document.getElementById(
-        "categoryChart"
-      );
-
-
-    if (!canvas) {
-      return;
-    }
-
-
-    if (
-      typeof Chart ===
-      "undefined"
-    ) {
-
-      return;
-    }
-
-
-    const labels =
-      Object.keys(dados)
-        .map(
-          function (categoria) {
-            return nomeCategoria(
-              categoria
-            );
-          }
-        );
-
-
-    const valores =
-      Object.values(dados);
-
-
-    if (categoryChart) {
-
-      categoryChart.destroy();
-
-    }
-
-
-    categoryChart =
-      new Chart(
-        canvas,
-        {
-          type: "doughnut",
-
-          data: {
-
-            labels: labels,
-
-            datasets: [
-
-              {
-                data: valores
-              }
-
-            ]
-
-          },
-
-          options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            plugins: {
-
-              legend: {
-                position: "bottom"
-              }
-
-            }
-
-          }
-
-        }
-      );
-
-  }
-
-
-  /* =======================================================
-     BOTÃO "VER TODOS"
-     ======================================================= */
-
-  document
-    .getElementById(
-      "viewTransactionsButton"
-    )
-    ?.addEventListener(
-      "click",
-      function () {
-
-        menuItems.forEach(
-          function (item) {
-
-            item.classList.remove(
-              "active"
-            );
-
-          }
-        );
-
-
-        sections.forEach(
-          function (section) {
-
-            section.classList.remove(
-              "active-section"
-            );
-
-          }
-        );
-
-
-        const transactions =
-          document.getElementById(
-            "transactions"
-          );
-
-
-        if (transactions) {
-
-          transactions.classList.add(
-            "active-section"
-          );
-
-        }
-
-
-        const menu =
-          document.querySelector(
-            '[data-section="transactions"]'
-          );
-
-
-        menu?.classList.add(
-          "active"
-        );
-
-
-        atualizarTabela();
-
+      if (item.tipo === "income") {
+        receitas += valor;
       }
-    );
 
 
-  /* =======================================================
-     ATUALIZAR TUDO
-     ======================================================= */
+      if (item.tipo === "expense") {
+        despesas += valor;
+      }
+
+    });
+
+
+    const saldo =
+      receitas - despesas;
+
+
+    container.innerHTML = `
+      <div style="padding:10px 0;">
+        <p>
+          <strong>Receitas:</strong>
+          ${dinheiro(receitas)}
+        </p>
+
+        <p>
+          <strong>Despesas:</strong>
+          ${dinheiro(despesas)}
+        </p>
+
+        <p>
+          <strong>Saldo:</strong>
+          ${dinheiro(saldo)}
+        </p>
+
+        <p>
+          <strong>Lançamentos:</strong>
+          ${lancamentos.length}
+        </p>
+      </div>
+    `;
+
+  }
+
+
+  // ==========================================================
+  // ATUALIZAR TUDO
+  // ==========================================================
 
   function atualizarTudo() {
 
     atualizarDashboard();
 
-    atualizarTabela();
-
     atualizarFiltroCategorias();
 
-    atualizarRelatorios();
+    renderizarTabela();
+
+    atualizarRelatorio();
 
   }
 
 
-  /* =======================================================
-     FECHAR MODAL CLICANDO FORA
-     ======================================================= */
+  // ==========================================================
+  // BOTÃO "VER TODOS"
+  // ==========================================================
 
-  transactionModal?.addEventListener(
-    "click",
-    function (event) {
+  document
+    .getElementById("viewTransactionsButton")
+    ?.addEventListener(
+      "click",
+      function () {
 
-      if (
-        event.target ===
-        transactionModal
-      ) {
-
-        fecharModal();
-
-      }
-
-    }
-  );
+        const menu =
+          document.querySelector(
+            '.menu-item[data-section="transactions"]'
+          );
 
 
-  /* =======================================================
-     TECLA ESC FECHA MODAL
-     ======================================================= */
-
-  document.addEventListener(
-    "keydown",
-    function (event) {
-
-      if (
-        event.key === "Escape"
-      ) {
-
-        fecharModal();
+        menu?.click();
 
       }
-
-    }
-  );
+    );
 
 
-  /* =======================================================
-     INICIALIZAÇÃO
-     ======================================================= */
+  // ==========================================================
+  // INICIALIZAÇÃO
+  // ==========================================================
+
+  const usuario =
+    pegarUsuario();
+
 
   const logado =
     localStorage.getItem(
@@ -2432,23 +1554,21 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-  const usuario =
-    pegarUsuario();
+  if (usuario && logado === "true") {
 
+    authScreen?.classList.add("hidden");
+    appScreen?.classList.remove("hidden");
 
-  if (
-    logado === "true" &&
-    usuario
-  ) {
-
-    abrirSistema(
-      usuario
-    );
+    abrirSistema(usuario);
 
   } else {
 
-    mostrarLogin();
+    authScreen?.classList.remove("hidden");
+    appScreen?.classList.add("hidden");
 
   }
+
+
+  atualizarTudo();
 
 });
