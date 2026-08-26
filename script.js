@@ -1,3 +1,5 @@
+alert("SCRIPT NOVO DO CONTROLES CARREGADO");
+
 document.addEventListener("DOMContentLoaded", function () {
 
   // ==========================================================
