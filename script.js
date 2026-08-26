@@ -1,8 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ==========================================
-    // TELA DE LOGIN E CADASTRO
-    // ==========================================
+    // =====================================================
+    // ELEMENTOS
+    // =====================================================
+
+    const authScreen = document.getElementById("authScreen");
+    const appScreen = document.getElementById("appScreen");
 
     const loginForm = document.getElementById("loginForm");
     const registerForm = document.getElementById("registerForm");
@@ -13,338 +16,362 @@ document.addEventListener("DOMContentLoaded", function () {
     const showLoginButton =
         document.getElementById("showLoginButton");
 
+    const registerButton =
+        document.getElementById("registerButton");
 
-    // ==========================================
-    // ABRIR CADASTRO
-    // ==========================================
+    const loginButton =
+        document.getElementById("loginButton");
+
+    const registerAccountType =
+        document.getElementById("registerAccountType");
+
+    const companyField =
+        document.getElementById("companyField");
+
+    const logoutButton =
+        document.getElementById("logoutButton");
+
+    // =====================================================
+    // MOSTRAR CADASTRO
+    // =====================================================
 
     if (showRegisterButton) {
 
-        showRegisterButton.addEventListener("click", function (event) {
-
-            event.preventDefault();
+        showRegisterButton.onclick = function () {
 
             loginForm.classList.add("hidden");
             registerForm.classList.remove("hidden");
 
-        });
+        };
 
     }
 
-
-    // ==========================================
-    // VOLTAR PARA LOGIN
-    // ==========================================
+    // =====================================================
+    // MOSTRAR LOGIN
+    // =====================================================
 
     if (showLoginButton) {
 
-        showLoginButton.addEventListener("click", function (event) {
-
-            event.preventDefault();
+        showLoginButton.onclick = function () {
 
             registerForm.classList.add("hidden");
             loginForm.classList.remove("hidden");
 
-        });
+        };
 
     }
 
-});
-/* =========================================================
-   CONTROLE FINANCEIRO
-   JavaScript principal
-   ========================================================= */
+    // =====================================================
+    // TIPO DE CONTA
+    // =====================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+    if (registerAccountType) {
 
-    // ---------------------------------------------------------
-    // ELEMENTOS DA TELA
-    // ---------------------------------------------------------
-
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
-
-    const loginSection = document.getElementById("loginSection");
-    const registerSection = document.getElementById("registerSection");
-    const dashboardSection = document.getElementById("dashboardSection");
-
-    const showRegister = document.getElementById("showRegister");
-    const showLogin = document.getElementById("showLogin");
-
-    // ---------------------------------------------------------
-    // FUNÇÕES PARA MOSTRAR LOGIN / CADASTRO
-    // ---------------------------------------------------------
-
-    function mostrarCadastro() {
-        if (loginSection) {
-            loginSection.style.display = "none";
-        }
-
-        if (registerSection) {
-            registerSection.style.display = "block";
-        }
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
-
-    function mostrarLogin() {
-        if (registerSection) {
-            registerSection.style.display = "none";
-        }
-
-        if (loginSection) {
-            loginSection.style.display = "block";
-        }
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
-
-    // ---------------------------------------------------------
-    // BOTÃO "CRIAR CONTA"
-    // ---------------------------------------------------------
-
-    if (showRegister) {
-        showRegister.addEventListener("click", function(event) {
-            event.preventDefault();
-            mostrarCadastro();
-        });
-    }
-
-    // ---------------------------------------------------------
-    // BOTÃO "JÁ TENHO UMA CONTA"
-    // ---------------------------------------------------------
-
-    if (showLogin) {
-        showLogin.addEventListener("click", function(event) {
-            event.preventDefault();
-            mostrarLogin();
-        });
-    }
-
-    // ---------------------------------------------------------
-    // PROCURA AUTOMATICAMENTE O TEXTO "CRIAR CONTA"
-    // CASO O HTML NÃO TENHA O ID ESPERADO
-    // ---------------------------------------------------------
-
-    document.querySelectorAll("a, button").forEach(element => {
-
-        const texto = element.textContent
-            .trim()
-            .toLowerCase();
-
-        if (
-            texto === "criar conta" ||
-            texto.includes("ainda não possui uma conta")
-        ) {
-
-            element.addEventListener("click", function(event) {
-                event.preventDefault();
-                mostrarCadastro();
-            });
-
-        }
-
-        if (
-            texto === "já tenho uma conta" ||
-            texto === "voltar para entrar" ||
-            texto === "entrar"
-        ) {
+        registerAccountType.addEventListener("change", function () {
 
             if (
-                registerSection &&
-                element.closest("#registerSection")
-            ) {
-                element.addEventListener("click", function(event) {
-                    event.preventDefault();
-                    mostrarLogin();
-                });
-            }
-        }
-    });
-
-    // ---------------------------------------------------------
-    // CADASTRO
-    // ---------------------------------------------------------
-
-    if (registerForm) {
-
-        registerForm.addEventListener("submit", function(event) {
-
-            event.preventDefault();
-
-            const nome =
-                document.getElementById("registerName")?.value.trim() || "";
-
-            const email =
-                document.getElementById("registerEmail")?.value.trim() || "";
-
-            const senha =
-                document.getElementById("registerPassword")?.value || "";
-
-            if (!nome) {
-                alert("Digite seu nome.");
-                return;
-            }
-
-            if (!email) {
-                alert("Digite seu e-mail.");
-                return;
-            }
-
-            if (!senha || senha.length < 6) {
-                alert("A senha precisa ter pelo menos 6 caracteres.");
-                return;
-            }
-
-            /*
-             * Por enquanto salvamos o cadastro localmente.
-             * Depois conectaremos esta parte ao Supabase.
-             */
-
-            const usuario = {
-                nome: nome,
-                email: email,
-                senha: senha
-            };
-
-            localStorage.setItem(
-                "controleFinanceiroUsuario",
-                JSON.stringify(usuario)
-            );
-
-            alert("Cadastro realizado com sucesso!");
-
-            mostrarLogin();
-
-            const loginEmail =
-                document.getElementById("loginEmail");
-
-            if (loginEmail) {
-                loginEmail.value = email;
-            }
-
-        });
-    }
-
-    // ---------------------------------------------------------
-    // LOGIN
-    // ---------------------------------------------------------
-
-    if (loginForm) {
-
-        loginForm.addEventListener("submit", function(event) {
-
-            event.preventDefault();
-
-            const email =
-                document.getElementById("loginEmail")?.value.trim() || "";
-
-            const senha =
-                document.getElementById("loginPassword")?.value || "";
-
-            if (!email || !senha) {
-                alert("Digite seu e-mail e sua senha.");
-                return;
-            }
-
-            const usuarioSalvo =
-                localStorage.getItem("controleFinanceiroUsuario");
-
-            if (!usuarioSalvo) {
-                alert("Nenhuma conta cadastrada neste dispositivo. Clique em Criar conta.");
-                return;
-            }
-
-            const usuario = JSON.parse(usuarioSalvo);
-
-            if (
-                email === usuario.email &&
-                senha === usuario.senha
+                this.value === "empresa" ||
+                this.value === "ambos"
             ) {
 
-                localStorage.setItem(
-                    "controleFinanceiroLogado",
-                    "true"
-                );
-
-                abrirDashboard(usuario);
+                companyField.classList.remove("hidden");
 
             } else {
 
-                alert("E-mail ou senha incorretos.");
+                companyField.classList.add("hidden");
 
             }
 
         });
+
     }
 
-    // ---------------------------------------------------------
-    // ABRIR DASHBOARD
-    // ---------------------------------------------------------
+    // =====================================================
+    // CADASTRO
+    // =====================================================
 
-    function abrirDashboard(usuario) {
+    if (registerButton) {
 
-        if (loginSection) {
-            loginSection.style.display = "none";
-        }
+        registerButton.onclick = async function () {
 
-        if (registerSection) {
-            registerSection.style.display = "none";
-        }
+            const nome =
+                document.getElementById("registerName").value.trim();
 
-        if (dashboardSection) {
-            dashboardSection.style.display = "block";
-        }
+            const email =
+                document.getElementById("registerEmail").value.trim();
 
-        const nomeUsuario =
-            document.getElementById("nomeUsuario");
+            const senha =
+                document.getElementById("registerPassword").value;
 
-        if (nomeUsuario && usuario) {
-            nomeUsuario.textContent =
-                usuario.nome;
-        }
+            const tipo =
+                document.getElementById("registerAccountType").value;
 
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
+            const empresa =
+                document.getElementById("registerCompany")?.value.trim() || "";
+
+            const mensagem =
+                document.getElementById("registerMessage");
+
+            if (!nome) {
+
+                mensagem.textContent =
+                    "Digite seu nome.";
+
+                return;
+
+            }
+
+            if (!email) {
+
+                mensagem.textContent =
+                    "Digite seu e-mail.";
+
+                return;
+
+            }
+
+            if (!senha || senha.length < 6) {
+
+                mensagem.textContent =
+                    "A senha precisa ter pelo menos 6 caracteres.";
+
+                return;
+
+            }
+
+            mensagem.textContent =
+                "Criando sua conta...";
+
+            // -------------------------------------------------
+            // SUPABASE
+            // -------------------------------------------------
+
+            if (
+                typeof supabase === "undefined"
+            ) {
+
+                mensagem.textContent =
+                    "Erro: Supabase não foi carregado.";
+
+                return;
+
+            }
+
+            try {
+
+                const SUPABASE_URL =
+                    "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
+
+                const SUPABASE_KEY =
+                    "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
+
+                const cliente =
+                    supabase.createClient(
+                        SUPABASE_URL,
+                        SUPABASE_KEY
+                    );
+
+                const { data, error } =
+                    await cliente.auth.signUp({
+
+                        email: email,
+
+                        password: senha,
+
+                        options: {
+                            data: {
+                                nome: nome,
+                                tipo_conta: tipo,
+                                empresa: empresa
+                            }
+                        }
+
+                    });
+
+                if (error) {
+
+                    mensagem.textContent =
+                        error.message;
+
+                    return;
+
+                }
+
+                mensagem.textContent =
+                    "Conta criada com sucesso! Verifique seu e-mail para confirmar o cadastro.";
+
+                // Volta para login depois de 2 segundos
+
+                setTimeout(function () {
+
+                    registerForm.classList.add("hidden");
+                    loginForm.classList.remove("hidden");
+
+                    document.getElementById(
+                        "loginEmail"
+                    ).value = email;
+
+                }, 2000);
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                mensagem.textContent =
+                    "Não foi possível criar a conta.";
+
+            }
+
+        };
+
     }
 
-    // ---------------------------------------------------------
-    // VERIFICAR LOGIN AO ABRIR
-    // ---------------------------------------------------------
+    // =====================================================
+    // LOGIN
+    // =====================================================
 
-    const estaLogado =
-        localStorage.getItem("controleFinanceiroLogado");
+    if (loginButton) {
 
-    const usuarioSalvo =
-        localStorage.getItem("controleFinanceiroUsuario");
+        loginButton.onclick = async function () {
 
-    if (
-        estaLogado === "true" &&
-        usuarioSalvo
-    ) {
+            const email =
+                document.getElementById("loginEmail").value.trim();
 
-        try {
+            const senha =
+                document.getElementById("loginPassword").value;
 
-            const usuario =
-                JSON.parse(usuarioSalvo);
+            const mensagem =
+                document.getElementById("loginMessage");
 
-            abrirDashboard(usuario);
+            if (!email || !senha) {
 
-        } catch (erro) {
+                mensagem.textContent =
+                    "Digite seu e-mail e sua senha.";
 
-            localStorage.removeItem(
-                "controleFinanceiroLogado"
-            );
+                return;
+
+            }
+
+            mensagem.textContent =
+                "Entrando...";
+
+            if (
+                typeof supabase === "undefined"
+            ) {
+
+                mensagem.textContent =
+                    "Erro: Supabase não foi carregado.";
+
+                return;
+
+            }
+
+            try {
+
+                const SUPABASE_URL =
+                    "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
+
+                const SUPABASE_KEY =
+                    "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
+
+                const cliente =
+                    supabase.createClient(
+                        SUPABASE_URL,
+                        SUPABASE_KEY
+                    );
+
+                const { data, error } =
+                    await cliente.auth.signInWithPassword({
+
+                        email: email,
+
+                        password: senha
+
+                    });
+
+                if (error) {
+
+                    mensagem.textContent =
+                        error.message;
+
+                    return;
+
+                }
+
+                mensagem.textContent =
+                    "";
+
+                abrirSistema(data.user);
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                mensagem.textContent =
+                    "Erro ao entrar.";
+
+            }
+
+        };
+
+    }
+
+    // =====================================================
+    // ABRIR SISTEMA
+    // =====================================================
+
+    function abrirSistema(usuario) {
+
+        authScreen.classList.add("hidden");
+
+        appScreen.classList.remove("hidden");
+
+        const userName =
+            document.getElementById("userName");
+
+        if (userName && usuario) {
+
+            userName.textContent =
+                usuario.user_metadata?.nome ||
+                usuario.email ||
+                "Usuário";
 
         }
+
+    }
+
+    // =====================================================
+    // LOGOUT
+    // =====================================================
+
+    if (logoutButton) {
+
+        logoutButton.onclick = async function () {
+
+            if (typeof supabase !== "undefined") {
+
+                const cliente =
+                    supabase.createClient(
+
+                        "https://sbiqhbxtrjrzpawdqqmy.supabase.co",
+
+                        "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8"
+
+                    );
+
+                await cliente.auth.signOut();
+
+            }
+
+            appScreen.classList.add("hidden");
+
+            authScreen.classList.remove("hidden");
+
+            registerForm.classList.add("hidden");
+
+            loginForm.classList.remove("hidden");
+
+        };
 
     }
 
