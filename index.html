@@ -1,552 +1,212 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="theme-color" content="#14532D">
-  <meta
-    name="description"
-    content="FinControl - Controle financeiro pessoal e empresarial"
-  >
-
-  <title>FinControl</title>
+  <title>Controle Financeiro</title>
 
   <link rel="stylesheet" href="style.css">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-  <!-- =====================================
-       TELA DE AUTENTICAÇÃO
-  ====================================== -->
+  <!-- =====================================================
+       TELA DE LOGIN / CADASTRO
+       ===================================================== -->
 
-  <div id="authScreen" class="auth-screen">
+  <section id="authScreen" class="auth-screen">
 
-    <div class="auth-visual">
+    <div class="auth-card">
 
-      <div class="visual-logo">
-        <div class="logo-mark">F</div>
-
-        <div>
-          <strong>FinControl</strong>
-          <span>Gestão financeira inteligente</span>
-        </div>
+      <div class="brand">
+        <div class="brand-icon">₿</div>
+        <h1>Controle Financeiro</h1>
+        <p>Organize seu dinheiro de forma simples.</p>
       </div>
-
-
-      <div class="visual-content">
-
-        <span class="eyebrow">SUA VIDA FINANCEIRA</span>
-
-        <h1>
-          Controle seu dinheiro.
-          <span>Planeje seu futuro.</span>
-        </h1>
-
-        <p>
-          Organize suas finanças pessoais e empresariais
-          em um único lugar.
-        </p>
-
-
-        <!-- ILUSTRAÇÃO GERADA POR CSS -->
-        <div class="finance-illustration">
-
-          <div class="floating-card card-one">
-            <small>Saldo</small>
-            <strong>R$ 12.850</strong>
-            <span>+ 8,4%</span>
-          </div>
-
-          <div class="floating-card card-two">
-            <small>Receitas</small>
-            <strong>R$ 8.420</strong>
-            <div class="mini-bars">
-              <i></i>
-              <i></i>
-              <i></i>
-              <i></i>
-              <i></i>
-            </div>
-          </div>
-
-          <div class="chart-visual">
-
-            <div class="chart-line"></div>
-
-            <div class="chart-dot dot-1"></div>
-            <div class="chart-dot dot-2"></div>
-            <div class="chart-dot dot-3"></div>
-            <div class="chart-dot dot-4"></div>
-
-          </div>
-
-          <div class="coin coin-one">R$</div>
-          <div class="coin coin-two">+</div>
-          <div class="coin coin-three">₿</div>
-
-        </div>
-
-      </div>
-
-
-      <div class="visual-footer">
-        <span>●</span>
-        Simples
-        <span>●</span>
-        Seguro
-        <span>●</span>
-        Inteligente
-      </div>
-
-    </div>
-
-
-    <!-- FORMULÁRIOS -->
-
-    <div class="auth-panel">
-
-      <div class="mobile-brand">
-        <div class="logo-mark">F</div>
-        <strong>FinControl</strong>
-      </div>
-
 
       <!-- LOGIN -->
 
-      <form id="loginForm" class="auth-form active">
+      <div id="loginForm">
 
-        <div class="form-heading">
+        <h2>Entrar</h2>
 
-          <span class="mobile-eyebrow">
-            BEM-VINDO DE VOLTA
-          </span>
+        <p class="form-description">
+          Acesse sua conta financeira.
+        </p>
 
-          <h2>Entrar na sua conta</h2>
+        <label for="loginEmail">E-mail</label>
 
-          <p>
-            Acesse seu controle financeiro.
-          </p>
-
-        </div>
-
-
-        <div class="input-group">
-
-          <label for="loginEmail">
-            E-mail
-          </label>
-
-          <div class="input-wrap">
-
-            <span>✉</span>
-
-            <input
-              type="email"
-              id="loginEmail"
-              placeholder="seu@email.com"
-              autocomplete="email"
-              required
-            >
-
-          </div>
-
-        </div>
-
-
-        <div class="input-group">
-
-          <div class="label-row">
-
-            <label for="loginPassword">
-              Senha
-            </label>
-
-            <button
-              type="button"
-              class="link-button"
-              id="forgotPassword"
-            >
-              Esqueci minha senha
-            </button>
-
-          </div>
-
-
-          <div class="input-wrap">
-
-            <span>●</span>
-
-            <input
-              type="password"
-              id="loginPassword"
-              placeholder="Digite sua senha"
-              autocomplete="current-password"
-              required
-            >
-
-            <button
-              type="button"
-              class="eye-button"
-              data-target="loginPassword"
-            >
-              👁
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <button
-          type="submit"
-          class="auth-button"
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="seuemail@email.com"
+          autocomplete="email"
         >
+
+        <label for="loginPassword">Senha</label>
+
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Sua senha"
+          autocomplete="current-password"
+        >
+
+        <button id="loginButton" class="primary-button">
           Entrar
         </button>
 
+        <p id="loginMessage" class="message"></p>
 
-        <div class="auth-divider">
-          <span>ou</span>
-        </div>
+        <p class="switch-auth">
+          Ainda não tem uma conta?
+          <button type="button" id="showRegisterButton">
+            Criar conta
+          </button>
+        </p>
 
-
-        <button
-          type="button"
-          class="outline-button"
-          id="showRegister"
-        >
-          Criar uma conta
-        </button>
-
-
-        <p class="auth-message" id="loginMessage"></p>
-
-      </form>
+      </div>
 
 
       <!-- CADASTRO -->
 
-      <form id="registerForm" class="auth-form">
+      <div id="registerForm" class="hidden">
 
-        <div class="form-heading">
+        <h2>Criar conta</h2>
 
-          <span class="mobile-eyebrow">
-            COMECE AGORA
-          </span>
+        <p class="form-description">
+          Crie seu acesso ao Controle Financeiro.
+        </p>
 
-          <h2>Criar sua conta</h2>
+        <label for="registerName">Nome</label>
 
-          <p>
-            Organize suas finanças gratuitamente.
-          </p>
-
-        </div>
-
-
-        <div class="input-group">
-
-          <label for="registerName">
-            Nome
-          </label>
-
-          <div class="input-wrap">
-
-            <span>👤</span>
-
-            <input
-              type="text"
-              id="registerName"
-              placeholder="Seu nome"
-              required
-            >
-
-          </div>
-
-        </div>
-
-
-        <div class="input-group">
-
-          <label for="registerEmail">
-            E-mail
-          </label>
-
-          <div class="input-wrap">
-
-            <span>✉</span>
-
-            <input
-              type="email"
-              id="registerEmail"
-              placeholder="seu@email.com"
-              required
-            >
-
-          </div>
-
-        </div>
-
-
-        <div class="input-group">
-
-          <label for="registerPassword">
-            Senha
-          </label>
-
-          <div class="input-wrap">
-
-            <span>●</span>
-
-            <input
-              type="password"
-              id="registerPassword"
-              placeholder="Mínimo de 6 caracteres"
-              minlength="6"
-              required
-            >
-
-            <button
-              type="button"
-              class="eye-button"
-              data-target="registerPassword"
-            >
-              👁
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <button
-          type="submit"
-          class="auth-button"
+        <input
+          type="text"
+          id="registerName"
+          placeholder="Seu nome"
+          autocomplete="name"
         >
+
+        <label for="registerEmail">E-mail</label>
+
+        <input
+          type="email"
+          id="registerEmail"
+          placeholder="seuemail@email.com"
+          autocomplete="email"
+        >
+
+        <label for="registerPassword">Senha</label>
+
+        <input
+          type="password"
+          id="registerPassword"
+          placeholder="Mínimo de 6 caracteres"
+          autocomplete="new-password"
+        >
+
+        <label for="registerAccountType">Tipo de controle</label>
+
+        <select id="registerAccountType">
+          <option value="pessoal">Pessoal</option>
+          <option value="empresa">Empresa</option>
+          <option value="ambos">Pessoal + Empresa</option>
+        </select>
+
+        <div id="companyField" class="hidden">
+
+          <label for="registerCompany">
+            Nome da empresa
+          </label>
+
+          <input
+            type="text"
+            id="registerCompany"
+            placeholder="Nome da empresa"
+          >
+
+        </div>
+
+        <button id="registerButton" class="primary-button">
           Criar minha conta
         </button>
 
+        <p id="registerMessage" class="message"></p>
 
-        <button
-          type="button"
-          class="back-login"
-          id="showLogin"
-        >
-          ← Já tenho uma conta
-        </button>
+        <p class="switch-auth">
+          Já possui uma conta?
+          <button type="button" id="showLoginButton">
+            Voltar para login
+          </button>
+        </p>
 
-
-        <p class="auth-message" id="registerMessage"></p>
-
-      </form>
-
-
-      <!-- RECUPERAÇÃO -->
-
-      <form id="recoveryForm" class="auth-form">
-
-        <div class="form-heading">
-
-          <h2>Recuperar senha</h2>
-
-          <p>
-            Digite seu e-mail e enviaremos
-            as instruções de recuperação.
-          </p>
-
-        </div>
-
-
-        <div class="input-group">
-
-          <label for="recoveryEmail">
-            E-mail
-          </label>
-
-          <div class="input-wrap">
-
-            <span>✉</span>
-
-            <input
-              type="email"
-              id="recoveryEmail"
-              placeholder="seu@email.com"
-              required
-            >
-
-          </div>
-
-        </div>
-
-
-        <button
-          type="submit"
-          class="auth-button"
-        >
-          Enviar recuperação
-        </button>
-
-
-        <button
-          type="button"
-          class="back-login"
-          id="backToLogin"
-        >
-          ← Voltar para login
-        </button>
-
-
-        <p class="auth-message" id="recoveryMessage"></p>
-
-      </form>
+      </div>
 
     </div>
 
-  </div>
+  </section>
 
 
-  <!-- =====================================
-       SISTEMA
-  ====================================== -->
+  <!-- =====================================================
+       SISTEMA PRINCIPAL
+       ===================================================== -->
 
-  <div id="appScreen" class="app-screen">
+  <section id="appScreen" class="app-screen hidden">
 
-    <!-- SIDEBAR -->
+    <!-- MENU LATERAL -->
 
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar">
 
-      <div class="brand">
+      <div class="sidebar-brand">
 
-        <div class="logo-mark">F</div>
+        <div class="brand-icon small">
+          ₿
+        </div>
 
         <div>
-          <strong>FinControl</strong>
-          <span>Gestão Financeira</span>
+          <strong>Controle</strong>
+          <span>Financeiro</span>
         </div>
 
       </div>
 
 
-      <div class="profile-mini">
-
-        <div class="avatar" id="userAvatar">
-          U
-        </div>
-
-        <div>
-          <strong id="userName">
-            Usuário
-          </strong>
-
-          <span id="userEmail">
-            usuario@email.com
-          </span>
-        </div>
-
-      </div>
-
-
-      <nav class="main-nav">
+      <nav class="menu">
 
         <button
-          class="nav-item active"
-          data-page="dashboard"
+          class="menu-item active"
+          data-section="dashboardSection"
         >
-          <span>⌂</span>
+          <span>📊</span>
           Dashboard
         </button>
 
-
         <button
-          class="nav-item"
-          data-page="movimentacoes"
+          class="menu-item"
+          data-section="transactionsSection"
         >
-          <span>↕</span>
-          Movimentações
+          <span>💰</span>
+          Lançamentos
         </button>
 
-
         <button
-          class="nav-item"
-          data-page="receitas"
+          class="menu-item"
+          data-section="reportsSection"
         >
-          <span>↗</span>
-          Receitas
-        </button>
-
-
-        <button
-          class="nav-item"
-          data-page="despesas"
-        >
-          <span>↘</span>
-          Despesas
-        </button>
-
-
-        <div class="nav-label">
-          ORGANIZAÇÃO
-        </div>
-
-
-        <button
-          class="nav-item"
-          data-page="contas"
-        >
-          <span>▣</span>
-          Contas e cartões
-        </button>
-
-
-        <button
-          class="nav-item"
-          data-page="planejamento"
-        >
-          <span>◷</span>
-          Planejamento
-        </button>
-
-
-        <button
-          class="nav-item"
-          data-page="metas"
-        >
-          <span>◎</span>
-          Metas
-        </button>
-
-
-        <div class="nav-label">
-          AMBIENTES
-        </div>
-
-
-        <button
-          class="nav-item"
-          data-page="pessoal"
-        >
-          <span>♙</span>
-          Pessoal
-        </button>
-
-
-        <button
-          class="nav-item"
-          data-page="empresa"
-        >
-          <span>▥</span>
-          Empresa
-        </button>
-
-
-        <button
-          class="nav-item"
-          data-page="relatorios"
-        >
-          <span>▤</span>
+          <span>📈</span>
           Relatórios
+        </button>
+
+        <button
+          class="menu-item"
+          data-section="profileSection"
+        >
+          <span>👤</span>
+          Meu perfil
         </button>
 
       </nav>
@@ -554,21 +214,9 @@
 
       <div class="sidebar-bottom">
 
-        <button
-          class="sidebar-action"
-          id="themeButton"
-        >
-          ☾
-          <span>Tema escuro</span>
-        </button>
-
-
-        <button
-          class="sidebar-action logout"
-          id="logoutButton"
-        >
-          ⇥
-          <span>Sair</span>
+        <button id="logoutButton" class="logout-button">
+          <span>🚪</span>
+          Sair
         </button>
 
       </div>
@@ -580,45 +228,44 @@
 
     <main class="main-content">
 
-      <header class="top-header">
+      <!-- HEADER -->
 
-        <div class="header-left">
+      <header class="topbar">
+
+        <div>
 
           <button
-            class="mobile-menu"
-            id="mobileMenu"
+            id="mobileMenuButton"
+            class="mobile-menu-button"
           >
             ☰
           </button>
 
-          <div>
-            <h1 id="pageTitle">
-              Dashboard
-            </h1>
+          <p class="welcome-small">
+            Bem-vindo,
+          </p>
 
-            <p id="pageSubtitle">
-              Visão geral das suas finanças
-            </p>
-          </div>
+          <h2 id="userName">
+            Usuário
+          </h2>
 
         </div>
 
 
-        <div class="header-actions">
+        <div class="topbar-actions">
 
           <button
-            class="icon-button"
-            title="Notificações"
+            id="quickExpenseButton"
+            class="quick-expense"
           >
-            ♧
+            − Despesa
           </button>
 
           <button
-            class="new-button"
-            id="newTransaction"
+            id="quickIncomeButton"
+            class="quick-income"
           >
-            <span>+</span>
-            Nova movimentação
+            + Receita
           </button>
 
         </div>
@@ -626,23 +273,952 @@
       </header>
 
 
-      <!-- ===============================
+      <!-- =====================================================
            DASHBOARD
-      ================================ -->
+           ===================================================== -->
 
       <section
-        class="page active"
-        id="page-dashboard"
+        id="dashboardSection"
+        class="content-section active-section"
       >
 
-        <div class="welcome">
+        <div class="page-heading">
+
+          <div>
+            <p class="section-label">
+              VISÃO GERAL
+            </p>
+
+            <h1>
+              Meu financeiro
+            </h1>
+
+            <p>
+              Acompanhe suas receitas, despesas e saldo.
+            </p>
+          </div>
+
+
+          <div class="period-selector">
+
+            <label for="dashboardPeriod">
+              Período
+            </label>
+
+            <select id="dashboardPeriod">
+
+              <option value="month">
+                Este mês
+              </option>
+
+              <option value="year">
+                Este ano
+              </option>
+
+              <option value="all">
+                Todo período
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- CARDS -->
+
+        <div class="summary-grid">
+
+          <div class="summary-card balance-card">
+
+            <div class="card-icon">
+              💵
+            </div>
+
+            <div>
+              <span>
+                Saldo
+              </span>
+
+              <strong id="balanceValue">
+                R$ 0,00
+              </strong>
+            </div>
+
+          </div>
+
+
+          <div class="summary-card income-card">
+
+            <div class="card-icon">
+              ↑
+            </div>
+
+            <div>
+              <span>
+                Receitas
+              </span>
+
+              <strong id="incomeValue">
+                R$ 0,00
+              </strong>
+            </div>
+
+          </div>
+
+
+          <div class="summary-card expense-card">
+
+            <div class="card-icon">
+              ↓
+            </div>
+
+            <div>
+              <span>
+                Despesas
+              </span>
+
+              <strong id="expenseValue">
+                R$ 0,00
+              </strong>
+            </div>
+
+          </div>
+
+
+          <div class="summary-card transaction-card">
+
+            <div class="card-icon">
+              📋
+            </div>
+
+            <div>
+              <span>
+                Lançamentos
+              </span>
+
+              <strong id="transactionCount">
+                0
+              </strong>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- GRÁFICOS / ÁREAS -->
+
+        <div class="dashboard-grid">
+
+          <div class="panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  Receitas x Despesas
+                </h3>
+
+                <p>
+                  Comparação financeira
+                </p>
+
+              </div>
+
+            </div>
+
+            <div class="chart-container">
+
+              <canvas id="financeChart"></canvas>
+
+            </div>
+
+          </div>
+
+
+          <div class="panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  Despesas por categoria
+                </h3>
+
+                <p>
+                  Onde seu dinheiro está indo
+                </p>
+
+              </div>
+
+            </div>
+
+            <div
+              id="categoryList"
+              class="category-list"
+            >
+
+              <div class="empty-state">
+                Nenhuma despesa registrada.
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ÚLTIMOS LANÇAMENTOS -->
+
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <div>
+
+              <h3>
+                Últimos lançamentos
+              </h3>
+
+              <p>
+                Movimentações recentes
+              </p>
+
+            </div>
+
+            <button
+              class="text-button"
+              data-section-target="transactionsSection"
+            >
+              Ver todos
+            </button>
+
+          </div>
+
+
+          <div
+            id="recentTransactions"
+            class="transactions-list"
+          >
+
+            <div class="empty-state">
+              Nenhum lançamento encontrado.
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           LANÇAMENTOS
+           ===================================================== -->
+
+      <section
+        id="transactionsSection"
+        class="content-section"
+      >
+
+        <div class="page-heading">
 
           <div>
 
-            <span>
-              RESUMO FINANCEIRO
+            <p class="section-label">
+              MOVIMENTAÇÕES
+            </p>
+
+            <h1>
+              Lançamentos
+            </h1>
+
+            <p>
+              Registre tudo que você recebe e gasta.
+            </p>
+
+          </div>
+
+
+          <button
+            id="newTransactionButton"
+            class="primary-button small-button"
+          >
+            + Novo lançamento
+          </button>
+
+        </div>
+
+
+        <!-- FILTROS -->
+
+        <div class="filters-panel">
+
+          <div class="filter-field">
+
+            <label for="searchTransaction">
+              Pesquisar
+            </label>
+
+            <input
+              type="search"
+              id="searchTransaction"
+              placeholder="Pesquisar lançamento..."
+            >
+
+          </div>
+
+
+          <div class="filter-field">
+
+            <label for="filterType">
+              Tipo
+            </label>
+
+            <select id="filterType">
+
+              <option value="all">
+                Todos
+              </option>
+
+              <option value="receita">
+                Receitas
+              </option>
+
+              <option value="despesa">
+                Despesas
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="filter-field">
+
+            <label for="filterArea">
+              Área
+            </label>
+
+            <select id="filterArea">
+
+              <option value="all">
+                Todas
+              </option>
+
+              <option value="pessoal">
+                Pessoal
+              </option>
+
+              <option value="empresa">
+                Empresa
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="filter-field">
+
+            <label for="filterCategory">
+              Categoria
+            </label>
+
+            <select id="filterCategory">
+
+              <option value="all">
+                Todas
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- TABELA -->
+
+        <div class="panel table-panel">
+
+          <div class="table-wrapper">
+
+            <table>
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Data
+                  </th>
+
+                  <th>
+                    Descrição
+                  </th>
+
+                  <th>
+                    Categoria
+                  </th>
+
+                  <th>
+                    Área
+                  </th>
+
+                  <th>
+                    Tipo
+                  </th>
+
+                  <th>
+                    Valor
+                  </th>
+
+                  <th>
+                    Ações
+                  </th>
+
+                </tr>
+
+              </thead>
+
+              <tbody id="transactionsTableBody">
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+
+          <div
+            id="transactionsEmpty"
+            class="empty-state"
+          >
+            Nenhum lançamento encontrado.
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           RELATÓRIOS
+           ===================================================== -->
+
+      <section
+        id="reportsSection"
+        class="content-section"
+      >
+
+        <div class="page-heading">
+
+          <div>
+
+            <p class="section-label">
+              ANÁLISE
+            </p>
+
+            <h1>
+              Relatórios
+            </h1>
+
+            <p>
+              Entenda melhor seu comportamento financeiro.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="reports-grid">
+
+          <div class="panel">
+
+            <h3>
+              Resumo financeiro
+            </h3>
+
+            <div
+              id="reportSummary"
+              class="report-summary"
+            >
+
+              <div>
+                <span>
+                  Total de receitas
+                </span>
+
+                <strong id="reportIncome">
+                  R$ 0,00
+                </strong>
+              </div>
+
+              <div>
+                <span>
+                  Total de despesas
+                </span>
+
+                <strong id="reportExpense">
+                  R$ 0,00
+                </strong>
+              </div>
+
+              <div>
+                <span>
+                  Resultado
+                </span>
+
+                <strong id="reportBalance">
+                  R$ 0,00
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="panel">
+
+            <h3>
+              Categoria com maior gasto
+            </h3>
+
+            <div
+              id="topCategory"
+              class="top-category"
+            >
+              Nenhuma informação.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <div>
+
+              <h3>
+                Evolução financeira
+              </h3>
+
+              <p>
+                Visão das movimentações
+              </p>
+
+            </div>
+
+          </div>
+
+          <div class="chart-container large">
+
+            <canvas id="reportChart"></canvas>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           PERFIL
+           ===================================================== -->
+
+      <section
+        id="profileSection"
+        class="content-section"
+      >
+
+        <div class="page-heading">
+
+          <div>
+
+            <p class="section-label">
+              CONTA
+            </p>
+
+            <h1>
+              Meu perfil
+            </h1>
+
+            <p>
+              Gerencie suas informações.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="panel profile-panel">
+
+          <div class="profile-avatar">
+            👤
+          </div>
+
+
+          <div class="profile-info">
+
+            <h2 id="profileName">
+              Usuário
+            </h2>
+
+            <p id="profileEmail">
+              —
+            </p>
+
+            <span
+              id="profileAccountType"
+              class="account-badge"
+            >
+              Pessoal
             </span>
 
-            <h2>
-              Olá, <strong id="welcomeName">
-                usuário
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </section>
+
+
+  <!-- =====================================================
+       MODAL NOVO LANÇAMENTO
+       ===================================================== -->
+
+  <div
+    id="transactionModal"
+    class="modal hidden"
+  >
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-card">
+
+      <div class="modal-header">
+
+        <div>
+
+          <p class="section-label">
+            FINANCEIRO
+          </p>
+
+          <h2 id="modalTitle">
+            Novo lançamento
+          </h2>
+
+        </div>
+
+        <button
+          id="closeModalButton"
+          class="close-button"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <form id="transactionForm">
+
+        <input
+          type="hidden"
+          id="transactionId"
+        >
+
+
+        <div class="type-selector">
+
+          <button
+            type="button"
+            class="type-option active"
+            data-type="receita"
+          >
+            + Receita
+          </button>
+
+          <button
+            type="button"
+            class="type-option"
+            data-type="despesa"
+          >
+            − Despesa
+          </button>
+
+        </div>
+
+
+        <div class="form-grid">
+
+          <div class="form-group full">
+
+            <label for="transactionDescription">
+              Descrição
+            </label>
+
+            <input
+              type="text"
+              id="transactionDescription"
+              placeholder="Ex.: Salário, aluguel, mercado..."
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="transactionAmount">
+              Valor
+            </label>
+
+            <input
+              type="number"
+              id="transactionAmount"
+              placeholder="0,00"
+              min="0"
+              step="0.01"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="transactionDate">
+              Data
+            </label>
+
+            <input
+              type="date"
+              id="transactionDate"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="transactionCategory">
+              Categoria
+            </label>
+
+            <select
+              id="transactionCategory"
+              required
+            >
+
+              <option value="">
+                Selecione
+              </option>
+
+              <option value="Salário">
+                Salário
+              </option>
+
+              <option value="Alimentação">
+                Alimentação
+              </option>
+
+              <option value="Moradia">
+                Moradia
+              </option>
+
+              <option value="Transporte">
+                Transporte
+              </option>
+
+              <option value="Saúde">
+                Saúde
+              </option>
+
+              <option value="Educação">
+                Educação
+              </option>
+
+              <option value="Lazer">
+                Lazer
+              </option>
+
+              <option value="Compras">
+                Compras
+              </option>
+
+              <option value="Contas">
+                Contas
+              </option>
+
+              <option value="Investimentos">
+                Investimentos
+              </option>
+
+              <option value="Vendas">
+                Vendas
+              </option>
+
+              <option value="Serviços">
+                Serviços
+              </option>
+
+              <option value="Outros">
+                Outros
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="transactionArea">
+              Área
+            </label>
+
+            <select id="transactionArea">
+
+              <option value="pessoal">
+                Pessoal
+              </option>
+
+              <option value="empresa">
+                Empresa
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group full">
+
+            <label for="transactionNote">
+              Observação
+            </label>
+
+            <textarea
+              id="transactionNote"
+              rows="3"
+              placeholder="Opcional"
+            ></textarea>
+
+          </div>
+
+        </div>
+
+
+        <p
+          id="transactionMessage"
+          class="message"
+        ></p>
+
+
+        <div class="modal-actions">
+
+          <button
+            type="button"
+            id="cancelTransactionButton"
+            class="secondary-button"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="primary-button"
+          >
+            Salvar lançamento
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       CONFIRMAÇÃO DE EXCLUSÃO
+       ===================================================== -->
+
+  <div
+    id="deleteModal"
+    class="modal hidden"
+  >
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-card confirmation-card">
+
+      <div class="confirmation-icon">
+        ⚠️
+      </div>
+
+      <h2>
+        Excluir lançamento?
+      </h2>
+
+      <p>
+        Essa ação não poderá ser desfeita.
+      </p>
+
+      <input
+        type="hidden"
+        id="deleteTransactionId"
+      >
+
+      <div class="modal-actions">
+
+        <button
+          id="cancelDeleteButton"
+          class="secondary-button"
+        >
+          Cancelar
+        </button>
+
+        <button
+          id="confirmDeleteButton"
+          class="danger-button"
+        >
+          Excluir
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       BIBLIOTECA DE GRÁFICOS
+       ===================================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- NOSSO JAVASCRIPT -->
+
+  <script src="script.js"></script>
+
+</body>
+</html>
