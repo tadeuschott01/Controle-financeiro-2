@@ -2,7 +2,11 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Controle Financeiro</title>
 
@@ -10,23 +14,35 @@
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-  <!-- =====================================================
-       TELA DE LOGIN / CADASTRO
-       ===================================================== -->
+  <!-- =================================================
+       LOGIN / CADASTRO
+       ================================================= -->
 
-  <section id="authScreen" class="auth-screen">
+  <div id="authScreen" class="auth-screen">
 
     <div class="auth-card">
 
       <div class="brand">
-        <div class="brand-icon">₿</div>
+
+        <div class="brand-icon">
+          $
+        </div>
+
         <h1>Controle Financeiro</h1>
-        <p>Organize seu dinheiro de forma simples.</p>
+
+        <p>
+          Organize sua vida financeira de forma simples.
+        </p>
+
       </div>
+
 
       <!-- LOGIN -->
 
@@ -38,16 +54,21 @@
           Acesse sua conta financeira.
         </p>
 
-        <label for="loginEmail">E-mail</label>
+        <label for="loginEmail">
+          E-mail
+        </label>
 
         <input
           type="email"
           id="loginEmail"
-          placeholder="seuemail@email.com"
+          placeholder="seu@email.com"
           autocomplete="email"
         >
 
-        <label for="loginPassword">Senha</label>
+
+        <label for="loginPassword">
+          Senha
+        </label>
 
         <input
           type="password"
@@ -56,33 +77,54 @@
           autocomplete="current-password"
         >
 
-        <button id="loginButton" class="primary-button">
+
+        <div
+          id="loginMessage"
+          class="message"
+        ></div>
+
+
+        <button
+          id="loginButton"
+          class="primary-button"
+        >
           Entrar
         </button>
 
-        <p id="loginMessage" class="message"></p>
 
-        <p class="switch-auth">
-          Ainda não tem uma conta?
-          <button type="button" id="showRegisterButton">
+        <div class="switch-auth">
+
+          Ainda não possui uma conta?
+
+          <button
+            id="showRegisterButton"
+            type="button"
+          >
             Criar conta
           </button>
-        </p>
+
+        </div>
 
       </div>
 
 
       <!-- CADASTRO -->
 
-      <div id="registerForm" class="hidden">
+      <div
+        id="registerForm"
+        class="hidden"
+      >
 
         <h2>Criar conta</h2>
 
         <p class="form-description">
-          Crie seu acesso ao Controle Financeiro.
+          Cadastre-se para começar seu controle financeiro.
         </p>
 
-        <label for="registerName">Nome</label>
+
+        <label for="registerName">
+          Nome
+        </label>
 
         <input
           type="text"
@@ -91,16 +133,22 @@
           autocomplete="name"
         >
 
-        <label for="registerEmail">E-mail</label>
+
+        <label for="registerEmail">
+          E-mail
+        </label>
 
         <input
           type="email"
           id="registerEmail"
-          placeholder="seuemail@email.com"
+          placeholder="seu@email.com"
           autocomplete="email"
         >
 
-        <label for="registerPassword">Senha</label>
+
+        <label for="registerPassword">
+          Senha
+        </label>
 
         <input
           type="password"
@@ -109,15 +157,32 @@
           autocomplete="new-password"
         >
 
-        <label for="registerAccountType">Tipo de controle</label>
+
+        <label for="registerAccountType">
+          Tipo de controle
+        </label>
 
         <select id="registerAccountType">
-          <option value="pessoal">Pessoal</option>
-          <option value="empresa">Empresa</option>
-          <option value="ambos">Pessoal + Empresa</option>
+
+          <option value="pessoal">
+            Pessoal
+          </option>
+
+          <option value="empresa">
+            Empresa
+          </option>
+
+          <option value="ambos">
+            Pessoal + Empresa
+          </option>
+
         </select>
 
-        <div id="companyField" class="hidden">
+
+        <div
+          id="companyField"
+          class="hidden"
+        >
 
           <label for="registerCompany">
             Nome da empresa
@@ -131,45 +196,71 @@
 
         </div>
 
-        <button id="registerButton" class="primary-button">
+
+        <div
+          id="registerMessage"
+          class="message"
+        ></div>
+
+
+        <button
+          id="registerButton"
+          class="primary-button"
+        >
           Criar minha conta
         </button>
 
-        <p id="registerMessage" class="message"></p>
 
-        <p class="switch-auth">
+        <div class="switch-auth">
+
           Já possui uma conta?
-          <button type="button" id="showLoginButton">
-            Voltar para login
+
+          <button
+            id="showLoginButton"
+            type="button"
+          >
+            Entrar
           </button>
-        </p>
+
+        </div>
 
       </div>
 
     </div>
 
-  </section>
+  </div>
 
 
-  <!-- =====================================================
-       SISTEMA PRINCIPAL
-       ===================================================== -->
+  <!-- =================================================
+       APLICAÇÃO
+       ================================================= -->
 
-  <section id="appScreen" class="app-screen hidden">
+  <div
+    id="appScreen"
+    class="app-screen hidden"
+  >
 
-    <!-- MENU LATERAL -->
+
+    <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
       <div class="sidebar-brand">
 
         <div class="brand-icon small">
-          ₿
+          $
         </div>
 
         <div>
-          <strong>Controle</strong>
-          <span>Financeiro</span>
+
+          <strong>
+            Controle Financeiro
+          </strong>
+
+          <span>
+            Gestão simples
+          </span>
+
         </div>
 
       </div>
@@ -179,31 +270,34 @@
 
         <button
           class="menu-item active"
-          data-section="dashboardSection"
+          data-section="dashboard"
         >
           <span>📊</span>
           Dashboard
         </button>
 
+
         <button
           class="menu-item"
-          data-section="transactionsSection"
+          data-section="transactions"
         >
           <span>💰</span>
           Lançamentos
         </button>
 
+
         <button
           class="menu-item"
-          data-section="reportsSection"
+          data-section="reports"
         >
           <span>📈</span>
           Relatórios
         </button>
 
+
         <button
           class="menu-item"
-          data-section="profileSection"
+          data-section="profile"
         >
           <span>👤</span>
           Meu perfil
@@ -214,7 +308,10 @@
 
       <div class="sidebar-bottom">
 
-        <button id="logoutButton" class="logout-button">
+        <button
+          id="logoutButton"
+          class="logout-button"
+        >
           <span>🚪</span>
           Sair
         </button>
@@ -228,7 +325,8 @@
 
     <main class="main-content">
 
-      <!-- HEADER -->
+
+      <!-- TOPBAR -->
 
       <header class="topbar">
 
@@ -241,9 +339,9 @@
             ☰
           </button>
 
-          <p class="welcome-small">
-            Bem-vindo,
-          </p>
+          <div class="welcome-small">
+            Olá,
+          </div>
 
           <h2 id="userName">
             Usuário
@@ -255,17 +353,17 @@
         <div class="topbar-actions">
 
           <button
-            id="quickExpenseButton"
-            class="quick-expense"
-          >
-            − Despesa
-          </button>
-
-          <button
             id="quickIncomeButton"
             class="quick-income"
           >
             + Receita
+          </button>
+
+          <button
+            id="quickExpenseButton"
+            class="quick-expense"
+          >
+            − Despesa
           </button>
 
         </div>
@@ -273,29 +371,31 @@
       </header>
 
 
-      <!-- =====================================================
+      <!-- =================================================
            DASHBOARD
-           ===================================================== -->
+           ================================================= -->
 
       <section
-        id="dashboardSection"
+        id="dashboard"
         class="content-section active-section"
       >
 
         <div class="page-heading">
 
           <div>
+
             <p class="section-label">
               VISÃO GERAL
             </p>
 
             <h1>
-              Meu financeiro
+              Dashboard
             </h1>
 
             <p>
               Acompanhe suas receitas, despesas e saldo.
             </p>
+
           </div>
 
 
@@ -315,910 +415,4 @@
                 Este ano
               </option>
 
-              <option value="all">
-                Todo período
-              </option>
-
-            </select>
-
-          </div>
-
-        </div>
-
-
-        <!-- CARDS -->
-
-        <div class="summary-grid">
-
-          <div class="summary-card balance-card">
-
-            <div class="card-icon">
-              💵
-            </div>
-
-            <div>
-              <span>
-                Saldo
-              </span>
-
-              <strong id="balanceValue">
-                R$ 0,00
-              </strong>
-            </div>
-
-          </div>
-
-
-          <div class="summary-card income-card">
-
-            <div class="card-icon">
-              ↑
-            </div>
-
-            <div>
-              <span>
-                Receitas
-              </span>
-
-              <strong id="incomeValue">
-                R$ 0,00
-              </strong>
-            </div>
-
-          </div>
-
-
-          <div class="summary-card expense-card">
-
-            <div class="card-icon">
-              ↓
-            </div>
-
-            <div>
-              <span>
-                Despesas
-              </span>
-
-              <strong id="expenseValue">
-                R$ 0,00
-              </strong>
-            </div>
-
-          </div>
-
-
-          <div class="summary-card transaction-card">
-
-            <div class="card-icon">
-              📋
-            </div>
-
-            <div>
-              <span>
-                Lançamentos
-              </span>
-
-              <strong id="transactionCount">
-                0
-              </strong>
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- GRÁFICOS / ÁREAS -->
-
-        <div class="dashboard-grid">
-
-          <div class="panel">
-
-            <div class="panel-header">
-
-              <div>
-
-                <h3>
-                  Receitas x Despesas
-                </h3>
-
-                <p>
-                  Comparação financeira
-                </p>
-
-              </div>
-
-            </div>
-
-            <div class="chart-container">
-
-              <canvas id="financeChart"></canvas>
-
-            </div>
-
-          </div>
-
-
-          <div class="panel">
-
-            <div class="panel-header">
-
-              <div>
-
-                <h3>
-                  Despesas por categoria
-                </h3>
-
-                <p>
-                  Onde seu dinheiro está indo
-                </p>
-
-              </div>
-
-            </div>
-
-            <div
-              id="categoryList"
-              class="category-list"
-            >
-
-              <div class="empty-state">
-                Nenhuma despesa registrada.
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- ÚLTIMOS LANÇAMENTOS -->
-
-        <div class="panel">
-
-          <div class="panel-header">
-
-            <div>
-
-              <h3>
-                Últimos lançamentos
-              </h3>
-
-              <p>
-                Movimentações recentes
-              </p>
-
-            </div>
-
-            <button
-              class="text-button"
-              data-section-target="transactionsSection"
-            >
-              Ver todos
-            </button>
-
-          </div>
-
-
-          <div
-            id="recentTransactions"
-            class="transactions-list"
-          >
-
-            <div class="empty-state">
-              Nenhum lançamento encontrado.
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =====================================================
-           LANÇAMENTOS
-           ===================================================== -->
-
-      <section
-        id="transactionsSection"
-        class="content-section"
-      >
-
-        <div class="page-heading">
-
-          <div>
-
-            <p class="section-label">
-              MOVIMENTAÇÕES
-            </p>
-
-            <h1>
-              Lançamentos
-            </h1>
-
-            <p>
-              Registre tudo que você recebe e gasta.
-            </p>
-
-          </div>
-
-
-          <button
-            id="newTransactionButton"
-            class="primary-button small-button"
-          >
-            + Novo lançamento
-          </button>
-
-        </div>
-
-
-        <!-- FILTROS -->
-
-        <div class="filters-panel">
-
-          <div class="filter-field">
-
-            <label for="searchTransaction">
-              Pesquisar
-            </label>
-
-            <input
-              type="search"
-              id="searchTransaction"
-              placeholder="Pesquisar lançamento..."
-            >
-
-          </div>
-
-
-          <div class="filter-field">
-
-            <label for="filterType">
-              Tipo
-            </label>
-
-            <select id="filterType">
-
-              <option value="all">
-                Todos
-              </option>
-
-              <option value="receita">
-                Receitas
-              </option>
-
-              <option value="despesa">
-                Despesas
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="filter-field">
-
-            <label for="filterArea">
-              Área
-            </label>
-
-            <select id="filterArea">
-
-              <option value="all">
-                Todas
-              </option>
-
-              <option value="pessoal">
-                Pessoal
-              </option>
-
-              <option value="empresa">
-                Empresa
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="filter-field">
-
-            <label for="filterCategory">
-              Categoria
-            </label>
-
-            <select id="filterCategory">
-
-              <option value="all">
-                Todas
-              </option>
-
-            </select>
-
-          </div>
-
-        </div>
-
-
-        <!-- TABELA -->
-
-        <div class="panel table-panel">
-
-          <div class="table-wrapper">
-
-            <table>
-
-              <thead>
-
-                <tr>
-
-                  <th>
-                    Data
-                  </th>
-
-                  <th>
-                    Descrição
-                  </th>
-
-                  <th>
-                    Categoria
-                  </th>
-
-                  <th>
-                    Área
-                  </th>
-
-                  <th>
-                    Tipo
-                  </th>
-
-                  <th>
-                    Valor
-                  </th>
-
-                  <th>
-                    Ações
-                  </th>
-
-                </tr>
-
-              </thead>
-
-              <tbody id="transactionsTableBody">
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-
-          <div
-            id="transactionsEmpty"
-            class="empty-state"
-          >
-            Nenhum lançamento encontrado.
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =====================================================
-           RELATÓRIOS
-           ===================================================== -->
-
-      <section
-        id="reportsSection"
-        class="content-section"
-      >
-
-        <div class="page-heading">
-
-          <div>
-
-            <p class="section-label">
-              ANÁLISE
-            </p>
-
-            <h1>
-              Relatórios
-            </h1>
-
-            <p>
-              Entenda melhor seu comportamento financeiro.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div class="reports-grid">
-
-          <div class="panel">
-
-            <h3>
-              Resumo financeiro
-            </h3>
-
-            <div
-              id="reportSummary"
-              class="report-summary"
-            >
-
-              <div>
-                <span>
-                  Total de receitas
-                </span>
-
-                <strong id="reportIncome">
-                  R$ 0,00
-                </strong>
-              </div>
-
-              <div>
-                <span>
-                  Total de despesas
-                </span>
-
-                <strong id="reportExpense">
-                  R$ 0,00
-                </strong>
-              </div>
-
-              <div>
-                <span>
-                  Resultado
-                </span>
-
-                <strong id="reportBalance">
-                  R$ 0,00
-                </strong>
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="panel">
-
-            <h3>
-              Categoria com maior gasto
-            </h3>
-
-            <div
-              id="topCategory"
-              class="top-category"
-            >
-              Nenhuma informação.
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="panel">
-
-          <div class="panel-header">
-
-            <div>
-
-              <h3>
-                Evolução financeira
-              </h3>
-
-              <p>
-                Visão das movimentações
-              </p>
-
-            </div>
-
-          </div>
-
-          <div class="chart-container large">
-
-            <canvas id="reportChart"></canvas>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =====================================================
-           PERFIL
-           ===================================================== -->
-
-      <section
-        id="profileSection"
-        class="content-section"
-      >
-
-        <div class="page-heading">
-
-          <div>
-
-            <p class="section-label">
-              CONTA
-            </p>
-
-            <h1>
-              Meu perfil
-            </h1>
-
-            <p>
-              Gerencie suas informações.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div class="panel profile-panel">
-
-          <div class="profile-avatar">
-            👤
-          </div>
-
-
-          <div class="profile-info">
-
-            <h2 id="profileName">
-              Usuário
-            </h2>
-
-            <p id="profileEmail">
-              —
-            </p>
-
-            <span
-              id="profileAccountType"
-              class="account-badge"
-            >
-              Pessoal
-            </span>
-
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
-
-  </section>
-
-
-  <!-- =====================================================
-       MODAL NOVO LANÇAMENTO
-       ===================================================== -->
-
-  <div
-    id="transactionModal"
-    class="modal hidden"
-  >
-
-    <div class="modal-overlay"></div>
-
-    <div class="modal-card">
-
-      <div class="modal-header">
-
-        <div>
-
-          <p class="section-label">
-            FINANCEIRO
-          </p>
-
-          <h2 id="modalTitle">
-            Novo lançamento
-          </h2>
-
-        </div>
-
-        <button
-          id="closeModalButton"
-          class="close-button"
-        >
-          ×
-        </button>
-
-      </div>
-
-
-      <form id="transactionForm">
-
-        <input
-          type="hidden"
-          id="transactionId"
-        >
-
-
-        <div class="type-selector">
-
-          <button
-            type="button"
-            class="type-option active"
-            data-type="receita"
-          >
-            + Receita
-          </button>
-
-          <button
-            type="button"
-            class="type-option"
-            data-type="despesa"
-          >
-            − Despesa
-          </button>
-
-        </div>
-
-
-        <div class="form-grid">
-
-          <div class="form-group full">
-
-            <label for="transactionDescription">
-              Descrição
-            </label>
-
-            <input
-              type="text"
-              id="transactionDescription"
-              placeholder="Ex.: Salário, aluguel, mercado..."
-              required
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="transactionAmount">
-              Valor
-            </label>
-
-            <input
-              type="number"
-              id="transactionAmount"
-              placeholder="0,00"
-              min="0"
-              step="0.01"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="transactionDate">
-              Data
-            </label>
-
-            <input
-              type="date"
-              id="transactionDate"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="transactionCategory">
-              Categoria
-            </label>
-
-            <select
-              id="transactionCategory"
-              required
-            >
-
-              <option value="">
-                Selecione
-              </option>
-
-              <option value="Salário">
-                Salário
-              </option>
-
-              <option value="Alimentação">
-                Alimentação
-              </option>
-
-              <option value="Moradia">
-                Moradia
-              </option>
-
-              <option value="Transporte">
-                Transporte
-              </option>
-
-              <option value="Saúde">
-                Saúde
-              </option>
-
-              <option value="Educação">
-                Educação
-              </option>
-
-              <option value="Lazer">
-                Lazer
-              </option>
-
-              <option value="Compras">
-                Compras
-              </option>
-
-              <option value="Contas">
-                Contas
-              </option>
-
-              <option value="Investimentos">
-                Investimentos
-              </option>
-
-              <option value="Vendas">
-                Vendas
-              </option>
-
-              <option value="Serviços">
-                Serviços
-              </option>
-
-              <option value="Outros">
-                Outros
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="transactionArea">
-              Área
-            </label>
-
-            <select id="transactionArea">
-
-              <option value="pessoal">
-                Pessoal
-              </option>
-
-              <option value="empresa">
-                Empresa
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="form-group full">
-
-            <label for="transactionNote">
-              Observação
-            </label>
-
-            <textarea
-              id="transactionNote"
-              rows="3"
-              placeholder="Opcional"
-            ></textarea>
-
-          </div>
-
-        </div>
-
-
-        <p
-          id="transactionMessage"
-          class="message"
-        ></p>
-
-
-        <div class="modal-actions">
-
-          <button
-            type="button"
-            id="cancelTransactionButton"
-            class="secondary-button"
-          >
-            Cancelar
-          </button>
-
-          <button
-            type="submit"
-            class="primary-button"
-          >
-            Salvar lançamento
-          </button>
-
-        </div>
-
-      </form>
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       CONFIRMAÇÃO DE EXCLUSÃO
-       ===================================================== -->
-
-  <div
-    id="deleteModal"
-    class="modal hidden"
-  >
-
-    <div class="modal-overlay"></div>
-
-    <div class="modal-card confirmation-card">
-
-      <div class="confirmation-icon">
-        ⚠️
-      </div>
-
-      <h2>
-        Excluir lançamento?
-      </h2>
-
-      <p>
-        Essa ação não poderá ser desfeita.
-      </p>
-
-      <input
-        type="hidden"
-        id="deleteTransactionId"
-      >
-
-      <div class="modal-actions">
-
-        <button
-          id="cancelDeleteButton"
-          class="secondary-button"
-        >
-          Cancelar
-        </button>
-
-        <button
-          id="confirmDeleteButton"
-          class="danger-button"
-        >
-          Excluir
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       BIBLIOTECA DE GRÁFICOS
-       ===================================================== -->
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- NOSSO JAVASCRIPT -->
-
-  <script src="script.js"></script>
-
-</body>
-</html>
+             
