@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+  // =====================================================
+  // ELEMENTOS
+  // =====================================================
+
   const loginForm = document.getElementById("loginForm");
   const registerForm = document.getElementById("registerForm");
 
@@ -21,285 +25,672 @@ document.addEventListener("DOMContentLoaded", function () {
   const loginMessage =
     document.getElementById("loginMessage");
 
+  const authScreen =
+    document.getElementById("authScreen");
 
-  // ==========================================
+  const appScreen =
+    document.getElementById("appScreen");
+
+
+  // =====================================================
+  // FUNÇÃO DE MENSAGEM
+  // =====================================================
+
+  function mensagem(elemento, texto, sucesso = false) {
+
+    if (!elemento) return;
+
+    elemento.textContent = texto;
+
+    elemento.style.color =
+      sucesso ? "#1f513d" : "#d94b4b";
+  }
+
+
+  // =====================================================
   // MOSTRAR CADASTRO
-  // ==========================================
+  // =====================================================
 
-  showRegisterButton?.addEventListener("click", function () {
+  if (showRegisterButton) {
 
-    loginForm?.classList.add("hidden");
-    registerForm?.classList.remove("hidden");
+    showRegisterButton.addEventListener("click", function (event) {
 
-    if (registerMessage) {
-      registerMessage.textContent = "";
-    }
+      event.preventDefault();
 
-  });
+      if (loginForm) {
+        loginForm.classList.add("hidden");
+      }
+
+      if (registerForm) {
+        registerForm.classList.remove("hidden");
+      }
+
+      if (loginMessage) {
+        loginMessage.textContent = "";
+      }
+
+      if (registerMessage) {
+        registerMessage.textContent = "";
+      }
+
+    });
+
+  }
 
 
-  // ==========================================
+  // =====================================================
   // MOSTRAR LOGIN
-  // ==========================================
+  // =====================================================
 
-  showLoginButton?.addEventListener("click", function () {
+  if (showLoginButton) {
 
-    registerForm?.classList.add("hidden");
-    loginForm?.classList.remove("hidden");
+    showLoginButton.addEventListener("click", function (event) {
 
-    if (loginMessage) {
-      loginMessage.textContent = "";
-    }
+      event.preventDefault();
 
-  });
+      if (registerForm) {
+        registerForm.classList.add("hidden");
+      }
 
+      if (loginForm) {
+        loginForm.classList.remove("hidden");
+      }
 
-  // ==========================================
-  // CADASTRAR CONTA
-  // ==========================================
+      if (loginMessage) {
+        loginMessage.textContent = "";
+      }
 
-  registerButton?.addEventListener("click", function (event) {
+      if (registerMessage) {
+        registerMessage.textContent = "";
+      }
 
-    event.preventDefault();
+    });
 
-    const nome =
-      document.getElementById("registerName")?.value.trim();
-
-    const email =
-      document.getElementById("registerEmail")?.value.trim();
-
-    const senha =
-      document.getElementById("registerPassword")?.value;
-
-    const tipo =
-      document.getElementById("registerAccountType")?.value
-      || "pessoal";
-
-    const empresa =
-      document.getElementById("registerCompany")?.value.trim()
-      || "";
+  }
 
 
-    // ==========================================
-    // VALIDAÇÕES
-    // ==========================================
+  // =====================================================
+  // CADASTRO
+  // =====================================================
 
-    if (!nome) {
+  if (registerButton) {
 
-      registerMessage.textContent =
-        "Digite seu nome.";
+    registerButton.addEventListener("click", function (event) {
 
-      return;
-    }
+      event.preventDefault();
 
 
-    if (!email) {
+      const nomeInput =
+        document.getElementById("registerName");
 
-      registerMessage.textContent =
-        "Digite seu e-mail.";
+      const emailInput =
+        document.getElementById("registerEmail");
 
-      return;
-    }
+      const senhaInput =
+        document.getElementById("registerPassword");
 
+      const tipoInput =
+        document.getElementById("registerAccountType");
 
-    if (!email.includes("@")) {
-
-      registerMessage.textContent =
-        "Digite um e-mail válido.";
-
-      return;
-    }
+      const empresaInput =
+        document.getElementById("registerCompany");
 
 
-    if (!senha) {
+      const nome =
+        nomeInput ? nomeInput.value.trim() : "";
 
-      registerMessage.textContent =
-        "Digite uma senha.";
+      const email =
+        emailInput ? emailInput.value.trim() : "";
 
-      return;
-    }
+      const senha =
+        senhaInput ? senhaInput.value : "";
 
+      const tipo =
+        tipoInput ? tipoInput.value : "pessoal";
 
-    if (senha.length < 6) {
-
-      registerMessage.textContent =
-        "A senha precisa ter pelo menos 6 caracteres.";
-
-      return;
-    }
+      const empresa =
+        empresaInput ? empresaInput.value.trim() : "";
 
 
-    // ==========================================
-    // CRIAR USUÁRIO
-    // ==========================================
+      // =================================================
+      // VALIDAÇÕES
+      // =================================================
 
-    const usuario = {
-      nome: nome,
-      email: email,
-      senha: senha,
-      tipo: tipo,
-      empresa: empresa,
-      criadoEm: new Date().toISOString()
-    };
+      if (!nome) {
+
+        mensagem(
+          registerMessage,
+          "Digite seu nome."
+        );
+
+        return;
+      }
 
 
-    try {
+      if (!email) {
 
-      localStorage.setItem(
-        "controleFinanceiroUsuario",
-        JSON.stringify(usuario)
+        mensagem(
+          registerMessage,
+          "Digite seu e-mail."
+        );
+
+        return;
+      }
+
+
+      if (!email.includes("@") || !email.includes(".")) {
+
+        mensagem(
+          registerMessage,
+          "Digite um e-mail válido."
+        );
+
+        return;
+      }
+
+
+      if (!senha) {
+
+        mensagem(
+          registerMessage,
+          "Digite uma senha."
+        );
+
+        return;
+      }
+
+
+      if (senha.length < 6) {
+
+        mensagem(
+          registerMessage,
+          "A senha precisa ter pelo menos 6 caracteres."
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // CRIAR USUÁRIO
+      // =================================================
+
+      const usuario = {
+
+        nome: nome,
+
+        email: email.toLowerCase(),
+
+        senha: senha,
+
+        tipo: tipo,
+
+        empresa: empresa,
+
+        criadoEm: new Date().toISOString()
+
+      };
+
+
+      // =================================================
+      // SALVAR
+      // =================================================
+
+      try {
+
+        localStorage.setItem(
+          "controleFinanceiroUsuario",
+          JSON.stringify(usuario)
+        );
+
+        localStorage.setItem(
+          "controleFinanceiroLancamentos",
+          JSON.stringify([])
+        );
+
+      } catch (erro) {
+
+        console.error(
+          "Erro ao salvar conta:",
+          erro
+        );
+
+        mensagem(
+          registerMessage,
+          "Não foi possível salvar a conta neste navegador."
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // CONFIRMAÇÃO
+      // =================================================
+
+      mensagem(
+        registerMessage,
+        "Conta criada com sucesso!",
+        true
       );
 
-      localStorage.setItem(
-        "controleFinanceiroLancamentos",
-        JSON.stringify([])
-      );
 
-    } catch (erro) {
+      // =================================================
+      // COLOCAR E-MAIL NO LOGIN
+      // =================================================
 
-      console.error(erro);
+      const loginEmail =
+        document.getElementById("loginEmail");
 
-      registerMessage.textContent =
-        "Não foi possível salvar a conta neste navegador.";
-
-      return;
-    }
+      if (loginEmail) {
+        loginEmail.value = email.toLowerCase();
+      }
 
 
-    // ==========================================
-    // CONFIRMAÇÃO
-    // ==========================================
+      // =================================================
+      // LIMPAR CAMPOS
+      // =================================================
 
-    registerMessage.style.color = "#1f513d";
+      if (nomeInput) {
+        nomeInput.value = "";
+      }
 
-    registerMessage.textContent =
-      "Conta criada com sucesso!";
+      if (emailInput) {
+        emailInput.value = "";
+      }
 
+      if (senhaInput) {
+        senhaInput.value = "";
+      }
 
-    // Coloca o e-mail no login
-
-    const loginEmail =
-      document.getElementById("loginEmail");
-
-    if (loginEmail) {
-      loginEmail.value = email;
-    }
-
-
-    // Limpa cadastro
-
-    document.getElementById("registerName").value = "";
-    document.getElementById("registerEmail").value = "";
-    document.getElementById("registerPassword").value = "";
-    document.getElementById("registerCompany").value = "";
+      if (empresaInput) {
+        empresaInput.value = "";
+      }
 
 
-    // Volta para login depois de 1 segundo
+      // =================================================
+      // VOLTAR PARA LOGIN
+      // =================================================
 
-    setTimeout(function () {
+      setTimeout(function () {
 
-      registerForm?.classList.add("hidden");
-      loginForm?.classList.remove("hidden");
+        if (registerForm) {
+          registerForm.classList.add("hidden");
+        }
 
-      registerMessage.textContent = "";
+        if (loginForm) {
+          loginForm.classList.remove("hidden");
+        }
 
-    }, 1000);
+        if (registerMessage) {
+          registerMessage.textContent = "";
+        }
 
-  });
+      }, 1200);
+
+    });
+
+  }
 
 
-  // ==========================================
+  // =====================================================
   // LOGIN
-  // ==========================================
+  // =====================================================
 
-  loginButton?.addEventListener("click", function (event) {
+  if (loginButton) {
 
-    event.preventDefault();
+    loginButton.addEventListener("click", function (event) {
 
-    const email =
-      document.getElementById("loginEmail")?.value.trim();
-
-    const senha =
-      document.getElementById("loginPassword")?.value;
+      event.preventDefault();
 
 
-    if (!email || !senha) {
+      const emailInput =
+        document.getElementById("loginEmail");
 
-      loginMessage.textContent =
-        "Digite seu e-mail e sua senha.";
-
-      return;
-    }
+      const senhaInput =
+        document.getElementById("loginPassword");
 
 
-    const dados =
-      localStorage.getItem(
-        "controleFinanceiroUsuario"
+      const email =
+        emailInput ? emailInput.value.trim() : "";
+
+      const senha =
+        senhaInput ? senhaInput.value : "";
+
+
+      if (!email || !senha) {
+
+        mensagem(
+          loginMessage,
+          "Digite seu e-mail e sua senha."
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // PEGAR USUÁRIO
+      // =================================================
+
+      const dados =
+        localStorage.getItem(
+          "controleFinanceiroUsuario"
+        );
+
+
+      if (!dados) {
+
+        mensagem(
+          loginMessage,
+          "Nenhuma conta cadastrada. Clique em Criar conta."
+        );
+
+        return;
+      }
+
+
+      let usuario;
+
+
+      try {
+
+        usuario = JSON.parse(dados);
+
+      } catch (erro) {
+
+        console.error(
+          "Erro ao ler usuário:",
+          erro
+        );
+
+        mensagem(
+          loginMessage,
+          "Os dados da conta estão corrompidos."
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // VERIFICAR LOGIN
+      // =================================================
+
+      if (
+        email.toLowerCase() !==
+        String(usuario.email).toLowerCase()
+      ) {
+
+        mensagem(
+          loginMessage,
+          "E-mail ou senha incorretos."
+        );
+
+        return;
+      }
+
+
+      if (senha !== usuario.senha) {
+
+        mensagem(
+          loginMessage,
+          "E-mail ou senha incorretos."
+        );
+
+        return;
+      }
+
+
+      // =================================================
+      // LOGIN OK
+      // =================================================
+
+      localStorage.setItem(
+        "controleFinanceiroLogado",
+        "true"
       );
 
 
-    if (!dados) {
-
-      loginMessage.textContent =
-        "Nenhuma conta cadastrada.";
-
-      return;
-    }
+      mensagem(
+        loginMessage,
+        "Login realizado com sucesso!",
+        true
+      );
 
 
-    const usuario =
-      JSON.parse(dados);
+      // =================================================
+      // ABRIR APLICAÇÃO
+      // =================================================
+
+      if (authScreen) {
+        authScreen.classList.add("hidden");
+      }
+
+      if (appScreen) {
+        appScreen.classList.remove("hidden");
+      }
 
 
-    if (
-      email.toLowerCase() !==
-      usuario.email.toLowerCase()
-      ||
-      senha !== usuario.senha
-    ) {
+      const userName =
+        document.getElementById("userName");
 
-      loginMessage.textContent =
-        "E-mail ou senha incorretos.";
-
-      return;
-    }
+      if (userName) {
+        userName.textContent =
+          usuario.nome;
+      }
 
 
-    localStorage.setItem(
-      "controleFinanceiroLogado",
-      "true"
+      const profileName =
+        document.getElementById("profileName");
+
+      if (profileName) {
+        profileName.textContent =
+          usuario.nome;
+      }
+
+
+      const profileEmail =
+        document.getElementById("profileEmail");
+
+      if (profileEmail) {
+        profileEmail.textContent =
+          usuario.email;
+      }
+
+
+      const profileAccountType =
+        document.getElementById(
+          "profileAccountType"
+        );
+
+
+      if (profileAccountType) {
+
+        const tipos = {
+
+          pessoal: "Pessoal",
+
+          empresa: "Empresa",
+
+          ambos: "Pessoal + Empresa"
+
+        };
+
+        profileAccountType.textContent =
+          tipos[usuario.tipo] || "Pessoal";
+      }
+
+
+      const profileCompany =
+        document.getElementById(
+          "profileCompany"
+        );
+
+
+      if (profileCompany) {
+
+        profileCompany.textContent =
+          usuario.empresa || "—";
+      }
+
+    });
+
+  }
+
+
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
+  const logoutButton =
+    document.getElementById("logoutButton");
+
+
+  if (logoutButton) {
+
+    logoutButton.addEventListener("click", function () {
+
+      localStorage.removeItem(
+        "controleFinanceiroLogado"
+      );
+
+      if (appScreen) {
+        appScreen.classList.add("hidden");
+      }
+
+      if (authScreen) {
+        authScreen.classList.remove("hidden");
+      }
+
+      if (registerForm) {
+        registerForm.classList.add("hidden");
+      }
+
+      if (loginForm) {
+        loginForm.classList.remove("hidden");
+      }
+
+    });
+
+  }
+
+
+  // =====================================================
+  // TIPO DE CONTROLE / EMPRESA
+  // =====================================================
+
+  const registerAccountType =
+    document.getElementById(
+      "registerAccountType"
+    );
+
+  const companyField =
+    document.getElementById(
+      "companyField"
     );
 
 
-    loginMessage.style.color = "#1f513d";
+  if (registerAccountType) {
 
-    loginMessage.textContent =
-      "Login realizado com sucesso!";
+    registerAccountType.addEventListener(
+      "change",
+      function () {
+
+        if (
+          this.value === "empresa" ||
+          this.value === "ambos"
+        ) {
+
+          if (companyField) {
+            companyField.classList.remove("hidden");
+          }
+
+        } else {
+
+          if (companyField) {
+            companyField.classList.add("hidden");
+          }
+
+        }
+
+      }
+    );
+
+  }
 
 
-    // ==========================================
-    // ABRIR SISTEMA
-    // ==========================================
+  // =====================================================
+  // VERIFICAR LOGIN SALVO
+  // =====================================================
 
-    const authScreen =
-      document.getElementById("authScreen");
-
-    const appScreen =
-      document.getElementById("appScreen");
-
-
-    authScreen?.classList.add("hidden");
-    appScreen?.classList.remove("hidden");
+  const logado =
+    localStorage.getItem(
+      "controleFinanceiroLogado"
+    );
 
 
-    const userName =
-      document.getElementById("userName");
+  const dadosUsuario =
+    localStorage.getItem(
+      "controleFinanceiroUsuario"
+    );
 
-    if (userName) {
-      userName.textContent = usuario.nome;
+
+  if (
+    logado === "true" &&
+    dadosUsuario
+  ) {
+
+    try {
+
+      const usuario =
+        JSON.parse(dadosUsuario);
+
+
+      if (authScreen) {
+        authScreen.classList.add("hidden");
+      }
+
+      if (appScreen) {
+        appScreen.classList.remove("hidden");
+      }
+
+
+      const userName =
+        document.getElementById("userName");
+
+      if (userName) {
+        userName.textContent =
+          usuario.nome;
+      }
+
+
+      const profileName =
+        document.getElementById("profileName");
+
+      if (profileName) {
+        profileName.textContent =
+          usuario.nome;
+      }
+
+
+      const profileEmail =
+        document.getElementById("profileEmail");
+
+      if (profileEmail) {
+        profileEmail.textContent =
+          usuario.email;
+      }
+
+
+    } catch (erro) {
+
+      localStorage.removeItem(
+        "controleFinanceiroLogado"
+      );
+
     }
 
-  });
-
+  }
 
 });
