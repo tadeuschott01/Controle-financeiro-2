@@ -1,19 +1,49 @@
 /* =========================================================
    CONTROLE FINANCEIRO
    SCRIPT PRINCIPAL
+   SUPABASE + LOGIN + CADASTRO
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+
+  // ========================================================
+  // SUPABASE
+  // ========================================================
+
+  const SUPABASE_URL =
+    "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
+
+  if (!window.supabase) {
+    console.error("Biblioteca do Supabase não carregada.");
+    alert("Erro: o Supabase não foi carregado.");
+    return;
+  }
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
 
   // ========================================================
   // ELEMENTOS
   // ========================================================
 
-  const authScreen = document.getElementById("authScreen");
-  const appScreen = document.getElementById("appScreen");
+  const authScreen =
+    document.getElementById("authScreen");
 
-  const loginForm = document.getElementById("loginForm");
-  const registerForm = document.getElementById("registerForm");
+  const appScreen =
+    document.getElementById("appScreen");
+
+  const loginForm =
+    document.getElementById("loginForm");
+
+  const registerForm =
+    document.getElementById("registerForm");
 
   const showRegisterButton =
     document.getElementById("showRegisterButton");
@@ -36,11 +66,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const companyField =
     document.getElementById("companyField");
 
-
-  // ========================================================
-  // MENSAGENS
-  // ========================================================
-
   const loginMessage =
     document.getElementById("loginMessage");
 
@@ -48,19 +73,29 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("registerMessage");
 
 
-  function mostrarMensagem(elemento, mensagem, sucesso = false) {
+  // ========================================================
+  // MENSAGENS
+  // ========================================================
+
+  function mostrarMensagem(
+    elemento,
+    mensagem,
+    sucesso = false
+  ) {
 
     if (!elemento) return;
 
     elemento.textContent = mensagem;
 
     elemento.style.color =
-      sucesso ? "#1f513d" : "#d94b4b";
+      sucesso
+        ? "#1f513d"
+        : "#d94b4b";
   }
 
 
   // ========================================================
-  // MOSTRAR LOGIN
+  // LOGIN / CADASTRO
   // ========================================================
 
   function mostrarLogin() {
@@ -82,10 +117,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-
-  // ========================================================
-  // MOSTRAR CADASTRO
-  // ========================================================
 
   function mostrarCadastro() {
 
@@ -113,13 +144,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (showRegisterButton) {
 
-    showRegisterButton.addEventListener("click", function (event) {
+    showRegisterButton.addEventListener(
+      "click",
+      function (event) {
 
-      event.preventDefault();
+        event.preventDefault();
 
-      mostrarCadastro();
+        mostrarCadastro();
 
-    });
+      }
+    );
 
   }
 
@@ -130,13 +164,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (showLoginButton) {
 
-    showLoginButton.addEventListener("click", function (event) {
+    showLoginButton.addEventListener(
+      "click",
+      function (event) {
 
-      event.preventDefault();
+        event.preventDefault();
 
-      mostrarLogin();
+        mostrarLogin();
 
-    });
+      }
+    );
 
   }
 
@@ -147,245 +184,419 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (registerAccountType) {
 
-    registerAccountType.addEventListener("change", function () {
+    registerAccountType.addEventListener(
+      "change",
+      function () {
 
-      const tipo = this.value;
+        const tipo = this.value;
 
-      if (
-        tipo === "empresa" ||
-        tipo === "ambos"
-      ) {
+        if (
+          tipo === "empresa" ||
+          tipo === "ambos"
+        ) {
 
-        if (companyField) {
-          companyField.classList.remove("hidden");
-        }
+          if (companyField) {
+            companyField.classList.remove("hidden");
+          }
 
-      } else {
+        } else {
 
-        if (companyField) {
-          companyField.classList.add("hidden");
+          if (companyField) {
+            companyField.classList.add("hidden");
+          }
+
         }
 
       }
-
-    });
-
-  }
-
-
-  // ========================================================
-  // FUNÇÃO PARA PEGAR USUÁRIO
-  // ========================================================
-
-  function pegarUsuario() {
-
-    const usuario =
-      localStorage.getItem("controleFinanceiroUsuario");
-
-    if (!usuario) {
-      return null;
-    }
-
-    try {
-
-      return JSON.parse(usuario);
-
-    } catch (erro) {
-
-      localStorage.removeItem(
-        "controleFinanceiroUsuario"
-      );
-
-      return null;
-    }
+    );
 
   }
 
 
   // ========================================================
-  // CADASTRAR USUÁRIO
+  // CADASTRO
   // ========================================================
 
   if (registerButton) {
 
-    registerButton.addEventListener("click", function (event) {
+    registerButton.addEventListener(
+      "click",
+      async function (event) {
 
-      event.preventDefault();
+        event.preventDefault();
 
-      const nome =
-        document.getElementById("registerName")
-          ?.value.trim();
+        const nome =
+          document
+            .getElementById("registerName")
+            ?.value
+            .trim() || "";
 
-      const email =
-        document.getElementById("registerEmail")
-          ?.value.trim();
+        const email =
+          document
+            .getElementById("registerEmail")
+            ?.value
+            .trim() || "";
 
-      const senha =
-        document.getElementById("registerPassword")
-          ?.value;
+        const senha =
+          document
+            .getElementById("registerPassword")
+            ?.value || "";
 
-      const tipo =
-        document.getElementById("registerAccountType")
-          ?.value || "pessoal";
+        const tipo =
+          document
+            .getElementById("registerAccountType")
+            ?.value || "pessoal";
 
-      const empresa =
-        document.getElementById("registerCompany")
-          ?.value.trim() || "";
-
-
-      // -------------------------------
-      // VALIDAÇÕES
-      // -------------------------------
-
-      if (!nome) {
-
-        mostrarMensagem(
-          registerMessage,
-          "Digite seu nome."
-        );
-
-        return;
-      }
+        const empresa =
+          document
+            .getElementById("registerCompany")
+            ?.value
+            .trim() || "";
 
 
-      if (!email) {
+        // ==================================================
+        // VALIDAÇÕES
+        // ==================================================
 
-        mostrarMensagem(
-          registerMessage,
-          "Digite seu e-mail."
-        );
+        if (!nome) {
 
-        return;
-      }
+          mostrarMensagem(
+            registerMessage,
+            "Digite seu nome."
+          );
 
-
-      if (!email.includes("@")) {
-
-        mostrarMensagem(
-          registerMessage,
-          "Digite um e-mail válido."
-        );
-
-        return;
-      }
-
-
-      if (!senha) {
-
-        mostrarMensagem(
-          registerMessage,
-          "Digite uma senha."
-        );
-
-        return;
-      }
-
-
-      if (senha.length < 6) {
-
-        mostrarMensagem(
-          registerMessage,
-          "A senha precisa ter pelo menos 6 caracteres."
-        );
-
-        return;
-      }
-
-
-      // ====================================================
-      // CRIAR USUÁRIO
-      // ====================================================
-
-      const usuario = {
-
-        nome: nome,
-
-        email: email,
-
-        senha: senha,
-
-        tipo: tipo,
-
-        empresa: empresa,
-
-        criadoEm:
-          new Date().toISOString()
-
-      };
-
-
-      localStorage.setItem(
-        "controleFinanceiroUsuario",
-        JSON.stringify(usuario)
-      );
-
-
-      // Criar lista de lançamentos
-      localStorage.setItem(
-        "controleFinanceiroLancamentos",
-        JSON.stringify([])
-      );
-
-
-      // ====================================================
-      // SUCESSO
-      // ====================================================
-
-      mostrarMensagem(
-        registerMessage,
-        "Conta criada com sucesso!",
-        true
-      );
-
-
-      // Coloca o e-mail automaticamente no login
-
-      const loginEmail =
-        document.getElementById("loginEmail");
-
-      if (loginEmail) {
-        loginEmail.value = email;
-      }
-
-
-      // Limpa campos
-
-      const registerName =
-        document.getElementById("registerName");
-
-      const registerEmail =
-        document.getElementById("registerEmail");
-
-      const registerPassword =
-        document.getElementById("registerPassword");
-
-      if (registerName) {
-        registerName.value = "";
-      }
-
-      if (registerEmail) {
-        registerEmail.value = "";
-      }
-
-      if (registerPassword) {
-        registerPassword.value = "";
-      }
-
-
-      // Depois de um pequeno intervalo,
-      // volta para o login.
-
-      setTimeout(function () {
-
-        mostrarLogin();
-
-        if (loginEmail) {
-          loginEmail.value = email;
+          return;
         }
 
-      }, 1000);
 
-    });
+        if (!email) {
+
+          mostrarMensagem(
+            registerMessage,
+            "Digite seu e-mail."
+          );
+
+          return;
+        }
+
+
+        if (!email.includes("@")) {
+
+          mostrarMensagem(
+            registerMessage,
+            "Digite um e-mail válido."
+          );
+
+          return;
+        }
+
+
+        if (!senha) {
+
+          mostrarMensagem(
+            registerMessage,
+            "Digite uma senha."
+          );
+
+          return;
+        }
+
+
+        if (senha.length < 6) {
+
+          mostrarMensagem(
+            registerMessage,
+            "A senha precisa ter pelo menos 6 caracteres."
+          );
+
+          return;
+        }
+
+
+        // ==================================================
+        // DESABILITA BOTÃO
+        // ==================================================
+
+        registerButton.disabled = true;
+
+        registerButton.textContent =
+          "Criando conta...";
+
+
+        mostrarMensagem(
+          registerMessage,
+          "Criando sua conta...",
+          true
+        );
+
+
+        // ==================================================
+        // CADASTRO NO SUPABASE AUTH
+        // ==================================================
+
+        try {
+
+          const { data, error } =
+            await supabaseClient.auth.signUp({
+
+              email: email,
+
+              password: senha,
+
+              options: {
+
+                data: {
+
+                  nome: nome,
+
+                  tipo: tipo,
+
+                  empresa: empresa
+
+                }
+
+              }
+
+            });
+
+
+          // =================================================
+          // ERRO
+          // =================================================
+
+          if (error) {
+
+            console.error(
+              "Erro Supabase:",
+              error
+            );
+
+            let mensagem =
+              error.message ||
+              "Não foi possível criar a conta.";
+
+
+            if (
+              error.message
+                .toLowerCase()
+                .includes("already registered")
+            ) {
+
+              mensagem =
+                "Este e-mail já possui uma conta.";
+
+            }
+
+
+            mostrarMensagem(
+              registerMessage,
+              mensagem
+            );
+
+            registerButton.disabled = false;
+
+            registerButton.textContent =
+              "Criar minha conta";
+
+            return;
+          }
+
+
+          // =================================================
+          // CONTA CRIADA
+          // =================================================
+
+          console.log(
+            "Usuário criado:",
+            data.user
+          );
+
+
+          // =================================================
+          // PERFIL
+          // =================================================
+
+          if (data.user) {
+
+            try {
+
+              const { error: profileError } =
+                await supabaseClient
+                  .from("profiles")
+                  .upsert({
+
+                    id: data.user.id,
+
+                    nome: nome,
+
+                    email: email,
+
+                    tipo: tipo,
+
+                    empresa: empresa
+
+                  });
+
+
+              if (profileError) {
+
+                console.warn(
+                  "Perfil não foi salvo:",
+                  profileError
+                );
+
+              }
+
+            } catch (profileError) {
+
+              console.warn(
+                "Erro ao salvar perfil:",
+                profileError
+              );
+
+            }
+
+          }
+
+
+          // =================================================
+          // MENSAGEM
+          // =================================================
+
+          mostrarMensagem(
+            registerMessage,
+            "Conta criada com sucesso!",
+            true
+          );
+
+
+          // =================================================
+          // LIMPAR CAMPOS
+          // =================================================
+
+          const loginEmail =
+            document.getElementById(
+              "loginEmail"
+            );
+
+          if (loginEmail) {
+            loginEmail.value = email;
+          }
+
+
+          const registerName =
+            document.getElementById(
+              "registerName"
+            );
+
+          const registerEmail =
+            document.getElementById(
+              "registerEmail"
+            );
+
+          const registerPassword =
+            document.getElementById(
+              "registerPassword"
+            );
+
+          if (registerName) {
+            registerName.value = "";
+          }
+
+          if (registerEmail) {
+            registerEmail.value = "";
+          }
+
+          if (registerPassword) {
+            registerPassword.value = "";
+          }
+
+
+          // =================================================
+          // SE O SUPABASE EXIGIR CONFIRMAÇÃO
+          // =================================================
+
+          if (
+            data.user &&
+            !data.session
+          ) {
+
+            mostrarMensagem(
+              registerMessage,
+              "Conta criada! Verifique seu e-mail para confirmar a conta.",
+              true
+            );
+
+            registerButton.disabled = false;
+
+            registerButton.textContent =
+              "Criar minha conta";
+
+            return;
+          }
+
+
+          // =================================================
+          // SE JÁ ENTROU AUTOMATICAMENTE
+          // =================================================
+
+          if (data.session) {
+
+            const usuario = {
+
+              id: data.user.id,
+
+              nome: nome,
+
+              email: email,
+
+              tipo: tipo,
+
+              empresa: empresa
+
+            };
+
+            abrirSistema(usuario);
+
+          } else {
+
+            registerButton.disabled = false;
+
+            registerButton.textContent =
+              "Criar minha conta";
+
+            setTimeout(
+              function () {
+
+                mostrarLogin();
+
+              },
+              1500
+            );
+
+          }
+
+        } catch (erro) {
+
+          console.error(
+            "Erro inesperado:",
+            erro
+          );
+
+          mostrarMensagem(
+            registerMessage,
+            "Ocorreu um erro. Verifique sua conexão e tente novamente."
+          );
+
+          registerButton.disabled = false;
+
+          registerButton.textContent =
+            "Criar minha conta";
+
+        }
+
+      }
+    );
 
   }
 
@@ -396,82 +607,167 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (loginButton) {
 
-    loginButton.addEventListener("click", function (event) {
+    loginButton.addEventListener(
+      "click",
+      async function (event) {
 
-      event.preventDefault();
+        event.preventDefault();
 
-      const email =
-        document.getElementById("loginEmail")
-          ?.value.trim();
+        const email =
+          document
+            .getElementById("loginEmail")
+            ?.value
+            .trim() || "";
 
-      const senha =
-        document.getElementById("loginPassword")
-          ?.value;
+        const senha =
+          document
+            .getElementById("loginPassword")
+            ?.value || "";
 
 
-      if (!email || !senha) {
+        if (!email || !senha) {
 
-        mostrarMensagem(
-          loginMessage,
-          "Digite seu e-mail e sua senha."
-        );
+          mostrarMensagem(
+            loginMessage,
+            "Digite seu e-mail e sua senha."
+          );
 
-        return;
+          return;
+        }
+
+
+        loginButton.disabled = true;
+
+        loginButton.textContent =
+          "Entrando...";
+
+
+        try {
+
+          const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+
+              email: email,
+
+              password: senha
+
+            });
+
+
+          if (error) {
+
+            console.error(
+              "Erro login:",
+              error
+            );
+
+            mostrarMensagem(
+              loginMessage,
+              "E-mail ou senha incorretos."
+            );
+
+            loginButton.disabled = false;
+
+            loginButton.textContent =
+              "Entrar";
+
+            return;
+          }
+
+
+          let usuario = {
+
+            id: data.user.id,
+
+            nome:
+              data.user.user_metadata?.nome ||
+              email.split("@")[0],
+
+            email:
+              data.user.email,
+
+            tipo:
+              data.user.user_metadata?.tipo ||
+              "pessoal",
+
+            empresa:
+              data.user.user_metadata?.empresa ||
+              ""
+
+          };
+
+
+          // =================================================
+          // TENTA BUSCAR PERFIL
+          // =================================================
+
+          try {
+
+            const { data: perfil } =
+              await supabaseClient
+                .from("profiles")
+                .select("*")
+                .eq("id", data.user.id)
+                .maybeSingle();
+
+
+            if (perfil) {
+
+              usuario.nome =
+                perfil.nome ||
+                perfil.name ||
+                usuario.nome;
+
+              usuario.email =
+                perfil.email ||
+                usuario.email;
+
+              usuario.tipo =
+                perfil.tipo ||
+                perfil.account_type ||
+                usuario.tipo;
+
+              usuario.empresa =
+                perfil.empresa ||
+                perfil.company ||
+                usuario.empresa;
+
+            }
+
+          } catch (erroPerfil) {
+
+            console.warn(
+              "Não foi possível carregar o perfil:",
+              erroPerfil
+            );
+
+          }
+
+
+          abrirSistema(usuario);
+
+
+        } catch (erro) {
+
+          console.error(
+            erro
+          );
+
+          mostrarMensagem(
+            loginMessage,
+            "Erro ao entrar na conta."
+          );
+
+        }
+
+
+        loginButton.disabled = false;
+
+        loginButton.textContent =
+          "Entrar";
+
       }
-
-
-      const usuario = pegarUsuario();
-
-
-      if (!usuario) {
-
-        mostrarMensagem(
-          loginMessage,
-          "Nenhuma conta cadastrada. Clique em Criar conta."
-        );
-
-        return;
-      }
-
-
-      if (
-        email.toLowerCase() !==
-        usuario.email.toLowerCase()
-      ) {
-
-        mostrarMensagem(
-          loginMessage,
-          "E-mail ou senha incorretos."
-        );
-
-        return;
-      }
-
-
-      if (senha !== usuario.senha) {
-
-        mostrarMensagem(
-          loginMessage,
-          "E-mail ou senha incorretos."
-        );
-
-        return;
-      }
-
-
-      // ====================================================
-      // LOGIN REALIZADO
-      // ====================================================
-
-      localStorage.setItem(
-        "controleFinanceiroLogado",
-        "true"
-      );
-
-
-      abrirSistema(usuario);
-
-    });
+    );
 
   }
 
@@ -491,34 +787,45 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    // Nome no topo
-
     const userName =
-      document.getElementById("userName");
+      document.getElementById(
+        "userName"
+      );
 
     if (userName) {
+
       userName.textContent =
-        usuario.nome;
+        usuario.nome ||
+        "Usuário";
+
     }
 
 
-    // Perfil
-
     const profileName =
-      document.getElementById("profileName");
+      document.getElementById(
+        "profileName"
+      );
 
     if (profileName) {
+
       profileName.textContent =
-        usuario.nome;
+        usuario.nome ||
+        "Usuário";
+
     }
 
 
     const profileEmail =
-      document.getElementById("profileEmail");
+      document.getElementById(
+        "profileEmail"
+      );
 
     if (profileEmail) {
+
       profileEmail.textContent =
-        usuario.email;
+        usuario.email ||
+        "";
+
     }
 
 
@@ -531,17 +838,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const tipos = {
 
-        pessoal: "Pessoal",
+        pessoal:
+          "Pessoal",
 
-        empresa: "Empresa",
+        empresa:
+          "Empresa",
 
-        ambos: "Pessoal + Empresa"
+        ambos:
+          "Pessoal + Empresa"
 
       };
 
       profileAccountType.textContent =
         tipos[usuario.tipo] ||
         "Pessoal";
+
     }
 
 
@@ -553,7 +864,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (profileCompany) {
 
       profileCompany.textContent =
-        usuario.empresa || "—";
+        usuario.empresa ||
+        "—";
+
     }
 
 
@@ -568,23 +881,80 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (logoutButton) {
 
-    logoutButton.addEventListener("click", function () {
+    logoutButton.addEventListener(
+      "click",
+      async function () {
 
-      localStorage.removeItem(
-        "controleFinanceiroLogado"
-      );
+        await supabaseClient.auth.signOut();
 
-      if (appScreen) {
-        appScreen.classList.add("hidden");
+        if (appScreen) {
+          appScreen.classList.add("hidden");
+        }
+
+        if (authScreen) {
+          authScreen.classList.remove("hidden");
+        }
+
+        mostrarLogin();
+
       }
+    );
 
-      if (authScreen) {
-        authScreen.classList.remove("hidden");
+  }
+
+
+  // ========================================================
+  // VERIFICAR SESSÃO EXISTENTE
+  // ========================================================
+
+  try {
+
+    const {
+      data: {
+        session
       }
+    } =
+      await supabaseClient.auth.getSession();
 
-      mostrarLogin();
 
-    });
+    if (
+      session &&
+      session.user
+    ) {
+
+      const usuario = {
+
+        id:
+          session.user.id,
+
+        nome:
+          session.user.user_metadata?.nome ||
+          session.user.email?.split("@")[0],
+
+        email:
+          session.user.email,
+
+        tipo:
+          session.user.user_metadata?.tipo ||
+          "pessoal",
+
+        empresa:
+          session.user.user_metadata?.empresa ||
+          ""
+
+      };
+
+
+      abrirSistema(usuario);
+
+    }
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao verificar sessão:",
+      erro
+    );
 
   }
 
@@ -604,52 +974,63 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-  menuItems.forEach(function (button) {
+  menuItems.forEach(
+    function (button) {
 
-    button.addEventListener(
-      "click",
-      function () {
+      button.addEventListener(
+        "click",
+        function () {
 
-        const sectionName =
-          button.dataset.section;
-
-
-        menuItems.forEach(function (item) {
-
-          item.classList.remove("active");
-
-        });
+          const sectionName =
+            button.dataset.section;
 
 
-        button.classList.add("active");
+          menuItems.forEach(
+            function (item) {
 
+              item.classList.remove(
+                "active"
+              );
 
-        sections.forEach(function (section) {
-
-          section.classList.remove(
-            "active-section"
+            }
           );
 
-        });
 
-
-        const section =
-          document.getElementById(
-            sectionName
+          button.classList.add(
+            "active"
           );
 
-        if (section) {
 
-          section.classList.add(
-            "active-section"
+          sections.forEach(
+            function (section) {
+
+              section.classList.remove(
+                "active-section"
+              );
+
+            }
           );
+
+
+          const section =
+            document.getElementById(
+              sectionName
+            );
+
+
+          if (section) {
+
+            section.classList.add(
+              "active-section"
+            );
+
+          }
 
         }
+      );
 
-      }
-    );
-
-  });
+    }
+  );
 
 
   // ========================================================
@@ -667,7 +1048,10 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-  if (mobileMenuButton && sidebar) {
+  if (
+    mobileMenuButton &&
+    sidebar
+  ) {
 
     mobileMenuButton.addEventListener(
       "click",
@@ -700,7 +1084,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     try {
 
-      return JSON.parse(dados);
+      return JSON.parse(
+        dados
+      );
 
     } catch (erro) {
 
@@ -711,23 +1097,29 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  function salvarLancamentos(lancamentos) {
+  function salvarLancamentos(
+    lancamentos
+  ) {
 
     localStorage.setItem(
       "controleFinanceiroLancamentos",
-      JSON.stringify(lancamentos)
+      JSON.stringify(
+        lancamentos
+      )
     );
 
   }
 
 
   // ========================================================
-  // FORMATAR DINHEIRO
+  // DINHEIRO
   // ========================================================
 
   function dinheiro(valor) {
 
-    return Number(valor || 0).toLocaleString(
+    return Number(
+      valor || 0
+    ).toLocaleString(
       "pt-BR",
       {
         style: "currency",
@@ -749,28 +1141,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     let receitas = 0;
+
     let despesas = 0;
 
 
-    lancamentos.forEach(function (item) {
+    lancamentos.forEach(
+      function (item) {
 
-      if (item.tipo === "income") {
+        if (
+          item.tipo === "income"
+        ) {
 
-        receitas += Number(item.valor);
+          receitas +=
+            Number(
+              item.valor
+            );
+
+        }
+
+
+        if (
+          item.tipo === "expense"
+        ) {
+
+          despesas +=
+            Number(
+              item.valor
+            );
+
+        }
 
       }
-
-      if (item.tipo === "expense") {
-
-        despesas += Number(item.valor);
-
-      }
-
-    });
+    );
 
 
     const saldo =
-      receitas - despesas;
+      receitas -
+      despesas;
 
 
     const totalIncome =
@@ -795,23 +1202,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     if (totalIncome) {
+
       totalIncome.textContent =
-        dinheiro(receitas);
+        dinheiro(
+          receitas
+        );
+
     }
+
 
     if (totalExpense) {
+
       totalExpense.textContent =
-        dinheiro(despesas);
+        dinheiro(
+          despesas
+        );
+
     }
+
 
     if (totalBalance) {
+
       totalBalance.textContent =
-        dinheiro(saldo);
+        dinheiro(
+          saldo
+        );
+
     }
 
+
     if (totalTransactions) {
+
       totalTransactions.textContent =
         lancamentos.length;
+
     }
 
 
@@ -831,14 +1255,19 @@ document.addEventListener("DOMContentLoaded", function () {
         "recentTransactions"
       );
 
-    if (!container) return;
+
+    if (!container) {
+      return;
+    }
 
 
     const lancamentos =
       pegarLancamentos();
 
 
-    if (lancamentos.length === 0) {
+    if (
+      lancamentos.length === 0
+    ) {
 
       container.innerHTML = `
 
@@ -859,6 +1288,7 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
 
       return;
+
     }
 
 
@@ -866,62 +1296,74 @@ document.addEventListener("DOMContentLoaded", function () {
       lancamentos
         .slice()
         .reverse()
-        .slice(0, 5);
+        .slice(
+          0,
+          5
+        );
 
 
     container.innerHTML =
-      recentes.map(function (item) {
+      recentes
+        .map(
+          function (item) {
 
-        const sinal =
-          item.tipo === "income"
-            ? "+"
-            : "-";
-
-        const classe =
-          item.tipo === "income"
-            ? "income"
-            : "expense";
+            const sinal =
+              item.tipo === "income"
+                ? "+"
+                : "-";
 
 
-        return `
+            const classe =
+              item.tipo === "income"
+                ? "income"
+                : "expense";
 
-          <div class="transaction-row">
 
-            <div class="transaction-info">
+            return `
 
-              <div class="transaction-icon ${classe}">
-                ${item.tipo === "income" ? "↑" : "↓"}
-              </div>
+              <div class="transaction-row">
 
-              <div>
+                <div class="transaction-info">
 
-                <div class="transaction-description">
-                  ${item.descricao}
+                  <div class="transaction-icon ${classe}">
+                    ${
+                      item.tipo === "income"
+                        ? "↑"
+                        : "↓"
+                    }
+                  </div>
+
+                  <div>
+
+                    <div class="transaction-description">
+                      ${item.descricao || ""}
+                    </div>
+
+                    <div class="transaction-date">
+                      ${item.data || ""}
+                    </div>
+
+                  </div>
+
                 </div>
 
-                <div class="transaction-date">
-                  ${item.data || ""}
+                <div class="transaction-value ${classe}">
+                  ${sinal} ${dinheiro(item.valor)}
                 </div>
 
               </div>
 
-            </div>
+            `;
 
-            <div class="transaction-value ${classe}">
-              ${sinal} ${dinheiro(item.valor)}
-            </div>
-
-          </div>
-
-        `;
-
-      }).join("");
+          }
+        )
+        .join("");
 
   }
 
 
   // ========================================================
-  // BOTÕES DE RECEITA E DESPESA
+  // MODAL DE LANÇAMENTO
   // ========================================================
 
   const quickIncomeButton =
@@ -953,16 +1395,23 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
 
-    if (!modal) return;
-
-
-    if (transactionType) {
-      transactionType.value =
-        tipo || "income";
+    if (!modal) {
+      return;
     }
 
 
-    modal.classList.remove("hidden");
+    if (transactionType) {
+
+      transactionType.value =
+        tipo ||
+        "income";
+
+    }
+
+
+    modal.classList.remove(
+      "hidden"
+    );
 
   }
 
@@ -973,7 +1422,9 @@ document.addEventListener("DOMContentLoaded", function () {
       "click",
       function () {
 
-        abrirModal("income");
+        abrirModal(
+          "income"
+        );
 
       }
     );
@@ -987,7 +1438,9 @@ document.addEventListener("DOMContentLoaded", function () {
       "click",
       function () {
 
-        abrirModal("expense");
+        abrirModal(
+          "expense"
+        );
 
       }
     );
@@ -1001,7 +1454,9 @@ document.addEventListener("DOMContentLoaded", function () {
       "click",
       function () {
 
-        abrirModal("income");
+        abrirModal(
+          "income"
+        );
 
       }
     );
@@ -1063,7 +1518,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // ========================================================
-  // SALVAR LANÇAMENTO
+  // SALVAR LANÇAMENTO LOCALMENTE
+  // ========================================================
+  // Mantido por enquanto para não quebrar
+  // o restante do seu sistema.
   // ========================================================
 
   const saveTransactionButton =
@@ -1081,18 +1539,129 @@ document.addEventListener("DOMContentLoaded", function () {
         const tipo =
           document.getElementById(
             "transactionType"
-          )?.value;
+          )?.value ||
+          "income";
+
 
         const descricao =
           document.getElementById(
             "transactionDescription"
-          )?.value.trim();
+          )?.value
+            .trim() ||
+          "";
+
 
         const valor =
           document.getElementById(
             "transactionAmount"
-          )?.value;
+          )?.value ||
+          "";
+
 
         const categoria =
           document.getElementById(
-            "
+            "transactionCategory"
+          )?.value ||
+          "";
+
+
+        if (!descricao) {
+
+          alert(
+            "Digite uma descrição."
+          );
+
+          return;
+
+        }
+
+
+        if (
+          !valor ||
+          Number(valor) <= 0
+        ) {
+
+          alert(
+            "Digite um valor válido."
+          );
+
+          return;
+
+        }
+
+
+        const lancamentos =
+          pegarLancamentos();
+
+
+        lancamentos.push({
+
+          id:
+            Date.now(),
+
+          tipo:
+            tipo,
+
+          descricao:
+            descricao,
+
+          valor:
+            Number(valor),
+
+          categoria:
+            categoria,
+
+          data:
+            new Date().toLocaleDateString(
+              "pt-BR"
+            )
+
+        });
+
+
+        salvarLancamentos(
+          lancamentos
+        );
+
+
+        fecharModal();
+
+        atualizarDashboard();
+
+
+        // Limpar campos
+
+        const descricaoInput =
+          document.getElementById(
+            "transactionDescription"
+          );
+
+        const valorInput =
+          document.getElementById(
+            "transactionAmount"
+          );
+
+
+        if (descricaoInput) {
+          descricaoInput.value = "";
+        }
+
+        if (valorInput) {
+          valorInput.value = "";
+        }
+
+      }
+    );
+
+  }
+
+
+  // ========================================================
+  // INÍCIO
+  // ========================================================
+
+  console.log(
+    "Controle Financeiro iniciado."
+  );
+
+});
