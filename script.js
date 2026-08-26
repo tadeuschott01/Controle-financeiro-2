@@ -1,22 +1,13 @@
+/* =========================================================
+   CONTROLE FINANCEIRO
+   SCRIPT PRINCIPAL COMPLETO
+   ========================================================= */
+
 document.addEventListener("DOMContentLoaded", function () {
 
-  // =========================================================
-  // CONFIGURAÇÃO
-  // =========================================================
-
-  const STORAGE_USER = "controleFinanceiroUsuario";
-  const STORAGE_LOGADO = "controleFinanceiroLogado";
-  const STORAGE_LANCAMENTOS = "controleFinanceiroLancamentos";
-
-  let editandoId = null;
-
-  let financeChart = null;
-  let categoryChart = null;
-
-
-  // =========================================================
-  // ELEMENTOS
-  // =========================================================
+  /* =======================================================
+     ELEMENTOS PRINCIPAIS
+     ======================================================= */
 
   const authScreen = document.getElementById("authScreen");
   const appScreen = document.getElementById("appScreen");
@@ -30,19 +21,28 @@ document.addEventListener("DOMContentLoaded", function () {
   const showLoginButton =
     document.getElementById("showLoginButton");
 
-  const registerButton =
-    document.getElementById("registerButton");
-
   const loginButton =
     document.getElementById("loginButton");
+
+  const registerButton =
+    document.getElementById("registerButton");
 
   const logoutButton =
     document.getElementById("logoutButton");
 
+  const loginMessage =
+    document.getElementById("loginMessage");
 
-  // =========================================================
-  // MENSAGENS
-  // =========================================================
+  const registerMessage =
+    document.getElementById("registerMessage");
+
+  const transactionMessage =
+    document.getElementById("transactionMessage");
+
+
+  /* =======================================================
+     UTILIDADES
+     ======================================================= */
 
   function mostrarMensagem(elemento, mensagem, sucesso = false) {
 
@@ -52,95 +52,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
     elemento.style.color =
       sucesso ? "#1f513d" : "#d94b4b";
-
   }
 
 
-  // =========================================================
-  // FORMATAÇÃO DE DINHEIRO
-  // =========================================================
-
   function dinheiro(valor) {
 
-    const numero = Number(valor) || 0;
+    const numero = Number(valor);
+
+    if (!Number.isFinite(numero)) {
+      return "R$ 0,00";
+    }
 
     return numero.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL"
     });
-
   }
 
 
-  // =========================================================
-  // CONVERTER VALOR BRASILEIRO
-  // =========================================================
+  function escaparHTML(texto) {
 
-  function converterValor(valorTexto) {
-
-    if (valorTexto === null || valorTexto === undefined) {
-      return NaN;
+    if (texto === null || texto === undefined) {
+      return "";
     }
 
-    let texto = String(valorTexto)
-      .trim()
-      .replace(/\s/g, "")
-      .replace(/R\$/gi, "");
-
-
-    if (!texto) {
-      return NaN;
-    }
-
-
-    /*
-      Exemplos:
-
-      2.200      -> 2200
-      2.200,50   -> 2200.50
-      2200       -> 2200
-      2200,50    -> 2200.50
-      2,50       -> 2.50
-    */
-
-    if (
-      texto.includes(".") &&
-      texto.includes(",")
-    ) {
-
-      texto = texto
-        .replace(/\./g, "")
-        .replace(",", ".");
-
-    } else if (texto.includes(",")) {
-
-      texto = texto.replace(",", ".");
-
-    } else if (
-      texto.includes(".") &&
-      /^\d{1,3}(\.\d{3})+$/.test(texto)
-    ) {
-
-      texto = texto.replace(/\./g, "");
-
-    }
-
-
-    const numero = Number(texto);
-
-    return numero;
-
+    return String(texto)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
 
-  // =========================================================
-  // USUÁRIO
-  // =========================================================
+  function gerarId() {
+
+    return Date.now() + Math.floor(Math.random() * 1000);
+  }
+
+
+  /* =======================================================
+     USUÁRIO
+     ======================================================= */
 
   function pegarUsuario() {
 
     const dados =
-      localStorage.getItem(STORAGE_USER);
+      localStorage.getItem(
+        "controleFinanceiroUsuario"
+      );
 
     if (!dados) {
       return null;
@@ -152,23 +112,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
     } catch (erro) {
 
-      localStorage.removeItem(STORAGE_USER);
+      console.error(
+        "Erro ao ler usuário:",
+        erro
+      );
+
+      localStorage.removeItem(
+        "controleFinanceiroUsuario"
+      );
 
       return null;
-
     }
-
   }
 
 
-  // =========================================================
-  // LANÇAMENTOS
-  // =========================================================
+  function salvarUsuario(usuario) {
+
+    localStorage.setItem(
+      "controleFinanceiroUsuario",
+      JSON.stringify(usuario)
+    );
+  }
+
+
+  /* =======================================================
+     LANÇAMENTOS
+     ======================================================= */
 
   function pegarLancamentos() {
 
     const dados =
-      localStorage.getItem(STORAGE_LANCAMENTOS);
+      localStorage.getItem(
+        "controleFinanceiroLancamentos"
+      );
 
     if (!dados) {
       return [];
@@ -178,32 +154,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const lista = JSON.parse(dados);
 
-      return Array.isArray(lista)
-        ? lista
-        : [];
+      if (!Array.isArray(lista)) {
+        return [];
+      }
+
+      return lista;
 
     } catch (erro) {
 
+      console.error(
+        "Erro ao ler lançamentos:",
+        erro
+      );
+
       return [];
-
     }
-
   }
 
 
   function salvarLancamentos(lancamentos) {
 
     localStorage.setItem(
-      STORAGE_LANCAMENTOS,
+      "controleFinanceiroLancamentos",
       JSON.stringify(lancamentos)
     );
-
   }
 
 
-  // =========================================================
-  // MOSTRAR LOGIN
-  // =========================================================
+  /* =======================================================
+     LOGIN / CADASTRO
+     ======================================================= */
 
   function mostrarLogin() {
 
@@ -217,13 +197,8 @@ document.addEventListener("DOMContentLoaded", function () {
     if (registerMessage) {
       registerMessage.textContent = "";
     }
-
   }
 
-
-  // =========================================================
-  // MOSTRAR CADASTRO
-  // =========================================================
 
   function mostrarCadastro() {
 
@@ -237,17 +212,14 @@ document.addEventListener("DOMContentLoaded", function () {
     if (registerMessage) {
       registerMessage.textContent = "";
     }
-
   }
 
 
-  // =========================================================
-  // BOTÃO CRIAR CONTA
-  // =========================================================
-
   showRegisterButton?.addEventListener(
     "click",
-    function () {
+    function (event) {
+
+      event.preventDefault();
 
       mostrarCadastro();
 
@@ -255,13 +227,11 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
 
-  // =========================================================
-  // BOTÃO VOLTAR LOGIN
-  // =========================================================
-
   showLoginButton?.addEventListener(
     "click",
-    function () {
+    function (event) {
+
+      event.preventDefault();
 
       mostrarLogin();
 
@@ -269,15 +239,19 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
 
-  // =========================================================
-  // TIPO DE CONTA
-  // =========================================================
+  /* =======================================================
+     TIPO DE CONTA
+     ======================================================= */
 
   const registerAccountType =
-    document.getElementById("registerAccountType");
+    document.getElementById(
+      "registerAccountType"
+    );
 
   const companyField =
-    document.getElementById("companyField");
+    document.getElementById(
+      "companyField"
+    );
 
 
   registerAccountType?.addEventListener(
@@ -301,9 +275,9 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
 
-  // =========================================================
-  // CADASTRO
-  // =========================================================
+  /* =======================================================
+     CADASTRAR CONTA
+     ======================================================= */
 
   registerButton?.addEventListener(
     "click",
@@ -311,34 +285,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
       event.preventDefault();
 
-
-      const registerMessage =
-        document.getElementById("registerMessage");
-
-
       const nome =
-        document.getElementById("registerName")
-          ?.value.trim();
-
+        document
+          .getElementById("registerName")
+          ?.value
+          .trim();
 
       const email =
-        document.getElementById("registerEmail")
-          ?.value.trim();
-
+        document
+          .getElementById("registerEmail")
+          ?.value
+          .trim();
 
       const senha =
-        document.getElementById("registerPassword")
+        document
+          .getElementById("registerPassword")
           ?.value;
 
-
       const tipo =
-        document.getElementById("registerAccountType")
+        document
+          .getElementById("registerAccountType")
           ?.value || "pessoal";
 
-
       const empresa =
-        document.getElementById("registerCompany")
-          ?.value.trim() || "";
+        document
+          .getElementById("registerCompany")
+          ?.value
+          .trim() || "";
 
 
       if (!nome) {
@@ -349,7 +322,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         return;
-
       }
 
 
@@ -361,7 +333,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         return;
-
       }
 
 
@@ -373,7 +344,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         return;
-
       }
 
 
@@ -385,7 +355,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         return;
-
       }
 
 
@@ -397,7 +366,26 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         return;
+      }
 
+
+      const usuarioExistente =
+        pegarUsuario();
+
+
+      if (
+        usuarioExistente &&
+        usuarioExistente.email &&
+        usuarioExistente.email.toLowerCase() ===
+        email.toLowerCase()
+      ) {
+
+        mostrarMensagem(
+          registerMessage,
+          "Este e-mail já possui uma conta."
+        );
+
+        return;
       }
 
 
@@ -405,7 +393,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         nome: nome,
 
-        email: email.toLowerCase(),
+        email: email,
 
         senha: senha,
 
@@ -421,29 +409,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
       try {
 
-        localStorage.setItem(
-          STORAGE_USER,
-          JSON.stringify(usuario)
-        );
+        salvarUsuario(usuario);
 
-
-        localStorage.setItem(
-          STORAGE_LANCAMENTOS,
-          JSON.stringify([])
-        );
-
+        salvarLancamentos([]);
 
       } catch (erro) {
 
-        console.error(erro);
+        console.error(
+          "Erro ao criar conta:",
+          erro
+        );
 
         mostrarMensagem(
           registerMessage,
-          "Não foi possível salvar a conta neste navegador."
+          "Não foi possível salvar a conta."
         );
 
         return;
-
       }
 
 
@@ -455,43 +437,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
       const loginEmail =
-        document.getElementById("loginEmail");
-
+        document.getElementById(
+          "loginEmail"
+        );
 
       if (loginEmail) {
         loginEmail.value = email;
       }
 
 
-      document.getElementById("registerName").value = "";
-      document.getElementById("registerEmail").value = "";
-      document.getElementById("registerPassword").value = "";
+      setTimeout(
+        function () {
 
-      const registerCompany =
-        document.getElementById("registerCompany");
+          mostrarLogin();
 
-      if (registerCompany) {
-        registerCompany.value = "";
-      }
+          if (loginEmail) {
+            loginEmail.value = email;
+          }
 
-
-      setTimeout(function () {
-
-        mostrarLogin();
-
-        if (loginEmail) {
-          loginEmail.value = email;
-        }
-
-      }, 1000);
+        },
+        1000
+      );
 
     }
   );
 
 
-  // =========================================================
-  // LOGIN
-  // =========================================================
+  /* =======================================================
+     LOGIN
+     ======================================================= */
 
   loginButton?.addEventListener(
     "click",
@@ -499,19 +473,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
       event.preventDefault();
 
-
-      const loginMessage =
-        document.getElementById("loginMessage");
-
-
       const email =
-        document.getElementById("loginEmail")
-          ?.value.trim()
-          .toLowerCase();
-
+        document
+          .getElementById("loginEmail")
+          ?.value
+          .trim();
 
       const senha =
-        document.getElementById("loginPassword")
+        document
+          .getElementById("loginPassword")
           ?.value;
 
 
@@ -523,7 +493,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         return;
-
       }
 
 
@@ -535,16 +504,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         mostrarMensagem(
           loginMessage,
-          "Nenhuma conta cadastrada."
+          "Nenhuma conta cadastrada. Clique em Criar conta."
         );
 
         return;
-
       }
 
 
       if (
-        email !== usuario.email.toLowerCase() ||
+        email.toLowerCase() !==
+        usuario.email.toLowerCase() ||
         senha !== usuario.senha
       ) {
 
@@ -554,12 +523,11 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         return;
-
       }
 
 
       localStorage.setItem(
-        STORAGE_LOGADO,
+        "controleFinanceiroLogado",
         "true"
       );
 
@@ -570,9 +538,9 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
 
-  // =========================================================
-  // ABRIR SISTEMA
-  // =========================================================
+  /* =======================================================
+     ABRIR SISTEMA
+     ======================================================= */
 
   function abrirSistema(usuario) {
 
@@ -581,7 +549,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     const userName =
-      document.getElementById("userName");
+      document.getElementById(
+        "userName"
+      );
 
     if (userName) {
       userName.textContent =
@@ -590,7 +560,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     const profileName =
-      document.getElementById("profileName");
+      document.getElementById(
+        "profileName"
+      );
 
     if (profileName) {
       profileName.textContent =
@@ -599,7 +571,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     const profileEmail =
-      document.getElementById("profileEmail");
+      document.getElementById(
+        "profileEmail"
+      );
 
     if (profileEmail) {
       profileEmail.textContent =
@@ -619,43 +593,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     const profileAccountType =
-      document.getElementById("profileAccountType");
-
+      document.getElementById(
+        "profileAccountType"
+      );
 
     if (profileAccountType) {
 
       profileAccountType.textContent =
         tipos[usuario.tipo] || "Pessoal";
-
     }
 
 
     const profileCompany =
-      document.getElementById("profileCompany");
-
+      document.getElementById(
+        "profileCompany"
+      );
 
     if (profileCompany) {
 
       profileCompany.textContent =
         usuario.empresa || "—";
-
     }
 
 
     atualizarTudo();
-
   }
 
 
-  // =========================================================
-  // LOGOUT
-  // =========================================================
+  /* =======================================================
+     LOGOUT
+     ======================================================= */
 
   logoutButton?.addEventListener(
     "click",
     function () {
 
-      localStorage.removeItem(STORAGE_LOGADO);
+      localStorage.removeItem(
+        "controleFinanceiroLogado"
+      );
 
       appScreen?.classList.add("hidden");
       authScreen?.classList.remove("hidden");
@@ -666,92 +641,123 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
 
-  // =========================================================
-  // MENU
-  // =========================================================
+  /* =======================================================
+     MENU
+     ======================================================= */
 
   const menuItems =
-    document.querySelectorAll(".menu-item");
-
-  const sections =
-    document.querySelectorAll(".content-section");
-
-
-  menuItems.forEach(function (button) {
-
-    button.addEventListener(
-      "click",
-      function () {
-
-        const sectionName =
-          button.dataset.section;
-
-
-        menuItems.forEach(function (item) {
-
-          item.classList.remove("active");
-
-        });
-
-
-        button.classList.add("active");
-
-
-        sections.forEach(function (section) {
-
-          section.classList.remove(
-            "active-section"
-          );
-
-        });
-
-
-        const section =
-          document.getElementById(sectionName);
-
-
-        if (section) {
-
-          section.classList.add(
-            "active-section"
-          );
-
-        }
-
-
-        if (sectionName === "reports") {
-          atualizarRelatorios();
-        }
-
-
-        if (sectionName === "transactions") {
-          atualizarTabela();
-        }
-
-
-        if (window.innerWidth <= 900) {
-
-          document
-            .querySelector(".sidebar")
-            ?.classList.remove("mobile-open");
-
-        }
-
-      }
+    document.querySelectorAll(
+      ".menu-item"
     );
 
-  });
+  const sections =
+    document.querySelectorAll(
+      ".content-section"
+    );
 
 
-  // =========================================================
-  // MENU MOBILE
-  // =========================================================
+  menuItems.forEach(
+    function (button) {
+
+      button.addEventListener(
+        "click",
+        function () {
+
+          const sectionName =
+            button.dataset.section;
+
+
+          menuItems.forEach(
+            function (item) {
+
+              item.classList.remove(
+                "active"
+              );
+
+            }
+          );
+
+
+          button.classList.add(
+            "active"
+          );
+
+
+          sections.forEach(
+            function (section) {
+
+              section.classList.remove(
+                "active-section"
+              );
+
+            }
+          );
+
+
+          const section =
+            document.getElementById(
+              sectionName
+            );
+
+
+          if (section) {
+
+            section.classList.add(
+              "active-section"
+            );
+
+          }
+
+
+          /* Fecha menu no celular */
+
+          const sidebar =
+            document.querySelector(
+              ".sidebar"
+            );
+
+          sidebar?.classList.remove(
+            "mobile-open"
+          );
+
+
+          if (
+            sectionName === "transactions"
+          ) {
+
+            atualizarTabela();
+
+          }
+
+
+          if (
+            sectionName === "reports"
+          ) {
+
+            atualizarRelatorios();
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  /* =======================================================
+     MENU MOBILE
+     ======================================================= */
 
   const mobileMenuButton =
-    document.getElementById("mobileMenuButton");
+    document.getElementById(
+      "mobileMenuButton"
+    );
 
   const sidebar =
-    document.querySelector(".sidebar");
+    document.querySelector(
+      ".sidebar"
+    );
 
 
   mobileMenuButton?.addEventListener(
@@ -766,49 +772,118 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
 
-  // =========================================================
-  // MODAL
-  // =========================================================
+  /* =======================================================
+     MODAL
+     ======================================================= */
 
   const transactionModal =
-    document.getElementById("transactionModal");
-
-  const transactionModalTitle =
     document.getElementById(
-      "transactionModalTitle"
+      "transactionModal"
     );
+
+  const closeTransactionModal =
+    document.getElementById(
+      "closeTransactionModal"
+    );
+
+  const cancelTransactionButton =
+    document.getElementById(
+      "cancelTransactionButton"
+    );
+
+  const saveTransactionButton =
+    document.getElementById(
+      "saveTransactionButton"
+    );
+
+
+  let editandoId = null;
 
 
   function abrirModal(tipo = "income", id = null) {
 
-    editandoId = id;
-
-
-    const tipoCampo =
-      document.getElementById("transactionType");
-
-    const descricaoCampo =
-      document.getElementById("transactionDescription");
-
-    const valorCampo =
-      document.getElementById("transactionAmount");
-
-    const categoriaCampo =
-      document.getElementById("transactionCategory");
-
-    const dataCampo =
-      document.getElementById("transactionDate");
-
-    const mensagem =
-      document.getElementById("transactionMessage");
-
-
-    if (mensagem) {
-      mensagem.textContent = "";
+    if (!transactionModal) {
+      return;
     }
 
 
-    if (id !== null) {
+    editandoId =
+      id !== null
+        ? Number(id)
+        : null;
+
+
+    const titulo =
+      transactionModal.querySelector(
+        "h2"
+      );
+
+
+    if (titulo) {
+
+      titulo.textContent =
+        editandoId !== null
+          ? "Editar lançamento"
+          : "Novo lançamento";
+
+    }
+
+
+    const transactionType =
+      document.getElementById(
+        "transactionType"
+      );
+
+    const transactionDescription =
+      document.getElementById(
+        "transactionDescription"
+      );
+
+    const transactionAmount =
+      document.getElementById(
+        "transactionAmount"
+      );
+
+    const transactionCategory =
+      document.getElementById(
+        "transactionCategory"
+      );
+
+    const transactionDate =
+      document.getElementById(
+        "transactionDate"
+      );
+
+
+    if (editandoId === null) {
+
+      if (transactionType) {
+        transactionType.value =
+          tipo || "income";
+      }
+
+      if (transactionDescription) {
+        transactionDescription.value = "";
+      }
+
+      if (transactionAmount) {
+        transactionAmount.value = "";
+      }
+
+      if (transactionCategory) {
+        transactionCategory.value = "salario";
+      }
+
+      if (transactionDate) {
+
+        transactionDate.value =
+          new Date()
+            .toISOString()
+            .split("T")[0];
+
+      }
+
+    } else {
 
       const lancamentos =
         pegarLancamentos();
@@ -816,118 +891,101 @@ document.addEventListener("DOMContentLoaded", function () {
       const item =
         lancamentos.find(
           function (lancamento) {
-            return lancamento.id === id;
+
+            return Number(lancamento.id) ===
+              editandoId;
+
           }
         );
 
 
-      if (!item) return;
+      if (!item) {
 
+        alert(
+          "Lançamento não encontrado."
+        );
 
-      if (transactionModalTitle) {
-        transactionModalTitle.textContent =
-          "Editar lançamento";
+        return;
       }
 
 
-      if (tipoCampo) {
-        tipoCampo.value = item.tipo;
+      if (transactionType) {
+        transactionType.value =
+          item.tipo;
       }
 
-      if (descricaoCampo) {
-        descricaoCampo.value = item.descricao;
+      if (transactionDescription) {
+        transactionDescription.value =
+          item.descricao || "";
       }
 
-      if (valorCampo) {
-        valorCampo.value =
-          Number(item.valor)
-            .toLocaleString("pt-BR", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            });
+      if (transactionAmount) {
+
+        transactionAmount.value =
+          Number(item.valor);
+
       }
 
-      if (categoriaCampo) {
-        categoriaCampo.value = item.categoria;
+      if (transactionCategory) {
+        transactionCategory.value =
+          item.categoria || "outros";
       }
 
-      if (dataCampo) {
-        dataCampo.value = item.data;
-      }
-
-
-    } else {
-
-      if (transactionModalTitle) {
-        transactionModalTitle.textContent =
-          "Novo lançamento";
-      }
-
-
-      if (tipoCampo) {
-        tipoCampo.value = tipo;
-      }
-
-
-      if (descricaoCampo) {
-        descricaoCampo.value = "";
-      }
-
-
-      if (valorCampo) {
-        valorCampo.value = "";
-      }
-
-
-      if (categoriaCampo) {
-        categoriaCampo.value = "outros";
-      }
-
-
-      if (dataCampo) {
-
-        const hoje =
-          new Date();
-
-        const ano =
-          hoje.getFullYear();
-
-        const mes =
-          String(hoje.getMonth() + 1)
-            .padStart(2, "0");
-
-        const dia =
-          String(hoje.getDate())
-            .padStart(2, "0");
-
-        dataCampo.value =
-          `${ano}-${mes}-${dia}`;
-
+      if (transactionDate) {
+        transactionDate.value =
+          item.data || "";
       }
 
     }
 
 
-    transactionModal?.classList.remove("hidden");
+    if (transactionMessage) {
+      transactionMessage.textContent = "";
+    }
+
+
+    transactionModal.classList.remove(
+      "hidden"
+    );
 
   }
 
 
   function fecharModal() {
 
-    transactionModal?.classList.add("hidden");
+    transactionModal?.classList.add(
+      "hidden"
+    );
 
     editandoId = null;
 
   }
 
 
+  closeTransactionModal?.addEventListener(
+    "click",
+    fecharModal
+  );
+
+
+  cancelTransactionButton?.addEventListener(
+    "click",
+    fecharModal
+  );
+
+
+  /* =======================================================
+     BOTÕES DE RECEITA / DESPESA
+     ======================================================= */
+
   document
     .getElementById("quickIncomeButton")
     ?.addEventListener(
       "click",
       function () {
+
         abrirModal("income");
+
       }
     );
 
@@ -937,7 +995,9 @@ document.addEventListener("DOMContentLoaded", function () {
     ?.addEventListener(
       "click",
       function () {
+
         abrirModal("expense");
+
       }
     );
 
@@ -947,182 +1007,164 @@ document.addEventListener("DOMContentLoaded", function () {
     ?.addEventListener(
       "click",
       function () {
+
         abrirModal("income");
+
       }
     );
 
 
-  document
-    .getElementById("closeTransactionModal")
-    ?.addEventListener(
-      "click",
-      fecharModal
-    );
+  /* =======================================================
+     SALVAR / EDITAR LANÇAMENTO
+     ======================================================= */
+
+  saveTransactionButton?.addEventListener(
+    "click",
+    function () {
+
+      const tipo =
+        document.getElementById(
+          "transactionType"
+        )?.value;
 
 
-  document
-    .getElementById("cancelTransactionButton")
-    ?.addEventListener(
-      "click",
-      fecharModal
-    );
+      const descricao =
+        document.getElementById(
+          "transactionDescription"
+        )?.value
+        .trim();
 
 
-  // =========================================================
-  // SALVAR LANÇAMENTO
-  // =========================================================
-
-  document
-    .getElementById("saveTransactionButton")
-    ?.addEventListener(
-      "click",
-      function () {
-
-        const tipo =
-          document.getElementById(
-            "transactionType"
-          )?.value;
+      const valorCampo =
+        document.getElementById(
+          "transactionAmount"
+        )?.value;
 
 
-        const descricao =
-          document.getElementById(
-            "transactionDescription"
-          )?.value.trim();
+      const categoria =
+        document.getElementById(
+          "transactionCategory"
+        )?.value;
 
 
-        const valorTexto =
-          document.getElementById(
-            "transactionAmount"
-          )?.value;
+      const data =
+        document.getElementById(
+          "transactionDate"
+        )?.value;
 
 
-        const categoria =
-          document.getElementById(
-            "transactionCategory"
-          )?.value;
+      if (!descricao) {
+
+        mostrarMensagem(
+          transactionMessage,
+          "Digite uma descrição."
+        );
+
+        return;
+      }
 
 
-        const data =
-          document.getElementById(
-            "transactionDate"
-          )?.value;
+      if (
+        valorCampo === "" ||
+        valorCampo === null ||
+        valorCampo === undefined
+      ) {
+
+        mostrarMensagem(
+          transactionMessage,
+          "Digite um valor."
+        );
+
+        return;
+      }
 
 
-        const mensagem =
-          document.getElementById(
-            "transactionMessage"
+      /*
+       * Corrige valores digitados.
+       * Exemplo:
+       * 2200 -> R$ 2.200,00
+       * 2.2  -> R$ 2,20
+       */
+
+      const valor =
+        Number(
+          String(valorCampo)
+            .replace(",", ".")
+        );
+
+
+      if (
+        !Number.isFinite(valor) ||
+        valor <= 0
+      ) {
+
+        mostrarMensagem(
+          transactionMessage,
+          "Digite um valor válido maior que zero."
+        );
+
+        return;
+      }
+
+
+      if (!data) {
+
+        mostrarMensagem(
+          transactionMessage,
+          "Informe a data."
+        );
+
+        return;
+      }
+
+
+      let lancamentos =
+        pegarLancamentos();
+
+
+      /* ===================================================
+         EDITAR
+         =================================================== */
+
+      if (editandoId !== null) {
+
+        const indice =
+          lancamentos.findIndex(
+            function (item) {
+
+              return Number(item.id) ===
+                Number(editandoId);
+
+            }
           );
 
 
-        if (!descricao) {
+        if (indice === -1) {
 
           mostrarMensagem(
-            mensagem,
-            "Digite uma descrição."
+            transactionMessage,
+            "Lançamento não encontrado."
           );
 
           return;
-
         }
 
 
-        const valor =
-          converterValor(valorTexto);
+        lancamentos[indice] = {
 
+          ...lancamentos[indice],
 
-        if (!Number.isFinite(valor) || valor <= 0) {
+          tipo: tipo,
 
-          mostrarMensagem(
-            mensagem,
-            "Digite um valor válido. Ex.: 2.200,50"
-          );
+          descricao: descricao,
 
-          return;
+          valor: valor,
 
-        }
+          categoria: categoria,
 
+          data: data
 
-        if (!data) {
-
-          mostrarMensagem(
-            mensagem,
-            "Selecione uma data."
-          );
-
-          return;
-
-        }
-
-
-        let lancamentos =
-          pegarLancamentos();
-
-
-        if (editandoId !== null) {
-
-          lancamentos =
-            lancamentos.map(
-              function (item) {
-
-                if (item.id === editandoId) {
-
-                  return {
-
-                    ...item,
-
-                    tipo: tipo,
-
-                    descricao: descricao,
-
-                    valor: valor,
-
-                    categoria: categoria,
-
-                    data: data
-
-                  };
-
-                }
-
-                return item;
-
-              }
-            );
-
-
-        } else {
-
-          const novoLancamento = {
-
-            id:
-              Date.now(),
-
-            tipo:
-              tipo,
-
-            descricao:
-              descricao,
-
-            valor:
-              valor,
-
-            categoria:
-              categoria,
-
-            data:
-              data,
-
-            criadoEm:
-              new Date().toISOString()
-
-          };
-
-
-          lancamentos.push(
-            novoLancamento
-          );
-
-        }
+        };
 
 
         salvarLancamentos(
@@ -1132,95 +1174,161 @@ document.addEventListener("DOMContentLoaded", function () {
 
         fecharModal();
 
+        atualizarTudo();
+
+        return;
+      }
+
+
+      /* ===================================================
+         NOVO LANÇAMENTO
+         =================================================== */
+
+      const novoLancamento = {
+
+        id: gerarId(),
+
+        tipo: tipo,
+
+        descricao: descricao,
+
+        valor: valor,
+
+        categoria: categoria,
+
+        data: data,
+
+        criadoEm:
+          new Date().toISOString()
+
+      };
+
+
+      lancamentos.push(
+        novoLancamento
+      );
+
+
+      salvarLancamentos(
+        lancamentos
+      );
+
+
+      fecharModal();
+
+      atualizarTudo();
+
+    }
+  );
+
+
+  /* =======================================================
+     EXCLUIR LANÇAMENTO
+     ======================================================= */
+
+  window.excluirLancamento =
+    function (id) {
+
+      const idNumerico =
+        Number(id);
+
+
+      if (!Number.isFinite(idNumerico)) {
+
+        alert(
+          "ID do lançamento inválido."
+        );
+
+        return;
+      }
+
+
+      const confirmar =
+        window.confirm(
+          "Tem certeza que deseja excluir este lançamento?"
+        );
+
+
+      if (!confirmar) {
+        return;
+      }
+
+
+      try {
+
+        const lancamentos =
+          pegarLancamentos();
+
+
+        const quantidadeAntes =
+          lancamentos.length;
+
+
+        const novosLancamentos =
+          lancamentos.filter(
+            function (item) {
+
+              return Number(item.id) !==
+                idNumerico;
+
+            }
+          );
+
+
+        if (
+          novosLancamentos.length ===
+          quantidadeAntes
+        ) {
+
+          alert(
+            "Não foi possível encontrar este lançamento."
+          );
+
+          return;
+        }
+
+
+        salvarLancamentos(
+          novosLancamentos
+        );
+
 
         atualizarTudo();
 
+      } catch (erro) {
+
+        console.error(
+          "Erro ao excluir:",
+          erro
+        );
+
+        alert(
+          "Erro ao excluir o lançamento."
+        );
+
       }
-    );
+
+    };
 
 
-  // =========================================================
-  // EXCLUIR LANÇAMENTO
-  // =========================================================
+  /* =======================================================
+     EDITAR LANÇAMENTO
+     ======================================================= */
 
-  function excluirLancamento(id) {
+  window.editarLancamento =
+    function (id) {
 
-    const confirmar =
-      window.confirm(
-        "Tem certeza que deseja excluir este lançamento?"
+      abrirModal(
+        "income",
+        Number(id)
       );
 
-
-    if (!confirmar) {
-      return;
-    }
+    };
 
 
-    let lancamentos =
-      pegarLancamentos();
-
-
-    lancamentos =
-      lancamentos.filter(
-        function (item) {
-          return item.id !== id;
-        }
-      );
-
-
-    salvarLancamentos(
-      lancamentos
-    );
-
-
-    atualizarTudo();
-
-  }
-
-
-  // =========================================================
-  // CATEGORIAS
-  // =========================================================
-
-  const nomesCategorias = {
-
-    salario: "Salário",
-
-    alimentacao: "Alimentação",
-
-    moradia: "Moradia",
-
-    transporte: "Transporte",
-
-    saude: "Saúde",
-
-    educacao: "Educação",
-
-    lazer: "Lazer",
-
-    contas: "Contas",
-
-    compras: "Compras",
-
-    empresa: "Empresa",
-
-    outros: "Outros"
-
-  };
-
-
-  function nomeCategoria(categoria) {
-
-    return nomesCategorias[categoria]
-      || categoria
-      || "Outros";
-
-  }
-
-
-  // =========================================================
-  // TABELA
-  // =========================================================
+  /* =======================================================
+     TABELA DE LANÇAMENTOS
+     ======================================================= */
 
   function atualizarTabela() {
 
@@ -1230,30 +1338,29 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
 
-    if (!tbody) return;
+    if (!tbody) {
+      return;
+    }
 
 
-    const pesquisa =
+    const busca =
       document.getElementById(
         "transactionSearch"
       )?.value
       .trim()
-      .toLowerCase()
-      || "";
+      .toLowerCase() || "";
 
 
     const filtroTipo =
       document.getElementById(
         "transactionTypeFilter"
-      )?.value
-      || "all";
+      )?.value || "all";
 
 
     const filtroCategoria =
       document.getElementById(
         "transactionCategoryFilter"
-      )?.value
-      || "all";
+      )?.value || "all";
 
 
     let lancamentos =
@@ -1264,18 +1371,14 @@ document.addEventListener("DOMContentLoaded", function () {
       lancamentos.filter(
         function (item) {
 
-          const texto =
-            (
-              item.descricao +
-              " " +
-              nomeCategoria(item.categoria)
-            )
-              .toLowerCase();
-
-
-          const correspondePesquisa =
-            !pesquisa ||
-            texto.includes(pesquisa);
+          const correspondeBusca =
+            !busca ||
+            String(item.descricao || "")
+              .toLowerCase()
+              .includes(busca) ||
+            String(item.categoria || "")
+              .toLowerCase()
+              .includes(busca);
 
 
           const correspondeTipo =
@@ -1289,7 +1392,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
           return (
-            correspondePesquisa &&
+            correspondeBusca &&
             correspondeTipo &&
             correspondeCategoria
           );
@@ -1301,14 +1404,11 @@ document.addEventListener("DOMContentLoaded", function () {
     lancamentos.sort(
       function (a, b) {
 
-        return new Date(b.data) -
-          new Date(a.data);
+        return Number(b.id) -
+          Number(a.id);
 
       }
     );
-
-
-    atualizarFiltroCategorias();
 
 
     if (lancamentos.length === 0) {
@@ -1329,7 +1429,6 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
 
       return;
-
     }
 
 
@@ -1356,30 +1455,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 : "expense";
 
 
-            const dataFormatada =
-              formatarData(item.data);
-
-
             return `
 
               <tr>
 
                 <td>
-                  ${dataFormatada}
+                  ${escaparHTML(
+                    formatarData(item.data)
+                  )}
                 </td>
 
                 <td>
-                  ${escaparHTML(item.descricao)}
+                  ${escaparHTML(
+                    item.descricao
+                  )}
                 </td>
 
                 <td>
-                  ${nomeCategoria(item.categoria)}
+                  ${escaparHTML(
+                    nomeCategoria(
+                      item.categoria
+                    )
+                  )}
                 </td>
 
                 <td>
-                  <span class="${classe}">
-                    ${tipoTexto}
-                  </span>
+                  ${tipoTexto}
                 </td>
 
                 <td class="${classe}">
@@ -1390,16 +1491,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
                   <button
                     type="button"
-                    onclick="editarLancamento(${item.id})"
                     title="Editar"
+                    onclick="editarLancamento(${Number(item.id)})"
                   >
                     ✏️
                   </button>
 
                   <button
                     type="button"
-                    onclick="excluirLancamento(${item.id})"
                     title="Excluir"
+                    onclick="excluirLancamento(${Number(item.id)})"
                   >
                     🗑️
                   </button>
@@ -1417,34 +1518,106 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  // =========================================================
-  // DISPONIBILIZAR EDITAR/EXCLUIR
-  // =========================================================
+  function formatarData(data) {
 
-  window.editarLancamento =
-    function (id) {
+    if (!data) {
+      return "";
+    }
 
-      abrirModal(
-        "income",
-        Number(id)
-      );
+
+    const partes =
+      String(data).split("-");
+
+
+    if (partes.length !== 3) {
+      return data;
+    }
+
+
+    return (
+      partes[2] +
+      "/" +
+      partes[1] +
+      "/" +
+      partes[0]
+    );
+
+  }
+
+
+  function nomeCategoria(categoria) {
+
+    const categorias = {
+
+      salario: "Salário",
+
+      alimentacao: "Alimentação",
+
+      moradia: "Moradia",
+
+      transporte: "Transporte",
+
+      saude: "Saúde",
+
+      educacao: "Educação",
+
+      lazer: "Lazer",
+
+      contas: "Contas",
+
+      compras: "Compras",
+
+      empresa: "Empresa",
+
+      outros: "Outros"
 
     };
 
 
-  window.excluirLancamento =
-    function (id) {
+    return categorias[categoria] ||
+      categoria ||
+      "Outros";
 
-      excluirLancamento(
-        Number(id)
-      );
-
-    };
+  }
 
 
-  // =========================================================
-  // FILTRO DE CATEGORIAS
-  // =========================================================
+  /* =======================================================
+     FILTROS
+     ======================================================= */
+
+  document
+    .getElementById(
+      "transactionSearch"
+    )
+    ?.addEventListener(
+      "input",
+      atualizarTabela
+    );
+
+
+  document
+    .getElementById(
+      "transactionTypeFilter"
+    )
+    ?.addEventListener(
+      "change",
+      atualizarTabela
+    );
+
+
+  document
+    .getElementById(
+      "transactionCategoryFilter"
+    )
+    ?.addEventListener(
+      "change",
+      atualizarTabela
+    );
+
+
+  /* =======================================================
+     ATUALIZAR FILTRO DE CATEGORIAS
+     ======================================================= */
 
   function atualizarFiltroCategorias() {
 
@@ -1454,29 +1627,25 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
 
-    if (!select) return;
+    if (!select) {
+      return;
+    }
 
 
     const valorAtual =
       select.value;
 
 
-    const lancamentos =
-      pegarLancamentos();
-
-
     const categorias =
-      [
-        ...new Set(
-          lancamentos
-            .map(
-              function (item) {
-                return item.categoria;
-              }
-            )
-            .filter(Boolean)
-        )
-      ];
+      [...new Set(
+        pegarLancamentos()
+          .map(
+            function (item) {
+              return item.categoria;
+            }
+          )
+          .filter(Boolean)
+      )];
 
 
     select.innerHTML = `
@@ -1492,16 +1661,15 @@ document.addEventListener("DOMContentLoaded", function () {
       function (categoria) {
 
         const option =
-          document.createElement("option");
-
+          document.createElement(
+            "option"
+          );
 
         option.value =
           categoria;
 
-
         option.textContent =
           nomeCategoria(categoria);
-
 
         select.appendChild(
           option
@@ -1512,7 +1680,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     if (
-      categorias.includes(valorAtual)
+      categorias.includes(
+        valorAtual
+      )
     ) {
 
       select.value =
@@ -1528,50 +1698,103 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  // =========================================================
-  // FORMATAR DATA
-  // =========================================================
+  /* =======================================================
+     DASHBOARD
+     ======================================================= */
 
-  function formatarData(data) {
+  function atualizarDashboard() {
 
-    if (!data) {
-      return "—";
+    const lancamentos =
+      pegarLancamentos();
+
+
+    let receitas = 0;
+    let despesas = 0;
+
+
+    lancamentos.forEach(
+      function (item) {
+
+        const valor =
+          Number(item.valor) || 0;
+
+
+        if (item.tipo === "income") {
+
+          receitas += valor;
+
+        }
+
+
+        if (item.tipo === "expense") {
+
+          despesas += valor;
+
+        }
+
+      }
+    );
+
+
+    const saldo =
+      receitas - despesas;
+
+
+    const totalIncome =
+      document.getElementById(
+        "totalIncome"
+      );
+
+    const totalExpense =
+      document.getElementById(
+        "totalExpense"
+      );
+
+    const totalBalance =
+      document.getElementById(
+        "totalBalance"
+      );
+
+    const totalTransactions =
+      document.getElementById(
+        "totalTransactions"
+      );
+
+
+    if (totalIncome) {
+      totalIncome.textContent =
+        dinheiro(receitas);
     }
 
 
-    const partes =
-      data.split("-");
-
-
-    if (partes.length !== 3) {
-      return data;
+    if (totalExpense) {
+      totalExpense.textContent =
+        dinheiro(despesas);
     }
 
 
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    if (totalBalance) {
+      totalBalance.textContent =
+        dinheiro(saldo);
+    }
+
+
+    if (totalTransactions) {
+      totalTransactions.textContent =
+        lancamentos.length;
+    }
+
+
+    atualizarLancamentosRecentes();
+
+    atualizarGraficoFinanceiro();
 
   }
 
 
-  // =========================================================
-  // ESCAPAR HTML
-  // =========================================================
-
-  function escaparHTML(texto) {
-
-    return String(texto)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-
-  }
-
-
-  // =========================================================
-  // LANÇAMENTOS RECENTES
-  // =========================================================
+  /* =======================================================
+     LANÇAMENTOS RECENTES
+     ======================================================= */
 
   function atualizarLancamentosRecentes() {
 
@@ -1581,7 +1804,9 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
 
-    if (!container) return;
+    if (!container) {
+      return;
+    }
 
 
     const lancamentos =
@@ -1590,8 +1815,8 @@ document.addEventListener("DOMContentLoaded", function () {
         .sort(
           function (a, b) {
 
-            return new Date(b.data) -
-              new Date(a.data);
+            return Number(b.id) -
+              Number(a.id);
 
           }
         )
@@ -1619,7 +1844,6 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
 
       return;
-
     }
 
 
@@ -1628,16 +1852,18 @@ document.addEventListener("DOMContentLoaded", function () {
         .map(
           function (item) {
 
-            const classe =
-              item.tipo === "income"
-                ? "income"
-                : "expense";
+            const income =
+              item.tipo === "income";
 
 
             const sinal =
-              item.tipo === "income"
-                ? "+"
-                : "-";
+              income ? "+" : "-";
+
+
+            const classe =
+              income
+                ? "income"
+                : "expense";
 
 
             return `
@@ -1646,39 +1872,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 <div class="transaction-info">
 
-                  <div
-                    class="transaction-icon ${classe}"
-                  >
-                    ${item.tipo === "income"
-                      ? "↑"
-                      : "↓"}
+                  <div class="transaction-icon ${classe}">
+                    ${income ? "↑" : "↓"}
                   </div>
 
                   <div>
 
-                    <div
-                      class="transaction-description"
-                    >
+                    <div class="transaction-description">
                       ${escaparHTML(
                         item.descricao
                       )}
                     </div>
 
-                    <div
-                      class="transaction-date"
-                    >
-                      ${formatarData(item.data)}
+                    <div class="transaction-date">
+                      ${escaparHTML(
+                        formatarData(item.data)
+                      )}
                     </div>
 
                   </div>
 
                 </div>
 
-                <div
-                  class="transaction-value ${classe}"
-                >
-                  ${sinal}
-                  ${dinheiro(item.valor)}
+                <div class="transaction-value ${classe}">
+                  ${sinal} ${dinheiro(item.valor)}
                 </div>
 
               </div>
@@ -1692,174 +1909,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  // =========================================================
-  // DASHBOARD
-  // =========================================================
+  /* =======================================================
+     GRÁFICO FINANCEIRO
+     ======================================================= */
 
-  function atualizarDashboard() {
+  let financeChart = null;
+  let categoryChart = null;
 
-    let lancamentos =
-      pegarLancamentos();
 
-
-    const periodo =
-      document.getElementById(
-        "dashboardPeriod"
-      )?.value
-      || "month";
-
-
-    const agora =
-      new Date();
-
-
-    lancamentos =
-      lancamentos.filter(
-        function (item) {
-
-          if (periodo === "all") {
-            return true;
-          }
-
-
-          const data =
-            new Date(
-              item.data + "T12:00:00"
-            );
-
-
-          if (periodo === "month") {
-
-            return (
-              data.getMonth() ===
-              agora.getMonth() &&
-              data.getFullYear() ===
-              agora.getFullYear()
-            );
-
-          }
-
-
-          if (periodo === "year") {
-
-            return (
-              data.getFullYear() ===
-              agora.getFullYear()
-            );
-
-          }
-
-
-          return true;
-
-        }
-      );
-
-
-    let receitas = 0;
-    let despesas = 0;
-
-
-    lancamentos.forEach(
-      function (item) {
-
-        if (item.tipo === "income") {
-
-          receitas +=
-            Number(item.valor) || 0;
-
-        }
-
-
-        if (item.tipo === "expense") {
-
-          despesas +=
-            Number(item.valor) || 0;
-
-        }
-
-      }
-    );
-
-
-    const saldo =
-      receitas - despesas;
-
-
-    const totalIncome =
-      document.getElementById(
-        "totalIncome"
-      );
-
-
-    const totalExpense =
-      document.getElementById(
-        "totalExpense"
-      );
-
-
-    const totalBalance =
-      document.getElementById(
-        "totalBalance"
-      );
-
-
-    const totalTransactions =
-      document.getElementById(
-        "totalTransactions"
-      );
-
-
-    if (totalIncome) {
-
-      totalIncome.textContent =
-        dinheiro(receitas);
-
-    }
-
-
-    if (totalExpense) {
-
-      totalExpense.textContent =
-        dinheiro(despesas);
-
-    }
-
-
-    if (totalBalance) {
-
-      totalBalance.textContent =
-        dinheiro(saldo);
-
-    }
-
-
-    if (totalTransactions) {
-
-      totalTransactions.textContent =
-        lancamentos.length;
-
-    }
-
-
-    atualizarLancamentosRecentes();
-
-    atualizarGraficoFinanceiro(
-      receitas,
-      despesas
-    );
-
-  }
-
-
-  // =========================================================
-  // GRÁFICO FINANCEIRO
-  // =========================================================
-
-  function atualizarGraficoFinanceiro(
-    receitas,
-    despesas
-  ) {
+  function atualizarGraficoFinanceiro() {
 
     const canvas =
       document.getElementById(
@@ -1867,12 +1925,86 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
 
-    if (!canvas) return;
-
-
-    if (typeof Chart === "undefined") {
+    if (!canvas) {
       return;
     }
+
+
+    if (
+      typeof Chart ===
+      "undefined"
+    ) {
+
+      return;
+    }
+
+
+    const lancamentos =
+      pegarLancamentos();
+
+
+    const meses = [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Abr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez"
+    ];
+
+
+    const receitas =
+      new Array(12).fill(0);
+
+    const despesas =
+      new Array(12).fill(0);
+
+
+    lancamentos.forEach(
+      function (item) {
+
+        if (!item.data) {
+          return;
+        }
+
+
+        const data =
+          new Date(
+            item.data + "T12:00:00"
+          );
+
+
+        const mes =
+          data.getMonth();
+
+
+        const valor =
+          Number(item.valor) || 0;
+
+
+        if (
+          item.tipo ===
+          "income"
+        ) {
+
+          receitas[mes] +=
+            valor;
+
+        } else {
+
+          despesas[mes] +=
+            valor;
+
+        }
+
+      }
+    );
 
 
     if (financeChart) {
@@ -1886,27 +2018,24 @@ document.addEventListener("DOMContentLoaded", function () {
       new Chart(
         canvas,
         {
-          type: "bar",
+          type: "line",
 
           data: {
 
-            labels: [
-              "Receitas",
-              "Despesas"
-            ],
+            labels: meses,
 
             datasets: [
 
               {
+                label: "Receitas",
+                data: receitas,
+                tension: 0.3
+              },
 
-                label:
-                  "Valor",
-
-                data: [
-                  receitas,
-                  despesas
-                ]
-
+              {
+                label: "Despesas",
+                data: despesas,
+                tension: 0.3
               }
 
             ]
@@ -1922,7 +2051,7 @@ document.addEventListener("DOMContentLoaded", function () {
             plugins: {
 
               legend: {
-                display: false
+                display: true
               }
 
             },
@@ -1931,7 +2060,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
               y: {
 
-                beginAtZero: true
+                beginAtZero: true,
+
+                ticks: {
+
+                  callback:
+                    function (value) {
+
+                      return dinheiro(
+                        value
+                      );
+
+                    }
+
+                }
 
               }
 
@@ -1945,9 +2087,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  // =========================================================
-  // RELATÓRIOS
-  // =========================================================
+  /* =======================================================
+     RELATÓRIOS
+     ======================================================= */
 
   function atualizarRelatorios() {
 
@@ -1958,39 +2100,58 @@ document.addEventListener("DOMContentLoaded", function () {
     const despesasPorCategoria = {};
 
 
-    let receitas = 0;
-    let despesas = 0;
+    let totalReceitas = 0;
+    let totalDespesas = 0;
 
 
     lancamentos.forEach(
       function (item) {
 
-        if (item.tipo === "income") {
+        const valor =
+          Number(item.valor) || 0;
 
-          receitas +=
-            Number(item.valor) || 0;
+
+        if (
+          item.tipo ===
+          "income"
+        ) {
+
+          totalReceitas +=
+            valor;
 
         }
 
 
-        if (item.tipo === "expense") {
+        if (
+          item.tipo ===
+          "expense"
+        ) {
 
-          despesas +=
-            Number(item.valor) || 0;
+          totalDespesas +=
+            valor;
 
 
           const categoria =
-            item.categoria || "outros";
+            item.categoria ||
+            "outros";
 
 
-          despesasPorCategoria[categoria] =
-            (
-              despesasPorCategoria[categoria]
-              || 0
-            ) +
-            (
-              Number(item.valor) || 0
-            );
+          if (
+            !despesasPorCategoria[
+              categoria
+            ]
+          ) {
+
+            despesasPorCategoria[
+              categoria
+            ] = 0;
+
+          }
+
+
+          despesasPorCategoria[
+            categoria
+          ] += valor;
 
         }
 
@@ -1998,13 +2159,9 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-    atualizarGraficoCategorias(
-      despesasPorCategoria
-    );
-
-
     const saldo =
-      receitas - despesas;
+      totalReceitas -
+      totalDespesas;
 
 
     const reportSummary =
@@ -2021,30 +2178,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
           <div>
             <strong>Receitas</strong>
-            <div>
-              ${dinheiro(receitas)}
-            </div>
+            <p>${dinheiro(totalReceitas)}</p>
           </div>
 
           <div>
             <strong>Despesas</strong>
-            <div>
-              ${dinheiro(despesas)}
-            </div>
+            <p>${dinheiro(totalDespesas)}</p>
           </div>
 
           <div>
             <strong>Saldo</strong>
-            <div>
-              ${dinheiro(saldo)}
-            </div>
+            <p>${dinheiro(saldo)}</p>
           </div>
 
           <div>
-            <strong>Lançamentos</strong>
-            <div>
-              ${lancamentos.length}
-            </div>
+            <strong>Total de lançamentos</strong>
+            <p>${lancamentos.length}</p>
           </div>
 
         </div>
@@ -2053,12 +2202,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
+    atualizarGraficoCategorias(
+      despesasPorCategoria
+    );
+
   }
 
-
-  // =========================================================
-  // GRÁFICO DE CATEGORIAS
-  // =========================================================
 
   function atualizarGraficoCategorias(
     dados
@@ -2070,16 +2220,29 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
 
-    if (!canvas) return;
-
-
-    if (typeof Chart === "undefined") {
+    if (!canvas) {
       return;
     }
 
 
-    const categorias =
-      Object.keys(dados);
+    if (
+      typeof Chart ===
+      "undefined"
+    ) {
+
+      return;
+    }
+
+
+    const labels =
+      Object.keys(dados)
+        .map(
+          function (categoria) {
+            return nomeCategoria(
+              categoria
+            );
+          }
+        );
 
 
     const valores =
@@ -2093,36 +2256,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    if (categorias.length === 0) {
-
-      categoryChart = null;
-
-      return;
-
-    }
-
-
     categoryChart =
       new Chart(
         canvas,
         {
-
           type: "doughnut",
 
           data: {
 
-            labels:
-              categorias.map(
-                nomeCategoria
-              ),
+            labels: labels,
 
             datasets: [
 
               {
-
-                data:
-                  valores
-
+                data: valores
               }
 
             ]
@@ -2133,7 +2280,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             responsive: true,
 
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+
+            plugins: {
+
+              legend: {
+                position: "bottom"
+              }
+
+            }
 
           }
 
@@ -2143,48 +2298,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  // =========================================================
-  // FILTROS
-  // =========================================================
+  /* =======================================================
+     BOTÃO "VER TODOS"
+     ======================================================= */
 
   document
-    .getElementById("transactionSearch")
-    ?.addEventListener(
-      "input",
-      atualizarTabela
-    );
-
-
-  document
-    .getElementById("transactionTypeFilter")
-    ?.addEventListener(
-      "change",
-      atualizarTabela
-    );
-
-
-  document
-    .getElementById("transactionCategoryFilter")
-    ?.addEventListener(
-      "change",
-      atualizarTabela
-    );
-
-
-  document
-    .getElementById("dashboardPeriod")
-    ?.addEventListener(
-      "change",
-      atualizarDashboard
-    );
-
-
-  // =========================================================
-  // VER TODOS
-  // =========================================================
-
-  document
-    .getElementById("viewTransactionsButton")
+    .getElementById(
+      "viewTransactionsButton"
+    )
     ?.addEventListener(
       "click",
       function () {
@@ -2200,17 +2321,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        const transactionsMenu =
-          document.querySelector(
-            '[data-section="transactions"]'
-          );
-
-
-        transactionsMenu?.classList.add(
-          "active"
-        );
-
-
         sections.forEach(
           function (section) {
 
@@ -2222,11 +2332,30 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        document
-          .getElementById("transactions")
-          ?.classList.add(
+        const transactions =
+          document.getElementById(
+            "transactions"
+          );
+
+
+        if (transactions) {
+
+          transactions.classList.add(
             "active-section"
           );
+
+        }
+
+
+        const menu =
+          document.querySelector(
+            '[data-section="transactions"]'
+          );
+
+
+        menu?.classList.add(
+          "active"
+        );
 
 
         atualizarTabela();
@@ -2235,9 +2364,9 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-  // =========================================================
-  // ATUALIZAR TUDO
-  // =========================================================
+  /* =======================================================
+     ATUALIZAR TUDO
+     ======================================================= */
 
   function atualizarTudo() {
 
@@ -2245,43 +2374,80 @@ document.addEventListener("DOMContentLoaded", function () {
 
     atualizarTabela();
 
+    atualizarFiltroCategorias();
+
     atualizarRelatorios();
 
   }
 
 
-  // =========================================================
-  // VERIFICAR LOGIN AO ABRIR
-  // =========================================================
+  /* =======================================================
+     FECHAR MODAL CLICANDO FORA
+     ======================================================= */
 
-  const usuarioInicial =
+  transactionModal?.addEventListener(
+    "click",
+    function (event) {
+
+      if (
+        event.target ===
+        transactionModal
+      ) {
+
+        fecharModal();
+
+      }
+
+    }
+  );
+
+
+  /* =======================================================
+     TECLA ESC FECHA MODAL
+     ======================================================= */
+
+  document.addEventListener(
+    "keydown",
+    function (event) {
+
+      if (
+        event.key === "Escape"
+      ) {
+
+        fecharModal();
+
+      }
+
+    }
+  );
+
+
+  /* =======================================================
+     INICIALIZAÇÃO
+     ======================================================= */
+
+  const logado =
+    localStorage.getItem(
+      "controleFinanceiroLogado"
+    );
+
+
+  const usuario =
     pegarUsuario();
 
 
-  const estaLogado =
-    localStorage.getItem(
-      STORAGE_LOGADO
-    ) === "true";
-
-
   if (
-    usuarioInicial &&
-    estaLogado
+    logado === "true" &&
+    usuario
   ) {
 
     abrirSistema(
-      usuarioInicial
+      usuario
     );
 
   } else {
 
-    authScreen?.classList.remove(
-      "hidden"
-    );
-
-    appScreen?.classList.add(
-      "hidden"
-    );
+    mostrarLogin();
 
   }
 
