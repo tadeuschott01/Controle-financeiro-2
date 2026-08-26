@@ -1,2198 +1,1538 @@
-// =============================================
-// FINCONTROL
-// =============================================
+/* =====================================================
+   CONTROLE FINANCEIRO
+   PALETA: LARANJA + VERDE ESCURO
+   ===================================================== */
 
-// COLOQUE AQUI OS DADOS DO SEU PROJETO SUPABASE
+:root {
+  --green-dark: #12372a;
+  --green: #1f513d;
+  --green-light: #2f6b50;
 
-const SUPABASE_URL = "COLE_AQUI_A_PROJECT_URL";
+  --orange: #f28c28;
+  --orange-dark: #d96f12;
+  --orange-light: #fff1df;
 
-const SUPABASE_PUBLISHABLE_KEY =
-  "COLE_AQUI_A_PUBLISHABLE_KEY";
+  --white: #ffffff;
+  --background: #f5f7f5;
+  --surface: #ffffff;
+  --border: #e3e8e4;
 
+  --text: #17231d;
+  --text-light: #6c776f;
+  --muted: #8b958e;
 
-const { createClient } = window.supabase;
+  --red: #d94b4b;
+  --red-light: #fff0f0;
 
-const supabaseClient = createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  }
-);
+  --shadow: 0 8px 25px rgba(18, 55, 42, 0.08);
 
-
-// =============================================
-// ESTADO
-// =============================================
-
-let currentUser = null;
-
-let transactions = [];
-
-
-// =============================================
-// ELEMENTOS
-// =============================================
-
-const authScreen =
-  document.getElementById("authScreen");
-
-const appScreen =
-  document.getElementById("appScreen");
-
-const loginForm =
-  document.getElementById("loginForm");
-
-const registerForm =
-  document.getElementById("registerForm");
-
-const recoveryForm =
-  document.getElementById("recoveryForm");
-
-const transactionModal =
-  document.getElementById("transactionModal");
-
-const transactionForm =
-  document.getElementById("transactionForm");
-
-
-// =============================================
-// INICIALIZAÇÃO
-// =============================================
-
-document.addEventListener(
-  "DOMContentLoaded",
-  initialize
-);
-
-
-async function initialize() {
-
-  setupEvents();
-
-  setToday();
-
-  setCurrentMonth();
-
-  const {
-    data
-  } = await supabaseClient.auth.getSession();
-
-
-  if (data.session) {
-
-    await startApplication(
-      data.session.user
-    );
-
-  } else {
-
-    showAuth();
-
-  }
-
-
-  supabaseClient.auth.onAuthStateChange(
-    async (event, session) => {
-
-      if (
-        event === "SIGNED_IN" &&
-        session
-      ) {
-
-        await startApplication(
-          session.user
-        );
-
-      }
-
-
-      if (
-        event === "SIGNED_OUT"
-      ) {
-
-        showAuth();
-
-      }
-
-    }
-  );
-
+  --radius: 14px;
 }
 
 
-// =============================================
-// EVENTOS
-// =============================================
+/* =====================================================
+   RESET
+   ===================================================== */
 
-function setupEvents() {
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  loginForm.addEventListener(
-    "submit",
-    handleLogin
-  );
+html {
+  scroll-behavior: smooth;
+}
 
+body {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 
-  registerForm.addEventListener(
-    "submit",
-    handleRegister
-  );
+  background: var(--background);
+  color: var(--text);
+  min-height: 100vh;
+}
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
 
-  recoveryForm.addEventListener(
-    "submit",
-    handleRecovery
-  );
+button {
+  cursor: pointer;
+}
 
-
-  document
-    .getElementById("showRegister")
-    .addEventListener(
-      "click",
-      () => showAuthForm("register")
-    );
-
-
-  document
-    .getElementById("showLogin")
-    .addEventListener(
-      "click",
-      () => showAuthForm("login")
-    );
-
-
-  document
-    .getElementById("forgotPassword")
-    .addEventListener(
-      "click",
-      () => showAuthForm("recovery")
-    );
-
-
-  document
-    .getElementById("backToLogin")
-    .addEventListener(
-      "click",
-      () => showAuthForm("login")
-    );
-
-
-  document
-    .querySelectorAll(".eye-button")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => togglePassword(
-          button.dataset.target
-        )
-      );
-
-    });
-
-
-  document
-    .querySelectorAll(".nav-item")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          navigate(
-            button.dataset.page
-          );
-
-        }
-      );
-
-    });
-
-
-  document
-    .querySelectorAll("[data-page]")
-    .forEach(button => {
-
-      if (
-        !button.classList.contains(
-          "nav-item"
-        )
-      ) {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            navigate(
-              button.dataset.page
-            );
-
-          }
-        );
-
-      }
-
-    });
-
-
-  document
-    .getElementById("logoutButton")
-    .addEventListener(
-      "click",
-      logout
-    );
-
-
-  document
-    .getElementById("themeButton")
-    .addEventListener(
-      "click",
-      toggleTheme
-    );
-
-
-  document
-    .getElementById("newTransaction")
-    .addEventListener(
-      "click",
-      openTransactionModal
-    );
-
-
-  document
-    .getElementById("newTransaction2")
-    .addEventListener(
-      "click",
-      openTransactionModal
-    );
-
-
-  document
-    .getElementById("closeModal")
-    .addEventListener(
-      "click",
-      closeTransactionModal
-    );
-
-
-  document
-    .getElementById("cancelModal")
-    .addEventListener(
-      "click",
-      closeTransactionModal
-    );
-
-
-  transactionForm.addEventListener(
-    "submit",
-    saveTransaction
-  );
-
-
-  document
-    .getElementById("dashboardMonth")
-    .addEventListener(
-      "change",
-      renderDashboard
-    );
-
-
-  document
-    .getElementById("searchInput")
-    .addEventListener(
-      "input",
-      renderTransactionsTable
-    );
-
-
-  document
-    .getElementById("typeFilter")
-    .addEventListener(
-      "change",
-      renderTransactionsTable
-    );
-
-
-  document
-    .getElementById("accountFilter")
-    .addEventListener(
-      "change",
-      renderTransactionsTable
-    );
-
-
-  document
-    .getElementById("mobileMenu")
-    .addEventListener(
-      "click",
-      () => {
-
-        document
-          .getElementById("sidebar")
-          .classList.toggle("open");
-
-      }
-    );
-
+.hidden {
+  display: none !important;
 }
 
 
-// =============================================
-// AUTH
-// =============================================
+/* =====================================================
+   LOGIN / CADASTRO
+   ===================================================== */
 
-async function handleLogin(event) {
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  event.preventDefault();
+  padding: 30px;
 
-  const email =
-    document.getElementById(
-      "loginEmail"
-    ).value.trim();
-
-
-  const password =
-    document.getElementById(
-      "loginPassword"
-    ).value;
-
-
-  setMessage(
-    "loginMessage",
-    "Entrando...",
-    "success"
-  );
-
-
-  const {
-    error
-  } =
-    await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
-
-
-  if (error) {
-
-    setMessage(
-      "loginMessage",
-      getAuthError(error),
-      "error"
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(242, 140, 40, 0.14),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #f5f7f5,
+      #eaf0eb
     );
+}
 
-    return;
+.auth-card {
+  width: 100%;
+  max-width: 440px;
 
-  }
+  background: var(--white);
 
+  padding: 38px;
 
-  loginForm.reset();
+  border-radius: 22px;
 
+  box-shadow:
+    0 25px 70px rgba(18, 55, 42, 0.13);
+
+  border: 1px solid var(--border);
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.brand-icon {
+  width: 62px;
+  height: 62px;
+
+  margin: 0 auto 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--orange);
+  color: var(--white);
+
+  border-radius: 18px;
+
+  font-size: 29px;
+  font-weight: 800;
+
+  box-shadow:
+    0 8px 20px rgba(242, 140, 40, 0.25);
+}
+
+.brand-icon.small {
+  width: 42px;
+  height: 42px;
+
+  margin: 0;
+
+  border-radius: 12px;
+
+  font-size: 20px;
+}
+
+.brand h1 {
+  color: var(--green-dark);
+  font-size: 26px;
+  margin-bottom: 7px;
+}
+
+.brand p {
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+.auth-card h2 {
+  color: var(--green-dark);
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.form-description {
+  color: var(--text-light);
+  margin-bottom: 22px;
+  font-size: 14px;
 }
 
 
-async function handleRegister(event) {
+/* =====================================================
+   FORMULÁRIOS
+   ===================================================== */
 
-  event.preventDefault();
+label {
+  display: block;
 
+  margin: 15px 0 7px;
 
-  const name =
-    document.getElementById(
-      "registerName"
-    ).value.trim();
+  color: var(--green-dark);
 
+  font-size: 13px;
+  font-weight: 700;
+}
 
-  const email =
-    document.getElementById(
-      "registerEmail"
-    ).value.trim();
+input,
+select,
+textarea {
+  width: 100%;
 
+  border: 1px solid var(--border);
 
-  const password =
-    document.getElementById(
-      "registerPassword"
-    ).value;
+  background: #fbfcfb;
 
+  color: var(--text);
 
-  if (password.length < 6) {
+  border-radius: 10px;
 
-    setMessage(
-      "registerMessage",
-      "A senha precisa ter pelo menos 6 caracteres.",
-      "error"
-    );
+  padding: 12px 14px;
 
-    return;
+  outline: none;
 
-  }
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+}
 
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--orange);
 
-  setMessage(
-    "registerMessage",
-    "Criando sua conta...",
-    "success"
-  );
+  background: var(--white);
 
+  box-shadow:
+    0 0 0 3px rgba(242, 140, 40, 0.12);
+}
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.auth.signUp({
+textarea {
+  resize: vertical;
+}
 
-      email,
-      password,
+.primary-button {
+  width: 100%;
 
-      options: {
+  border: none;
 
-        data: {
-          name
-        }
+  background: var(--orange);
 
-      }
+  color: var(--white);
 
-    });
+  padding: 13px 18px;
 
+  margin-top: 20px;
 
-  if (error) {
+  border-radius: 10px;
 
-    setMessage(
-      "registerMessage",
-      getAuthError(error),
-      "error"
-    );
+  font-weight: 800;
 
-    return;
+  transition:
+    transform 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
+}
 
-  }
+.primary-button:hover {
+  background: var(--orange-dark);
 
+  transform: translateY(-1px);
 
-  if (data.session) {
+  box-shadow:
+    0 7px 18px rgba(242, 140, 40, 0.22);
+}
 
-    setMessage(
-      "registerMessage",
-      "Conta criada com sucesso!",
-      "success"
-    );
+.small-button {
+  width: auto;
+  margin: 0;
+  padding: 11px 18px;
+}
 
-  } else {
+.secondary-button {
+  border: 1px solid var(--border);
 
-    setMessage(
-      "registerMessage",
-      "Conta criada! Confira seu e-mail para confirmar o cadastro.",
-      "success"
-    );
+  background: var(--white);
 
-  }
+  color: var(--green-dark);
 
+  padding: 11px 18px;
+
+  border-radius: 10px;
+
+  font-weight: 700;
+}
+
+.secondary-button:hover {
+  background: #f1f4f1;
+}
+
+.danger-button {
+  border: none;
+
+  background: var(--red);
+
+  color: var(--white);
+
+  padding: 11px 18px;
+
+  border-radius: 10px;
+
+  font-weight: 700;
+}
+
+.message {
+  min-height: 20px;
+
+  margin-top: 12px;
+
+  color: var(--red);
+
+  font-size: 13px;
+}
+
+.switch-auth {
+  text-align: center;
+
+  color: var(--text-light);
+
+  font-size: 14px;
+
+  margin-top: 22px;
+}
+
+.switch-auth button {
+  border: none;
+
+  background: transparent;
+
+  color: var(--orange-dark);
+
+  font-weight: 800;
+
+  margin-left: 4px;
 }
 
 
-async function handleRecovery(event) {
+/* =====================================================
+   APP
+   ===================================================== */
 
-  event.preventDefault();
+.app-screen {
+  min-height: 100vh;
 
-
-  const email =
-    document.getElementById(
-      "recoveryEmail"
-    ).value.trim();
-
-
-  const redirectUrl =
-    window.location.origin +
-    window.location.pathname;
-
-
-  const {
-    error
-  } =
-    await supabaseClient.auth.resetPasswordForEmail(
-      email,
-      {
-        redirectTo: redirectUrl
-      }
-    );
-
-
-  if (error) {
-
-    setMessage(
-      "recoveryMessage",
-      getAuthError(error),
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  setMessage(
-    "recoveryMessage",
-    "Enviamos as instruções para seu e-mail.",
-    "success"
-  );
-
+  display: flex;
 }
 
 
-async function logout() {
+/* =====================================================
+   SIDEBAR
+   ===================================================== */
 
-  await supabaseClient.auth.signOut();
+.sidebar {
+  width: 250px;
 
+  position: fixed;
+
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--green-dark);
+
+  color: var(--white);
+
+  padding: 25px 16px;
+
+  z-index: 50;
+}
+
+.sidebar-brand {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 5px 10px 30px;
+}
+
+.sidebar-brand strong {
+  display: block;
+
+  font-size: 16px;
+}
+
+.sidebar-brand span {
+  display: block;
+
+  font-size: 12px;
+
+  opacity: 0.65;
+}
+
+.menu {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.menu-item {
+  width: 100%;
+
+  border: none;
+
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.72);
+
+  padding: 13px 15px;
+
+  border-radius: 10px;
+
+  text-align: left;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  font-weight: 600;
+
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+
+  color: var(--white);
+}
+
+.menu-item.active {
+  background: var(--orange);
+
+  color: var(--white);
+}
+
+.menu-item span {
+  width: 22px;
+
+  text-align: center;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+}
+
+.logout-button {
+  width: 100%;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.75);
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  display: flex;
+
+  gap: 10px;
+
+  align-items: center;
+
+  font-weight: 600;
+}
+
+.logout-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+
+  color: white;
 }
 
 
-// =============================================
-// APLICAÇÃO
-// =============================================
+/* =====================================================
+   CONTEÚDO PRINCIPAL
+   ===================================================== */
 
-async function startApplication(user) {
+.main-content {
+  width: calc(100% - 250px);
 
-  currentUser = user;
+  margin-left: 250px;
 
-  authScreen.style.display = "none";
+  padding: 30px;
 
-  appScreen.classList.add("active");
-
-
-  const name =
-    user.user_metadata?.name ||
-    user.email?.split("@")[0] ||
-    "Usuário";
-
-
-  document.getElementById(
-    "userName"
-  ).textContent = name;
-
-
-  document.getElementById(
-    "welcomeName"
-  ).textContent = name;
-
-
-  document.getElementById(
-    "userEmail"
-  ).textContent = user.email;
-
-
-  document.getElementById(
-    "userAvatar"
-  ).textContent =
-    name.charAt(0).toUpperCase();
-
-
-  await loadTransactions();
-
-  renderAll();
-
+  min-height: 100vh;
 }
 
 
-function showAuth() {
+/* =====================================================
+   TOPBAR
+   ===================================================== */
 
-  currentUser = null;
+.topbar {
+  display: flex;
 
-  transactions = [];
+  justify-content: space-between;
 
-  appScreen.classList.remove("active");
+  align-items: center;
 
-  authScreen.style.display = "grid";
+  margin-bottom: 35px;
+}
 
-  showAuthForm("login");
+.welcome-small {
+  color: var(--text-light);
 
+  font-size: 13px;
+
+  margin-bottom: 2px;
+}
+
+.topbar h2 {
+  color: var(--green-dark);
+
+  font-size: 22px;
+}
+
+.topbar-actions {
+  display: flex;
+
+  gap: 9px;
+}
+
+.quick-income,
+.quick-expense {
+  border-radius: 9px;
+
+  padding: 10px 14px;
+
+  font-weight: 700;
+
+  border: 1px solid var(--border);
+
+  background: var(--white);
+}
+
+.quick-income {
+  color: var(--green);
+
+  border-color: rgba(31, 81, 61, 0.2);
+}
+
+.quick-expense {
+  color: var(--red);
+
+  border-color: rgba(217, 75, 75, 0.2);
+}
+
+.mobile-menu-button {
+  display: none;
+
+  border: none;
+
+  background: transparent;
+
+  color: var(--green-dark);
+
+  font-size: 24px;
 }
 
 
-function showAuthForm(formName) {
+/* =====================================================
+   TÍTULOS
+   ===================================================== */
 
-  document
-    .querySelectorAll(".auth-form")
-    .forEach(form => {
+.page-heading {
+  display: flex;
 
-      form.classList.remove("active");
+  justify-content: space-between;
 
-    });
+  align-items: flex-end;
 
+  gap: 20px;
 
-  const target =
-    document.getElementById(
-      formName + "Form"
-    );
+  margin-bottom: 25px;
+}
 
+.section-label {
+  color: var(--orange-dark);
 
-  if (target) {
-    target.classList.add("active");
-  }
+  font-size: 11px;
 
+  font-weight: 900;
+
+  letter-spacing: 1.2px;
+
+  margin-bottom: 5px;
+}
+
+.page-heading h1 {
+  color: var(--green-dark);
+
+  font-size: 29px;
+
+  margin-bottom: 5px;
+}
+
+.page-heading p:not(.section-label) {
+  color: var(--text-light);
+
+  font-size: 14px;
+}
+
+.period-selector {
+  width: 170px;
+}
+
+.period-selector label {
+  margin-top: 0;
 }
 
 
-// =============================================
-// BANCO
-// =============================================
+/* =====================================================
+   SEÇÕES
+   ===================================================== */
 
-async function loadTransactions() {
+.content-section {
+  display: none;
+}
 
-  if (!currentUser) return;
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("transactions")
-      .select("*")
-      .eq(
-        "user_id",
-        currentUser.id
-      )
-      .order(
-        "date",
-        {
-          ascending: false
-        }
-      );
-
-
-  if (error) {
-
-    console.error(error);
-
-    alert(
-      "Não foi possível carregar suas movimentações."
-    );
-
-    return;
-
-  }
-
-
-  transactions = data || [];
-
+.content-section.active-section {
+  display: block;
 }
 
 
-async function saveTransaction(event) {
+/* =====================================================
+   CARDS
+   ===================================================== */
 
-  event.preventDefault();
+.summary-grid {
+  display: grid;
 
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
 
-  if (!currentUser) return;
+  gap: 16px;
 
+  margin-bottom: 20px;
+}
 
-  const id =
-    document.getElementById(
-      "transactionId"
-    ).value;
+.summary-card {
+  background: var(--surface);
 
+  border: 1px solid var(--border);
 
-  const type =
-    document.querySelector(
-      'input[name="transactionType"]:checked'
-    ).value;
+  border-radius: var(--radius);
 
+  padding: 20px;
 
-  const transaction = {
+  display: flex;
 
-    user_id:
-      currentUser.id,
+  align-items: center;
 
-    description:
-      document.getElementById(
-        "transactionDescription"
-      ).value.trim(),
+  gap: 15px;
 
-    value:
-      Number(
-        document.getElementById(
-          "transactionValue"
-        ).value
-      ),
+  box-shadow: var(--shadow);
+}
 
-    date:
-      document.getElementById(
-        "transactionDate"
-      ).value,
+.card-icon {
+  width: 48px;
+  height: 48px;
 
-    type,
+  flex-shrink: 0;
 
-    category:
-      document.getElementById(
-        "transactionCategory"
-      ).value,
+  border-radius: 12px;
 
-    account:
-      document.getElementById(
-        "transactionAccount"
-      ).value,
+  display: flex;
 
-    wallet:
-      document.getElementById(
-        "transactionWallet"
-      ).value,
+  align-items: center;
 
-    notes:
-      document.getElementById(
-        "transactionNotes"
-      ).value.trim()
+  justify-content: center;
 
-  };
+  background: var(--orange-light);
 
+  color: var(--orange-dark);
 
-  let result;
+  font-size: 20px;
 
+  font-weight: 900;
+}
 
-  if (id) {
+.income-card .card-icon {
+  background: #e7f3eb;
 
-    result =
-      await supabaseClient
-        .from("transactions")
-        .update(transaction)
-        .eq("id", id)
-        .eq(
-          "user_id",
-          currentUser.id
-        );
+  color: var(--green);
+}
 
-  } else {
+.expense-card .card-icon {
+  background: var(--red-light);
 
-    result =
-      await supabaseClient
-        .from("transactions")
-        .insert(transaction);
+  color: var(--red);
+}
 
-  }
+.transaction-card .card-icon {
+  background: #edf0ef;
 
+  color: var(--green-dark);
+}
 
-  if (result.error) {
+.summary-card span {
+  display: block;
 
-    console.error(result.error);
+  color: var(--text-light);
 
-    alert(
-      "Não foi possível salvar a movimentação."
-    );
+  font-size: 12px;
 
-    return;
+  margin-bottom: 5px;
+}
 
-  }
+.summary-card strong {
+  display: block;
 
+  color: var(--green-dark);
 
-  closeTransactionModal();
-
-  transactionForm.reset();
-
-  setToday();
-
-  await loadTransactions();
-
-  renderAll();
-
+  font-size: 19px;
 }
 
 
-async function deleteTransaction(id) {
+/* =====================================================
+   PAINÉIS
+   ===================================================== */
 
-  if (!currentUser) return;
+.dashboard-grid {
+  display: grid;
 
+  grid-template-columns:
+    1.4fr 1fr;
 
-  const confirmed =
-    confirm(
-      "Deseja excluir esta movimentação?"
-    );
+  gap: 20px;
 
+  margin-bottom: 20px;
+}
 
-  if (!confirmed) return;
+.panel {
+  background: var(--white);
 
+  border: 1px solid var(--border);
 
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("transactions")
-      .delete()
-      .eq("id", id)
-      .eq(
-        "user_id",
-        currentUser.id
-      );
+  border-radius: var(--radius);
 
+  box-shadow: var(--shadow);
 
-  if (error) {
+  padding: 22px;
 
-    alert(
-      "Não foi possível excluir."
-    );
+  margin-bottom: 20px;
+}
 
-    return;
+.panel-header {
+  display: flex;
 
-  }
+  justify-content: space-between;
 
+  align-items: center;
 
-  await loadTransactions();
+  margin-bottom: 20px;
+}
 
-  renderAll();
+.panel h3 {
+  color: var(--green-dark);
 
+  font-size: 17px;
+
+  margin-bottom: 3px;
+}
+
+.panel-header p {
+  color: var(--text-light);
+
+  font-size: 12px;
+}
+
+.chart-container {
+  height: 280px;
+
+  position: relative;
+}
+
+.chart-container.large {
+  height: 360px;
+}
+
+.text-button {
+  border: none;
+
+  background: transparent;
+
+  color: var(--orange-dark);
+
+  font-weight: 800;
+
+  font-size: 13px;
 }
 
 
-async function editTransaction(id) {
+/* =====================================================
+   CATEGORIAS
+   ===================================================== */
 
-  const transaction =
-    transactions.find(
-      item => item.id === id
-    );
+.category-list {
+  display: flex;
 
+  flex-direction: column;
 
-  if (!transaction) return;
+  gap: 13px;
+}
 
+.category-item {
+  display: flex;
 
-  document.getElementById(
-    "transactionId"
-  ).value = transaction.id;
+  align-items: center;
 
+  justify-content: space-between;
+}
 
-  document.getElementById(
-    "transactionDescription"
-  ).value =
-    transaction.description;
+.category-name {
+  display: flex;
 
+  align-items: center;
 
-  document.getElementById(
-    "transactionValue"
-  ).value =
-    transaction.value;
+  gap: 9px;
 
+  font-size: 13px;
 
-  document.getElementById(
-    "transactionDate"
-  ).value =
-    transaction.date;
+  font-weight: 600;
+}
 
+.category-dot {
+  width: 9px;
+  height: 9px;
 
-  document.getElementById(
-    "transactionCategory"
-  ).value =
-    transaction.category;
+  border-radius: 50%;
 
+  background: var(--orange);
+}
 
-  document.getElementById(
-    "transactionAccount"
-  ).value =
-    transaction.account;
+.category-value {
+  font-size: 13px;
 
+  font-weight: 800;
 
-  document.getElementById(
-    "transactionWallet"
-  ).value =
-    transaction.wallet || "principal";
-
-
-  document.getElementById(
-    "transactionNotes"
-  ).value =
-    transaction.notes || "";
-
-
-  const radio =
-    document.querySelector(
-      `input[name="transactionType"][value="${transaction.type}"]`
-    );
-
-
-  if (radio) {
-    radio.checked = true;
-  }
-
-
-  document.getElementById(
-    "modalTitle"
-  ).textContent =
-    "Editar movimentação";
-
-
-  transactionModal.classList.add(
-    "active"
-  );
-
+  color: var(--green-dark);
 }
 
 
-// =============================================
-// DASHBOARD
-// =============================================
+/* =====================================================
+   TRANSAÇÕES
+   ===================================================== */
 
-function renderDashboard() {
+.transactions-list {
+  display: flex;
 
-  const month =
-    document.getElementById(
-      "dashboardMonth"
-    ).value;
+  flex-direction: column;
+}
 
+.transaction-row {
+  display: flex;
 
-  let data =
-    transactions;
+  align-items: center;
 
+  justify-content: space-between;
 
-  if (month) {
+  gap: 15px;
 
-    data =
-      transactions.filter(
-        item =>
-          item.date.startsWith(month)
-      );
+  padding: 14px 0;
 
-  }
+  border-bottom: 1px solid var(--border);
+}
 
+.transaction-row:last-child {
+  border-bottom: none;
+}
 
-  const summary =
-    calculate(data);
+.transaction-info {
+  display: flex;
 
+  align-items: center;
 
-  document.getElementById(
-    "balanceValue"
-  ).textContent =
-    formatCurrency(
-      summary.balance
-    );
+  gap: 12px;
+}
 
+.transaction-icon {
+  width: 38px;
+  height: 38px;
 
-  document.getElementById(
-    "incomeValue"
-  ).textContent =
-    formatCurrency(
-      summary.income
-    );
+  border-radius: 10px;
 
+  display: flex;
 
-  document.getElementById(
-    "expenseValue"
-  ).textContent =
-    formatCurrency(
-      summary.expense
-    );
+  align-items: center;
 
+  justify-content: center;
 
-  document.getElementById(
-    "resultValue"
-  ).textContent =
-    formatCurrency(
-      summary.result
-    );
+  font-weight: 900;
+}
 
+.transaction-icon.income {
+  background: #e7f3eb;
 
-  renderRecent(data);
+  color: var(--green);
+}
 
-  renderCategories(data);
+.transaction-icon.expense {
+  background: var(--red-light);
 
+  color: var(--red);
+}
+
+.transaction-description {
+  font-weight: 700;
+
+  color: var(--green-dark);
+
+  font-size: 13px;
+}
+
+.transaction-date {
+  color: var(--text-light);
+
+  font-size: 11px;
+
+  margin-top: 3px;
+}
+
+.transaction-value {
+  font-weight: 900;
+
+  font-size: 14px;
+
+  white-space: nowrap;
+}
+
+.transaction-value.income {
+  color: var(--green);
+}
+
+.transaction-value.expense {
+  color: var(--red);
 }
 
 
-function calculate(data) {
+/* =====================================================
+   FILTROS
+   ===================================================== */
 
-  let income = 0;
+.filters-panel {
+  display: grid;
 
-  let expense = 0;
+  grid-template-columns:
+    2fr repeat(3, 1fr);
 
+  gap: 12px;
 
-  data.forEach(item => {
+  background: var(--white);
 
-    if (
-      item.type === "receita"
-    ) {
+  border: 1px solid var(--border);
 
-      income += Number(
-        item.value
-      );
+  padding: 16px;
 
-    } else {
+  border-radius: var(--radius);
 
-      expense += Number(
-        item.value
-      );
+  margin-bottom: 20px;
+}
 
-    }
-
-  });
-
-
-  return {
-
-    income,
-
-    expense,
-
-    balance:
-      income - expense,
-
-    result:
-      income - expense
-
-  };
-
+.filter-field label {
+  margin-top: 0;
 }
 
 
-// =============================================
-// RECENTES
-// =============================================
+/* =====================================================
+   TABELA
+   ===================================================== */
 
-function renderRecent(data) {
+.table-panel {
+  padding: 0;
 
-  const container =
-    document.getElementById(
-      "recentTransactions"
-    );
+  overflow: hidden;
+}
 
+.table-wrapper {
+  overflow-x: auto;
+}
 
-  const recent =
-    [...data]
-      .sort(
-        (a, b) =>
-          new Date(b.date) -
-          new Date(a.date)
-      )
-      .slice(0, 6);
+table {
+  width: 100%;
 
+  border-collapse: collapse;
 
-  if (!recent.length) {
+  min-width: 850px;
+}
 
-    container.innerHTML = `
+th {
+  background: #f7f9f7;
 
-      <div class="empty-state">
+  color: var(--text-light);
 
-        <span>◎</span>
+  text-align: left;
 
-        <strong>
-          Nenhuma movimentação
-        </strong>
+  padding: 14px 18px;
 
-        <p>
-          Comece adicionando sua primeira
-          receita ou despesa.
-        </p>
+  font-size: 11px;
 
-      </div>
+  text-transform: uppercase;
 
-    `;
+  letter-spacing: 0.5px;
+}
 
-    return;
+td {
+  padding: 15px 18px;
 
-  }
+  border-top: 1px solid var(--border);
 
+  font-size: 13px;
 
-  container.innerHTML =
-    recent.map(item => {
+  color: var(--text);
+}
 
-      const income =
-        item.type === "receita";
+.type-badge,
+.area-badge,
+.account-badge {
+  display: inline-flex;
 
+  padding: 5px 8px;
 
-      return `
+  border-radius: 7px;
 
-        <div class="recent-item">
+  font-size: 10px;
 
-          <div class="recent-icon ${
-            income
-              ? "income"
-              : "expense"
-          }">
+  font-weight: 800;
+}
 
-            ${income ? "↗" : "↘"}
+.type-badge.income {
+  color: var(--green);
 
-          </div>
+  background: #e7f3eb;
+}
 
+.type-badge.expense {
+  color: var(--red);
 
-          <div>
+  background: var(--red-light);
+}
 
-            <div class="recent-description">
+.area-badge {
+  color: var(--green-dark);
 
-              ${escapeHTML(
-                item.description
-              )}
+  background: #edf2ee;
+}
 
-            </div>
+.table-actions {
+  display: flex;
 
-            <div class="recent-meta">
+  gap: 6px;
+}
 
-              ${formatDate(item.date)}
-              ·
-              ${formatCategory(
-                item.category
-              )}
+.action-button {
+  border: 1px solid var(--border);
 
-            </div>
+  background: white;
 
-          </div>
+  border-radius: 7px;
 
+  padding: 6px 8px;
 
-          <div class="recent-value ${
-            income
-              ? "income"
-              : "expense"
-          }">
+  font-size: 12px;
+}
 
-            ${income ? "+" : "-"}
+.action-button:hover {
+  background: #f2f5f2;
+}
 
-            ${formatCurrency(
-              item.value
-            )}
-
-          </div>
-
-        </div>
-
-      `;
-
-    }).join("");
-
+.action-button.delete {
+  color: var(--red);
 }
 
 
-// =============================================
-// CATEGORIAS
-// =============================================
+/* =====================================================
+   ESTADO VAZIO
+   ===================================================== */
 
-function renderCategories(data) {
+.empty-state {
+  padding: 30px 15px;
 
-  const container =
-    document.getElementById(
-      "categoryChart"
-    );
+  text-align: center;
 
+  color: var(--muted);
 
-  const expenses =
-    data.filter(
-      item =>
-        item.type === "despesa"
-    );
-
-
-  if (!expenses.length) {
-
-    container.innerHTML = `
-      <div class="empty-small">
-        Nenhuma despesa cadastrada.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  const categories = {};
-
-
-  expenses.forEach(item => {
-
-    categories[item.category] =
-      (categories[item.category] || 0) +
-      Number(item.value);
-
-  });
-
-
-  const ordered =
-    Object.entries(categories)
-      .sort(
-        (a, b) =>
-          b[1] - a[1]
-      )
-      .slice(0, 5);
-
-
-  const max =
-    ordered[0]?.[1] || 1;
-
-
-  container.innerHTML =
-    ordered.map(
-      ([category, value]) => `
-
-        <div class="category-row">
-
-          <span class="category-name">
-
-            ${formatCategory(
-              category
-            )}
-
-          </span>
-
-          <div class="category-track">
-
-            <div
-              class="category-fill"
-              style="
-                width:${(value / max) * 100}%;
-              "
-            ></div>
-
-          </div>
-
-          <span class="category-value">
-
-            ${formatCurrency(
-              value
-            )}
-
-          </span>
-
-        </div>
-
-      `
-    ).join("");
-
+  font-size: 13px;
 }
 
 
-// =============================================
-// TABELA
-// =============================================
+/* =====================================================
+   RELATÓRIOS
+   ===================================================== */
 
-function renderTransactionsTable() {
+.reports-grid {
+  display: grid;
 
-  const tbody =
-    document.getElementById(
-      "transactionsTable"
-    );
+  grid-template-columns:
+    1.5fr 1fr;
 
+  gap: 20px;
+}
 
-  const search =
-    document.getElementById(
-      "searchInput"
-    ).value
-      .toLowerCase();
+.report-summary {
+  display: grid;
 
+  gap: 15px;
 
-  const type =
-    document.getElementById(
-      "typeFilter"
-    ).value;
+  margin-top: 20px;
+}
 
+.report-summary div {
+  display: flex;
 
-  const account =
-    document.getElementById(
-      "accountFilter"
-    ).value;
+  justify-content: space-between;
 
+  align-items: center;
 
-  let data =
-    [...transactions];
+  padding-bottom: 12px;
 
+  border-bottom: 1px solid var(--border);
+}
 
-  if (search) {
+.report-summary span {
+  color: var(--text-light);
 
-    data =
-      data.filter(
-        item =>
-          item.description
-            .toLowerCase()
-            .includes(search)
-      );
+  font-size: 13px;
+}
 
-  }
+.report-summary strong {
+  color: var(--green-dark);
 
+  font-size: 16px;
+}
 
-  if (type !== "todos") {
+.top-category {
+  margin-top: 25px;
 
-    data =
-      data.filter(
-        item =>
-          item.type === type
-      );
+  background: var(--orange-light);
 
-  }
+  color: var(--orange-dark);
 
+  border-radius: 12px;
 
-  if (account !== "todos") {
+  padding: 25px;
 
-    data =
-      data.filter(
-        item =>
-          item.account === account
-      );
+  font-size: 18px;
 
-  }
+  font-weight: 900;
 
-
-  if (!data.length) {
-
-    tbody.innerHTML = `
-
-      <tr>
-
-        <td colspan="7">
-
-          <div class="empty-state">
-
-            Nenhuma movimentação encontrada.
-
-          </div>
-
-        </td>
-
-      </tr>
-
-    `;
-
-    return;
-
-  }
-
-
-  tbody.innerHTML =
-    data.map(item => {
-
-      const income =
-        item.type === "receita";
-
-
-      return `
-
-        <tr>
-
-          <td>
-            ${formatDate(item.date)}
-          </td>
-
-
-          <td>
-
-            <strong>
-              ${escapeHTML(
-                item.description
-              )}
-            </strong>
-
-          </td>
-
-
-          <td>
-            ${formatCategory(
-              item.category
-            )}
-          </td>
-
-
-          <td>
-            ${
-              item.account === "empresa"
-                ? "🏢 Empresa"
-                : "👤 Pessoal"
-            }
-          </td>
-
-
-          <td>
-
-            <span class="badge ${
-              income
-                ? "income"
-                : "expense"
-            }">
-
-              ${
-                income
-                  ? "Receita"
-                  : "Despesa"
-              }
-
-            </span>
-
-          </td>
-
-
-          <td>
-
-            <strong>
-
-              ${income ? "+" : "-"}
-
-              ${formatCurrency(
-                item.value
-              )}
-
-            </strong>
-
-          </td>
-
-
-          <td>
-
-            <button
-              class="table-action"
-              onclick="editTransaction('${item.id}')"
-            >
-              ✏️
-            </button>
-
-
-            <button
-              class="table-action"
-              onclick="deleteTransaction('${item.id}')"
-            >
-              🗑️
-            </button>
-
-          </td>
-
-        </tr>
-
-      `;
-
-    }).join("");
-
+  text-align: center;
 }
 
 
-// =============================================
-// NAVEGAÇÃO
-// =============================================
+/* =====================================================
+   PERFIL
+   ===================================================== */
 
-function navigate(page) {
+.profile-panel {
+  display: flex;
 
-  document
-    .querySelectorAll(".page")
-    .forEach(section => {
+  align-items: center;
 
-      section.classList.remove(
-        "active"
-      );
+  gap: 20px;
+}
 
-    });
+.profile-avatar {
+  width: 75px;
+  height: 75px;
 
+  border-radius: 20px;
 
-  const target =
-    document.getElementById(
-      "page-" + page
-    );
+  background: var(--orange-light);
 
+  display: flex;
 
-  if (target) {
+  align-items: center;
 
-    target.classList.add(
-      "active"
-    );
+  justify-content: center;
 
-  }
+  font-size: 32px;
+}
 
+.profile-info h2 {
+  color: var(--green-dark);
 
-  document
-    .querySelectorAll(".nav-item")
-    .forEach(button => {
+  margin-bottom: 4px;
+}
 
-      button.classList.toggle(
-        "active",
-        button.dataset.page === page
-      );
+.profile-info p {
+  color: var(--text-light);
 
-    });
+  margin-bottom: 10px;
+}
 
+.account-badge {
+  background: var(--orange-light);
 
-  const titles = {
-
-    dashboard: [
-      "Dashboard",
-      "Visão geral das suas finanças"
-    ],
-
-    movimentacoes: [
-      "Movimentações",
-      "Controle suas entradas e saídas"
-    ],
-
-    receitas: [
-      "Receitas",
-      "Suas entradas financeiras"
-    ],
-
-    despesas: [
-      "Despesas",
-      "Seus gastos"
-    ],
-
-    contas: [
-      "Contas e cartões",
-      "Organize seus bancos e cartões"
-    ],
-
-    planejamento: [
-      "Planejamento",
-      "Planeje seu futuro financeiro"
-    ],
-
-    metas: [
-      "Metas",
-      "Objetivos para seu dinheiro"
-    ],
-
-    pessoal: [
-      "Financeiro pessoal",
-      "Sua vida financeira"
-    ],
-
-    empresa: [
-      "Financeiro empresarial",
-      "Sua empresa"
-    ],
-
-    relatorios: [
-      "Relatórios",
-      "Análise financeira"
-    ]
-
-  };
-
-
-  const title =
-    titles[page] ||
-    titles.dashboard;
-
-
-  document.getElementById(
-    "pageTitle"
-  ).textContent = title[0];
-
-
-  document.getElementById(
-    "pageSubtitle"
-  ).textContent = title[1];
-
-
-  document
-    .getElementById("sidebar")
-    .classList.remove("open");
-
-
-  renderPageData(page);
-
+  color: var(--orange-dark);
 }
 
 
-function renderPageData(page) {
+/* =====================================================
+   MODAIS
+   ===================================================== */
 
-  if (
-    page === "dashboard"
-  ) {
+.modal {
+  position: fixed;
 
-    renderDashboard();
+  inset: 0;
 
+  z-index: 100;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+}
+
+.modal-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  background: rgba(10, 25, 18, 0.55);
+
+  backdrop-filter: blur(3px);
+}
+
+.modal-card {
+  position: relative;
+
+  width: 100%;
+
+  max-width: 620px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  background: var(--white);
+
+  border-radius: 18px;
+
+  padding: 25px;
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.2);
+
+  z-index: 1;
+}
+
+.modal-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  color: var(--green-dark);
+}
+
+.close-button {
+  width: 35px;
+  height: 35px;
+
+  border: none;
+
+  background: #f1f4f1;
+
+  color: var(--green-dark);
+
+  border-radius: 9px;
+
+  font-size: 22px;
+}
+
+.close-button:hover {
+  background: var(--orange-light);
+
+  color: var(--orange-dark);
+}
+
+.type-selector {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+
+  margin-bottom: 18px;
+}
+
+.type-option {
+  padding: 11px;
+
+  border-radius: 9px;
+
+  border: 1px solid var(--border);
+
+  background: white;
+
+  font-weight: 800;
+
+  color: var(--text-light);
+}
+
+.type-option.active {
+  background: var(--green-dark);
+
+  color: white;
+
+  border-color: var(--green-dark);
+}
+
+.form-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 5px 15px;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+.modal-actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.modal-actions .primary-button {
+  width: auto;
+
+  margin: 0;
+}
+
+.confirmation-card {
+  max-width: 420px;
+
+  text-align: center;
+}
+
+.confirmation-icon {
+  font-size: 40px;
+
+  margin-bottom: 10px;
+}
+
+.confirmation-card h2 {
+  color: var(--green-dark);
+
+  margin-bottom: 7px;
+}
+
+.confirmation-card p {
+  color: var(--text-light);
+}
+
+
+/* =====================================================
+   RESPONSIVIDADE
+   ===================================================== */
+
+@media (max-width: 1100px) {
+
+  .summary-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
   }
 
-
-  if (
-    page === "movimentacoes"
-  ) {
-
-    renderTransactionsTable();
-
+  .dashboard-grid {
+    grid-template-columns: 1fr;
   }
 
-
-  if (
-    page === "receitas"
-  ) {
-
-    renderSimpleList(
-      "incomeList",
-      "receita"
-    );
-
-  }
-
-
-  if (
-    page === "despesas"
-  ) {
-
-    renderSimpleList(
-      "expenseList",
-      "despesa"
-    );
-
-  }
-
-
-  if (
-    page === "pessoal"
-  ) {
-
-    renderEnvironment(
-      "pessoal",
-      "personalBalance"
-    );
-
-  }
-
-
-  if (
-    page === "empresa"
-  ) {
-
-    renderEnvironment(
-      "empresa",
-      "companyBalance"
-    );
-
-  }
-
-
-  if (
-    page === "relatorios"
-  ) {
-
-    renderReports();
-
+  .filters-panel {
+    grid-template-columns:
+      repeat(2, 1fr);
   }
 
 }
 
 
-// =============================================
-// LISTAS
-// =============================================
+@media (max-width: 800px) {
 
-function renderSimpleList(
-  elementId,
-  type
-) {
+  .sidebar {
+    transform: translateX(-100%);
 
-  const container =
-    document.getElementById(
-      elementId
-    );
-
-
-  const data =
-    transactions.filter(
-      item =>
-        item.type === type
-    );
-
-
-  if (!data.length) {
-
-    container.innerHTML = `
-
-      <div class="coming-card">
-
-        <span>
-          ${type === "receita" ? "↗" : "↘"}
-        </span>
-
-        <h3>
-          Nenhum lançamento
-        </h3>
-
-        <p>
-          Ainda não existem registros nesta categoria.
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-
+    transition: transform 0.25s ease;
   }
 
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
 
-  container.innerHTML =
-    data.map(item => `
+  .main-content {
+    width: 100%;
 
-      <div class="simple-item">
+    margin-left: 0;
 
-        <div>
+    padding: 20px 15px;
+  }
 
-          <strong>
-            ${escapeHTML(
-              item.description
-            )}
-          </strong>
+  .mobile-menu-button {
+    display: inline-block;
+  }
 
-          <small>
+  .topbar {
+    align-items: flex-start;
+  }
 
-            ${formatDate(item.date)}
-            ·
-            ${formatCategory(
-              item.category
-            )}
+  .topbar-actions {
+    display: none;
+  }
 
-          </small>
+  .page-heading {
+    align-items: flex-start;
 
-        </div>
+    flex-direction: column;
+  }
 
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
 
-        <strong
-          style="
-            color:${
-              type === "receita"
-                ? "var(--green)"
-                : "var(--red)"
-            }
-          "
-        >
+  .reports-grid {
+    grid-template-columns: 1fr;
+  }
 
-          ${type === "receita" ? "+" : "-"}
-
-          ${formatCurrency(
-            item.value
-          )}
-
-        </strong>
-
-      </div>
-
-    `).join("");
-
-}
-
-
-// =============================================
-// AMBIENTES
-// =============================================
-
-function renderEnvironment(
-  account,
-  elementId
-) {
-
-  const data =
-    transactions.filter(
-      item =>
-        item.account === account
-    );
-
-
-  const summary =
-    calculate(data);
-
-
-  document.getElementById(
-    elementId
-  ).textContent =
-    formatCurrency(
-      summary.balance
-    );
-
-}
-
-
-// =============================================
-// RELATÓRIOS
-// =============================================
-
-function renderReports() {
-
-  const container =
-    document.getElementById(
-      "reportContent"
-    );
-
-
-  const summary =
-    calculate(
-      transactions
-    );
-
-
-  container.innerHTML = `
-
-    <div class="report-card">
-
-      <span>
-        Receitas
-      </span>
-
-      <strong>
-        ${formatCurrency(
-          summary.income
-        )}
-      </strong>
-
-    </div>
-
-
-    <div class="report-card">
-
-      <span>
-        Despesas
-      </span>
-
-      <strong>
-        ${formatCurrency(
-          summary.expense
-        )}
-      </strong>
-
-    </div>
-
-
-    <div class="report-card">
-
-      <span>
-        Resultado
-      </span>
-
-      <strong>
-        ${formatCurrency(
-          summary.result
-        )}
-      </strong>
-
-    </div>
-
-  `;
-
-}
-
-
-// =============================================
-// MODAL
-// =============================================
-
-function openTransactionModal() {
-
-  transactionForm.reset();
-
-  document.getElementById(
-    "transactionId"
-  ).value = "";
-
-
-  document.getElementById(
-    "modalTitle"
-  ).textContent =
-    "Nova movimentação";
-
-
-  document.querySelector(
-    'input[name="transactionType"][value="receita"]'
-  ).checked = true;
-
-
-  setToday();
-
-
-  transactionModal.classList.add(
-    "active"
-  );
-
-}
-
-
-function closeTransactionModal() {
-
-  transactionModal.classList.remove(
-    "active"
-  );
-
-}
-
-
-// =============================================
-// TEMA
-// =============================================
-
-function toggleTheme() {
-
-  document.body.classList.toggle(
-    "dark"
-  );
-
-
-  const dark =
-    document.body.classList.contains(
-      "dark"
-    );
-
-
-  localStorage.setItem(
-    "fincontrol_theme",
-    dark
-      ? "dark"
-      : "light"
-  );
-
-
-  document.getElementById(
-    "themeButton"
-  ).innerHTML =
-    dark
-      ? "☀ <span>Tema claro</span>"
-      : "☾ <span>Tema escuro</span>";
-
-}
-
-
-function loadTheme() {
-
-  const theme =
-    localStorage.getItem(
-      "fincontrol_theme"
-    );
-
-
-  if (theme === "dark") {
-
-    document.body.classList.add(
-      "dark"
-    );
-
+  .filters-panel {
+    grid-template-columns: 1fr;
   }
 
 }
 
 
-// =============================================
-// UTILIDADES
-// =============================================
+@media (max-width: 600px) {
 
-function setToday() {
+  .auth-screen {
+    padding: 15px;
+  }
 
-  const today =
-    new Date()
-      .toISOString()
-      .split("T")[0];
+  .auth-card {
+    padding: 25px 20px;
 
+    border-radius: 18px;
+  }
 
-  const input =
-    document.getElementById(
-      "transactionDate"
-    );
+  .page-heading h1 {
+    font-size: 24px;
+  }
 
+  .summary-card {
+    padding: 16px;
+  }
 
-  if (input) {
-    input.value = today;
+  .panel {
+    padding: 17px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.full {
+    grid-column: auto;
+  }
+
+  .modal {
+    padding: 10px;
+  }
+
+  .modal-card {
+    padding: 20px;
+
+    border-radius: 15px;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+
+  .profile-panel {
+    flex-direction: column;
+
+    align-items: flex-start;
   }
 
 }
 
 
-function setCurrentMonth() {
+/* =====================================================
+   SCROLLBAR
+   ===================================================== */
 
-  const date =
-    new Date();
-
-
-  const month =
-    date.getFullYear() +
-    "-" +
-    String(
-      date.getMonth() + 1
-    ).padStart(2, "0");
-
-
-  const input =
-    document.getElementById(
-      "dashboardMonth"
-    );
-
-
-  if (input) {
-    input.value = month;
-  }
-
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-
-function formatCurrency(value) {
-
-  return new Intl.NumberFormat(
-    "pt-BR",
-    {
-      style: "currency",
-      currency: "BRL"
-    }
-  ).format(
-    Number(value) || 0
-  );
-
+::-webkit-scrollbar-track {
+  background: #edf1ed;
 }
 
+::-webkit-scrollbar-thumb {
+  background: #bdc8bf;
 
-function formatDate(date) {
-
-  if (!date) return "-";
-
-
-  return new Date(
-    date + "T00:00:00"
-  ).toLocaleDateString(
-    "pt-BR"
-  );
-
+  border-radius: 10px;
 }
 
-
-function formatCategory(category) {
-
-  const categories = {
-
-    salario: "Salário",
-
-    vendas: "Vendas",
-
-    servicos: "Serviços",
-
-    alimentacao: "Alimentação",
-
-    moradia: "Moradia",
-
-    transporte: "Transporte",
-
-    saude: "Saúde",
-
-    educacao: "Educação",
-
-    lazer: "Lazer",
-
-    compras: "Compras",
-
-    impostos: "Impostos",
-
-    fornecedores: "Fornecedores",
-
-    marketing: "Marketing",
-
-    outros: "Outros"
-
-  };
-
-
-  return (
-    categories[category] ||
-    category ||
-    "Outros"
-  );
-
+::-webkit-scrollbar-thumb:hover {
+  background: var(--green);
 }
-
-
-function escapeHTML(value) {
-
-  return String(value)
-
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
-
-}
-
-
-function togglePassword(id) {
-
-  const input =
-    document.getElementById(
-      id
-    );
-
-
-  input.type =
-    input.type === "password"
-      ? "text"
-      : "password";
-
-}
-
-
-function setMessage(
-  id,
-  message,
-  type
-) {
-
-  const element =
-    document.getElementById(
-      id
-    );
-
-
-  element.textContent =
-    message;
-
-
-  element.className =
-    "auth-message " +
-    type;
-
-}
-
-
-function getAuthError(error) {
-
-  const message =
-    error?.message || "";
-
-
-  if (
-    message.includes(
-      "Invalid login credentials"
-    )
-  ) {
-
-    return "E-mail ou senha incorretos.";
-
-  }
-
-
-  if (
-    message.includes(
-      "User already registered"
-    )
-  ) {
-
-    return "Este e-mail já está cadastrado.";
-
-  }
-
-
-  if (
-    message.includes(
-      "Password should be at least"
-    )
-  ) {
-
-    return "A senha precisa ter pelo menos 6 caracteres.";
-
-  }
-
-
-  return message ||
-    "Ocorreu um erro. Tente novamente.";
-
-}
-
-
-// Carregar tema
-loadTheme();
