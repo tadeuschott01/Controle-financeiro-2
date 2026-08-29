@@ -7,11 +7,14 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ControleS</title>
+<title>ControleS - Controle Financeiro</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -34,8 +37,8 @@ $
 </div>
 
 <div>
-<strong>Controle<span>S</span></strong>
-<small>Gestão financeira</small>
+<h2>Controle<span>S</span></h2>
+<p>Financeiro inteligente</p>
 </div>
 
 </div>
@@ -51,7 +54,7 @@ $
 
 
 <a>
-💰 Movimentações
+💰 Lançamentos
 </a>
 
 
@@ -66,7 +69,7 @@ $
 
 
 <a>
-🔔 Contas a pagar
+🔔 Lembretes
 </a>
 
 
@@ -86,25 +89,42 @@ $
 
 
 <a>
-📈 Relatórios
+📂 Relatórios
 </a>
+
+
+<a>
+⚙ Configurações
+</a>
+
 
 
 </nav>
 
 
 
-<div class="premium">
+<div class="premium-box">
+
 
 <h3>ControleS Premium</h3>
 
 <p>
-Mais recursos para controlar seu dinheiro.
+Tenha recursos avançados
 </p>
 
 
+<strong>
+R$ 24,99/mês
+</strong>
+
+
+<span>
+Plano anual R$19,99/mês
+</span>
+
+
 <button>
-Assinar R$9,90
+Conhecer Premium
 </button>
 
 
@@ -117,33 +137,48 @@ Assinar R$9,90
 
 
 
-<!-- ÁREA PRINCIPAL -->
+<!-- CONTEÚDO -->
 
 
 <main>
 
 
 
-<header>
+<header class="top">
 
 
 <div>
 
-<h2>
+<h1>
 Olá, Felipe 👋
-</h2>
+</h1>
 
 <p>
-Aqui está sua visão financeira.
+Aqui está seu resumo financeiro
 </p>
 
 </div>
 
 
 
-<button class="add">
-+ Nova movimentação
-</button>
+<div class="profile">
+
+<div class="avatar">
+F
+</div>
+
+<div>
+<strong>
+Felipe
+</strong>
+
+<small>
+Plano gratuito
+</small>
+</div>
+
+
+</div>
 
 
 </header>
@@ -152,62 +187,75 @@ Aqui está sua visão financeira.
 
 
 
-<!-- SALDO -->
+<section class="dashboard">
 
 
-<section class="balance">
+
+<!-- SALDO PRINCIPAL -->
+
+
+<div class="balance">
 
 
 <div>
 
 <span>
-Saldo atual
+Saldo disponível
 </span>
 
 
-<h1>
-R$ 4.850,00
-</h1>
+<h2>
+R$ 8.540,00
+</h2>
 
 
-<p class="positive">
-↑ R$650 este mês
+<p>
+Atualizado manualmente
 </p>
 
 
 </div>
 
 
-<div class="money-icon">
-$
+<div class="balance-actions">
+
+<button>
++ Entrada
+</button>
+
+<button>
+- Saída
+</button>
+
+
 </div>
 
 
-</section>
-
-
+</div>
 
 
 
 <!-- CARDS -->
 
 
-<section class="cards">
+<div class="cards">
 
 
 <div class="card">
 
 <span>
-Receitas
+Entradas do mês
 </span>
 
-<h2>
-R$5.000,00
-</h2>
+<strong class="green">
+R$ 5.200,00
+</strong>
 
-<p class="green">
-+12% esse mês
+
+<p>
+↑ 12% comparado ao mês anterior
 </p>
+
 
 </div>
 
@@ -216,16 +264,18 @@ R$5.000,00
 <div class="card">
 
 <span>
-Despesas
+Gastos do mês
 </span>
 
-<h2>
-R$1.200,00
-</h2>
+<strong class="red">
+R$ 1.840,00
+</strong>
 
-<p class="red">
--5% esse mês
+
+<p>
+Controle suas despesas
 </p>
+
 
 </div>
 
@@ -237,13 +287,15 @@ R$1.200,00
 Economia
 </span>
 
-<h2>
-R$3.800,00
-</h2>
+<strong>
+R$ 3.360,00
+</strong>
+
 
 <p>
 Meta mensal
 </p>
+
 
 </div>
 
@@ -252,19 +304,21 @@ Meta mensal
 <div class="card">
 
 <span>
-Contas próximas
+Contas futuras
 </span>
 
-<h2>
-3
-</h2>
+<strong>
+R$ 620,00
+</strong>
+
 
 <p>
-Vencendo
+Próximos pagamentos
 </p>
+
 
 </div>
 
 
 
-</section>
+</div>
