@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +8,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -19,2127 +19,1518 @@
 
 <body>
 
-  <!-- CONTROLES DE NAVEGAÇÃO -->
-  <input type="radio" name="page" id="page-dashboard" checked>
-  <input type="radio" name="page" id="page-transacoes">
-  <input type="radio" name="page" id="page-calendario">
-  <input type="radio" name="page" id="page-metas">
-  <input type="radio" name="page" id="page-cartoes">
-  <input type="radio" name="page" id="page-lembretes">
-  <input type="radio" name="page" id="page-indicadores">
-  <input type="radio" name="page" id="page-recibos">
-  <input type="radio" name="page" id="page-contas">
-  <input type="radio" name="page" id="page-relatorios">
-  <input type="radio" name="page" id="page-categorias">
-  <input type="radio" name="page" id="page-configuracoes">
+<!-- =========================================================
+     CONTROLE DE PÁGINAS
+========================================================= -->
+
+<input type="radio" name="page" id="page-dashboard" checked>
+<input type="radio" name="page" id="page-transacoes">
+<input type="radio" name="page" id="page-calendario">
+<input type="radio" name="page" id="page-metas">
+<input type="radio" name="page" id="page-lembretes">
+<input type="radio" name="page" id="page-indicadores">
+<input type="radio" name="page" id="page-recibos">
+<input type="radio" name="page" id="page-contas">
+<input type="radio" name="page" id="page-relatorios">
+<input type="radio" name="page" id="page-categorias">
+<input type="radio" name="page" id="page-configuracoes">
 
 
-  <div class="app-shell">
+<div class="app">
 
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
+  <!-- =======================================================
+       SIDEBAR
+  ======================================================== -->
 
-    <aside class="sidebar">
+  <aside class="sidebar">
 
-      <div class="brand">
+    <div class="brand">
+      <div class="brand-logo">$</div>
 
-        <div class="brand-logo">
-          $
-        </div>
-
-        <div class="brand-name">
-          <strong>Controle<span>S</span></strong>
-          <small>GESTÃO FINANCEIRA</small>
-        </div>
-
+      <div>
+        <strong>Controle<span>S</span></strong>
+        <small>GESTÃO FINANCEIRA</small>
       </div>
+    </div>
 
 
-      <!-- PRINCIPAL -->
+    <nav>
 
-      <div class="sidebar-section">
+      <div class="nav-group">
 
-        <span class="sidebar-title">
-          PRINCIPAL
-        </span>
-
+        <span class="nav-title">PRINCIPAL</span>
 
         <label for="page-dashboard" class="nav-item">
-          <span class="nav-icon">⌂</span>
+          <span>▦</span>
           Dashboard
         </label>
 
-
         <label for="page-transacoes" class="nav-item">
-          <span class="nav-icon">↕</span>
+          <span>⇅</span>
           Transações
-        </label>
-
-
-        <label for="page-calendario" class="nav-item">
-          <span class="nav-icon">▣</span>
-          Calendário
         </label>
 
       </div>
 
 
-      <!-- PLANEJAMENTO -->
+      <div class="nav-group">
 
-      <div class="sidebar-section">
+        <span class="nav-title">PLANEJAMENTO</span>
 
-        <span class="sidebar-title">
-          PLANEJAMENTO
-        </span>
-
+        <label for="page-calendario" class="nav-item">
+          <span>▣</span>
+          Calendário
+        </label>
 
         <label for="page-metas" class="nav-item">
-          <span class="nav-icon">◎</span>
+          <span>◎</span>
           Metas
         </label>
 
-
-        <label for="page-cartoes" class="nav-item">
-          <span class="nav-icon">▭</span>
-          Cartões
-        </label>
-
-
         <label for="page-lembretes" class="nav-item">
-          <span class="nav-icon">♧</span>
+          <span>♧</span>
           Lembretes
         </label>
 
       </div>
 
 
-      <!-- ANÁLISES -->
+      <div class="nav-group">
 
-      <div class="sidebar-section">
-
-        <span class="sidebar-title">
-          ANÁLISES
-        </span>
-
+        <span class="nav-title">ANÁLISES</span>
 
         <label for="page-indicadores" class="nav-item">
-          <span class="nav-icon">↗</span>
+          <span>↗</span>
           Indicadores
         </label>
 
-
         <label for="page-relatorios" class="nav-item">
-          <span class="nav-icon">▤</span>
+          <span>▤</span>
           Relatórios
         </label>
 
       </div>
 
 
-      <!-- GESTÃO -->
+      <div class="nav-group">
 
-      <div class="sidebar-section">
-
-        <span class="sidebar-title">
-          GESTÃO
-        </span>
-
+        <span class="nav-title">GESTÃO</span>
 
         <label for="page-recibos" class="nav-item">
-          <span class="nav-icon">▧</span>
+          <span>▧</span>
           Recibos
         </label>
 
-
         <label for="page-contas" class="nav-item">
-          <span class="nav-icon">▣</span>
-          Contas
+          <span>▣</span>
+          Contas e saldos
         </label>
 
-
         <label for="page-categorias" class="nav-item">
-          <span class="nav-icon">◈</span>
+          <span>◈</span>
           Categorias
         </label>
 
       </div>
 
-
-      <div class="sidebar-bottom">
-
-        <label for="page-configuracoes" class="nav-item">
-          <span class="nav-icon">⚙</span>
-          Configurações
-        </label>
+    </nav>
 
 
-        <div class="account-box">
+    <div class="sidebar-bottom">
 
-          <div class="avatar">
-            F
+      <label for="page-configuracoes" class="nav-item">
+        <span>⚙</span>
+        Configurações
+      </label>
+
+      <div class="user-box">
+
+        <div class="avatar">F</div>
+
+        <div>
+          <strong>Felipe</strong>
+          <small>Plano gratuito</small>
+        </div>
+
+        <span>•••</span>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =======================================================
+       CONTEÚDO
+  ======================================================== -->
+
+  <main class="main">
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+      <div class="mobile-logo">
+        <div class="brand-logo small">$</div>
+        <strong>Controle<span>S</span></strong>
+      </div>
+
+
+      <div class="search">
+        <span>⌕</span>
+
+        <input
+          type="search"
+          placeholder="Buscar transações, contas..."
+        >
+      </div>
+
+
+      <div class="top-actions">
+
+        <button class="icon-button notification">
+          ♧
+          <i></i>
+        </button>
+
+        <button class="icon-button">
+          ?
+        </button>
+
+        <div class="profile">
+
+          <div class="avatar">F</div>
+
+          <div>
+            <strong>Felipe</strong>
+            <small>Plano gratuito</small>
           </div>
-
-          <div class="account-info">
-            <strong>Minha conta</strong>
-            <span>Plano gratuito</span>
-          </div>
-
-          <span class="account-more">•••</span>
 
         </div>
 
       </div>
 
-    </aside>
-
+    </header>
 
 
     <!-- =====================================================
-         CONTEÚDO PRINCIPAL
+         DASHBOARD
     ====================================================== -->
 
-    <main class="main-content">
+    <section class="page dashboard">
+
+      <div class="page-heading">
+
+        <div>
+
+          <span class="eyebrow">VISÃO GERAL</span>
+
+          <h1>Dashboard</h1>
+
+          <p>
+            Olá, Felipe! 👋
+            Aqui está o resumo das suas finanças.
+          </p>
+
+        </div>
+
+        <button class="primary-button">
+          + Nova transação
+        </button>
+
+      </div>
 
 
-      <!-- TOPBAR -->
+      <!-- SALDO -->
 
-      <header class="topbar">
+      <div class="hero-balance">
 
-        <div class="mobile-brand">
+        <div>
 
-          <div class="brand-logo small">
+          <div class="balance-label">
+            Saldo disponível
+            <button>◉</button>
+          </div>
+
+          <div class="balance-value">
+            R$ 12.480,00
+          </div>
+
+          <div class="balance-growth">
+            <span>▲ 8,4%</span>
+            em relação ao mês anterior
+          </div>
+
+        </div>
+
+        <div class="hero-decoration">
+          $
+        </div>
+
+      </div>
+
+
+      <!-- RESUMO -->
+
+      <div class="summary-grid">
+
+        <div class="stat-card">
+
+          <div class="stat-icon green">
+            ↗
+          </div>
+
+          <div>
+            <span>Receitas</span>
+            <strong>R$ 8.750,00</strong>
+            <small class="positive">+12,5% este mês</small>
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div class="stat-icon red">
+            ↘
+          </div>
+
+          <div>
+            <span>Despesas</span>
+            <strong>R$ 4.280,00</strong>
+            <small class="negative">+4,2% este mês</small>
+          </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <div class="stat-icon orange">
             $
           </div>
 
-          <strong>
-            Controle<span>S</span>
-          </strong>
-
-        </div>
-
-
-        <div class="topbar-search">
-
-          <span>⌕</span>
-
-          <input
-            type="search"
-            placeholder="Buscar transações, contas..."
-          >
-
-        </div>
-
-
-        <div class="topbar-actions">
-
-          <button class="top-icon notification">
-            ♧
-            <i></i>
-          </button>
-
-
-          <button class="top-icon">
-            ?
-          </button>
-
-
-          <div class="top-profile">
-
-            <div class="avatar">
-              F
-            </div>
-
-            <div>
-              <strong>Minha conta</strong>
-              <span>Plano gratuito</span>
-            </div>
-
+          <div>
+            <span>Economia</span>
+            <strong>R$ 4.470,00</strong>
+            <small class="positive">51,1% da receita</small>
           </div>
 
         </div>
 
-      </header>
 
+        <div class="stat-card">
 
-
-      <!-- =====================================================
-           DASHBOARD
-      ====================================================== -->
-
-      <section class="page page-dashboard">
-
-        <div class="page-header">
+          <div class="stat-icon blue">
+            ◎
+          </div>
 
           <div>
-
-            <span class="eyebrow">
-              VISÃO GERAL
-            </span>
-
-            <h1>
-              Dashboard
-            </h1>
-
-            <p>
-              Acompanhe sua vida financeira em um só lugar.
-            </p>
-
+            <span>Projeção</span>
+            <strong>R$ 13.240,00</strong>
+            <small class="positive">próximo mês</small>
           </div>
-
-
-          <button class="primary-button">
-            + Nova transação
-          </button>
 
         </div>
 
-
-        <!-- SALDO -->
-
-        <div class="balance-card">
-
-          <div class="balance-content">
-
-            <div class="balance-header">
-              <span>Saldo disponível</span>
-              <button>◉</button>
-            </div>
+      </div>
 
 
-            <strong class="balance-number">
-              R$ 12.480,00
-            </strong>
+      <!-- GRÁFICO + METAS -->
 
+      <div class="dashboard-grid">
 
-            <div class="balance-footer">
+        <div class="card chart-card">
 
-              <span class="growth">
-                ↑ 8,4%
-              </span>
-
-              <span>
-                em relação ao mês anterior
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <strong class="balance-mark">
-            ControleS
-          </strong>
-
-
-          <div class="balance-decoration one"></div>
-          <div class="balance-decoration two"></div>
-
-        </div>
-
-
-
-        <!-- RESUMO -->
-
-        <div class="summary-grid">
-
-          <div class="stat-card">
-
-            <div class="stat-icon income">
-              ↑
-            </div>
+          <div class="card-heading">
 
             <div>
-              <span>Receitas</span>
-              <strong>R$ 8.750,00</strong>
-              <small class="positive">
-                +12,5% este mês
-              </small>
+              <h2>Receitas x Despesas</h2>
+              <p>Movimentação dos últimos meses.</p>
+            </div>
+
+            <select>
+              <option>Últimos 6 meses</option>
+              <option>Últimos 12 meses</option>
+            </select>
+
+          </div>
+
+
+          <div class="chart">
+
+            <div class="chart-y">
+              <span>10k</span>
+              <span>7.5k</span>
+              <span>5k</span>
+              <span>2.5k</span>
+              <span>0</span>
+            </div>
+
+
+            <div class="chart-area">
+
+              <div class="grid-lines"></div>
+
+              <svg
+                viewBox="0 0 700 260"
+                preserveAspectRatio="none"
+              >
+
+                <polyline
+                  class="line-income"
+                  points="0,190 110,145 220,165 330,125 440,70 550,100 700,45"
+                />
+
+                <polyline
+                  class="line-expense"
+                  points="0,215 110,185 220,195 330,180 440,145 550,155 700,130"
+                />
+
+              </svg>
+
+
+              <div class="chart-x">
+                <span>Mar</span>
+                <span>Abr</span>
+                <span>Mai</span>
+                <span>Jun</span>
+                <span>Jul</span>
+                <span>Ago</span>
+                <span>Set</span>
+              </div>
+
             </div>
 
           </div>
 
 
-          <div class="stat-card">
+          <div class="legend">
 
-            <div class="stat-icon expense">
+            <span>
+              <i class="dot income"></i>
+              Receitas
+            </span>
+
+            <span>
+              <i class="dot expense"></i>
+              Despesas
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- METAS -->
+
+        <div class="card goals-card">
+
+          <div class="card-heading">
+
+            <div>
+              <h2>Metas</h2>
+              <p>Seus objetivos financeiros.</p>
+            </div>
+
+            <label for="page-metas" class="link">
+              Ver todas
+            </label>
+
+          </div>
+
+
+          <div class="goal-item">
+
+            <div class="goal-symbol">✈</div>
+
+            <div class="goal-content">
+
+              <strong>Viagem para Europa</strong>
+
+              <span>
+                R$ 6.240 / R$ 10.000
+              </span>
+
+              <div class="progress">
+                <i style="width:62%"></i>
+              </div>
+
+            </div>
+
+            <b>62%</b>
+
+          </div>
+
+
+          <div class="goal-item">
+
+            <div class="goal-symbol">♢</div>
+
+            <div class="goal-content">
+
+              <strong>Reserva de emergência</strong>
+
+              <span>
+                R$ 8.000 / R$ 15.000
+              </span>
+
+              <div class="progress">
+                <i style="width:53%"></i>
+              </div>
+
+            </div>
+
+            <b>53%</b>
+
+          </div>
+
+
+          <div class="goal-item">
+
+            <div class="goal-symbol">▣</div>
+
+            <div class="goal-content">
+
+              <strong>Comprar um carro</strong>
+
+              <span>
+                R$ 12.300 / R$ 40.000
+              </span>
+
+              <div class="progress">
+                <i style="width:31%"></i>
+              </div>
+
+            </div>
+
+            <b>31%</b>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- TRANSAÇÕES + CONTAS -->
+
+      <div class="dashboard-grid lower">
+
+        <div class="card transactions-card">
+
+          <div class="card-heading">
+
+            <div>
+              <h2>Últimas transações</h2>
+              <p>Movimentações recentes.</p>
+            </div>
+
+            <label for="page-transacoes" class="link">
+              Ver todas
+            </label>
+
+          </div>
+
+
+          <div class="transaction">
+
+            <div class="transaction-icon income-icon">
               ↓
             </div>
 
-            <div>
-              <span>Despesas</span>
-              <strong>R$ 4.280,00</strong>
-              <small class="negative">
-                +4,2% este mês
-              </small>
+            <div class="transaction-info">
+              <strong>Salário</strong>
+              <span>Hoje • Receita</span>
             </div>
+
+            <b class="positive">
+              + R$ 7.500,00
+            </b>
 
           </div>
 
 
-          <div class="stat-card">
+          <div class="transaction">
 
-            <div class="stat-icon saving">
+            <div class="transaction-icon expense-icon">
+              $
+            </div>
+
+            <div class="transaction-info">
+              <strong>Supermercado</strong>
+              <span>Ontem • Alimentação</span>
+            </div>
+
+            <b class="negative">
+              - R$ 420,00
+            </b>
+
+          </div>
+
+
+          <div class="transaction">
+
+            <div class="transaction-icon home-icon">
+              ⌂
+            </div>
+
+            <div class="transaction-info">
+              <strong>Aluguel</strong>
+              <span>27 Ago • Moradia</span>
+            </div>
+
+            <b class="negative">
+              - R$ 1.800,00
+            </b>
+
+          </div>
+
+
+          <div class="transaction">
+
+            <div class="transaction-icon fuel-icon">
+              ◉
+            </div>
+
+            <div class="transaction-info">
+              <strong>Combustível</strong>
+              <span>26 Ago • Transporte</span>
+            </div>
+
+            <b class="negative">
+              - R$ 250,00
+            </b>
+
+          </div>
+
+        </div>
+
+
+        <!-- CONTAS -->
+
+        <div class="card accounts-card">
+
+          <div class="card-heading">
+
+            <div>
+              <h2>Contas e saldos</h2>
+              <p>Valores informados manualmente.</p>
+            </div>
+
+            <label for="page-contas" class="link">
+              Ver todas
+            </label>
+
+          </div>
+
+
+          <div class="account-item">
+
+            <div class="account-icon">
               $
             </div>
 
             <div>
-              <span>Economia</span>
-              <strong>R$ 4.470,00</strong>
-              <small class="positive">
-                51,1% da receita
-              </small>
+              <strong>Conta principal</strong>
+              <span>Saldo informado</span>
             </div>
+
+            <b>R$ 9.850,00</b>
 
           </div>
 
 
-          <div class="stat-card">
+          <div class="account-item">
 
-            <div class="stat-icon projection">
-              ↗
+            <div class="account-icon">
+              ♢
             </div>
 
             <div>
-              <span>Projeção</span>
-              <strong>R$ 13.240,00</strong>
-              <small class="positive">
-                próximo mês
-              </small>
+              <strong>Reserva</strong>
+              <span>Saldo informado</span>
             </div>
 
+            <b>R$ 13.000,00</b>
+
+          </div>
+
+
+          <div class="account-item">
+
+            <div class="account-icon">
+              +
+            </div>
+
+            <div>
+              <strong>Dinheiro</strong>
+              <span>Saldo informado</span>
+            </div>
+
+            <b>R$ 850,00</b>
+
+          </div>
+
+
+          <div class="manual-note">
+            🔒 Nenhuma conta bancária é conectada.
+            Os valores são cadastrados por você.
           </div>
 
         </div>
 
+      </div>
 
 
-        <!-- GRÁFICO + INDICADORES -->
+      <!-- RODAPÉ -->
 
-        <div class="two-columns">
+      <footer>
+        © 2026 <strong>ControleS</strong>. Todos os direitos reservados.
+      </footer>
 
-          <div class="card chart-card">
-
-            <div class="card-header">
-
-              <div>
-                <h2>Fluxo financeiro</h2>
-                <p>Receitas e despesas dos últimos meses.</p>
-              </div>
-
-              <select>
-                <option>Últimos 6 meses</option>
-                <option>Últimos 12 meses</option>
-              </select>
-
-            </div>
+    </section>
 
 
-            <div class="chart">
+    <!-- =====================================================
+         TRANSAÇÕES
+    ====================================================== -->
 
-              <div class="chart-values">
-                <span>10k</span>
-                <span>7.5k</span>
-                <span>5k</span>
-                <span>2.5k</span>
-                <span>0</span>
-              </div>
+    <section class="page">
 
+      <div class="page-heading">
 
-              <div class="chart-body">
+        <div>
+          <span class="eyebrow">MOVIMENTAÇÕES</span>
+          <h1>Transações</h1>
+          <p>Controle todas as entradas e saídas.</p>
+        </div>
 
-                <div class="chart-grid"></div>
+        <button class="primary-button">
+          + Nova transação
+        </button>
 
-                <svg
-                  viewBox="0 0 600 220"
-                  preserveAspectRatio="none"
-                >
-
-                  <polyline
-                    class="chart-income"
-                    points="0,150 100,130 200,90 300,105 400,55 500,75 600,35"
-                  />
-
-                  <polyline
-                    class="chart-expense"
-                    points="0,175 100,165 200,145 300,155 400,125 500,140 600,115"
-                  />
-
-                </svg>
+      </div>
 
 
-                <div class="chart-months">
-                  <span>Mar</span>
-                  <span>Abr</span>
-                  <span>Mai</span>
-                  <span>Jun</span>
-                  <span>Jul</span>
-                  <span>Ago</span>
-                  <span>Set</span>
-                </div>
+      <div class="filter-bar">
 
-              </div>
+        <div class="search-filter">
+          ⌕
+          <input placeholder="Buscar transação...">
+        </div>
 
-            </div>
+        <button>Todos</button>
+        <button>Receitas</button>
+        <button>Despesas</button>
+        <button>Este mês</button>
 
-
-            <div class="legend">
-
-              <span>
-                <i class="dot income-dot"></i>
-                Receitas
-              </span>
-
-              <span>
-                <i class="dot expense-dot"></i>
-                Despesas
-              </span>
-
-            </div>
-
-          </div>
+      </div>
 
 
+      <div class="card table-card">
 
-          <div class="card indicator-preview">
-
-            <div class="card-header compact">
-
-              <div>
-                <h2>Indicadores</h2>
-                <p>Saúde financeira</p>
-              </div>
-
-              <label for="page-indicadores" class="text-button">
-                Ver todos
-              </label>
-
-            </div>
+        <div class="table-header">
+          <span>DESCRIÇÃO</span>
+          <span>CATEGORIA</span>
+          <span>DATA</span>
+          <span>VALOR</span>
+        </div>
 
 
-            <div class="indicator-list">
+        <div class="table-row">
 
-              <div class="indicator-row">
-
-                <div class="indicator-symbol">
-                  %
-                </div>
-
-                <div>
-                  <strong>Taxa de economia</strong>
-                  <span>Quanto você consegue guardar</span>
-                </div>
-
-                <b>51%</b>
-
-              </div>
-
-
-              <div class="indicator-row">
-
-                <div class="indicator-symbol">
-                  $
-                </div>
-
-                <div>
-                  <strong>Comprometimento</strong>
-                  <span>Despesas sobre receitas</span>
-                </div>
-
-                <b>49%</b>
-
-              </div>
-
-
-              <div class="indicator-row">
-
-                <div class="indicator-symbol">
-                  ↗
-                </div>
-
-                <div>
-                  <strong>Saldo projetado</strong>
-                  <span>Estimativa mensal</span>
-                </div>
-
-                <b class="positive">
-                  +8,4%
-                </b>
-
-              </div>
-
-            </div>
-
-          </div>
+          <strong>Salário</strong>
+          <span>Receita</span>
+          <span>29/08/2026</span>
+          <b class="positive">+ R$ 7.500,00</b>
 
         </div>
 
 
+        <div class="table-row">
 
-        <!-- ÚLTIMAS TRANSAÇÕES -->
-
-        <div class="two-columns">
-
-          <div class="card transactions-card">
-
-            <div class="card-header compact">
-
-              <div>
-                <h2>Últimas transações</h2>
-                <p>Movimentações recentes.</p>
-              </div>
-
-              <label for="page-transacoes" class="text-button">
-                Ver todas
-              </label>
-
-            </div>
-
-
-            <div class="transaction">
-
-              <div class="transaction-icon salary">
-                ↑
-              </div>
-
-              <div class="transaction-info">
-                <strong>Salário</strong>
-                <span>Hoje • Receita</span>
-              </div>
-
-              <strong class="value positive">
-                + R$ 7.500,00
-              </strong>
-
-            </div>
-
-
-            <div class="transaction">
-
-              <div class="transaction-icon food">
-                $
-              </div>
-
-              <div class="transaction-info">
-                <strong>Supermercado</strong>
-                <span>Ontem • Alimentação</span>
-              </div>
-
-              <strong class="value negative">
-                - R$ 420,00
-              </strong>
-
-            </div>
-
-
-            <div class="transaction">
-
-              <div class="transaction-icon home">
-                ⌂
-              </div>
-
-              <div class="transaction-info">
-                <strong>Aluguel</strong>
-                <span>27 Ago • Moradia</span>
-              </div>
-
-              <strong class="value negative">
-                - R$ 1.800,00
-              </strong>
-
-            </div>
-
-
-            <div class="transaction">
-
-              <div class="transaction-icon transport">
-                →
-              </div>
-
-              <div class="transaction-info">
-                <strong>Combustível</strong>
-                <span>26 Ago • Transporte</span>
-              </div>
-
-              <strong class="value negative">
-                - R$ 250,00
-              </strong>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="three-columns" style="margin-bottom:0;">
-
-            <div class="card mini-card">
-
-              <div class="card-header compact">
-                <div>
-                  <h2>Próximos</h2>
-                  <p>Contas a vencer</p>
-                </div>
-              </div>
-
-
-              <div class="upcoming-item">
-
-                <div class="date-box">
-                  <strong>02</strong>
-                  <span>SET</span>
-                </div>
-
-                <div>
-                  <strong>Internet</strong>
-                  <span>Conta mensal</span>
-                </div>
-
-                <b>R$ 120</b>
-
-              </div>
-
-
-              <div class="upcoming-item">
-
-                <div class="date-box">
-                  <strong>05</strong>
-                  <span>SET</span>
-                </div>
-
-                <div>
-                  <strong>Energia</strong>
-                  <span>Conta mensal</span>
-                </div>
-
-                <b>R$ 280</b>
-
-              </div>
-
-            </div>
-
-          </div>
+          <strong>Supermercado</strong>
+          <span>Alimentação</span>
+          <span>28/08/2026</span>
+          <b class="negative">- R$ 420,00</b>
 
         </div>
 
 
+        <div class="table-row">
 
-        <!-- META + DATA -->
-
-        <div class="three-columns">
-
-          <div class="card mini-card">
-
-            <div class="card-header compact">
-
-              <div>
-                <h2>Meta em destaque</h2>
-                <p>Seu progresso</p>
-              </div>
-
-            </div>
-
-
-            <div class="goal-box">
-
-              <div class="goal-top">
-
-                <div class="goal-icon">
-                  🎯
-                </div>
-
-                <div>
-                  <strong>Reserva de emergência</strong>
-                  <span>Meta: R$ 20.000</span>
-                </div>
-
-              </div>
-
-
-              <div class="progress">
-                <div style="width:65%;"></div>
-              </div>
-
-
-              <div class="goal-bottom">
-                <span>R$ 13.000</span>
-                <strong>65%</strong>
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="card mini-card">
-
-            <div class="card-header compact">
-
-              <div>
-                <h2>Hoje</h2>
-                <p>Resumo do dia</p>
-              </div>
-
-            </div>
-
-
-            <div class="today-box">
-
-              <div class="big-date">
-                29
-                <span>AGO</span>
-              </div>
-
-              <div>
-                <strong>Sábado</strong>
-                <span>Nenhuma conta vencendo hoje.</span>
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="card mini-card">
-
-            <div class="card-header compact">
-
-              <div>
-                <h2>Economia</h2>
-                <p>Este mês</p>
-              </div>
-
-            </div>
-
-
-            <strong style="font-size:28px;">
-              R$ 4.470
-            </strong>
-
-            <p style="font-size:9px;color:var(--muted);margin-top:7px;">
-              Você economizou mais que no mês anterior.
-            </p>
-
-          </div>
+          <strong>Aluguel</strong>
+          <span>Moradia</span>
+          <span>27/08/2026</span>
+          <b class="negative">- R$ 1.800,00</b>
 
         </div>
 
-      </section>
+      </div>
+
+    </section>
 
 
+    <!-- =====================================================
+         CALENDÁRIO
+    ====================================================== -->
 
-      <!-- =====================================================
-           TRANSAÇÕES
-      ====================================================== -->
+    <section class="page">
 
-      <section class="page page-transacoes">
+      <div class="page-heading">
 
-        <div class="page-header">
+        <div>
+          <span class="eyebrow">ORGANIZAÇÃO</span>
+          <h1>Calendário financeiro</h1>
+          <p>Visualize receitas, despesas e contas por data.</p>
+        </div>
+
+      </div>
+
+
+      <div class="card calendar-card">
+
+        <div class="calendar-title">
+          <button>‹</button>
+          <h2>Agosto 2026</h2>
+          <button>›</button>
+        </div>
+
+
+        <div class="week">
+          <span>DOM</span>
+          <span>SEG</span>
+          <span>TER</span>
+          <span>QUA</span>
+          <span>QUI</span>
+          <span>SEX</span>
+          <span>SÁB</span>
+        </div>
+
+
+        <div class="calendar">
+
+          <div class="muted-day">26</div>
+          <div class="muted-day">27</div>
+          <div class="muted-day">28</div>
+          <div class="muted-day">29</div>
+          <div class="muted-day">30</div>
+          <div class="muted-day">31</div>
+
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+          <div>4</div>
+          <div>5</div>
+          <div>6</div>
+          <div>7</div>
+          <div>8</div>
+          <div>9</div>
+          <div>10</div>
+          <div>11</div>
+          <div>12</div>
+          <div>13</div>
+          <div>14</div>
+          <div>15</div>
+          <div>16</div>
+          <div>17</div>
+          <div>18</div>
+          <div>19</div>
+          <div>20</div>
+          <div>21</div>
+          <div>22</div>
+          <div>23</div>
+          <div>24</div>
+          <div>25</div>
+          <div>26</div>
+          <div>27</div>
+          <div>28</div>
+          <div class="today">29</div>
+          <div>30</div>
+          <div>31</div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         METAS
+    ====================================================== -->
+
+    <section class="page">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">PLANEJAMENTO</span>
+          <h1>Metas de economia</h1>
+          <p>Transforme seus objetivos em metas financeiras.</p>
+        </div>
+
+        <button class="primary-button">
+          + Nova meta
+        </button>
+
+      </div>
+
+
+      <div class="cards-grid">
+
+        <div class="card goal-large">
+
+          <div class="goal-big-icon">♢</div>
+
+          <span>Reserva de emergência</span>
+
+          <strong>R$ 13.000</strong>
+
+          <small>de R$ 20.000</small>
+
+          <div class="progress big">
+            <i style="width:65%"></i>
+          </div>
+
+          <b>65% concluído</b>
+
+        </div>
+
+
+        <div class="card goal-large">
+
+          <div class="goal-big-icon">▣</div>
+
+          <span>Comprar um carro</span>
+
+          <strong>R$ 28.500</strong>
+
+          <small>de R$ 50.000</small>
+
+          <div class="progress big">
+            <i style="width:57%"></i>
+          </div>
+
+          <b>57% concluído</b>
+
+        </div>
+
+
+        <div class="card goal-large">
+
+          <div class="goal-big-icon">✈</div>
+
+          <span>Viagem</span>
+
+          <strong>R$ 3.200</strong>
+
+          <small>de R$ 8.000</small>
+
+          <div class="progress big">
+            <i style="width:40%"></i>
+          </div>
+
+          <b>40% concluído</b>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         LEMBRETES
+    ====================================================== -->
+
+    <section class="page">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">AVISOS</span>
+          <h1>Lembretes</h1>
+          <p>Não deixe suas contas vencerem.</p>
+        </div>
+
+        <button class="primary-button">
+          + Novo lembrete
+        </button>
+
+      </div>
+
+
+      <div class="reminders">
+
+        <div class="card reminder">
+          <div class="reminder-date">
+            <strong>02</strong>
+            <small>SET</small>
+          </div>
 
           <div>
-            <span class="eyebrow">MOVIMENTAÇÕES</span>
-            <h1>Transações</h1>
-            <p>Controle todas as entradas e saídas.</p>
+            <strong>Internet</strong>
+            <span>Conta mensal</span>
           </div>
 
-          <button class="primary-button">
-            + Nova transação
+          <b>R$ 120,00</b>
+
+          <em>Programado</em>
+        </div>
+
+
+        <div class="card reminder">
+          <div class="reminder-date">
+            <strong>05</strong>
+            <small>SET</small>
+          </div>
+
+          <div>
+            <strong>Conta de energia</strong>
+            <span>Conta mensal</span>
+          </div>
+
+          <b>R$ 280,00</b>
+
+          <em>Próximo</em>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         INDICADORES
+    ====================================================== -->
+
+    <section class="page">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">ANÁLISE</span>
+          <h1>Indicadores financeiros</h1>
+          <p>Entenda a saúde da sua vida financeira.</p>
+        </div>
+
+      </div>
+
+
+      <div class="cards-grid">
+
+        <div class="card indicator-card">
+          <div class="circle">51%</div>
+          <span>Taxa de economia</span>
+          <strong>Excelente</strong>
+          <p>Mais da metade das suas receitas está sendo economizada.</p>
+        </div>
+
+        <div class="card indicator-card">
+          <div class="circle">49%</div>
+          <span>Comprometimento</span>
+          <strong>Saudável</strong>
+          <p>Suas despesas representam 49% das receitas.</p>
+        </div>
+
+        <div class="card indicator-card">
+          <div class="indicator-number">
+            R$ 4.470
+          </div>
+          <span>Economia mensal</span>
+          <strong>+12,4%</strong>
+          <p>Crescimento comparado ao mês anterior.</p>
+        </div>
+
+        <div class="card indicator-card">
+          <div class="indicator-number">
+            R$ 13.240
+          </div>
+          <span>Saldo projetado</span>
+          <strong>Positivo</strong>
+          <p>Projeção baseada nos dados cadastrados.</p>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RECIBOS
+    ====================================================== -->
+
+    <section class="page">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">DOCUMENTOS</span>
+          <h1>Recibos</h1>
+          <p>Crie recibos profissionais rapidamente.</p>
+        </div>
+
+      </div>
+
+
+      <div class="receipt-layout">
+
+        <div class="card receipt">
+
+          <div class="receipt-top">
+            <strong>RECIBO</strong>
+            <span>ControleS</span>
+          </div>
+
+          <hr>
+
+          <p>Recebi de:</p>
+          <strong class="receipt-name">Nome do pagador</strong>
+
+          <p>A importância de:</p>
+          <strong class="receipt-value">R$ 0,00</strong>
+
+          <p>Referente a:</p>
+          <span>Descrição do pagamento</span>
+
+          <div class="signature">
+            Assinatura
+          </div>
+
+          <small>
+            Cidade, ____ de __________ de ______.
+          </small>
+
+        </div>
+
+
+        <div class="card form-card">
+
+          <h2>Criar recibo</h2>
+
+          <p>
+            Preencha as informações para gerar seu recibo.
+          </p>
+
+          <input placeholder="Nome do pagador">
+          <input placeholder="Valor do pagamento">
+          <input placeholder="Referente a">
+          <input placeholder="Cidade e data">
+
+          <button class="primary-button full">
+            Gerar recibo
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CONTAS
+    ====================================================== -->
+
+    <section class="page">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">PATRIMÔNIO</span>
+          <h1>Contas e saldos</h1>
+          <p>
+            Organize seus valores manualmente.
+          </p>
+        </div>
+
+        <button class="primary-button">
+          + Nova conta
+        </button>
+
+      </div>
+
+
+      <div class="manual-warning">
+
+        <strong>🔒 Seus bancos não são conectados ao ControleS.</strong>
+
+        <span>
+          Cadastre apenas o nome da conta e informe o saldo
+          manualmente. Nenhum extrato ou informação bancária
+          é puxado automaticamente.
+        </span>
+
+      </div>
+
+
+      <div class="cards-grid">
+
+        <div class="card finance-card">
+
+          <div class="finance-icon">$</div>
+
+          <span>Conta corrente</span>
+
+          <strong>Conta principal</strong>
+
+          <small>Saldo informado</small>
+
+          <b>R$ 9.850,00</b>
+
+          <button class="secondary-button">
+            Editar saldo
           </button>
 
         </div>
 
 
-        <div class="filter-bar">
+        <div class="card finance-card">
 
-          <div class="filter-search">
-            ⌕
-            <input
-              type="search"
-              placeholder="Buscar transação..."
-            >
-          </div>
+          <div class="finance-icon">♢</div>
 
-          <button>Todos</button>
-          <button>Receitas</button>
-          <button>Despesas</button>
-          <button>Este mês</button>
+          <span>Poupança</span>
+
+          <strong>Reserva</strong>
+
+          <small>Saldo informado</small>
+
+          <b>R$ 13.000,00</b>
+
+          <button class="secondary-button">
+            Editar saldo
+          </button>
 
         </div>
 
 
-        <div class="card table-card">
+        <div class="card finance-card add">
 
-          <div class="table-head">
-            <span>DESCRIÇÃO</span>
-            <span>CATEGORIA</span>
-            <span>DATA</span>
-            <span>VALOR</span>
+          <div class="plus">+</div>
+
+          <strong>Adicionar conta</strong>
+
+          <small>
+            Banco, carteira, dinheiro ou investimento
+          </small>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RELATÓRIOS
+    ====================================================== -->
+
+    <section class="page">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">ANÁLISE</span>
+          <h1>Relatórios</h1>
+          <p>Veja como seu dinheiro está sendo utilizado.</p>
+        </div>
+
+        <button class="primary-button">
+          Exportar dados
+        </button>
+
+      </div>
+
+
+      <div class="summary-grid">
+
+        <div class="stat-card">
+          <div class="stat-icon green">↑</div>
+          <div>
+            <span>Receitas</span>
+            <strong>R$ 8.750</strong>
+            <small class="positive">+12,5%</small>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon red">↓</div>
+          <div>
+            <span>Despesas</span>
+            <strong>R$ 4.280</strong>
+            <small class="negative">+4,2%</small>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon orange">$</div>
+          <div>
+            <span>Economia</span>
+            <strong>R$ 4.470</strong>
+            <small class="positive">51,1%</small>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="card report-card">
+
+        <div class="card-heading">
+
+          <div>
+            <h2>Despesas por categoria</h2>
+            <p>Distribuição dos seus gastos.</p>
           </div>
 
+          <select>
+            <option>Este mês</option>
+            <option>Últimos 3 meses</option>
+          </select>
 
-          <div class="table-row">
-
-            <div class="table-description">
-
-              <div class="transaction-icon salary">
-                ↑
-              </div>
-
-              <strong>Salário</strong>
-
-            </div>
-
-            <span>Receita</span>
-            <span>29/08/2026</span>
-            <strong class="positive">+ R$ 7.500,00</strong>
-
-          </div>
+        </div>
 
 
-          <div class="table-row">
+        <div class="report-bars">
 
-            <div class="table-description">
-
-              <div class="transaction-icon food">
-                $
-              </div>
-
-              <strong>Supermercado</strong>
-
-            </div>
-
-            <span>Alimentação</span>
-            <span>28/08/2026</span>
-            <strong class="negative">- R$ 420,00</strong>
-
-          </div>
-
-
-          <div class="table-row">
-
-            <div class="table-description">
-
-              <div class="transaction-icon home">
-                ⌂
-              </div>
-
-              <strong>Aluguel</strong>
-
-            </div>
-
+          <div>
             <span>Moradia</span>
-            <span>27/08/2026</span>
-            <strong class="negative">- R$ 1.800,00</strong>
-
+            <div class="bar"><i style="width:75%"></i></div>
           </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- =====================================================
-           CALENDÁRIO
-      ====================================================== -->
-
-      <section class="page page-calendario">
-
-        <div class="page-header">
 
           <div>
-            <span class="eyebrow">ORGANIZAÇÃO</span>
-            <h1>Calendário financeiro</h1>
-            <p>Visualize receitas, despesas e contas por data.</p>
+            <span>Alimentação</span>
+            <div class="bar"><i style="width:58%"></i></div>
           </div>
-
-        </div>
-
-
-        <div class="card calendar-card">
-
-          <div class="calendar-header">
-
-            <button>‹</button>
-
-            <h2>Agosto 2026</h2>
-
-            <button>›</button>
-
-          </div>
-
-
-          <div class="calendar-week">
-
-            <span>DOM</span>
-            <span>SEG</span>
-            <span>TER</span>
-            <span>QUA</span>
-            <span>QUI</span>
-            <span>SEX</span>
-            <span>SÁB</span>
-
-          </div>
-
-
-          <div class="calendar-grid">
-
-            <div class="calendar-day muted">26</div>
-            <div class="calendar-day muted">27</div>
-            <div class="calendar-day muted">28</div>
-            <div class="calendar-day muted">29</div>
-            <div class="calendar-day muted">30</div>
-            <div class="calendar-day muted">31</div>
-
-            <div class="calendar-day">
-              1
-            </div>
-
-            <div class="calendar-day">
-              2
-            </div>
-
-            <div class="calendar-day">
-              3
-            </div>
-
-            <div class="calendar-day">
-              4
-            </div>
-
-            <div class="calendar-day">
-              5
-            </div>
-
-            <div class="calendar-day">
-              6
-            </div>
-
-            <div class="calendar-day">
-              7
-            </div>
-
-            <div class="calendar-day">
-              8
-            </div>
-
-            <div class="calendar-day">
-              9
-            </div>
-
-            <div class="calendar-day">
-              10
-            </div>
-
-            <div class="calendar-day">
-              11
-            </div>
-
-            <div class="calendar-day">
-              12
-            </div>
-
-            <div class="calendar-day">
-              13
-            </div>
-
-            <div class="calendar-day">
-              14
-            </div>
-
-            <div class="calendar-day">
-              15
-            </div>
-
-            <div class="calendar-day">
-              16
-            </div>
-
-            <div class="calendar-day">
-              17
-            </div>
-
-            <div class="calendar-day">
-              18
-            </div>
-
-            <div class="calendar-day">
-              19
-            </div>
-
-            <div class="calendar-day">
-              20
-            </div>
-
-            <div class="calendar-day">
-              21
-            </div>
-
-            <div class="calendar-day">
-              22
-            </div>
-
-            <div class="calendar-day">
-              23
-            </div>
-
-            <div class="calendar-day">
-              24
-            </div>
-
-            <div class="calendar-day">
-              25
-            </div>
-
-            <div class="calendar-day">
-              26
-            </div>
-
-            <div class="calendar-day">
-              27
-              <div class="expense-dot-calendar"></div>
-            </div>
-
-            <div class="calendar-day">
-              28
-              <div class="expense-dot-calendar"></div>
-            </div>
-
-            <div class="calendar-day today">
-              29
-              <div class="income-dot-calendar"></div>
-            </div>
-
-            <div class="calendar-day">
-              30
-            </div>
-
-            <div class="calendar-day">
-              31
-            </div>
-
-          </div>
-
-
-          <div class="calendar-legend">
-
-            <span>
-              <i class="income-dot-calendar"></i>
-              Receita
-            </span>
-
-            <span>
-              <i class="expense-dot-calendar"></i>
-              Despesa
-            </span>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- =====================================================
-           METAS
-      ====================================================== -->
-
-      <section class="page page-metas">
-
-        <div class="page-header">
 
           <div>
-            <span class="eyebrow">PLANEJAMENTO</span>
-            <h1>Metas de economia</h1>
-            <p>Transforme seus objetivos em metas financeiras.</p>
+            <span>Transporte</span>
+            <div class="bar"><i style="width:38%"></i></div>
           </div>
-
-          <button class="primary-button">
-            + Nova meta
-          </button>
-
-        </div>
-
-
-        <div class="goal-grid">
-
-          <div class="card goal-card">
-
-            <div class="goal-icon large">
-              🛡
-            </div>
-
-            <span>Reserva de emergência</span>
-
-            <strong>R$ 13.000</strong>
-
-            <small>de R$ 20.000</small>
-
-            <div class="progress">
-              <div style="width:65%;"></div>
-            </div>
-
-            <small>65% concluído</small>
-
-          </div>
-
-
-          <div class="card goal-card">
-
-            <div class="goal-icon large">
-              🚗
-            </div>
-
-            <span>Comprar um carro</span>
-
-            <strong>R$ 28.500</strong>
-
-            <small>de R$ 50.000</small>
-
-            <div class="progress">
-              <div style="width:57%;"></div>
-            </div>
-
-            <small>57% concluído</small>
-
-          </div>
-
-
-          <div class="card goal-card">
-
-            <div class="goal-icon large">
-              ✈
-            </div>
-
-            <span>Viagem</span>
-
-            <strong>R$ 3.200</strong>
-
-            <small>de R$ 8.000</small>
-
-            <div class="progress">
-              <div style="width:40%;"></div>
-            </div>
-
-            <small>40% concluído</small>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- =====================================================
-           CARTÕES
-      ====================================================== -->
-
-      <section class="page page-cartoes">
-
-        <div class="page-header">
 
           <div>
-            <span class="eyebrow">CRÉDITO</span>
-            <h1>Cartões</h1>
-            <p>Controle seus cartões de crédito.</p>
-          </div>
-
-          <button class="primary-button">
-            + Adicionar cartão
-          </button>
-
-        </div>
-
-
-        <div class="card-grid">
-
-          <div class="visual-card">
-
-            <div class="credit-top">
-              <strong>Meu cartão</strong>
-              <span>VISA</span>
-            </div>
-
-            <div class="credit-number">
-              •••• •••• •••• 4821
-            </div>
-
-            <div class="credit-bottom">
-              <span>FELIPE</span>
-              <span>12/29</span>
-            </div>
-
-          </div>
-
-
-          <div class="card credit-summary">
-
-            <span>Fatura atual</span>
-
-            <strong>
-              R$ 1.840,00
-            </strong>
-
-            <span>
-              Vencimento: 10/09/2026
-            </span>
-
-            <div class="progress">
-              <div style="width:46%;"></div>
-            </div>
-
-            <small>
-              Limite utilizado: 46%
-            </small>
-
+            <span>Lazer</span>
+            <div class="bar"><i style="width:24%"></i></div>
           </div>
 
         </div>
 
-      </section>
+      </div>
+
+    </section>
 
 
+    <!-- =====================================================
+         CATEGORIAS
+    ====================================================== -->
 
-      <!-- =====================================================
-           LEMBRETES
-      ====================================================== -->
+    <section class="page">
 
-      <section class="page page-lembretes">
+      <div class="page-heading">
 
-        <div class="page-header">
-
-          <div>
-            <span class="eyebrow">AVISOS</span>
-            <h1>Lembretes</h1>
-            <p>Não deixe suas contas vencerem.</p>
-          </div>
-
-          <button class="primary-button">
-            + Novo lembrete
-          </button>
-
+        <div>
+          <span class="eyebrow">ORGANIZAÇÃO</span>
+          <h1>Categorias</h1>
+          <p>Organize suas receitas e despesas.</p>
         </div>
 
+        <button class="primary-button">
+          + Nova categoria
+        </button>
 
-        <div class="reminder-list">
-
-          <div class="card reminder">
-
-            <div class="reminder-date">
-              <strong>02</strong>
-              <span>SET</span>
-            </div>
-
-            <div class="reminder-info">
-              <strong>Internet</strong>
-              <span>R$ 120,00 • Mensal</span>
-            </div>
-
-            <span class="status">
-              Programado
-            </span>
-
-          </div>
+      </div>
 
 
-          <div class="card reminder">
+      <div class="cards-grid categories">
 
-            <div class="reminder-date">
-              <strong>05</strong>
-              <span>SET</span>
-            </div>
-
-            <div class="reminder-info">
-              <strong>Conta de energia</strong>
-              <span>R$ 280,00 • Mensal</span>
-            </div>
-
-            <span class="status warning">
-              Próximo
-            </span>
-
-          </div>
-
-
-          <div class="card reminder">
-
-            <div class="reminder-date">
-              <strong>10</strong>
-              <span>SET</span>
-            </div>
-
-            <div class="reminder-info">
-              <strong>Fatura do cartão</strong>
-              <span>R$ 1.840,00</span>
-            </div>
-
-            <span class="status">
-              Programado
-            </span>
-
-          </div>
-
+        <div class="card category-card">
+          <div>⌂</div>
+          <strong>Moradia</strong>
+          <span>Aluguel, condomínio e contas</span>
         </div>
 
-      </section>
-
-
-
-      <!-- =====================================================
-           INDICADORES
-      ====================================================== -->
-
-      <section class="page page-indicadores">
-
-        <div class="page-header">
-
-          <div>
-            <span class="eyebrow">ANÁLISE</span>
-            <h1>Indicadores financeiros</h1>
-            <p>Entenda a saúde da sua vida financeira.</p>
-          </div>
-
+        <div class="card category-card">
+          <div>$</div>
+          <strong>Alimentação</strong>
+          <span>Mercado, restaurantes e refeições</span>
         </div>
 
-
-        <div class="indicator-grid">
-
-          <div class="card big-indicator">
-
-            <div class="indicator-circle">
-              51%
-            </div>
-
-            <span>Taxa de economia</span>
-
-            <strong>
-              Excelente
-            </strong>
-
-            <p>
-              Mais da metade das suas receitas está sendo economizada.
-            </p>
-
-          </div>
-
-
-          <div class="card big-indicator">
-
-            <div class="indicator-circle">
-              49%
-            </div>
-
-            <span>Comprometimento</span>
-
-            <strong>
-              Saudável
-            </strong>
-
-            <p>
-              Suas despesas representam 49% das receitas.
-            </p>
-
-          </div>
-
-
-          <div class="card big-indicator">
-
-            <div class="big-number">
-              R$ 4.470
-            </div>
-
-            <span>Economia mensal</span>
-
-            <strong>
-              +12,4%
-            </strong>
-
-            <p>
-              Crescimento da economia comparado ao mês anterior.
-            </p>
-
-          </div>
-
-
-          <div class="card big-indicator">
-
-            <div class="big-number">
-              R$ 13.240
-            </div>
-
-            <span>Saldo projetado</span>
-
-            <strong>
-              Positivo
-            </strong>
-
-            <p>
-              Projeção baseada nas receitas e despesas cadastradas.
-            </p>
-
-          </div>
-
+        <div class="card category-card">
+          <div>→</div>
+          <strong>Transporte</strong>
+          <span>Combustível, ônibus e manutenção</span>
         </div>
 
-      </section>
-
-
-
-      <!-- =====================================================
-           RECIBOS
-      ====================================================== -->
-
-      <section class="page page-recibos">
-
-        <div class="page-header">
-
-          <div>
-            <span class="eyebrow">DOCUMENTOS</span>
-            <h1>Recibos</h1>
-            <p>Crie recibos profissionais rapidamente.</p>
-          </div>
-
+        <div class="card category-card">
+          <div>★</div>
+          <strong>Lazer</strong>
+          <span>Viagens, jogos e entretenimento</span>
         </div>
 
+        <div class="card category-card">
+          <div>♥</div>
+          <strong>Saúde</strong>
+          <span>Consultas, medicamentos e exames</span>
+        </div>
 
-        <div class="receipt-layout">
+        <div class="card category-card">
+          <div>◆</div>
+          <strong>Educação</strong>
+          <span>Cursos, livros e estudos</span>
+        </div>
 
-          <div class="card receipt-preview">
+        <div class="card category-card">
+          <div>✦</div>
+          <strong>Investimentos</strong>
+          <span>Aplicações e investimentos</span>
+        </div>
 
-            <div class="receipt-head">
+        <div class="card category-card">
+          <div>+</div>
+          <strong>Outros</strong>
+          <span>Despesas diversas</span>
+        </div>
 
-              <strong>RECIBO</strong>
+      </div>
 
-              <span>
-                ControleS
-              </span>
+    </section>
 
+
+    <!-- =====================================================
+         CONFIGURAÇÕES
+    ====================================================== -->
+
+    <section class="page">
+
+      <div class="page-heading">
+
+        <div>
+          <span class="eyebrow">SISTEMA</span>
+          <h1>Configurações</h1>
+          <p>Personalize sua experiência no ControleS.</p>
+        </div>
+
+      </div>
+
+
+      <div class="settings-grid">
+
+        <div class="card settings-card">
+
+          <h2>Minha conta</h2>
+
+          <div class="setting-user">
+
+            <div class="avatar large">F</div>
+
+            <div>
+              <strong>Felipe</strong>
+              <span>Plano gratuito</span>
             </div>
 
-
-            <div class="receipt-line"></div>
-
-
-            <p>
-              Recebi de:
-            </p>
-
-            <strong class="receipt-name">
-              Nome do pagador
-            </strong>
-
-
-            <p>
-              A importância de:
-            </p>
-
-            <strong class="receipt-value">
-              R$ 0,00
-            </strong>
-
-
-            <p>
-              Referente a:
-            </p>
-
-            <span>
-              Descrição do pagamento
-            </span>
-
-
-            <div class="receipt-signature">
-              Assinatura
-            </div>
-
-
-            <div class="receipt-date">
-              Cidade, ____ de __________ de ______.
-            </div>
-
-          </div>
-
-
-          <div class="card receipt-info">
-
-            <h2>
-              Criar recibo
-            </h2>
-
-            <p>
-              Preencha as informações para gerar seu recibo.
-            </p>
-
-
-            <div class="fake-input">
-              Nome do pagador
-            </div>
-
-            <div class="fake-input">
-              Valor do pagamento
-            </div>
-
-            <div class="fake-input">
-              Referente a
-            </div>
-
-            <div class="fake-input">
-              Cidade e data
-            </div>
-
-
-            <button class="primary-button full">
-              Gerar recibo
+            <button class="secondary-button">
+              Editar
             </button>
 
           </div>
 
         </div>
 
-      </section>
 
+        <div class="card settings-card">
 
+          <h2>Preferências</h2>
 
-      <!-- =====================================================
-           CONTAS
-      ====================================================== -->
-
-      <section class="page page-contas">
-
-        <div class="page-header">
-
-          <div>
-            <span class="eyebrow">PATRIMÔNIO</span>
-            <h1>Contas financeiras</h1>
-            <p>Organize seu dinheiro em diferentes contas.</p>
-          </div>
-
-          <button class="primary-button">
-            + Nova conta
-          </button>
-
-        </div>
-
-
-        <div class="account-grid">
-
-          <div class="card finance-account">
-
-            <div class="finance-account-top">
-
-              <div class="finance-icon">
-                🏦
-              </div>
-
-              <span>Principal</span>
-
-            </div>
-
-            <strong>
-              Conta corrente
-            </strong>
-
-            <span>
-              Saldo atual
-            </span>
-
-            <b>
-              R$ 9.850,00
-            </b>
-
-          </div>
-
-
-          <div class="card finance-account">
-
-            <div class="finance-account-top">
-
-              <div class="finance-icon">
-                $
-              </div>
-
-              <span>Reserva</span>
-
-            </div>
-
-            <strong>
-              Poupança
-            </strong>
-
-            <span>
-              Saldo atual
-            </span>
-
-            <b>
-              R$ 13.000,00
-            </b>
-
-          </div>
-
-
-          <div class="card finance-account add-account">
-
-            <span>+</span>
-
-            <strong>
-              Adicionar conta
-            </strong>
-
-            <small>
-              Banco, carteira ou dinheiro
-            </small>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- =====================================================
-           RELATÓRIOS
-      ====================================================== -->
-
-      <section class="page page-relatorios">
-
-        <div class="page-header">
-
-          <div>
-            <span class="eyebrow">ANÁLISE</span>
-            <h1>Relatórios</h1>
-            <p>Veja como seu dinheiro está sendo utilizado.</p>
-          </div>
-
-          <button class="secondary-button">
-            Exportar dados
-          </button>
-
-        </div>
-
-
-        <div class="report-cards">
-
-          <div class="card report-card">
-
-            <span>Receitas</span>
-
-            <strong>
-              R$ 8.750
-            </strong>
-
-            <small class="positive">
-              +12,5%
-            </small>
-
-          </div>
-
-
-          <div class="card report-card">
-
-            <span>Despesas</span>
-
-            <strong>
-              R$ 4.280
-            </strong>
-
-            <small class="negative">
-              +4,2%
-            </small>
-
-          </div>
-
-
-          <div class="card report-card">
-
-            <span>Economia</span>
-
-            <strong>
-              R$ 4.470
-            </strong>
-
-            <small class="positive">
-              51,1%
-            </small>
-
-          </div>
-
-        </div>
-
-
-        <div class="card report-large">
-
-          <div class="card-header">
-
+          <div class="setting">
             <div>
-              <h2>Despesas por categoria</h2>
-              <p>Distribuição dos seus gastos.</p>
+              <strong>Notificações</strong>
+              <span>Receber lembretes financeiros</span>
             </div>
-
-            <select>
-              <option>Agosto 2026</option>
-            </select>
-
+            <i class="toggle active"></i>
           </div>
 
-
-          <div class="report-bars">
-
+          <div class="setting">
             <div>
-
-              <span>Moradia</span>
-
-              <div class="bar">
-                <i style="width:82%;"></i>
-              </div>
-
+              <strong>Modo escuro</strong>
+              <span>Alterar aparência do sistema</span>
             </div>
+            <i class="toggle"></i>
+          </div>
 
-
+          <div class="setting">
             <div>
+              <strong>Alertas financeiros</strong>
+              <span>Avisar sobre contas próximas</span>
+            </div>
+            <i class="toggle active"></i>
+          </div>
 
-              <span>Alimentação</span>
+        </div>
 
-              <div class="bar">
-                <i style="width:65%;"></i>
-              </div>
 
+        <div class="card settings-card">
+
+          <h2>Tipo de utilização</h2>
+
+          <div class="mode-grid">
+
+            <div class="mode active">
+              <strong>Pessoa</strong>
+              <span>Finanças pessoais</span>
             </div>
 
+            <div class="mode">
+              <strong>Empresa</strong>
+              <span>Gestão empresarial</span>
+            </div>
 
+          </div>
+
+        </div>
+
+
+        <div class="card settings-card">
+
+          <h2>Dados</h2>
+
+          <div class="setting">
             <div>
-
-              <span>Transporte</span>
-
-              <div class="bar">
-                <i style="width:40%;"></i>
-              </div>
-
+              <strong>Exportar dados</strong>
+              <span>Baixe suas informações</span>
             </div>
 
+            <button class="secondary-button">
+              Exportar
+            </button>
+          </div>
 
+
+          <div class="setting">
             <div>
-
-              <span>Lazer</span>
-
-              <div class="bar">
-                <i style="width:28%;"></i>
-              </div>
-
+              <strong>Backup</strong>
+              <span>Faça uma cópia dos seus dados</span>
             </div>
 
+            <button class="secondary-button">
+              Backup
+            </button>
           </div>
 
         </div>
 
-      </section>
+      </div>
 
+    </section>
 
+  </main>
 
-      <!-- =====================================================
-           CATEGORIAS
-      ====================================================== -->
+</div>
 
-      <section class="page page-categorias">
 
-        <div class="page-header">
-
-          <div>
-            <span class="eyebrow">ORGANIZAÇÃO</span>
-            <h1>Categorias</h1>
-            <p>Organize suas receitas e despesas.</p>
-          </div>
-
-          <button class="primary-button">
-            + Nova categoria
-          </button>
-
-        </div>
-
-
-        <div class="category-grid">
-
-          <div class="card category-card">
-
-            <div class="category-icon">
-              ⌂
-            </div>
-
-            <strong>Moradia</strong>
-            <span>Aluguel, condomínio e contas</span>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-icon">
-              $
-            </div>
-
-            <strong>Alimentação</strong>
-            <span>Mercado, restaurantes e refeições</span>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-icon">
-              →
-            </div>
-
-            <strong>Transporte</strong>
-            <span>Combustível, ônibus e manutenção</span>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-icon">
-              ★
-            </div>
-
-            <strong>Lazer</strong>
-            <span>Viagens, jogos e entretenimento</span>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-icon">
-              ♥
-            </div>
-
-            <strong>Saúde</strong>
-            <span>Consultas, medicamentos e exames</span>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-icon">
-              ◆
-            </div>
-
-            <strong>Educação</strong>
-            <span>Cursos, livros e estudos</span>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-icon">
-              ✦
-            </div>
-
-            <strong>Investimentos</strong>
-            <span>Aplicações e investimentos</span>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-icon">
-              +
-            </div>
-
-            <strong>Outros</strong>
-            <span>Despesas diversas</span>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- =====================================================
-           CONFIGURAÇÕES
-      ====================================================== -->
-
-      <section class="page page-configuracoes">
-
-        <div class="page-header">
-
-          <div>
-            <span class="eyebrow">SISTEMA</span>
-            <h1>Configurações</h1>
-            <p>Personalize sua experiência no ControleS.</p>
-          </div>
-
-        </div>
-
-
-        <div class="settings-layout">
-
-          <div class="card settings-card">
-
-            <h2>
-              Minha conta
-            </h2>
-
-
-            <div class="setting-row">
-
-              <div class="avatar large">
-                F
-              </div>
-
-              <div>
-                <strong>
-                  Minha conta
-                </strong>
-
-                <span>
-                  Plano gratuito
-                </span>
-              </div>
-
-              <button>
-                Editar
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <div class="card settings-card">
-
-            <h2>
-              Preferências
-            </h2>
-
-
-            <div class="setting-option">
-
-              <div>
-                <strong>Notificações</strong>
-                <span>Receber lembretes financeiros</span>
-              </div>
-
-              <div class="toggle active"></div>
-
-            </div>
-
-
-            <div class="setting-option">
-
-              <div>
-                <strong>Modo escuro</strong>
-                <span>Alterar aparência do sistema</span>
-              </div>
-
-              <div class="toggle"></div>
-
-            </div>
-
-
-            <div class="setting-option">
-
-              <div>
-                <strong>Alertas financeiros</strong>
-                <span>Avisar sobre contas próximas</span>
-              </div>
-
-              <div class="toggle active"></div>
-
-            </div>
-
-          </div>
-
-
-          <div class="card settings-card">
-
-            <h2>
-              Tipo de utilização
-            </h2>
-
-
-            <div class="mode-selector">
-
-              <div class="mode active">
-
-                <strong>
-                  Pessoa
-                </strong>
-
-                <span>
-                  Finanças pessoais
-                </span>
-
-              </div>
-
-
-              <div class="mode">
-
-                <strong>
-                  Empresa
-                </strong>
-
-                <span>
-                  Gestão empresarial
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="card settings-card">
-
-            <h2>
-              Dados
-            </h2>
-
-
-            <div class="setting-option">
-
-              <div>
-                <strong>Exportar dados</strong>
-                <span>Baixe suas informações</span>
-              </div>
-
-              <button>
-                Exportar
-              </button>
-
-            </div>
-
-
-            <div class="setting-option">
-
-              <div>
-                <strong>Backup</strong>
-                <span>Faça uma cópia dos seus dados</span>
-              </div>
-
-              <button>
-                Backup
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
-
-  </div>
+<script src="script.js"></script>
 
 </body>
-
 </html>
