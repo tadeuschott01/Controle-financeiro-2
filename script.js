@@ -1,3 +1,4 @@
+alert("JAVASCRIPT FUNCIONANDO");
 // ============================================================
 // CONTROLES - SCRIPT COMPLETO
 // LOGIN + CADASTRO + TRANSAÇÕES + DASHBOARD + GRÁFICO
