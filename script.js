@@ -1,12 +1,6 @@
 // ============================================================
 // CONTROLES - SCRIPT COMPLETO
-// Login + Cadastro + Sessão + Entradas + Despesas
-// Transações + Saldo + Gráfico + Editar + Excluir
-// ============================================================
-
-
-// ============================================================
-// SUPABASE
+// LOGIN + CADASTRO + TRANSAÇÕES + DASHBOARD + GRÁFICO
 // ============================================================
 
 const SUPABASE_URL =
@@ -15,25 +9,7 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
 
-
-// Verifica se a biblioteca do Supabase foi carregada
-if (!window.supabase) {
-  console.error("Supabase não foi carregado.");
-  alert("Erro: o Supabase não foi carregado.");
-}
-
-const supabaseClient =
-  window.supabase
-    ? window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-      )
-    : null;
-
-
-// ============================================================
-// VARIÁVEIS
-// ============================================================
+let supabaseClient = null;
 
 let currentUser = null;
 let transactions = [];
@@ -41,307 +17,216 @@ let financeChart = null;
 
 
 // ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  console.log("ControleS iniciado.");
+
+  // ----------------------------------------------------------
+  // SUPABASE
+  // ----------------------------------------------------------
+
+  if (
+    window.supabase &&
+    typeof window.supabase.createClient === "function"
+  ) {
+
+    supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
+
+  } else {
+
+    console.error("Supabase não foi carregado.");
+
+    alert(
+      "Erro: o Supabase não foi carregado. Verifique a conexão com a internet."
+    );
+
+    return;
+  }
+
+
+  // ----------------------------------------------------------
+  // CONFIGURAÇÕES INICIAIS
+  // ----------------------------------------------------------
+
+  setDefaultDates();
+
+  setupAuth();
+
+  setupNavigation();
+
+  setupTransactionForms();
+
+  checkSession();
+
+});
+
+
+// ============================================================
 // ELEMENTOS
 // ============================================================
 
-const authScreen =
-  document.getElementById("authScreen");
+function getElement(id) {
 
-const appScreen =
-  document.getElementById("appScreen");
+  return document.getElementById(id);
 
-const loginForm =
-  document.getElementById("loginForm");
-
-const registerForm =
-  document.getElementById("registerForm");
-
-const loginTab =
-  document.getElementById("loginTab");
-
-const registerTab =
-  document.getElementById("registerTab");
-
-const authMessage =
-  document.getElementById("authMessage");
-
-const loginButton =
-  document.getElementById("loginButton");
-
-const registerButton =
-  document.getElementById("registerButton");
-
-const logoutButton =
-  document.getElementById("logoutButton");
-
-const mobileLogout =
-  document.getElementById("mobileLogout");
+}
 
 
 // ============================================================
-// MENSAGENS
+// MENSAGEM DE LOGIN
 // ============================================================
 
 function showMessage(message, type = "error") {
 
-  if (!authMessage) {
+  const element =
+    getElement("authMessage");
+
+  if (!element) {
+
     alert(message);
+
     return;
   }
 
-  authMessage.textContent = message;
+  element.textContent = message;
 
-  authMessage.className =
+  element.className =
     "auth-message " + type;
+
 }
 
 
 function clearMessage() {
 
-  if (!authMessage) return;
+  const element =
+    getElement("authMessage");
 
-  authMessage.textContent = "";
+  if (!element) return;
 
-  authMessage.className =
+  element.textContent = "";
+
+  element.className =
     "auth-message";
+
 }
 
 
 // ============================================================
-// ABAS
+// LOGIN / CADASTRO
 // ============================================================
 
-function showLoginForm() {
+function setupAuth() {
 
-  if (loginForm) {
-    loginForm.style.display = "block";
-  }
+  const loginTab =
+    getElement("loginTab");
 
-  if (registerForm) {
-    registerForm.style.display = "none";
-  }
+  const registerTab =
+    getElement("registerTab");
 
-  if (loginTab) {
-    loginTab.classList.add("active");
-  }
+  const loginForm =
+    getElement("loginForm");
 
-  if (registerTab) {
-    registerTab.classList.remove("active");
-  }
-}
+  const registerForm =
+    getElement("registerForm");
 
 
-function showRegisterForm() {
-
-  if (loginForm) {
-    loginForm.style.display = "none";
-  }
-
-  if (registerForm) {
-    registerForm.style.display = "block";
-  }
+  // ----------------------------------------------------------
+  // ABA LOGIN
+  // ----------------------------------------------------------
 
   if (loginTab) {
-    loginTab.classList.remove("active");
-  }
 
-  if (registerTab) {
-    registerTab.classList.add("active");
-  }
-}
-
-
-if (loginTab) {
-
-  loginTab.addEventListener(
-    "click",
-    function () {
+    loginTab.onclick = function () {
 
       clearMessage();
 
-      showLoginForm();
-    }
-  );
-}
+      loginTab.classList.add("active");
+
+      if (registerTab) {
+
+        registerTab.classList.remove("active");
+
+      }
+
+      if (loginForm) {
+
+        loginForm.style.display = "block";
+
+      }
+
+      if (registerForm) {
+
+        registerForm.style.display = "none";
+
+      }
+
+    };
+
+  }
 
 
-if (registerTab) {
+  // ----------------------------------------------------------
+  // ABA CADASTRO
+  // ----------------------------------------------------------
 
-  registerTab.addEventListener(
-    "click",
-    function () {
+  if (registerTab) {
+
+    registerTab.onclick = function () {
 
       clearMessage();
 
-      showRegisterForm();
-    }
-  );
-}
+      registerTab.classList.add("active");
 
+      if (loginTab) {
 
-// ============================================================
-// MOSTRAR APP
-// ============================================================
+        loginTab.classList.remove("active");
 
-function showApp(user) {
+      }
 
-  currentUser = user;
+      if (loginForm) {
 
-  if (authScreen) {
-    authScreen.style.display = "none";
-  }
+        loginForm.style.display = "none";
 
-  if (appScreen) {
-    appScreen.style.display = "block";
-  }
+      }
 
+      if (registerForm) {
 
-  const userName =
-    document.getElementById("userName");
+        registerForm.style.display = "block";
 
+      }
 
-  if (userName) {
+    };
 
-    const name =
-      user?.user_metadata?.name ||
-      user?.user_metadata?.nome ||
-      user?.email ||
-      "Usuário";
-
-    userName.textContent =
-      "Olá, " + name;
   }
 
 
-  activateSection(
-    "dashboardSection",
-    "dashboardMenu",
-    "Dashboard"
-  );
+  // ----------------------------------------------------------
+  // LOGIN
+  // ----------------------------------------------------------
 
-  loadTransactions();
-}
+  if (loginForm) {
 
-
-// ============================================================
-// MOSTRAR AUTENTICAÇÃO
-// ============================================================
-
-function showAuth() {
-
-  currentUser = null;
-
-  transactions = [];
-
-  if (appScreen) {
-    appScreen.style.display = "none";
-  }
-
-  if (authScreen) {
-    authScreen.style.display = "flex";
-  }
-
-  updateDashboard();
-}
-
-
-// ============================================================
-// VERIFICAR SESSÃO
-// ============================================================
-
-async function checkSession() {
-
-  if (!supabaseClient) {
-    showAuth();
-    return;
-  }
-
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth.getSession();
-
-
-    if (error) {
-
-      console.error(
-        "Erro ao verificar sessão:",
-        error
-      );
-
-      showAuth();
-
-      return;
-    }
-
-
-    if (
-      data &&
-      data.session &&
-      data.session.user
-    ) {
-
-      showApp(
-        data.session.user
-      );
-
-    } else {
-
-      showAuth();
-    }
-
-  } catch (error) {
-
-    console.error(
-      "Erro na sessão:",
-      error
-    );
-
-    showAuth();
-  }
-}
-
-
-// ============================================================
-// LOGIN
-// ============================================================
-
-if (loginForm) {
-
-  loginForm.addEventListener(
-    "submit",
-    async function (event) {
+    loginForm.onsubmit = async function (event) {
 
       event.preventDefault();
+
       event.stopPropagation();
 
       clearMessage();
 
 
-      const emailInput =
-        document.getElementById(
-          "loginEmail"
-        );
-
-      const passwordInput =
-        document.getElementById(
-          "loginPassword"
-        );
-
-
       const email =
-        emailInput
-          ? emailInput.value.trim()
-          : "";
-
+        getElement("loginEmail")?.value.trim();
 
       const password =
-        passwordInput
-          ? passwordInput.value
-          : "";
+        getElement("loginPassword")?.value;
 
 
       if (!email) {
@@ -350,7 +235,8 @@ if (loginForm) {
           "Digite seu e-mail."
         );
 
-        return;
+        return false;
+
       }
 
 
@@ -360,26 +246,22 @@ if (loginForm) {
           "Digite sua senha."
         );
 
-        return;
+        return false;
+
       }
 
 
-      if (!supabaseClient) {
-
-        showMessage(
-          "Supabase não foi carregado."
-        );
-
-        return;
-      }
+      const button =
+        getElement("loginButton");
 
 
-      if (loginButton) {
+      if (button) {
 
-        loginButton.disabled = true;
+        button.disabled = true;
 
-        loginButton.textContent =
+        button.textContent =
           "Entrando...";
+
       }
 
 
@@ -390,57 +272,53 @@ if (loginForm) {
         );
 
 
-        const {
-          data,
-          error
-        } =
-          await supabaseClient.auth
-            .signInWithPassword({
+        const result =
+          await supabaseClient.auth.signInWithPassword({
 
-              email: email,
+            email: email,
 
-              password: password
+            password: password
 
-            });
+          });
 
 
         console.log(
-          "Resposta do login:",
-          data,
-          error
+          "Resultado login:",
+          result
         );
 
 
-        if (error) {
+        if (result.error) {
 
           console.error(
-            "Erro no login:",
-            error
+            "Erro login:",
+            result.error
           );
 
 
-          const message =
+          const errorMessage =
             String(
-              error.message || ""
+              result.error.message || ""
             ).toLowerCase();
 
 
           if (
-            message.includes(
+            errorMessage.includes(
               "email not confirmed"
             )
           ) {
 
             showMessage(
-              "Seu e-mail ainda não foi confirmado. Confirme o e-mail recebido antes de entrar."
+              "Seu e-mail ainda não foi confirmado."
             );
 
-            return;
+            return false;
+
           }
 
 
           if (
-            message.includes(
+            errorMessage.includes(
               "invalid login credentials"
             )
           ) {
@@ -449,44 +327,42 @@ if (loginForm) {
               "E-mail ou senha incorretos."
             );
 
-            return;
+            return false;
+
           }
 
 
           showMessage(
-            error.message ||
+            result.error.message ||
             "Não foi possível entrar."
           );
 
-          return;
+          return false;
+
         }
 
 
         if (
-          data &&
-          data.user
+          result.data &&
+          result.data.user
         ) {
 
           console.log(
-            "Login realizado com sucesso."
+            "Login realizado!"
           );
 
 
           showApp(
-            data.user
+            result.data.user
           );
 
-        } else {
-
-          showMessage(
-            "Login realizado, mas a sessão não foi encontrada."
-          );
         }
+
 
       } catch (error) {
 
         console.error(
-          "Erro inesperado no login:",
+          "Erro no login:",
           error
         );
 
@@ -497,67 +373,48 @@ if (loginForm) {
 
       } finally {
 
-        if (loginButton) {
+        if (button) {
 
-          loginButton.disabled = false;
+          button.disabled = false;
 
-          loginButton.textContent =
+          button.textContent =
             "Entrar";
+
         }
+
       }
-    }
-  );
-}
 
 
-// ============================================================
-// CADASTRO
-// ============================================================
+      return false;
 
-if (registerForm) {
+    };
 
-  registerForm.addEventListener(
-    "submit",
-    async function (event) {
+  }
+
+
+  // ----------------------------------------------------------
+  // CADASTRO
+  // ----------------------------------------------------------
+
+  if (registerForm) {
+
+    registerForm.onsubmit = async function (event) {
 
       event.preventDefault();
+
       event.stopPropagation();
 
       clearMessage();
 
 
-      const nameInput =
-        document.getElementById(
-          "registerName"
-        );
-
-      const emailInput =
-        document.getElementById(
-          "registerEmail"
-        );
-
-      const passwordInput =
-        document.getElementById(
-          "registerPassword"
-        );
-
-
       const name =
-        nameInput
-          ? nameInput.value.trim()
-          : "";
-
+        getElement("registerName")?.value.trim();
 
       const email =
-        emailInput
-          ? emailInput.value.trim()
-          : "";
-
+        getElement("registerEmail")?.value.trim();
 
       const password =
-        passwordInput
-          ? passwordInput.value
-          : "";
+        getElement("registerPassword")?.value;
 
 
       if (!name) {
@@ -566,7 +423,8 @@ if (registerForm) {
           "Digite seu nome."
         );
 
-        return;
+        return false;
+
       }
 
 
@@ -576,7 +434,8 @@ if (registerForm) {
           "Digite seu e-mail."
         );
 
-        return;
+        return false;
+
       }
 
 
@@ -589,115 +448,79 @@ if (registerForm) {
           "A senha precisa ter pelo menos 6 caracteres."
         );
 
-        return;
+        return false;
+
       }
 
 
-      if (!supabaseClient) {
-
-        showMessage(
-          "Supabase não foi carregado."
-        );
-
-        return;
-      }
+      const button =
+        getElement("registerButton");
 
 
-      if (registerButton) {
+      if (button) {
 
-        registerButton.disabled = true;
+        button.disabled = true;
 
-        registerButton.textContent =
+        button.textContent =
           "Criando conta...";
+
       }
 
 
       try {
 
-        console.log(
-          "Criando conta..."
-        );
+        const result =
+          await supabaseClient.auth.signUp({
 
+            email: email,
 
-        const {
-          data,
-          error
-        } =
-          await supabaseClient.auth
-            .signUp({
+            password: password,
 
-              email: email,
+            options: {
 
-              password: password,
+              data: {
 
-              options: {
-
-                data: {
-
-                  name: name
-
-                }
+                name: name
 
               }
 
-            });
+            }
+
+          });
 
 
         console.log(
-          "Resposta do cadastro:",
-          data,
-          error
+          "Resultado cadastro:",
+          result
         );
 
 
-        if (error) {
-
-          console.error(
-            "Erro no cadastro:",
-            error
-          );
-
-
-          const message =
-            String(
-              error.message || ""
-            ).toLowerCase();
-
-
-          if (
-            message.includes(
-              "user already registered"
-            )
-          ) {
-
-            showMessage(
-              "Este e-mail já possui uma conta."
-            );
-
-            return;
-          }
-
+        if (result.error) {
 
           showMessage(
-            error.message ||
+            result.error.message ||
             "Não foi possível criar a conta."
           );
 
-          return;
+          return false;
+
         }
 
 
+        // Caso o Supabase já crie sessão
+
         if (
-          data &&
-          data.session &&
-          data.user
+          result.data &&
+          result.data.session &&
+          result.data.user
         ) {
 
           showApp(
-            data.user
+            result.data.user
           );
 
-          return;
+          return false;
+
         }
 
 
@@ -709,12 +532,24 @@ if (registerForm) {
 
         registerForm.reset();
 
-        showLoginForm();
+
+        // Volta para login
+
+        setTimeout(function () {
+
+          if (loginTab) {
+
+            loginTab.click();
+
+          }
+
+        }, 1500);
+
 
       } catch (error) {
 
         console.error(
-          "Erro inesperado no cadastro:",
+          "Erro cadastro:",
           error
         );
 
@@ -725,16 +560,189 @@ if (registerForm) {
 
       } finally {
 
-        if (registerButton) {
+        if (button) {
 
-          registerButton.disabled = false;
+          button.disabled = false;
 
-          registerButton.textContent =
+          button.textContent =
             "Criar conta";
+
         }
+
       }
+
+
+      return false;
+
+    };
+
+  }
+
+
+  // ----------------------------------------------------------
+  // LOGOUT
+  // ----------------------------------------------------------
+
+  const logoutButton =
+    getElement("logoutButton");
+
+  const mobileLogout =
+    getElement("mobileLogout");
+
+
+  if (logoutButton) {
+
+    logoutButton.onclick = logout;
+
+  }
+
+
+  if (mobileLogout) {
+
+    mobileLogout.onclick = logout;
+
+  }
+
+}
+
+
+// ============================================================
+// VERIFICAR SESSÃO
+// ============================================================
+
+async function checkSession() {
+
+  if (!supabaseClient) return;
+
+
+  try {
+
+    const result =
+      await supabaseClient.auth.getSession();
+
+
+    console.log(
+      "Sessão:",
+      result
+    );
+
+
+    if (
+      result.data &&
+      result.data.session &&
+      result.data.session.user
+    ) {
+
+      showApp(
+        result.data.session.user
+      );
+
+    } else {
+
+      showAuth();
+
     }
-  );
+
+  } catch (error) {
+
+    console.error(
+      "Erro verificando sessão:",
+      error
+    );
+
+    showAuth();
+
+  }
+
+}
+
+
+// ============================================================
+// MOSTRAR APP
+// ============================================================
+
+function showApp(user) {
+
+  currentUser = user;
+
+
+  const authScreen =
+    getElement("authScreen");
+
+  const appScreen =
+    getElement("appScreen");
+
+
+  if (authScreen) {
+
+    authScreen.style.display =
+      "none";
+
+  }
+
+
+  if (appScreen) {
+
+    appScreen.style.display =
+      "block";
+
+  }
+
+
+  const userName =
+    getElement("userName");
+
+
+  if (userName) {
+
+    const name =
+      user?.user_metadata?.name ||
+      user?.user_metadata?.nome ||
+      user?.email ||
+      "Usuário";
+
+
+    userName.textContent =
+      "Olá, " + name;
+
+  }
+
+
+  loadTransactions();
+
+}
+
+
+// ============================================================
+// MOSTRAR LOGIN
+// ============================================================
+
+function showAuth() {
+
+  currentUser = null;
+
+  const authScreen =
+    getElement("authScreen");
+
+  const appScreen =
+    getElement("appScreen");
+
+
+  if (appScreen) {
+
+    appScreen.style.display =
+      "none";
+
+  }
+
+
+  if (authScreen) {
+
+    authScreen.style.display =
+      "flex";
+
+  }
+
 }
 
 
@@ -744,301 +752,199 @@ if (registerForm) {
 
 async function logout() {
 
-  if (!supabaseClient) {
-
-    showAuth();
-
-    return;
-  }
-
-
   try {
 
-    const {
-      error
-    } =
-      await supabaseClient.auth
-        .signOut();
+    if (supabaseClient) {
 
+      await supabaseClient.auth.signOut();
 
-    if (error) {
-
-      console.error(
-        "Erro ao sair:",
-        error
-      );
-
-      return;
-    }
-
-
-    transactions = [];
-
-    showAuth();
-
-  } catch (error) {
-
-    console.error(
-      "Erro no logout:",
-      error
-    );
-  }
-}
-
-
-if (logoutButton) {
-
-  logoutButton.addEventListener(
-    "click",
-    logout
-  );
-}
-
-
-if (mobileLogout) {
-
-  mobileLogout.addEventListener(
-    "click",
-    logout
-  );
-}
-
-
-// ============================================================
-// MONITORAR AUTENTICAÇÃO
-// ============================================================
-
-if (supabaseClient) {
-
-  supabaseClient.auth.onAuthStateChange(
-    function (
-      event,
-      session
-    ) {
-
-      console.log(
-        "Supabase Auth:",
-        event
-      );
-
-
-      if (
-        event ===
-        "SIGNED_OUT"
-      ) {
-
-        showAuth();
-
-        return;
-      }
-
-
-      if (
-        session &&
-        session.user
-      ) {
-
-        currentUser =
-          session.user;
-      }
-
-    }
-  );
-}
-
-
-// ============================================================
-// CHAVE DO LOCALSTORAGE
-// ============================================================
-
-function getStorageKey() {
-
-  if (!currentUser) {
-    return null;
-  }
-
-  return (
-    "controles_transactions_" +
-    currentUser.id
-  );
-}
-
-
-// ============================================================
-// CARREGAR TRANSAÇÕES
-// ============================================================
-
-async function loadTransactions() {
-
-  if (!currentUser) {
-
-    transactions = [];
-
-    updateDashboard();
-
-    return;
-  }
-
-
-  const key =
-    getStorageKey();
-
-
-  try {
-
-    const saved =
-      localStorage.getItem(
-        key
-      );
-
-
-    if (saved) {
-
-      const parsed =
-        JSON.parse(saved);
-
-
-      if (Array.isArray(parsed)) {
-
-        transactions =
-          parsed;
-
-      } else {
-
-        transactions = [];
-      }
-
-    } else {
-
-      transactions = [];
     }
 
   } catch (error) {
 
     console.error(
-      "Erro ao carregar transações:",
+      "Erro ao sair:",
       error
     );
 
-    transactions = [];
   }
 
 
-  updateDashboard();
+  transactions = [];
+
+  showAuth();
+
 }
 
 
 // ============================================================
-// SALVAR TRANSAÇÕES
+// NAVEGAÇÃO
 // ============================================================
 
-function saveTransactions() {
+function setupNavigation() {
 
-  if (!currentUser) {
+  const menuMap = {
 
-    alert(
-      "Você precisa estar conectado para salvar uma transação."
-    );
+    dashboardMenu: {
+      section: "dashboardSection",
+      title: "Dashboard"
+    },
 
-    return false;
-  }
+    incomeMenu: {
+      section: "incomeSection",
+      title: "Entradas"
+    },
+
+    expenseMenu: {
+      section: "expenseSection",
+      title: "Despesas"
+    },
+
+    transactionsMenu: {
+      section: "transactionsSection",
+      title: "Transações"
+    }
+
+  };
 
 
-  const key =
-    getStorageKey();
+  Object.keys(menuMap).forEach(function (menuId) {
+
+    const button =
+      getElement(menuId);
 
 
-  try {
+    if (!button) return;
 
-    localStorage.setItem(
-      key,
-      JSON.stringify(
-        transactions
-      )
-    );
 
-    return true;
+    button.onclick = function () {
 
-  } catch (error) {
+      Object.keys(menuMap).forEach(function (id) {
 
-    console.error(
-      "Erro ao salvar transações:",
-      error
-    );
+        const btn =
+          getElement(id);
 
-    alert(
-      "Não foi possível salvar a transação."
-    );
+        if (btn) {
 
-    return false;
-  }
+          btn.classList.remove(
+            "active"
+          );
+
+        }
+
+      });
+
+
+      document
+        .querySelectorAll(".section")
+        .forEach(function (section) {
+
+          section.classList.remove(
+            "active"
+          );
+
+        });
+
+
+      const section =
+        getElement(
+          menuMap[menuId].section
+        );
+
+
+      if (section) {
+
+        section.classList.add(
+          "active"
+        );
+
+      }
+
+
+      button.classList.add(
+        "active"
+      );
+
+
+      const pageTitle =
+        getElement("pageTitle");
+
+
+      if (pageTitle) {
+
+        pageTitle.textContent =
+          menuMap[menuId].title;
+
+      }
+
+    };
+
+  });
+
 }
 
 
 // ============================================================
-// ADICIONAR ENTRADA
+// FORMULÁRIOS DE TRANSAÇÕES
 // ============================================================
 
-const incomeForm =
-  document.getElementById(
-    "incomeForm"
-  );
+function setupTransactionForms() {
+
+  const incomeForm =
+    getElement("incomeForm");
+
+  const expenseForm =
+    getElement("expenseForm");
 
 
-if (incomeForm) {
+  // ----------------------------------------------------------
+  // ENTRADA
+  // ----------------------------------------------------------
 
-  incomeForm.addEventListener(
-    "submit",
-    function (event) {
+  if (incomeForm) {
+
+    incomeForm.onsubmit = function (event) {
 
       event.preventDefault();
+
+      event.stopPropagation();
 
 
       if (!currentUser) {
 
         alert(
-          "Faça login para adicionar uma entrada."
+          "Você precisa estar logado."
         );
 
-        return;
+        return false;
+
       }
 
 
       const description =
-        document
-          .getElementById(
-            "incomeDescription"
-          )
-          ?.value
-          .trim();
+        getElement(
+          "incomeDescription"
+        )?.value.trim();
 
 
       const amount =
         Number(
-          document
-            .getElementById(
-              "incomeAmount"
-            )
-            ?.value
+          getElement(
+            "incomeAmount"
+          )?.value
         );
 
 
       const category =
-        document
-          .getElementById(
-            "incomeCategory"
-          )
-          ?.value ||
-        "Outros";
+        getElement(
+          "incomeCategory"
+        )?.value || "Outros";
 
 
       const date =
-        document
-          .getElementById(
-            "incomeDate"
-          )
-          ?.value ||
-        today();
+        getElement(
+          "incomeDate"
+        )?.value || today();
 
 
       if (!description) {
@@ -1047,7 +953,8 @@ if (incomeForm) {
           "Digite uma descrição."
         );
 
-        return;
+        return false;
+
       }
 
 
@@ -1060,7 +967,8 @@ if (incomeForm) {
           "Digite um valor válido."
         );
 
-        return;
+        return false;
+
       }
 
 
@@ -1092,89 +1000,76 @@ if (incomeForm) {
       );
 
 
-      if (
-        saveTransactions()
-      ) {
-
-        incomeForm.reset();
-
-        setDefaultDates();
-
-        updateDashboard();
-
-        alert(
-          "Entrada adicionada com sucesso!"
-        );
-      }
-    }
-  );
-}
+      saveTransactions();
 
 
-// ============================================================
-// ADICIONAR DESPESA
-// ============================================================
+      incomeForm.reset();
 
-const expenseForm =
-  document.getElementById(
-    "expenseForm"
-  );
+      setDefaultDates();
+
+      updateDashboard();
 
 
-if (expenseForm) {
+      alert(
+        "Entrada adicionada com sucesso!"
+      );
 
-  expenseForm.addEventListener(
-    "submit",
-    function (event) {
+
+      return false;
+
+    };
+
+  }
+
+
+  // ----------------------------------------------------------
+  // DESPESA
+  // ----------------------------------------------------------
+
+  if (expenseForm) {
+
+    expenseForm.onsubmit = function (event) {
 
       event.preventDefault();
+
+      event.stopPropagation();
 
 
       if (!currentUser) {
 
         alert(
-          "Faça login para adicionar uma despesa."
+          "Você precisa estar logado."
         );
 
-        return;
+        return false;
+
       }
 
 
       const description =
-        document
-          .getElementById(
-            "expenseDescription"
-          )
-          ?.value
-          .trim();
+        getElement(
+          "expenseDescription"
+        )?.value.trim();
 
 
       const amount =
         Number(
-          document
-            .getElementById(
-              "expenseAmount"
-            )
-            ?.value
+          getElement(
+            "expenseAmount"
+          )?.value
         );
 
 
       const category =
-        document
-          .getElementById(
-            "expenseCategory"
-          )
-          ?.value ||
-        "Outros";
+        getElement(
+          "expenseCategory"
+        )?.value || "Outros";
 
 
       const date =
-        document
-          .getElementById(
-            "expenseDate"
-          )
-          ?.value ||
-        today();
+        getElement(
+          "expenseDate"
+        )?.value || today();
 
 
       if (!description) {
@@ -1183,7 +1078,8 @@ if (expenseForm) {
           "Digite uma descrição."
         );
 
-        return;
+        return false;
+
       }
 
 
@@ -1196,7 +1092,8 @@ if (expenseForm) {
           "Digite um valor válido."
         );
 
-        return;
+        return false;
+
       }
 
 
@@ -1228,22 +1125,142 @@ if (expenseForm) {
       );
 
 
-      if (
-        saveTransactions()
-      ) {
+      saveTransactions();
 
-        expenseForm.reset();
 
-        setDefaultDates();
+      expenseForm.reset();
 
-        updateDashboard();
+      setDefaultDates();
 
-        alert(
-          "Despesa adicionada com sucesso!"
-        );
-      }
-    }
+      updateDashboard();
+
+
+      alert(
+        "Despesa adicionada com sucesso!"
+      );
+
+
+      return false;
+
+    };
+
+  }
+
+}
+
+
+// ============================================================
+// LOCAL STORAGE
+// ============================================================
+
+function getStorageKey() {
+
+  if (!currentUser) return null;
+
+  return (
+    "controles_transactions_" +
+    currentUser.id
   );
+
+}
+
+
+function loadTransactions() {
+
+  if (!currentUser) {
+
+    transactions = [];
+
+    return;
+
+  }
+
+
+  const key =
+    getStorageKey();
+
+
+  try {
+
+    const saved =
+      localStorage.getItem(key);
+
+
+    if (saved) {
+
+      transactions =
+        JSON.parse(saved);
+
+
+      if (!Array.isArray(transactions)) {
+
+        transactions = [];
+
+      }
+
+    } else {
+
+      transactions = [];
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Erro carregando transações:",
+      error
+    );
+
+    transactions = [];
+
+  }
+
+
+  updateDashboard();
+
+}
+
+
+function saveTransactions() {
+
+  if (!currentUser) {
+
+    console.error(
+      "Usuário não está logado."
+    );
+
+    return;
+
+  }
+
+
+  const key =
+    getStorageKey();
+
+
+  try {
+
+    localStorage.setItem(
+      key,
+      JSON.stringify(
+        transactions
+      )
+    );
+
+
+    console.log(
+      "Transações salvas."
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Erro salvando transações:",
+      error
+    );
+
+  }
+
 }
 
 
@@ -1273,6 +1290,7 @@ function updateDashboard() {
       ) {
 
         income += value;
+
       }
 
 
@@ -1282,6 +1300,7 @@ function updateDashboard() {
       ) {
 
         expense += value;
+
       }
 
     }
@@ -1293,19 +1312,19 @@ function updateDashboard() {
 
 
   const balanceValue =
-    document.getElementById(
+    getElement(
       "balanceValue"
     );
 
 
   const incomeValue =
-    document.getElementById(
+    getElement(
       "incomeValue"
     );
 
 
   const expenseValue =
-    document.getElementById(
+    getElement(
       "expenseValue"
     );
 
@@ -1313,27 +1332,24 @@ function updateDashboard() {
   if (balanceValue) {
 
     balanceValue.textContent =
-      formatMoney(
-        balance
-      );
+      formatMoney(balance);
+
   }
 
 
   if (incomeValue) {
 
     incomeValue.textContent =
-      formatMoney(
-        income
-      );
+      formatMoney(income);
+
   }
 
 
   if (expenseValue) {
 
     expenseValue.textContent =
-      formatMoney(
-        expense
-      );
+      formatMoney(expense);
+
   }
 
 
@@ -1345,24 +1361,23 @@ function updateDashboard() {
     income,
     expense
   );
+
 }
 
 
 // ============================================================
-// TRANSAÇÕES
+// TABELA
 // ============================================================
 
 function renderTransactions() {
 
   const tbody =
-    document.getElementById(
+    getElement(
       "transactionsTableBody"
     );
 
 
-  if (!tbody) {
-    return;
-  }
+  if (!tbody) return;
 
 
   if (
@@ -1374,7 +1389,7 @@ function renderTransactions() {
 
       <tr>
 
-        <td colspan="6">
+        <td colspan="5">
 
           Nenhuma transação encontrada.
 
@@ -1385,6 +1400,7 @@ function renderTransactions() {
     `;
 
     return;
+
   }
 
 
@@ -1464,44 +1480,13 @@ function renderTransactions() {
               )}
             </td>
 
-            <td>
-
-              <button
-                type="button"
-                onclick="editTransaction('${transaction.id}')"
-                style="
-                  border:none;
-                  background:#1f513d;
-                  color:white;
-                  padding:7px 10px;
-                  border-radius:6px;
-                  margin-right:5px;
-                "
-              >
-                Editar
-              </button>
-
-              <button
-                type="button"
-                onclick="deleteTransaction('${transaction.id}')"
-                style="
-                  border:none;
-                  background:#dc2626;
-                  color:white;
-                  padding:7px 10px;
-                  border-radius:6px;
-                "
-              >
-                Excluir
-              </button>
-
-            </td>
-
           </tr>
 
         `;
+
       }
     ).join("");
+
 }
 
 
@@ -1512,14 +1497,12 @@ function renderTransactions() {
 function renderRecentTransactions() {
 
   const container =
-    document.getElementById(
+    getElement(
       "recentTransactions"
     );
 
 
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
 
   if (
@@ -1529,18 +1512,19 @@ function renderRecentTransactions() {
 
     container.innerHTML = `
 
-      <p
-        style="
-          color:#6b7280;
-          font-size:14px;
-        "
-      >
+      <p style="
+        color:#6b7280;
+        font-size:14px;
+      ">
+
         Nenhuma transação encontrada.
+
       </p>
 
     `;
 
     return;
+
   }
 
 
@@ -1559,10 +1543,7 @@ function renderRecentTransactions() {
 
         }
       )
-      .slice(
-        0,
-        5
-      );
+      .slice(0, 5);
 
 
   container.innerHTML =
@@ -1588,50 +1569,54 @@ function renderRecentTransactions() {
 
         return `
 
-          <div
-            style="
-              display:flex;
-              justify-content:space-between;
-              align-items:center;
-              padding:12px 0;
-              border-bottom:1px solid #eee;
-            "
-          >
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:12px 0;
+            border-bottom:1px solid #eee;
+          ">
 
             <div>
 
               <strong>
+
                 ${escapeHTML(
                   transaction.description
                 )}
+
               </strong>
 
-              <div
-                style="
-                  font-size:12px;
-                  color:#6b7280;
-                  margin-top:4px;
-                "
-              >
+              <div style="
+                font-size:12px;
+                color:#6b7280;
+                margin-top:4px;
+              ">
+
                 ${escapeHTML(
                   transaction.category || ""
                 )}
+
               </div>
 
             </div>
 
             <strong class="${className}">
+
               ${sign}
               ${formatMoney(
                 transaction.amount
               )}
+
             </strong>
 
           </div>
 
         `;
+
       }
     ).join("");
+
 }
 
 
@@ -1645,14 +1630,12 @@ function renderChart(
 ) {
 
   const canvas =
-    document.getElementById(
+    getElement(
       "financeChart"
     );
 
 
-  if (!canvas) {
-    return;
-  }
+  if (!canvas) return;
 
 
   if (
@@ -1665,6 +1648,7 @@ function renderChart(
     );
 
     return;
+
   }
 
 
@@ -1672,18 +1656,6 @@ function renderChart(
 
     financeChart.destroy();
 
-    financeChart = null;
-  }
-
-
-  const hasData =
-    income > 0 ||
-    expense > 0;
-
-
-  if (!hasData) {
-
-    return;
   }
 
 
@@ -1740,406 +1712,12 @@ function renderChart(
 
       }
     );
+
 }
 
 
 // ============================================================
-// EDITAR TRANSAÇÃO
-// ============================================================
-
-function editTransaction(id) {
-
-  const transaction =
-    transactions.find(
-      function (item) {
-
-        return item.id === id;
-
-      }
-    );
-
-
-  if (!transaction) {
-
-    alert(
-      "Transação não encontrada."
-    );
-
-    return;
-  }
-
-
-  const newDescription =
-    prompt(
-      "Descrição:",
-      transaction.description
-    );
-
-
-  if (
-    newDescription ===
-    null
-  ) {
-
-    return;
-  }
-
-
-  const newAmount =
-    prompt(
-      "Valor:",
-      transaction.amount
-    );
-
-
-  if (
-    newAmount ===
-    null
-  ) {
-
-    return;
-  }
-
-
-  const newCategory =
-    prompt(
-      "Categoria:",
-      transaction.category || ""
-    );
-
-
-  if (
-    newCategory ===
-    null
-  ) {
-
-    return;
-  }
-
-
-  const newDate =
-    prompt(
-      "Data (AAAA-MM-DD):",
-      transaction.date
-    );
-
-
-  if (
-    newDate ===
-    null
-  ) {
-
-    return;
-  }
-
-
-  const amount =
-    Number(
-      String(
-        newAmount
-      ).replace(
-        ",",
-        "."
-      )
-    );
-
-
-  if (
-    !newDescription.trim()
-  ) {
-
-    alert(
-      "A descrição não pode ficar vazia."
-    );
-
-    return;
-  }
-
-
-  if (
-    !amount ||
-    amount <= 0
-  ) {
-
-    alert(
-      "Digite um valor válido."
-    );
-
-    return;
-  }
-
-
-  transaction.description =
-    newDescription.trim();
-
-
-  transaction.amount =
-    amount;
-
-
-  transaction.category =
-    newCategory.trim() ||
-    "Outros";
-
-
-  transaction.date =
-    newDate ||
-    today();
-
-
-  saveTransactions();
-
-  updateDashboard();
-
-
-  alert(
-    "Transação atualizada com sucesso!"
-  );
-}
-
-
-// ============================================================
-// EXCLUIR TRANSAÇÃO
-// ============================================================
-
-function deleteTransaction(id) {
-
-  const transaction =
-    transactions.find(
-      function (item) {
-
-        return item.id === id;
-
-      }
-    );
-
-
-  if (!transaction) {
-
-    alert(
-      "Transação não encontrada."
-    );
-
-    return;
-  }
-
-
-  const confirmed =
-    confirm(
-      "Deseja realmente excluir esta transação?"
-    );
-
-
-  if (!confirmed) {
-    return;
-  }
-
-
-  transactions =
-    transactions.filter(
-      function (item) {
-
-        return item.id !== id;
-
-      }
-    );
-
-
-  saveTransactions();
-
-  updateDashboard();
-
-
-  alert(
-    "Transação excluída com sucesso!"
-  );
-}
-
-
-// ============================================================
-// NAVEGAÇÃO
-// ============================================================
-
-function activateSection(
-  sectionId,
-  menuId,
-  title
-) {
-
-  document
-    .querySelectorAll(
-      ".section"
-    )
-    .forEach(
-      function (section) {
-
-        section.classList.remove(
-          "active"
-        );
-
-      }
-    );
-
-
-  const section =
-    document.getElementById(
-      sectionId
-    );
-
-
-  if (section) {
-
-    section.classList.add(
-      "active"
-    );
-  }
-
-
-  document
-    .querySelectorAll(
-      ".menu button"
-    )
-    .forEach(
-      function (button) {
-
-        button.classList.remove(
-          "active"
-        );
-
-      }
-    );
-
-
-  const menu =
-    document.getElementById(
-      menuId
-    );
-
-
-  if (menu) {
-
-    menu.classList.add(
-      "active"
-    );
-  }
-
-
-  const pageTitle =
-    document.getElementById(
-      "pageTitle"
-    );
-
-
-  if (pageTitle) {
-
-    pageTitle.textContent =
-      title;
-  }
-}
-
-
-// ============================================================
-// MENUS
-// ============================================================
-
-const dashboardMenu =
-  document.getElementById(
-    "dashboardMenu"
-  );
-
-
-if (dashboardMenu) {
-
-  dashboardMenu.addEventListener(
-    "click",
-    function () {
-
-      activateSection(
-        "dashboardSection",
-        "dashboardMenu",
-        "Dashboard"
-      );
-
-      updateDashboard();
-    }
-  );
-}
-
-
-const incomeMenu =
-  document.getElementById(
-    "incomeMenu"
-  );
-
-
-if (incomeMenu) {
-
-  incomeMenu.addEventListener(
-    "click",
-    function () {
-
-      activateSection(
-        "incomeSection",
-        "incomeMenu",
-        "Entradas"
-      );
-
-      setDefaultDates();
-    }
-  );
-}
-
-
-const expenseMenu =
-  document.getElementById(
-    "expenseMenu"
-  );
-
-
-if (expenseMenu) {
-
-  expenseMenu.addEventListener(
-    "click",
-    function () {
-
-      activateSection(
-        "expenseSection",
-        "expenseMenu",
-        "Despesas"
-      );
-
-      setDefaultDates();
-    }
-  );
-}
-
-
-const transactionsMenu =
-  document.getElementById(
-    "transactionsMenu"
-  );
-
-
-if (transactionsMenu) {
-
-  transactionsMenu.addEventListener(
-    "click",
-    function () {
-
-      activateSection(
-        "transactionsSection",
-        "transactionsMenu",
-        "Transações"
-      );
-
-      renderTransactions();
-    }
-  );
-}
-
-
-// ============================================================
-// DATA
+// DATAS
 // ============================================================
 
 function today() {
@@ -2177,67 +1755,65 @@ function today() {
     "-" +
     day
   );
+
 }
 
 
 function setDefaultDates() {
 
   const incomeDate =
-    document.getElementById(
+    getElement(
       "incomeDate"
     );
 
 
   const expenseDate =
-    document.getElementById(
+    getElement(
       "expenseDate"
     );
 
 
-  if (
-    incomeDate &&
-    !incomeDate.value
-  ) {
+  if (incomeDate) {
 
     incomeDate.value =
       today();
+
   }
 
 
-  if (
-    expenseDate &&
-    !expenseDate.value
-  ) {
+  if (expenseDate) {
 
     expenseDate.value =
       today();
+
   }
+
 }
 
 
 // ============================================================
-// FORMATAR DATA
+// FORMATAÇÃO
 // ============================================================
 
 function formatDate(value) {
 
   if (!value) {
+
     return "-";
+
   }
 
 
   const parts =
-    String(value).split(
-      "-"
-    );
+    String(value).split("-");
 
 
   if (
-    parts.length !==
-    3
+    parts.length !== 3
   ) {
 
     return value;
+
   }
 
 
@@ -2248,12 +1824,9 @@ function formatDate(value) {
     "/" +
     parts[0]
   );
+
 }
 
-
-// ============================================================
-// FORMATAR DINHEIRO
-// ============================================================
 
 function formatMoney(value) {
 
@@ -2271,11 +1844,12 @@ function formatMoney(value) {
 
     }
   );
+
 }
 
 
 // ============================================================
-// SEGURANÇA HTML
+// SEGURANÇA
 // ============================================================
 
 function escapeHTML(value) {
@@ -2283,55 +1857,71 @@ function escapeHTML(value) {
   return String(
     value ?? ""
   )
+
     .replace(
       /&/g,
       "&amp;"
     )
+
     .replace(
       /</g,
       "&lt;"
     )
+
     .replace(
       />/g,
       "&gt;"
     )
+
     .replace(
       /"/g,
       "&quot;"
     )
+
     .replace(
       /'/g,
       "&#039;"
     );
+
 }
 
 
 // ============================================================
-// INICIALIZAÇÃO
+// MONITORAR SUPABASE
 // ============================================================
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
+function setupAuthListener() {
 
-    console.log(
-      "ControleS iniciado."
-    );
+  if (!supabaseClient) return;
 
 
-    setDefaultDates();
+  supabaseClient.auth.onAuthStateChange(
+    function (event, session) {
+
+      console.log(
+        "Supabase Auth:",
+        event
+      );
 
 
-    if (
-      loginForm &&
-      registerForm
-    ) {
+      if (
+        event ===
+        "SIGNED_OUT"
+      ) {
 
-      showLoginForm();
+        showAuth();
+
+      }
+
     }
+  );
+
+}
 
 
-    checkSession();
+// Executa depois que tudo foi carregado
 
-  }
+setTimeout(
+  setupAuthListener,
+  500
 );
