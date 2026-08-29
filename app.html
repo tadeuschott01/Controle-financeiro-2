@@ -4,13 +4,14 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ControleS - Dashboard</title>
+<title>ControleS - Sistema Financeiro</title>
 
 <link rel="stylesheet" href="app.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -18,10 +19,10 @@
 <body>
 
 
-<div class="app-layout">
+<div id="app">
 
 
-<!-- MENU LATERAL -->
+<!-- ================= SIDEBAR ================= -->
 
 <aside class="sidebar">
 
@@ -32,9 +33,9 @@
 $
 </div>
 
-<span>
+<h2>
 ControleS
-</span>
+</h2>
 
 </div>
 
@@ -43,58 +44,53 @@ ControleS
 <nav>
 
 
-<button class="menu-item active">
+<button class="nav-item active" data-section="dashboard">
+
 📊 Dashboard
+
 </button>
 
 
-<button class="menu-item">
-💰 Receitas
+<button class="nav-item" data-section="transactions">
+
+💰 Transações
+
 </button>
 
 
-<button class="menu-item">
-💸 Despesas
+<button class="nav-item" data-section="categories">
+
+📂 Categorias
+
 </button>
 
 
-<button class="menu-item">
-🎯 Metas
-</button>
+<button class="nav-item" data-section="reports">
 
-
-<button class="menu-item">
-📅 Calendário
-</button>
-
-
-<button class="menu-item">
-🧾 Recibos
-</button>
-
-
-<button class="menu-item">
 📈 Relatórios
+
 </button>
+
 
 
 </nav>
 
 
 
-<div class="sidebar-footer">
+<button id="themeBtn">
 
-<button>
-⚙ Configurações
+🌙 Tema
+
 </button>
 
 
-<button>
-🚪 Sair
+
+<button id="logoutBtn">
+
+Sair
+
 </button>
 
-
-</div>
 
 
 </aside>
@@ -103,9 +99,11 @@ ControleS
 
 
 
-<!-- CONTEÚDO PRINCIPAL -->
+<!-- ================= CONTEÚDO ================= -->
+
 
 <main class="main-content">
+
 
 
 <header class="topbar">
@@ -113,13 +111,17 @@ ControleS
 
 <div>
 
-<h1>
-Olá, Felipe 👋
+<h1 id="pageTitle">
+
+Dashboard
+
 </h1>
 
+
 <p>
-Aqui está sua visão financeira.
+Olá, <span id="welcomeName">Felipe</span> 👋
 </p>
+
 
 </div>
 
@@ -127,167 +129,205 @@ Aqui está sua visão financeira.
 
 <div class="profile">
 
-<div class="avatar">
+
+<div class="avatar" id="userAvatar">
+
 F
+
 </div>
 
 
 <div>
 
-<strong>
+<strong id="userName">
+
 Felipe
+
 </strong>
 
+
 <span>
+
 Premium
+
 </span>
 
+
 </div>
 
 
 </div>
+
 
 
 </header>
 
-  <!-- ================= CARDS PRINCIPAIS ================= -->
 
-<section class="summary-cards">
+
+
+
+<!-- ================= DASHBOARD ================= -->
+
+
+<section id="dashboard" class="section">
+
+
+<div class="quick-actions">
+
+
+<button id="openTransactionBtn">
+
++ Novo lançamento
+
+</button>
+
+
+</div>
+
+
+
+
+
+<div class="summary-cards">
+
 
 
 <div class="summary-card balance">
 
+
 <span>
-Saldo disponível
+
+Saldo atual
+
 </span>
 
+
 <h2 id="balanceValue">
+
 R$ 0,00
+
 </h2>
 
+
 <small>
-▲ 12% este mês
+
+Controle financeiro
+
 </small>
 
+
 </div>
+
+
 
 
 
 <div class="summary-card income">
 
+
 <span>
+
 Receitas
+
 </span>
 
+
 <h2 id="incomeValue">
+
 R$ 0,00
+
 </h2>
 
+
 <small>
-Entradas financeiras
+
+Entradas
+
 </small>
 
+
 </div>
+
 
 
 
 
 <div class="summary-card expense">
 
+
 <span>
+
 Despesas
+
 </span>
 
+
 <h2 id="expenseValue">
+
 R$ 0,00
+
 </h2>
 
+
 <small>
-Gastos realizados
+
+Gastos
+
 </small>
 
+
 </div>
+
 
 
 
 
 <div class="summary-card goal">
 
+
 <span>
+
 Economia
+
 </span>
 
+
 <h2 id="economyValue">
+
 0%
+
 </h2>
 
+
 <small>
+
 Meta mensal
+
 </small>
+
 
 </div>
 
 
-</section>
+
+</div>
 
 
+<!-- ================= GRÁFICOS ================= -->
 
 
+<div class="dashboard-grid">
 
 
-<!-- ================= AÇÕES ================= -->
-
-<section class="quick-actions">
-
-
-<button id="addIncomeBtn">
-
-💰
-Adicionar receita
-
-</button>
-
-
-
-<button id="addExpenseBtn">
-
-💸
-Adicionar despesa
-
-</button>
-
-
-
-<button id="exportBtn">
-
-📄
-Exportar dados
-
-</button>
-
-
-
-</section>
-
-
-
-
-
-
-<!-- ================= ÁREA DE GRÁFICOS ================= -->
-
-
-<section class="dashboard-grid">
-
-
-
-<div class="panel chart-panel">
+<div class="panel">
 
 
 <div class="panel-header">
 
 <h3>
+
 Evolução financeira
+
 </h3>
 
 </div>
@@ -306,22 +346,37 @@ Evolução financeira
 
 
 
-
 <div class="panel">
 
 
 <div class="panel-header">
 
 <h3>
-Análise por categoria
+
+Análise
+
 </h3>
 
 </div>
 
 
-<div class="chart-container">
+<div class="analysis">
 
-<canvas id="categoryChart"></canvas>
+
+<p>
+📈 Sua evolução financeira aparecerá aqui.
+</p>
+
+
+<p>
+✅ Controle suas receitas e despesas.
+</p>
+
+
+<p>
+💡 Organize seus objetivos.
+</p>
+
 
 </div>
 
@@ -329,30 +384,31 @@ Análise por categoria
 </div>
 
 
+</div>
 
-</section>
+
+
+
+
+
 
 <!-- ================= ÚLTIMAS MOVIMENTAÇÕES ================= -->
 
-<section class="panel transactions-panel">
+
+<div class="panel">
 
 
 <div class="panel-header">
 
 
 <h3>
+
 Últimas movimentações
+
 </h3>
 
 
-<button class="view-all">
-Ver todas
-</button>
-
-
 </div>
-
-
 
 
 
@@ -361,14 +417,16 @@ Ver todas
 
 <div class="empty-state">
 
-<p>
-Nenhuma movimentação registrada.
-</p>
+Nenhuma movimentação ainda.
 
 </div>
 
 
 </div>
+
+
+</div>
+
 
 
 </section>
@@ -379,17 +437,23 @@ Nenhuma movimentação registrada.
 
 
 
-<!-- ================= TABELA DE TRANSAÇÕES ================= -->
+
+<!-- ================= TRANSAÇÕES ================= -->
 
 
-<section class="panel">
+<section id="transactions" class="section hidden">
+
+
+<div class="panel">
 
 
 <div class="panel-header">
 
 
 <h3>
+
 Todas as transações
+
 </h3>
 
 
@@ -398,13 +462,12 @@ Todas as transações
 
 
 
-
 <div class="filters">
 
 
-<input
-type="text"
+<input 
 id="searchInput"
+type="text"
 placeholder="Pesquisar..."
 >
 
@@ -412,16 +475,25 @@ placeholder="Pesquisar..."
 
 <select id="typeFilter">
 
+
 <option value="all">
+
 Todos
+
 </option>
+
 
 <option value="income">
+
 Receitas
+
 </option>
 
+
 <option value="expense">
+
 Despesas
+
 </option>
 
 
@@ -432,8 +504,11 @@ Despesas
 
 <select id="categoryFilter">
 
+
 <option value="all">
+
 Todas categorias
+
 </option>
 
 
@@ -447,21 +522,13 @@ Todas categorias
 
 
 
-<div id="allTransactions">
-
-
-<div class="empty-state">
-
-<p>
-Suas movimentações aparecerão aqui.
-</p>
+<div id="allTransactions" class="transactions-list">
 
 
 </div>
 
 
 </div>
-
 
 
 </section>
@@ -472,15 +539,94 @@ Suas movimentações aparecerão aqui.
 
 
 
+
+<!-- ================= CATEGORIAS ================= -->
+
+
+<section id="categories" class="section hidden">
+
+
+<div class="panel">
+
+
+<div class="panel-header">
+
+
+<h3>
+
+Categorias
+
+</h3>
+
+
+</div>
+
+
+
+<div id="categoriesGrid" class="categories-grid">
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- ================= RELATÓRIOS ================= -->
+
+
+<section id="reports" class="section hidden">
+
+
+<div class="panel">
+
+
+<div class="panel-header">
+
+
+<h3>
+
+Relatórios
+
+</h3>
+
+
+</div>
+
+
+<div class="report-area">
+
+
+<canvas id="categoryChart"></canvas>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
 <!-- ================= MODAL LANÇAMENTO ================= -->
 
 
 <div id="transactionModal" class="modal hidden">
 
 
-
 <div class="modal-overlay"></div>
-
 
 
 
@@ -492,12 +638,17 @@ Suas movimentações aparecerão aqui.
 
 
 <h2>
+
 Novo lançamento
+
 </h2>
 
 
+
 <button id="closeModal">
+
 ×
+
 </button>
 
 
@@ -512,48 +663,28 @@ Novo lançamento
 
 
 
-<div class="type-selector">
+<div class="type-buttons">
 
 
-<label class="type-option active">
+<button 
+type="button"
+data-type="income"
+class="type-option active">
 
-
-<input 
-type="radio"
-name="transactionType"
-value="income"
-checked
->
-
-
-<span>
 💰 Receita
-</span>
 
-
-</label>
-
+</button>
 
 
 
+<button
+type="button"
+data-type="expense"
+class="type-option">
 
-<label class="type-option">
-
-
-<input
-type="radio"
-name="transactionType"
-value="expense"
->
-
-
-<span>
 💸 Despesa
-</span>
 
-
-</label>
-
+</button>
 
 
 </div>
@@ -586,41 +717,41 @@ required
 
 
 
-<input
-id="dateInput"
-type="date"
-required
->
-
-
-
-
-
 <select id="transactionCategory">
 
 
-<option>
+<option value="Alimentação">
+
 Alimentação
+
 </option>
 
 
-<option>
+<option value="Moradia">
+
 Moradia
+
 </option>
 
 
-<option>
+<option value="Transporte">
+
 Transporte
+
 </option>
 
 
-<option>
+<option value="Salário">
+
 Salário
+
 </option>
 
 
-<option>
+<option value="Outros">
+
 Outros
+
 </option>
 
 
@@ -631,10 +762,21 @@ Outros
 
 
 
+<input
+id="dateInput"
+type="date"
+>
+
+
+
+
+
+
 <textarea
 id="noteInput"
-placeholder="Observação"
-></textarea>
+placeholder="Observação">
+</textarea>
+
 
 
 
@@ -651,70 +793,6 @@ Salvar lançamento
 </form>
 
 
-
-</div>
-
-
-
-</div>
-
-<!-- ================= RELATÓRIOS ================= -->
-
-<section class="dashboard-grid">
-
-
-<div class="panel">
-
-
-<div class="panel-header">
-
-<h3>
-Resumo financeiro
-</h3>
-
-</div>
-
-
-<div class="report-item">
-
-<span>
-Total recebido
-</span>
-
-<strong id="reportIncome">
-R$ 0,00
-</strong>
-
-</div>
-
-
-
-
-<div class="report-item">
-
-<span>
-Total gasto
-</span>
-
-<strong id="reportExpense">
-R$ 0,00
-</strong>
-
-</div>
-
-
-
-
-<div class="report-item">
-
-<span>
-Saldo final
-</span>
-
-<strong id="reportBalance">
-R$ 0,00
-</strong>
-
 </div>
 
 
@@ -725,70 +803,10 @@ R$ 0,00
 
 
 
-<div class="panel">
 
 
-<div class="panel-header">
+<!-- ================= SCRIPTS ================= -->
 
-<h3>
-Categorias
-</h3>
-
-</div>
-
-
-<div id="categoriesGrid" class="categories-grid">
-
-
-<p>
-Nenhuma categoria cadastrada.
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-<!-- ================= RODAPÉ DO APP ================= -->
-
-
-<footer class="app-footer">
-
-
-<p>
-© 2026 ControleS - Controle financeiro inteligente
-</p>
-
-
-</footer>
-
-
-
-</main>
-
-
-</div>
-
-
-
-
-
-
-<!-- JAVASCRIPT -->
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script src="app.js"></script>
 
