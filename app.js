@@ -1196,6 +1196,7 @@ location.reload();
 });
 document.getElementById("openTransactionBtn").onclick = function(){
 
-alert("BOTÃO FUNCIONOU");
+
+
 
 };
