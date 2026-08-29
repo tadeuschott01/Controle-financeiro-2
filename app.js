@@ -1193,8 +1193,6 @@ localStorage.removeItem(
 location.reload();
 
 
-});
-document.getElementById("openTransactionBtn").onclick = function(){
 
 
 
