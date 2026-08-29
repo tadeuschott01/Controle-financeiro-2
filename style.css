@@ -1,2145 +1,2707 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+/* ============================================================
+   CONTROLES — NOVO DESIGN
+============================================================ */
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+:root {
+  --green-dark: #063b27;
+  --green: #08783f;
+  --green-light: #20a85b;
 
-  <title>ControleS</title>
+  --orange: #ff7a00;
+  --orange-light: #fff3e8;
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
+  --bg: #f6f8f7;
+  --white: #ffffff;
 
-  <link rel="stylesheet" href="style.css">
-</head>
+  --text: #10231b;
+  --muted: #7b8782;
 
-<body>
+  --border: #e7ece9;
 
-  <!-- CONTROLES DE NAVEGAÇÃO -->
-  <input type="radio" name="page" id="page-dashboard" checked>
-  <input type="radio" name="page" id="page-transacoes">
-  <input type="radio" name="page" id="page-calendario">
-  <input type="radio" name="page" id="page-metas">
-  <input type="radio" name="page" id="page-cartoes">
-  <input type="radio" name="page" id="page-lembretes">
-  <input type="radio" name="page" id="page-indicadores">
-  <input type="radio" name="page" id="page-recibos">
-  <input type="radio" name="page" id="page-contas">
-  <input type="radio" name="page" id="page-relatorios">
-  <input type="radio" name="page" id="page-categorias">
-  <input type="radio" name="page" id="page-configuracoes">
+  --red: #ef4c45;
+  --red-light: #fff0ef;
 
+  --blue: #4c83d1;
+  --blue-light: #edf4ff;
 
-  <div class="app-shell">
+  --shadow:
+    0 8px 30px rgba(8, 54, 37, .055);
 
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
+  --radius: 17px;
+}
 
-    <aside class="sidebar">
 
-      <div class="brand">
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-        <div class="brand-logo">
-          $
-        </div>
 
-        <div class="brand-name">
-          <strong>Controle<span>S</span></strong>
-          <small>GESTÃO FINANCEIRA</small>
-        </div>
+html {
+  scroll-behavior: smooth;
+}
 
-      </div>
 
+body {
+  font-family: "Inter", sans-serif;
 
-      <!-- PRINCIPAL -->
+  background: var(--bg);
 
-      <div class="sidebar-section">
+  color: var(--text);
 
-        <span class="sidebar-title">
-          PRINCIPAL
-        </span>
+  min-height: 100vh;
 
+  -webkit-font-smoothing: antialiased;
+}
 
-        <label for="page-dashboard" class="nav-item">
-          <span class="nav-icon">⌂</span>
-          Dashboard
-        </label>
 
+button,
+input,
+select {
+  font: inherit;
+}
 
-        <label for="page-transacoes" class="nav-item">
-          <span class="nav-icon">↕</span>
-          Transações
-        </label>
 
+button {
+  border: 0;
+  cursor: pointer;
+}
 
-        <label for="page-calendario" class="nav-item">
-          <span class="nav-icon">▣</span>
-          Calendário
-        </label>
 
-      </div>
+input,
+select {
+  outline: none;
+}
 
 
-      <!-- PLANEJAMENTO -->
+input[type="radio"] {
+  display: none;
+}
 
-      <div class="sidebar-section">
 
-        <span class="sidebar-title">
-          PLANEJAMENTO
-        </span>
+label {
+  cursor: pointer;
+}
 
 
-        <label for="page-metas" class="nav-item">
-          <span class="nav-icon">◎</span>
-          Metas
-        </label>
+/* ============================================================
+   APP
+============================================================ */
 
+.app {
+  min-height: 100vh;
+}
 
-        <label for="page-cartoes" class="nav-item">
-          <span class="nav-icon">▭</span>
-          Cartões
-        </label>
 
+/* ============================================================
+   SIDEBAR
+============================================================ */
 
-        <label for="page-lembretes" class="nav-item">
-          <span class="nav-icon">♧</span>
-          Lembretes
-        </label>
+.sidebar {
+  width: 245px;
 
-      </div>
+  position: fixed;
 
+  left: 0;
+  top: 0;
+  bottom: 0;
 
-      <!-- ANÁLISES -->
+  background:
+    linear-gradient(
+      180deg,
+      #053a26 0%,
+      #052f21 100%
+    );
 
-      <div class="sidebar-section">
+  color: white;
 
-        <span class="sidebar-title">
-          ANÁLISES
-        </span>
+  padding: 25px 16px;
 
+  display: flex;
+  flex-direction: column;
 
-        <label for="page-indicadores" class="nav-item">
-          <span class="nav-icon">↗</span>
-          Indicadores
-        </label>
+  z-index: 100;
+}
 
 
-        <label for="page-relatorios" class="nav-item">
-          <span class="nav-icon">▤</span>
-          Relatórios
-        </label>
+.brand {
+  display: flex;
+  align-items: center;
 
-      </div>
+  gap: 11px;
 
+  padding: 5px 10px 30px;
+}
 
-      <!-- GESTÃO -->
 
-      <div class="sidebar-section">
+.brand-logo {
+  width: 43px;
+  height: 43px;
 
-        <span class="sidebar-title">
-          GESTÃO
-        </span>
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
+  border-radius: 13px;
 
-        <label for="page-recibos" class="nav-item">
-          <span class="nav-icon">▧</span>
-          Recibos
-        </label>
+  background: var(--orange);
 
+  color: white;
 
-        <label for="page-contas" class="nav-item">
-          <span class="nav-icon">▣</span>
-          Contas
-        </label>
+  font-size: 24px;
+  font-weight: 800;
 
+  box-shadow:
+    0 8px 20px rgba(255,122,0,.25);
+}
 
-        <label for="page-categorias" class="nav-item">
-          <span class="nav-icon">◈</span>
-          Categorias
-        </label>
 
-      </div>
+.brand-logo.small {
+  width: 35px;
+  height: 35px;
 
+  font-size: 18px;
+}
 
-      <div class="sidebar-bottom">
 
-        <label for="page-configuracoes" class="nav-item">
-          <span class="nav-icon">⚙</span>
-          Configurações
-        </label>
+.brand strong {
+  display: block;
 
+  font-size: 20px;
 
-        <div class="account-box">
+  letter-spacing: -.8px;
+}
 
-          <div class="avatar">
-            F
-          </div>
 
-          <div class="account-info">
-            <strong>Minha conta</strong>
-            <span>Plano gratuito</span>
-          </div>
+.brand strong span,
+.mobile-logo span {
+  color: var(--orange);
+}
 
-          <span class="account-more">•••</span>
 
-        </div>
+.brand small {
+  display: block;
 
-      </div>
+  margin-top: 3px;
 
-    </aside>
+  font-size: 8px;
 
+  letter-spacing: 1.2px;
 
+  color: rgba(255,255,255,.42);
+}
 
-    <!-- =====================================================
-         CONTEÚDO PRINCIPAL
-    ====================================================== -->
 
-    <main class="main-content">
+.nav-group {
+  margin-bottom: 25px;
+}
 
 
-      <!-- TOPBAR -->
+.nav-title {
+  display: block;
 
-      <header class="topbar">
+  padding: 0 12px 9px;
 
-        <div class="mobile-brand">
+  color: rgba(255,255,255,.32);
 
-          <div class="brand-logo small">
-            $
-          </div>
+  font-size: 8px;
 
-          <strong>
-            Controle<span>S</span>
-          </strong>
+  font-weight: 800;
 
-        </div>
+  letter-spacing: 1.4px;
+}
 
 
-        <div class="topbar-search">
+.nav-item {
+  height: 43px;
 
-          <span>⌕</span>
+  display: flex;
+  align-items: center;
 
-          <input
-            type="search"
-            placeholder="Buscar transações, contas..."
-          >
+  gap: 12px;
 
-        </div>
+  padding: 0 13px;
 
+  margin-bottom: 3px;
 
-        <div class="topbar-actions">
+  border-radius: 11px;
 
-          <button class="top-icon notification">
-            ♧
-            <i></i>
-          </button>
+  color: rgba(255,255,255,.67);
 
+  font-size: 12px;
 
-          <button class="top-icon">
-            ?
-          </button>
+  transition:
+    background .2s,
+    color .2s,
+    transform .2s;
+}
 
 
-          <div class="top-profile">
+.nav-item span {
+  width: 22px;
 
-            <div class="avatar">
-              F
-            </div>
+  text-align: center;
 
-            <div>
-              <strong>Minha conta</strong>
-              <span>Plano gratuito</span>
-            </div>
+  font-size: 16px;
+}
 
-          </div>
 
-        </div>
+.nav-item:hover {
+  color: white;
 
-      </header>
+  background:
+    rgba(255,255,255,.075);
 
+  transform: translateX(2px);
+}
 
 
-      <!-- =====================================================
-           DASHBOARD
-      ====================================================== -->
+/* DASHBOARD ACTIVE */
 
-      <section class="page page-dashboard">
+#page-dashboard:checked ~ .app .nav-item[for="page-dashboard"],
+#page-transacoes:checked ~ .app .nav-item[for="page-transacoes"],
+#page-calendario:checked ~ .app .nav-item[for="page-calendario"],
+#page-metas:checked ~ .app .nav-item[for="page-metas"],
+#page-lembretes:checked ~ .app .nav-item[for="page-lembretes"],
+#page-indicadores:checked ~ .app .nav-item[for="page-indicadores"],
+#page-recibos:checked ~ .app .nav-item[for="page-recibos"],
+#page-contas:checked ~ .app .nav-item[for="page-contas"],
+#page-relatorios:checked ~ .app .nav-item[for="page-relatorios"],
+#page-categorias:checked ~ .app .nav-item[for="page-categorias"],
+#page-configuracoes:checked ~ .app .nav-item[for="page-configuracoes"] {
+  background:
+    linear-gradient(
+      90deg,
+      #087b42,
+      #0b934e
+    );
 
-        <div class="page-header">
+  color: white;
 
-          <div>
+  box-shadow:
+    0 6px 16px rgba(0,0,0,.12);
+}
 
-            <span class="eyebrow">
-              VISÃO GERAL
-            </span>
 
-            <h1>
-              Dashboard
-            </h1>
+.sidebar-bottom {
+  margin-top: auto;
+}
 
-            <p>
-              Acompanhe sua vida financeira em um só lugar.
-            </p>
 
-          </div>
+.user-box {
+  display: flex;
+  align-items: center;
 
+  gap: 9px;
 
-          <button class="primary-button">
-            + Nova transação
-          </button>
+  padding: 11px;
 
-        </div>
+  margin-top: 12px;
 
+  border-radius: 13px;
 
-        <!-- SALDO -->
+  background: rgba(255,255,255,.055);
 
-        <div class="balance-card">
+  border: 1px solid rgba(255,255,255,.07);
+}
 
-          <div class="balance-content">
 
-            <div class="balance-header">
-              <span>Saldo disponível</span>
-              <button>◉</button>
-            </div>
+.user-box > div:nth-child(2) {
+  min-width: 0;
 
+  display: flex;
+  flex-direction: column;
 
-            <strong class="balance-number">
-              R$ 12.480,00
-            </strong>
+  flex: 1;
+}
 
 
-            <div class="balance-footer">
+.user-box strong {
+  font-size: 11px;
+}
 
-              <span class="growth">
-                ↑ 8,4%
-              </span>
 
-              <span>
-                em relação ao mês anterior
-              </span>
+.user-box small {
+  color: rgba(255,255,255,.4);
 
-            </div>
+  font-size: 8px;
 
-          </div>
+  margin-top: 3px;
+}
 
 
-          <strong class="balance-mark">
-            ControleS
-          </strong>
+.user-box > span {
+  color: rgba(255,255,255,.4);
 
+  font-size: 10px;
+}
 
-          <div class="balance-decoration one"></div>
-          <div class="balance-decoration two"></div>
 
-        </div>
+.avatar {
+  width: 35px;
+  height: 35px;
 
+  border-radius: 50%;
 
+  background:
+    linear-gradient(
+      135deg,
+      #19a85b,
+      #06723d
+    );
 
-        <!-- RESUMO -->
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-        <div class="summary-grid">
+  color: white;
 
-          <div class="stat-card">
+  font-size: 12px;
 
-            <div class="stat-icon income">
-              ↑
-            </div>
+  font-weight: 800;
+}
 
-            <div>
-              <span>Receitas</span>
-              <strong>R$ 8.750,00</strong>
-              <small class="positive">
-                +12,5% este mês
-              </small>
-            </div>
 
-          </div>
+.avatar.large {
+  width: 48px;
+  height: 48px;
+}
 
 
-          <div class="stat-card">
+/* ============================================================
+   MAIN
+============================================================ */
 
-            <div class="stat-icon expense">
-              ↓
-            </div>
+.main {
+  margin-left: 245px;
 
-            <div>
-              <span>Despesas</span>
-              <strong>R$ 4.280,00</strong>
-              <small class="negative">
-                +4,2% este mês
-              </small>
-            </div>
+  min-height: 100vh;
+}
 
-          </div>
 
+/* ============================================================
+   TOPBAR
+============================================================ */
 
-          <div class="stat-card">
+.topbar {
+  height: 75px;
 
-            <div class="stat-icon saving">
-              $
-            </div>
+  position: sticky;
 
-            <div>
-              <span>Economia</span>
-              <strong>R$ 4.470,00</strong>
-              <small class="positive">
-                51,1% da receita
-              </small>
-            </div>
+  top: 0;
 
-          </div>
+  z-index: 50;
 
+  background:
+    rgba(255,255,255,.88);
 
-          <div class="stat-card">
+  backdrop-filter:
+    blur(16px);
 
-            <div class="stat-icon projection">
-              ↗
-            </div>
+  border-bottom:
+    1px solid var(--border);
 
-            <div>
-              <span>Projeção</span>
-              <strong>R$ 13.240,00</strong>
-              <small class="positive">
-                próximo mês
-              </small>
-            </div>
+  display: flex;
+  align-items: center;
 
-          </div>
+  padding: 0 38px;
+}
 
-        </div>
 
+.search {
+  width: 350px;
 
+  display: flex;
+  align-items: center;
 
-        <!-- GRÁFICO + INDICADORES -->
+  gap: 9px;
 
-        <div class="two-columns">
+  background: #f4f6f5;
 
-          <div class="card chart-card">
+  border: 1px solid var(--border);
 
-            <div class="card-header">
+  border-radius: 10px;
 
-              <div>
-                <h2>Fluxo financeiro</h2>
-                <p>Receitas e despesas dos últimos meses.</p>
-              </div>
+  padding: 10px 13px;
 
-              <select>
-                <option>Últimos 6 meses</option>
-                <option>Últimos 12 meses</option>
-              </select>
+  color: var(--muted);
 
-            </div>
+  font-size: 16px;
+}
 
 
-            <div class="chart">
+.search input {
+  width: 100%;
 
-              <div class="chart-values">
-                <span>10k</span>
-                <span>7.5k</span>
-                <span>5k</span>
-                <span>2.5k</span>
-                <span>0</span>
-              </div>
+  border: 0;
 
+  background: transparent;
 
-              <div class="chart-body">
+  font-size: 11px;
 
-                <div class="chart-grid"></div>
+  color: var(--text);
+}
 
-                <svg
-                  viewBox="0 0 600 220"
-                  preserveAspectRatio="none"
-                >
 
-                  <polyline
-                    class="chart-income"
-                    points="0,150 100,130 200,90 300,105 400,55 500,75 600,35"
-                  />
+.top-actions {
+  margin-left: auto;
 
-                  <polyline
-                    class="chart-expense"
-                    points="0,175 100,165 200,145 300,155 400,125 500,140 600,115"
-                  />
+  display: flex;
+  align-items: center;
 
-                </svg>
+  gap: 10px;
+}
 
 
-                <div class="chart-months">
-                  <span>Mar</span>
-                  <span>Abr</span>
-                  <span>Mai</span>
-                  <span>Jun</span>
-                  <span>Jul</span>
-                  <span>Ago</span>
-                  <span>Set</span>
-                </div>
+.icon-button {
+  width: 37px;
+  height: 37px;
 
-              </div>
+  border-radius: 10px;
 
-            </div>
+  background: #f3f5f4;
 
+  color: var(--green-dark);
 
-            <div class="legend">
+  position: relative;
+}
 
-              <span>
-                <i class="dot income-dot"></i>
-                Receitas
-              </span>
 
-              <span>
-                <i class="dot expense-dot"></i>
-                Despesas
-              </span>
+.notification i {
+  width: 6px;
+  height: 6px;
 
-            </div>
+  position: absolute;
 
-          </div>
+  top: 7px;
+  right: 8px;
 
+  background: var(--orange);
 
+  border-radius: 50%;
+}
 
-          <div class="card indicator-preview">
 
-            <div class="card-header compact">
+.profile {
+  display: flex;
+  align-items: center;
 
-              <div>
-                <h2>Indicadores</h2>
-                <p>Saúde financeira</p>
-              </div>
+  gap: 9px;
 
-              <label for="page-indicadores" class="text-button">
-                Ver todos
-              </label>
+  padding-left: 8px;
+}
 
-            </div>
 
+.profile > div:last-child {
+  display: flex;
+  flex-direction: column;
+}
 
-            <div class="indicator-list">
 
-              <div class="indicator-row">
+.profile strong {
+  font-size: 11px;
+}
 
-                <div class="indicator-symbol">
-                  %
-                </div>
 
-                <div>
-                  <strong>Taxa de economia</strong>
-                  <span>Quanto você consegue guardar</span>
-                </div>
+.profile small {
+  color: var(--muted);
 
-                <b>51%</b>
+  font-size: 8px;
 
-              </div>
+  margin-top: 2px;
+}
 
 
-              <div class="indicator-row">
+.mobile-logo {
+  display: none;
+}
 
-                <div class="indicator-symbol">
-                  $
-                </div>
 
-                <div>
-                  <strong>Comprometimento</strong>
-                  <span>Despesas sobre receitas</span>
-                </div>
+/* ============================================================
+   PAGES
+============================================================ */
 
-                <b>49%</b>
+.page {
+  display: none;
 
-              </div>
+  padding:
+    35px 38px 55px;
 
+  max-width: 1550px;
 
-              <div class="indicator-row">
+  margin: auto;
+}
 
-                <div class="indicator-symbol">
-                  ↗
-                </div>
 
-                <div>
-                  <strong>Saldo projetado</strong>
-                  <span>Estimativa mensal</span>
-                </div>
+#page-dashboard:checked ~ .app .page:nth-of-type(1),
+#page-transacoes:checked ~ .app .page:nth-of-type(2),
+#page-calendario:checked ~ .app .page:nth-of-type(3),
+#page-metas:checked ~ .app .page:nth-of-type(4),
+#page-lembretes:checked ~ .app .page:nth-of-type(5),
+#page-indicadores:checked ~ .app .page:nth-of-type(6),
+#page-recibos:checked ~ .app .page:nth-of-type(7),
+#page-contas:checked ~ .app .page:nth-of-type(8),
+#page-relatorios:checked ~ .app .page:nth-of-type(9),
+#page-categorias:checked ~ .app .page:nth-of-type(10),
+#page-configuracoes:checked ~ .app .page:nth-of-type(11) {
+  display: block;
+}
 
-                <b class="positive">
-                  +8,4%
-                </b>
 
-              </div>
+/* ============================================================
+   HEADER
+============================================================ */
 
-            </div>
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
 
-          </div>
+  gap: 20px;
 
-        </div>
+  margin-bottom: 24px;
+}
 
 
+.eyebrow {
+  display: block;
 
-        <!-- ÚLTIMAS TRANSAÇÕES -->
+  color: var(--orange);
 
-        <div class="two-columns">
+  font-size: 8px;
 
-          <div class="card transactions-card">
+  font-weight: 800;
 
-            <div class="card-header compact">
+  letter-spacing: 1.5px;
 
-              <div>
-                <h2>Últimas transações</h2>
-                <p>Movimentações recentes.</p>
-              </div>
+  margin-bottom: 7px;
+}
 
-              <label for="page-transacoes" class="text-button">
-                Ver todas
-              </label>
 
-            </div>
+.page-heading h1 {
+  font-size: 28px;
 
+  line-height: 1.1;
 
-            <div class="transaction">
+  letter-spacing: -1.2px;
 
-              <div class="transaction-icon salary">
-                ↑
-              </div>
+  margin-bottom: 7px;
+}
 
-              <div class="transaction-info">
-                <strong>Salário</strong>
-                <span>Hoje • Receita</span>
-              </div>
 
-              <strong class="value positive">
-                + R$ 7.500,00
-              </strong>
+.page-heading p {
+  color: var(--muted);
 
-            </div>
+  font-size: 11px;
+}
 
 
-            <div class="transaction">
+/* ============================================================
+   BUTTONS
+============================================================ */
 
-              <div class="transaction-icon food">
-                $
-              </div>
+.primary-button {
+  background:
+    linear-gradient(
+      135deg,
+      #ff8a1c,
+      #f16d00
+    );
 
-              <div class="transaction-info">
-                <strong>Supermercado</strong>
-                <span>Ontem • Alimentação</span>
-              </div>
+  color: white;
 
-              <strong class="value negative">
-                - R$ 420,00
-              </strong>
+  border-radius: 10px;
 
-            </div>
+  padding: 12px 17px;
 
+  font-size: 10px;
 
-            <div class="transaction">
+  font-weight: 800;
 
-              <div class="transaction-icon home">
-                ⌂
-              </div>
+  box-shadow:
+    0 8px 18px rgba(255,122,0,.2);
 
-              <div class="transaction-info">
-                <strong>Aluguel</strong>
-                <span>27 Ago • Moradia</span>
-              </div>
+  transition: .2s;
+}
 
-              <strong class="value negative">
-                - R$ 1.800,00
-              </strong>
 
-            </div>
+.primary-button:hover {
+  transform: translateY(-2px);
 
+  box-shadow:
+    0 12px 25px rgba(255,122,0,.27);
+}
 
-            <div class="transaction">
 
-              <div class="transaction-icon transport">
-                →
-              </div>
+.secondary-button {
+  padding: 9px 12px;
 
-              <div class="transaction-info">
-                <strong>Combustível</strong>
-                <span>26 Ago • Transporte</span>
-              </div>
+  background: white;
 
-              <strong class="value negative">
-                - R$ 250,00
-              </strong>
+  border:
+    1px solid var(--border);
 
-            </div>
+  border-radius: 9px;
 
-          </div>
+  color: var(--green-dark);
 
+  font-size: 9px;
 
+  font-weight: 700;
+}
 
-          <div class="three-columns" style="margin-bottom:0;">
 
-            <div class="card mini-card">
+.full {
+  width: 100%;
+}
 
-              <div class="card-header compact">
-                <div>
-                  <h2>Próximos</h2>
-                  <p>Contas a vencer</p>
-                </div>
-              </div>
 
+/* ============================================================
+   HERO BALANCE
+============================================================ */
 
-              <div class="upcoming-item">
+.hero-balance {
+  min-height: 190px;
 
-                <div class="date-box">
-                  <strong>02</strong>
-                  <span>SET</span>
-                </div>
+  position: relative;
 
-                <div>
-                  <strong>Internet</strong>
-                  <span>Conta mensal</span>
-                </div>
+  overflow: hidden;
 
-                <b>R$ 120</b>
+  display: flex;
+  align-items: center;
 
-              </div>
+  padding: 28px 30px;
 
+  margin-bottom: 16px;
 
-              <div class="upcoming-item">
+  border-radius: 21px;
 
-                <div class="date-box">
-                  <strong>05</strong>
-                  <span>SET</span>
-                </div>
+  color: white;
 
-                <div>
-                  <strong>Energia</strong>
-                  <span>Conta mensal</span>
-                </div>
+  background:
+    linear-gradient(
+      125deg,
+      #043824,
+      #087b42
+    );
 
-                <b>R$ 280</b>
+  box-shadow:
+    0 18px 35px rgba(5,59,38,.16);
+}
 
-              </div>
 
-            </div>
+.balance-label {
+  display: flex;
+  align-items: center;
 
-          </div>
+  gap: 8px;
 
-        </div>
+  color: rgba(255,255,255,.63);
 
+  font-size: 10px;
+}
 
 
-        <!-- META + DATA -->
+.balance-label button {
+  background: transparent;
 
-        <div class="three-columns">
+  color: rgba(255,255,255,.6);
+}
 
-          <div class="card mini-card">
 
-            <div class="card-header compact">
+.balance-value {
+  font-size: 39px;
 
-              <div>
-                <h2>Meta em destaque</h2>
-                <p>Seu progresso</p>
-              </div>
+  font-weight: 700;
 
-            </div>
+  letter-spacing: -2px;
 
+  margin: 15px 0;
+}
 
-            <div class="goal-box">
 
-              <div class="goal-top">
+.balance-growth {
+  display: flex;
+  align-items: center;
 
-                <div class="goal-icon">
-                  🎯
-                </div>
+  gap: 8px;
 
-                <div>
-                  <strong>Reserva de emergência</strong>
-                  <span>Meta: R$ 20.000</span>
-                </div>
+  color: rgba(255,255,255,.5);
 
-              </div>
+  font-size: 9px;
+}
 
 
-              <div class="progress">
-                <div style="width:65%;"></div>
-              </div>
+.balance-growth span {
+  padding: 5px 8px;
 
+  background: rgba(131,228,174,.12);
 
-              <div class="goal-bottom">
-                <span>R$ 13.000</span>
-                <strong>65%</strong>
-              </div>
+  color: #8ee3b4;
 
-            </div>
+  border-radius: 7px;
 
-          </div>
+  font-weight: 800;
+}
 
 
-          <div class="card mini-card">
+.hero-decoration {
+  position: absolute;
 
-            <div class="card-header compact">
+  right: 50px;
+  bottom: -30px;
 
-              <div>
-                <h2>Hoje</h2>
-                <p>Resumo do dia</p>
-              </div>
+  font-size: 180px;
 
-            </div>
+  line-height: 1;
 
+  color: rgba(255,255,255,.055);
 
-            <div class="today-box">
+  font-weight: 800;
+}
 
-              <div class="big-date">
-                29
-                <span>AGO</span>
-              </div>
 
-              <div>
-                <strong>Sábado</strong>
-                <span>Nenhuma conta vencendo hoje.</span>
-              </div>
+/* ============================================================
+   SUMMARY
+============================================================ */
 
-            </div>
+.summary-grid {
+  display: grid;
 
-          </div>
+  grid-template-columns:
+    repeat(4, 1fr);
 
+  gap: 13px;
 
-          <div class="card mini-card">
+  margin-bottom: 16px;
+}
 
-            <div class="card-header compact">
 
-              <div>
-                <h2>Economia</h2>
-                <p>Este mês</p>
-              </div>
+.stat-card {
+  min-height: 92px;
 
-            </div>
+  background: white;
 
+  border:
+    1px solid var(--border);
 
-            <strong style="font-size:28px;">
-              R$ 4.470
-            </strong>
+  border-radius: var(--radius);
 
-            <p style="font-size:9px;color:var(--muted);margin-top:7px;">
-              Você economizou mais que no mês anterior.
-            </p>
+  box-shadow: var(--shadow);
 
-          </div>
+  padding: 17px;
 
-        </div>
+  display: flex;
+  align-items: center;
 
-      </section>
+  gap: 12px;
+}
 
 
+.stat-icon {
+  width: 42px;
+  height: 42px;
 
-      <!-- =====================================================
-           TRANSAÇÕES
-      ====================================================== -->
+  flex-shrink: 0;
 
-      <section class="page page-transacoes">
+  border-radius: 12px;
 
-        <div class="page-header">
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-          <div>
-            <span class="eyebrow">MOVIMENTAÇÕES</span>
-            <h1>Transações</h1>
-            <p>Controle todas as entradas e saídas.</p>
-          </div>
+  font-size: 17px;
 
-          <button class="primary-button">
-            + Nova transação
-          </button>
+  font-weight: 800;
+}
 
-        </div>
 
+.stat-icon.green {
+  background: #e9f8ef;
+  color: var(--green);
+}
 
-        <div class="filter-bar">
 
-          <div class="filter-search">
-            ⌕
-            <input
-              type="search"
-              placeholder="Buscar transação..."
-            >
-          </div>
+.stat-icon.red {
+  background: var(--red-light);
+  color: var(--red);
+}
 
-          <button>Todos</button>
-          <button>Receitas</button>
-          <button>Despesas</button>
-          <button>Este mês</button>
 
-        </div>
+.stat-icon.orange {
+  background: var(--orange-light);
+  color: var(--orange);
+}
 
 
-        <div class="card table-card">
+.stat-icon.blue {
+  background: var(--blue-light);
+  color: var(--blue);
+}
 
-          <div class="table-head">
-            <span>DESCRIÇÃO</span>
-            <span>CATEGORIA</span>
-            <span>DATA</span>
-            <span>VALOR</span>
-          </div>
 
+.stat-card div:last-child {
+  display: flex;
+  flex-direction: column;
+}
 
-          <div class="table-row">
 
-            <div class="table-description">
+.stat-card span {
+  color: var(--muted);
 
-              <div class="transaction-icon salary">
-                ↑
-              </div>
+  font-size: 9px;
+}
 
-              <strong>Salário</strong>
 
-            </div>
+.stat-card strong {
+  font-size: 16px;
 
-            <span>Receita</span>
-            <span>29/08/2026</span>
-            <strong class="positive">+ R$ 7.500,00</strong>
+  margin: 4px 0;
+}
 
-          </div>
 
+.stat-card small {
+  font-size: 8px;
 
-          <div class="table-row">
+  font-weight: 700;
+}
 
-            <div class="table-description">
 
-              <div class="transaction-icon food">
-                $
-              </div>
+.positive {
+  color: var(--green);
+}
 
-              <strong>Supermercado</strong>
 
-            </div>
+.negative {
+  color: var(--red);
+}
 
-            <span>Alimentação</span>
-            <span>28/08/2026</span>
-            <strong class="negative">- R$ 420,00</strong>
 
-          </div>
+/* ============================================================
+   CARDS
+============================================================ */
 
+.card {
+  background: white;
 
-          <div class="table-row">
+  border:
+    1px solid var(--border);
 
-            <div class="table-description">
+  border-radius: var(--radius);
 
-              <div class="transaction-icon home">
-                ⌂
-              </div>
+  box-shadow: var(--shadow);
+}
 
-              <strong>Aluguel</strong>
 
-            </div>
+.card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 
-            <span>Moradia</span>
-            <span>27/08/2026</span>
-            <strong class="negative">- R$ 1.800,00</strong>
+  gap: 15px;
 
-          </div>
+  margin-bottom: 18px;
+}
 
-        </div>
 
-      </section>
+.card-heading h2 {
+  font-size: 14px;
 
+  letter-spacing: -.3px;
 
+  margin-bottom: 4px;
+}
 
-      <!-- =====================================================
-           CALENDÁRIO
-      ====================================================== -->
 
-      <section class="page page-calendario">
+.card-heading p {
+  color: var(--muted);
 
-        <div class="page-header">
+  font-size: 9px;
+}
 
-          <div>
-            <span class="eyebrow">ORGANIZAÇÃO</span>
-            <h1>Calendário financeiro</h1>
-            <p>Visualize receitas, despesas e contas por data.</p>
-          </div>
 
-        </div>
+.card-heading select {
+  border:
+    1px solid var(--border);
 
+  background: #f6f8f7;
 
-        <div class="card calendar-card">
+  border-radius: 8px;
 
-          <div class="calendar-header">
+  padding: 8px 10px;
 
-            <button>‹</button>
+  color: var(--muted);
 
-            <h2>Agosto 2026</h2>
+  font-size: 9px;
+}
 
-            <button>›</button>
 
-          </div>
+.link {
+  color: var(--orange);
 
+  font-size: 9px;
 
-          <div class="calendar-week">
+  font-weight: 800;
 
-            <span>DOM</span>
-            <span>SEG</span>
-            <span>TER</span>
-            <span>QUA</span>
-            <span>QUI</span>
-            <span>SEX</span>
-            <span>SÁB</span>
+  cursor: pointer;
+}
 
-          </div>
 
+/* ============================================================
+   DASHBOARD GRID
+============================================================ */
 
-          <div class="calendar-grid">
+.dashboard-grid {
+  display: grid;
 
-            <div class="calendar-day muted">26</div>
-            <div class="calendar-day muted">27</div>
-            <div class="calendar-day muted">28</div>
-            <div class="calendar-day muted">29</div>
-            <div class="calendar-day muted">30</div>
-            <div class="calendar-day muted">31</div>
+  grid-template-columns:
+    1.55fr .85fr;
 
-            <div class="calendar-day">
-              1
-            </div>
+  gap: 16px;
 
-            <div class="calendar-day">
-              2
-            </div>
+  margin-bottom: 16px;
+}
 
-            <div class="calendar-day">
-              3
-            </div>
 
-            <div class="calendar-day">
-              4
-            </div>
+.dashboard-grid.lower {
+  grid-template-columns:
+    1.55fr .85fr;
+}
 
-            <div class="calendar-day">
-              5
-            </div>
 
-            <div class="calendar-day">
-              6
-            </div>
+/* ============================================================
+   CHART
+============================================================ */
 
-            <div class="calendar-day">
-              7
-            </div>
+.chart-card {
+  padding: 23px;
+}
 
-            <div class="calendar-day">
-              8
-            </div>
 
-            <div class="calendar-day">
-              9
-            </div>
+.chart {
+  height: 260px;
 
-            <div class="calendar-day">
-              10
-            </div>
+  display: flex;
 
-            <div class="calendar-day">
-              11
-            </div>
+  gap: 10px;
+}
 
-            <div class="calendar-day">
-              12
-            </div>
 
-            <div class="calendar-day">
-              13
-            </div>
+.chart-y {
+  width: 32px;
 
-            <div class="calendar-day">
-              14
-            </div>
+  padding-bottom: 30px;
 
-            <div class="calendar-day">
-              15
-            </div>
+  display: flex;
+  flex-direction: column;
 
-            <div class="calendar-day">
-              16
-            </div>
+  justify-content: space-between;
 
-            <div class="calendar-day">
-              17
-            </div>
+  color: var(--muted);
 
-            <div class="calendar-day">
-              18
-            </div>
+  font-size: 8px;
+}
 
-            <div class="calendar-day">
-              19
-            </div>
 
-            <div class="calendar-day">
-              20
-            </div>
+.chart-area {
+  flex: 1;
 
-            <div class="calendar-day">
-              21
-            </div>
+  position: relative;
 
-            <div class="calendar-day">
-              22
-            </div>
+  padding-bottom: 30px;
+}
 
-            <div class="calendar-day">
-              23
-            </div>
 
-            <div class="calendar-day">
-              24
-            </div>
+.grid-lines {
+  position: absolute;
 
-            <div class="calendar-day">
-              25
-            </div>
+  inset: 0 0 30px;
 
-            <div class="calendar-day">
-              26
-            </div>
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(25% - 1px),
+      #edf0ee calc(25% - 1px),
+      #edf0ee 25%
+    );
+}
 
-            <div class="calendar-day">
-              27
-              <div class="expense-dot-calendar"></div>
-            </div>
 
-            <div class="calendar-day">
-              28
-              <div class="expense-dot-calendar"></div>
-            </div>
+.chart-area svg {
+  position: absolute;
 
-            <div class="calendar-day today">
-              29
-              <div class="income-dot-calendar"></div>
-            </div>
+  left: 0;
+  right: 0;
+  top: 0;
 
-            <div class="calendar-day">
-              30
-            </div>
+  width: 100%;
+  height: calc(100% - 30px);
+}
 
-            <div class="calendar-day">
-              31
-            </div>
 
-          </div>
+.line-income,
+.line-expense {
+  fill: none;
 
+  stroke-width: 4;
 
-          <div class="calendar-legend">
+  stroke-linecap: round;
 
-            <span>
-              <i class="income-dot-calendar"></i>
-              Receita
-            </span>
+  stroke-linejoin: round;
+}
 
-            <span>
-              <i class="expense-dot-calendar"></i>
-              Despesa
-            </span>
 
-          </div>
+.line-income {
+  stroke: var(--green);
+}
 
-        </div>
 
-      </section>
+.line-expense {
+  stroke: var(--orange);
+}
 
 
+.chart-x {
+  position: absolute;
 
-      <!-- =====================================================
-           METAS
-      ====================================================== -->
+  left: 0;
+  right: 0;
+  bottom: 0;
 
-      <section class="page page-metas">
+  display: flex;
+  justify-content: space-between;
 
-        <div class="page-header">
+  color: var(--muted);
 
-          <div>
-            <span class="eyebrow">PLANEJAMENTO</span>
-            <h1>Metas de economia</h1>
-            <p>Transforme seus objetivos em metas financeiras.</p>
-          </div>
+  font-size: 8px;
+}
 
-          <button class="primary-button">
-            + Nova meta
-          </button>
 
-        </div>
+.legend {
+  display: flex;
 
+  gap: 18px;
 
-        <div class="goal-grid">
+  color: var(--muted);
 
-          <div class="card goal-card">
+  font-size: 8px;
+}
 
-            <div class="goal-icon large">
-              🛡
-            </div>
 
-            <span>Reserva de emergência</span>
+.legend span {
+  display: flex;
+  align-items: center;
 
-            <strong>R$ 13.000</strong>
+  gap: 6px;
+}
 
-            <small>de R$ 20.000</small>
 
-            <div class="progress">
-              <div style="width:65%;"></div>
-            </div>
+.dot {
+  width: 7px;
+  height: 7px;
 
-            <small>65% concluído</small>
+  display: inline-block;
 
-          </div>
+  border-radius: 50%;
+}
 
 
-          <div class="card goal-card">
+.dot.income {
+  background: var(--green);
+}
 
-            <div class="goal-icon large">
-              🚗
-            </div>
 
-            <span>Comprar um carro</span>
+.dot.expense {
+  background: var(--orange);
+}
 
-            <strong>R$ 28.500</strong>
 
-            <small>de R$ 50.000</small>
+/* ============================================================
+   GOALS
+============================================================ */
 
-            <div class="progress">
-              <div style="width:57%;"></div>
-            </div>
+.goals-card {
+  padding: 23px;
+}
 
-            <small>57% concluído</small>
 
-          </div>
+.goal-item {
+  display: flex;
+  align-items: center;
 
+  gap: 10px;
 
-          <div class="card goal-card">
+  padding: 14px 0;
 
-            <div class="goal-icon large">
-              ✈
-            </div>
+  border-bottom:
+    1px solid var(--border);
+}
 
-            <span>Viagem</span>
 
-            <strong>R$ 3.200</strong>
+.goal-item:last-child {
+  border-bottom: 0;
+}
 
-            <small>de R$ 8.000</small>
 
-            <div class="progress">
-              <div style="width:40%;"></div>
-            </div>
+.goal-symbol {
+  width: 40px;
+  height: 40px;
 
-            <small>40% concluído</small>
+  flex-shrink: 0;
 
-          </div>
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-        </div>
+  border-radius: 11px;
 
-      </section>
+  background: #edf8f1;
 
+  color: var(--green);
 
+  font-size: 17px;
+}
 
-      <!-- =====================================================
-           CARTÕES
-      ====================================================== -->
 
-      <section class="page page-cartoes">
+.goal-content {
+  flex: 1;
 
-        <div class="page-header">
+  min-width: 0;
+}
 
-          <div>
-            <span class="eyebrow">CRÉDITO</span>
-            <h1>Cartões</h1>
-            <p>Controle seus cartões de crédito.</p>
-          </div>
 
-          <button class="primary-button">
-            + Adicionar cartão
-          </button>
+.goal-content strong {
+  display: block;
 
-        </div>
+  font-size: 10px;
 
+  margin-bottom: 4px;
+}
 
-        <div class="card-grid">
 
-          <div class="visual-card">
+.goal-content span {
+  display: block;
 
-            <div class="credit-top">
-              <strong>Meu cartão</strong>
-              <span>VISA</span>
-            </div>
+  color: var(--muted);
 
-            <div class="credit-number">
-              •••• •••• •••• 4821
-            </div>
+  font-size: 8px;
+}
 
-            <div class="credit-bottom">
-              <span>FELIPE</span>
-              <span>12/29</span>
-            </div>
 
-          </div>
+.goal-item > b {
+  color: var(--green);
 
+  font-size: 9px;
+}
 
-          <div class="card credit-summary">
 
-            <span>Fatura atual</span>
+.progress {
+  height: 6px;
 
-            <strong>
-              R$ 1.840,00
-            </strong>
+  margin-top: 9px;
 
-            <span>
-              Vencimento: 10/09/2026
-            </span>
+  overflow: hidden;
 
-            <div class="progress">
-              <div style="width:46%;"></div>
-            </div>
+  background: #eef2ef;
 
-            <small>
-              Limite utilizado: 46%
-            </small>
+  border-radius: 20px;
+}
 
-          </div>
 
-        </div>
+.progress i {
+  display: block;
 
-      </section>
+  height: 100%;
 
+  background:
+    linear-gradient(
+      90deg,
+      var(--green),
+      var(--green-light)
+    );
 
+  border-radius: inherit;
+}
 
-      <!-- =====================================================
-           LEMBRETES
-      ====================================================== -->
 
-      <section class="page page-lembretes">
+/* ============================================================
+   TRANSACTIONS
+============================================================ */
 
-        <div class="page-header">
+.transactions-card,
+.accounts-card {
+  padding: 23px;
+}
 
-          <div>
-            <span class="eyebrow">AVISOS</span>
-            <h1>Lembretes</h1>
-            <p>Não deixe suas contas vencerem.</p>
-          </div>
 
-          <button class="primary-button">
-            + Novo lembrete
-          </button>
+.transaction {
+  min-height: 61px;
 
-        </div>
+  display: flex;
+  align-items: center;
 
+  gap: 11px;
 
-        <div class="reminder-list">
+  border-bottom:
+    1px solid var(--border);
+}
 
-          <div class="card reminder">
 
-            <div class="reminder-date">
-              <strong>02</strong>
-              <span>SET</span>
-            </div>
+.transaction:last-child {
+  border-bottom: 0;
+}
 
-            <div class="reminder-info">
-              <strong>Internet</strong>
-              <span>R$ 120,00 • Mensal</span>
-            </div>
 
-            <span class="status">
-              Programado
-            </span>
+.transaction-icon {
+  width: 38px;
+  height: 38px;
 
-          </div>
+  flex-shrink: 0;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-          <div class="card reminder">
+  border-radius: 11px;
 
-            <div class="reminder-date">
-              <strong>05</strong>
-              <span>SET</span>
-            </div>
+  font-weight: 800;
+}
 
-            <div class="reminder-info">
-              <strong>Conta de energia</strong>
-              <span>R$ 280,00 • Mensal</span>
-            </div>
 
-            <span class="status warning">
-              Próximo
-            </span>
+.income-icon {
+  background: #e9f8ef;
+  color: var(--green);
+}
 
-          </div>
 
+.expense-icon {
+  background: var(--orange-light);
+  color: var(--orange);
+}
 
-          <div class="card reminder">
 
-            <div class="reminder-date">
-              <strong>10</strong>
-              <span>SET</span>
-            </div>
+.home-icon {
+  background: #edf4ff;
+  color: var(--blue);
+}
 
-            <div class="reminder-info">
-              <strong>Fatura do cartão</strong>
-              <span>R$ 1.840,00</span>
-            </div>
 
-            <span class="status">
-              Programado
-            </span>
+.fuel-icon {
+  background: var(--red-light);
+  color: var(--red);
+}
 
-          </div>
 
-        </div>
+.transaction-info {
+  flex: 1;
 
-      </section>
+  display: flex;
+  flex-direction: column;
+}
 
 
+.transaction-info strong {
+  font-size: 10px;
+}
 
-      <!-- =====================================================
-           INDICADORES
-      ====================================================== -->
 
-      <section class="page page-indicadores">
+.transaction-info span {
+  color: var(--muted);
 
-        <div class="page-header">
+  font-size: 8px;
 
-          <div>
-            <span class="eyebrow">ANÁLISE</span>
-            <h1>Indicadores financeiros</h1>
-            <p>Entenda a saúde da sua vida financeira.</p>
-          </div>
+  margin-top: 3px;
+}
 
-        </div>
 
+.transaction > b {
+  font-size: 9px;
+}
 
-        <div class="indicator-grid">
 
-          <div class="card big-indicator">
+/* ============================================================
+   CONTAS
+============================================================ */
 
-            <div class="indicator-circle">
-              51%
-            </div>
+.account-item {
+  display: flex;
+  align-items: center;
 
-            <span>Taxa de economia</span>
+  gap: 10px;
 
-            <strong>
-              Excelente
-            </strong>
+  padding: 13px 0;
 
-            <p>
-              Mais da metade das suas receitas está sendo economizada.
-            </p>
+  border-bottom:
+    1px solid var(--border);
+}
 
-          </div>
 
+.account-item:last-of-type {
+  border-bottom: 0;
+}
 
-          <div class="card big-indicator">
 
-            <div class="indicator-circle">
-              49%
-            </div>
+.account-icon {
+  width: 36px;
+  height: 36px;
 
-            <span>Comprometimento</span>
+  border-radius: 10px;
 
-            <strong>
-              Saudável
-            </strong>
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-            <p>
-              Suas despesas representam 49% das receitas.
-            </p>
+  background: #edf8f1;
 
-          </div>
+  color: var(--green);
 
+  font-weight: 800;
+}
 
-          <div class="card big-indicator">
 
-            <div class="big-number">
-              R$ 4.470
-            </div>
+.account-item > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
 
-            <span>Economia mensal</span>
+  flex: 1;
+}
 
-            <strong>
-              +12,4%
-            </strong>
 
-            <p>
-              Crescimento da economia comparado ao mês anterior.
-            </p>
+.account-item strong {
+  font-size: 10px;
+}
 
-          </div>
 
+.account-item span {
+  color: var(--muted);
 
-          <div class="card big-indicator">
+  font-size: 8px;
 
-            <div class="big-number">
-              R$ 13.240
-            </div>
+  margin-top: 3px;
+}
 
-            <span>Saldo projetado</span>
 
-            <strong>
-              Positivo
-            </strong>
+.account-item > b {
+  color: var(--green);
 
-            <p>
-              Projeção baseada nas receitas e despesas cadastradas.
-            </p>
+  font-size: 9px;
+}
 
-          </div>
 
-        </div>
+.manual-note {
+  margin-top: 15px;
 
-      </section>
+  padding: 10px 11px;
 
+  border-radius: 9px;
 
+  background: #f3f8f5;
 
-      <!-- =====================================================
-           RECIBOS
-      ====================================================== -->
+  color: #628071;
 
-      <section class="page page-recibos">
+  font-size: 8px;
 
-        <div class="page-header">
+  line-height: 1.5;
+}
 
-          <div>
-            <span class="eyebrow">DOCUMENTOS</span>
-            <h1>Recibos</h1>
-            <p>Crie recibos profissionais rapidamente.</p>
-          </div>
 
-        </div>
+/* ============================================================
+   FOOTER
+============================================================ */
 
+footer {
+  text-align: center;
 
-        <div class="receipt-layout">
+  color: var(--muted);
 
-          <div class="card receipt-preview">
+  font-size: 8px;
 
-            <div class="receipt-head">
+  padding: 10px 0;
+}
 
-              <strong>RECIBO</strong>
 
-              <span>
-                ControleS
-              </span>
+footer strong {
+  color: var(--green);
+}
 
-            </div>
 
+/* ============================================================
+   FILTERS / TABLE
+============================================================ */
 
-            <div class="receipt-line"></div>
+.filter-bar {
+  display: flex;
 
+  gap: 8px;
 
-            <p>
-              Recebi de:
-            </p>
+  margin-bottom: 18px;
+}
 
-            <strong class="receipt-name">
-              Nome do pagador
-            </strong>
 
+.search-filter,
+.filter-bar button {
+  background: white;
 
-            <p>
-              A importância de:
-            </p>
+  border:
+    1px solid var(--border);
 
-            <strong class="receipt-value">
-              R$ 0,00
-            </strong>
+  border-radius: 9px;
 
+  padding: 10px 12px;
 
-            <p>
-              Referente a:
-            </p>
+  font-size: 9px;
 
-            <span>
-              Descrição do pagamento
-            </span>
+  color: var(--muted);
+}
 
 
-            <div class="receipt-signature">
-              Assinatura
-            </div>
+.search-filter {
+  flex: 1;
 
+  display: flex;
+  align-items: center;
 
-            <div class="receipt-date">
-              Cidade, ____ de __________ de ______.
-            </div>
+  gap: 7px;
+}
 
-          </div>
 
+.search-filter input {
+  width: 100%;
 
-          <div class="card receipt-info">
+  border: 0;
 
-            <h2>
-              Criar recibo
-            </h2>
+  font-size: 9px;
+}
 
-            <p>
-              Preencha as informações para gerar seu recibo.
-            </p>
 
+.table-card {
+  overflow: hidden;
+}
 
-            <div class="fake-input">
-              Nome do pagador
-            </div>
 
-            <div class="fake-input">
-              Valor do pagamento
-            </div>
+.table-header,
+.table-row {
+  display: grid;
 
-            <div class="fake-input">
-              Referente a
-            </div>
+  grid-template-columns:
+    2fr 1.2fr 1.2fr 1fr;
 
-            <div class="fake-input">
-              Cidade e data
-            </div>
+  align-items: center;
 
+  padding: 16px 22px;
+}
 
-            <button class="primary-button full">
-              Gerar recibo
-            </button>
 
-          </div>
+.table-header {
+  background: #f5f7f6;
 
-        </div>
+  color: var(--muted);
 
-      </section>
+  font-size: 8px;
 
+  font-weight: 800;
+}
 
 
-      <!-- =====================================================
-           CONTAS
-      ====================================================== -->
+.table-row {
+  border-top:
+    1px solid var(--border);
 
-      <section class="page page-contas">
+  font-size: 9px;
+}
 
-        <div class="page-header">
 
-          <div>
-            <span class="eyebrow">PATRIMÔNIO</span>
-            <h1>Contas financeiras</h1>
-            <p>Organize seu dinheiro em diferentes contas.</p>
-          </div>
+.table-row span {
+  color: var(--muted);
+}
 
-          <button class="primary-button">
-            + Nova conta
-          </button>
 
-        </div>
+/* ============================================================
+   CALENDAR
+============================================================ */
 
+.calendar-card {
+  padding: 25px;
+}
 
-        <div class="account-grid">
 
-          <div class="card finance-account">
+.calendar-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-            <div class="finance-account-top">
+  gap: 20px;
 
-              <div class="finance-icon">
-                🏦
-              </div>
+  margin-bottom: 25px;
+}
 
-              <span>Principal</span>
 
-            </div>
+.calendar-title button {
+  width: 34px;
+  height: 34px;
 
-            <strong>
-              Conta corrente
-            </strong>
+  border-radius: 9px;
 
-            <span>
-              Saldo atual
-            </span>
+  background: #f3f5f4;
 
-            <b>
-              R$ 9.850,00
-            </b>
+  color: var(--green-dark);
+}
 
-          </div>
 
+.calendar-title h2 {
+  font-size: 17px;
+}
 
-          <div class="card finance-account">
 
-            <div class="finance-account-top">
+.week,
+.calendar {
+  display: grid;
 
-              <div class="finance-icon">
-                $
-              </div>
+  grid-template-columns:
+    repeat(7, 1fr);
+}
 
-              <span>Reserva</span>
 
-            </div>
+.week span {
+  text-align: center;
 
-            <strong>
-              Poupança
-            </strong>
+  padding-bottom: 10px;
 
-            <span>
-              Saldo atual
-            </span>
+  color: var(--muted);
 
-            <b>
-              R$ 13.000,00
-            </b>
+  font-size: 8px;
 
-          </div>
+  font-weight: 800;
+}
 
 
-          <div class="card finance-account add-account">
+.calendar > div {
+  min-height: 95px;
 
-            <span>+</span>
+  padding: 11px;
 
-            <strong>
-              Adicionar conta
-            </strong>
+  border:
+    1px solid var(--border);
 
-            <small>
-              Banco, carteira ou dinheiro
-            </small>
+  font-size: 10px;
+}
 
-          </div>
 
-        </div>
+.calendar .muted-day {
+  color: #c7ceca;
 
-      </section>
+  background: #fafbfa;
+}
 
 
+.calendar .today {
+  background: var(--orange-light);
 
-      <!-- =====================================================
-           RELATÓRIOS
-      ====================================================== -->
+  box-shadow:
+    inset 0 0 0 2px var(--orange);
+}
 
-      <section class="page page-relatorios">
 
-        <div class="page-header">
+/* ============================================================
+   GENERAL CARD GRIDS
+============================================================ */
 
-          <div>
-            <span class="eyebrow">ANÁLISE</span>
-            <h1>Relatórios</h1>
-            <p>Veja como seu dinheiro está sendo utilizado.</p>
-          </div>
+.cards-grid {
+  display: grid;
 
-          <button class="secondary-button">
-            Exportar dados
-          </button>
+  grid-template-columns:
+    repeat(3, 1fr);
 
-        </div>
+  gap: 16px;
+}
 
 
-        <div class="report-cards">
+.goal-large,
+.indicator-card,
+.finance-card,
+.category-card {
+  padding: 25px;
+}
 
-          <div class="card report-card">
 
-            <span>Receitas</span>
+.goal-big-icon {
+  width: 50px;
+  height: 50px;
 
-            <strong>
-              R$ 8.750
-            </strong>
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-            <small class="positive">
-              +12,5%
-            </small>
+  margin-bottom: 18px;
 
-          </div>
+  border-radius: 13px;
 
+  background: var(--orange-light);
 
-          <div class="card report-card">
+  color: var(--orange);
 
-            <span>Despesas</span>
+  font-size: 20px;
+}
 
-            <strong>
-              R$ 4.280
-            </strong>
 
-            <small class="negative">
-              +4,2%
-            </small>
+.goal-large > span,
+.finance-card > span,
+.indicator-card > span {
+  display: block;
 
-          </div>
+  color: var(--muted);
 
+  font-size: 9px;
 
-          <div class="card report-card">
+  margin-bottom: 7px;
+}
 
-            <span>Economia</span>
 
-            <strong>
-              R$ 4.470
-            </strong>
+.goal-large > strong {
+  display: inline-block;
 
-            <small class="positive">
-              51,1%
-            </small>
+  font-size: 25px;
+}
 
-          </div>
 
-        </div>
+.goal-large > small {
+  color: var(--muted);
 
+  font-size: 9px;
+}
 
-        <div class="card report-large">
 
-          <div class="card-header">
+.progress.big {
+  margin: 18px 0 8px;
+}
 
-            <div>
-              <h2>Despesas por categoria</h2>
-              <p>Distribuição dos seus gastos.</p>
-            </div>
 
-            <select>
-              <option>Agosto 2026</option>
-            </select>
+.goal-large > b {
+  color: var(--green);
 
-          </div>
+  font-size: 9px;
+}
 
 
-          <div class="report-bars">
+/* ============================================================
+   REMINDERS
+============================================================ */
 
-            <div>
+.reminders {
+  display: flex;
+  flex-direction: column;
 
-              <span>Moradia</span>
+  gap: 12px;
+}
 
-              <div class="bar">
-                <i style="width:82%;"></i>
-              </div>
 
-            </div>
+.reminder {
+  display: flex;
+  align-items: center;
 
+  gap: 15px;
 
-            <div>
+  padding: 17px 20px;
+}
 
-              <span>Alimentação</span>
 
-              <div class="bar">
-                <i style="width:65%;"></i>
-              </div>
+.reminder-date {
+  width: 50px;
+  height: 50px;
 
-            </div>
+  flex-shrink: 0;
 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-            <div>
+  background: var(--orange-light);
 
-              <span>Transporte</span>
+  color: var(--orange);
 
-              <div class="bar">
-                <i style="width:40%;"></i>
-              </div>
+  border-radius: 11px;
+}
 
-            </div>
 
+.reminder-date strong {
+  font-size: 15px;
+}
 
-            <div>
 
-              <span>Lazer</span>
+.reminder-date small {
+  font-size: 7px;
 
-              <div class="bar">
-                <i style="width:28%;"></i>
-              </div>
+  font-weight: 800;
+}
 
-            </div>
 
-          </div>
+.reminder > div:nth-child(2) {
+  flex: 1;
 
-        </div>
+  display: flex;
+  flex-direction: column;
+}
 
-      </section>
 
+.reminder > div:nth-child(2) strong {
+  font-size: 11px;
+}
 
 
-      <!-- =====================================================
-           CATEGORIAS
-      ====================================================== -->
+.reminder > div:nth-child(2) span {
+  color: var(--muted);
 
-      <section class="page page-categorias">
+  font-size: 8px;
 
-        <div class="page-header">
+  margin-top: 4px;
+}
 
-          <div>
-            <span class="eyebrow">ORGANIZAÇÃO</span>
-            <h1>Categorias</h1>
-            <p>Organize suas receitas e despesas.</p>
-          </div>
 
-          <button class="primary-button">
-            + Nova categoria
-          </button>
+.reminder > b {
+  font-size: 10px;
+}
 
-        </div>
 
+.reminder em {
+  font-style: normal;
 
-        <div class="category-grid">
+  padding: 6px 9px;
 
-          <div class="card category-card">
+  border-radius: 7px;
 
-            <div class="category-icon">
-              ⌂
-            </div>
+  background: #eaf8ef;
 
-            <strong>Moradia</strong>
-            <span>Aluguel, condomínio e contas</span>
+  color: var(--green);
 
-          </div>
+  font-size: 8px;
 
+  font-weight: 700;
+}
 
-          <div class="card category-card">
 
-            <div class="category-icon">
-              $
-            </div>
+/* ============================================================
+   INDICATORS
+============================================================ */
 
-            <strong>Alimentação</strong>
-            <span>Mercado, restaurantes e refeições</span>
+.indicator-card {
+  min-height: 220px;
+}
 
-          </div>
 
+.circle {
+  width: 78px;
+  height: 78px;
 
-          <div class="card category-card">
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-            <div class="category-icon">
-              →
-            </div>
+  margin-bottom: 20px;
 
-            <strong>Transporte</strong>
-            <span>Combustível, ônibus e manutenção</span>
+  border-radius: 50%;
 
-          </div>
+  border:
+    8px solid #e9f6ed;
 
+  border-top-color:
+    var(--green);
 
-          <div class="card category-card">
+  color: var(--green);
 
-            <div class="category-icon">
-              ★
-            </div>
+  font-size: 15px;
 
-            <strong>Lazer</strong>
-            <span>Viagens, jogos e entretenimento</span>
+  font-weight: 800;
+}
 
-          </div>
 
+.indicator-card > strong {
+  display: block;
 
-          <div class="card category-card">
+  font-size: 13px;
 
-            <div class="category-icon">
-              ♥
-            </div>
+  margin-top: 6px;
+}
 
-            <strong>Saúde</strong>
-            <span>Consultas, medicamentos e exames</span>
 
-          </div>
+.indicator-card p {
+  color: var(--muted);
 
+  font-size: 9px;
 
-          <div class="card category-card">
+  line-height: 1.6;
 
-            <div class="category-icon">
-              ◆
-            </div>
+  margin-top: 10px;
+}
 
-            <strong>Educação</strong>
-            <span>Cursos, livros e estudos</span>
 
-          </div>
+.indicator-number {
+  font-size: 25px;
 
+  font-weight: 800;
 
-          <div class="card category-card">
+  margin-bottom: 20px;
+}
 
-            <div class="category-icon">
-              ✦
-            </div>
 
-            <strong>Investimentos</strong>
-            <span>Aplicações e investimentos</span>
+/* ============================================================
+   RECEIPT
+============================================================ */
 
-          </div>
+.receipt-layout {
+  display: grid;
 
+  grid-template-columns:
+    1.4fr .8fr;
 
-          <div class="card category-card">
+  gap: 18px;
+}
 
-            <div class="category-icon">
-              +
-            </div>
 
-            <strong>Outros</strong>
-            <span>Despesas diversas</span>
+.receipt {
+  padding: 35px;
 
-          </div>
+  min-height: 500px;
+}
 
-        </div>
 
-      </section>
+.receipt-top {
+  display: flex;
+  justify-content: space-between;
 
+  color: var(--green-dark);
+}
 
 
-      <!-- =====================================================
-           CONFIGURAÇÕES
-      ====================================================== -->
+.receipt-top strong {
+  font-size: 17px;
+}
 
-      <section class="page page-configuracoes">
 
-        <div class="page-header">
+.receipt-top span {
+  color: var(--orange);
 
-          <div>
-            <span class="eyebrow">SISTEMA</span>
-            <h1>Configurações</h1>
-            <p>Personalize sua experiência no ControleS.</p>
-          </div>
+  font-size: 9px;
 
-        </div>
+  font-weight: 800;
+}
 
 
-        <div class="settings-layout">
+.receipt hr {
+  border: 0;
 
-          <div class="card settings-card">
+  border-top:
+    1px solid var(--border);
 
-            <h2>
-              Minha conta
-            </h2>
+  margin: 25px 0;
+}
 
 
-            <div class="setting-row">
+.receipt p {
+  color: var(--muted);
 
-              <div class="avatar large">
-                F
-              </div>
+  font-size: 9px;
 
-              <div>
-                <strong>
-                  Minha conta
-                </strong>
+  margin: 18px 0 7px;
+}
 
-                <span>
-                  Plano gratuito
-                </span>
-              </div>
 
-              <button>
-                Editar
-              </button>
+.receipt-name {
+  font-size: 14px;
+}
 
-            </div>
 
-          </div>
+.receipt-value {
+  display: block;
 
+  color: var(--green-dark);
 
-          <div class="card settings-card">
+  font-size: 25px;
+}
 
-            <h2>
-              Preferências
-            </h2>
 
+.receipt > span {
+  font-size: 10px;
+}
 
-            <div class="setting-option">
 
-              <div>
-                <strong>Notificações</strong>
-                <span>Receber lembretes financeiros</span>
-              </div>
+.signature {
+  width: 200px;
 
-              <div class="toggle active"></div>
+  margin-top: 75px;
 
-            </div>
+  padding-top: 8px;
 
+  border-top:
+    1px solid var(--text);
 
-            <div class="setting-option">
+  color: var(--muted);
 
-              <div>
-                <strong>Modo escuro</strong>
-                <span>Alterar aparência do sistema</span>
-              </div>
+  font-size: 8px;
+}
 
-              <div class="toggle"></div>
 
-            </div>
+.receipt > small {
+  display: block;
 
+  margin-top: 35px;
 
-            <div class="setting-option">
+  color: var(--muted);
 
-              <div>
-                <strong>Alertas financeiros</strong>
-                <span>Avisar sobre contas próximas</span>
-              </div>
+  font-size: 8px;
+}
 
-              <div class="toggle active"></div>
 
-            </div>
+.form-card {
+  padding: 28px;
 
-          </div>
+  align-self: start;
+}
 
 
-          <div class="card settings-card">
+.form-card h2 {
+  font-size: 16px;
 
-            <h2>
-              Tipo de utilização
-            </h2>
+  margin-bottom: 7px;
+}
 
 
-            <div class="mode-selector">
+.form-card p {
+  color: var(--muted);
 
-              <div class="mode active">
+  font-size: 9px;
 
-                <strong>
-                  Pessoa
-                </strong>
+  line-height: 1.6;
 
-                <span>
-                  Finanças pessoais
-                </span>
+  margin-bottom: 18px;
+}
 
-              </div>
 
+.form-card input {
+  width: 100%;
 
-              <div class="mode">
+  padding: 12px;
 
-                <strong>
-                  Empresa
-                </strong>
+  margin-bottom: 9px;
 
-                <span>
-                  Gestão empresarial
-                </span>
+  background: #f5f7f6;
 
-              </div>
+  border:
+    1px solid var(--border);
 
-            </div>
+  border-radius: 9px;
 
-          </div>
+  font-size: 9px;
+}
 
 
-          <div class="card settings-card">
+/* ============================================================
+   CONTAS
+============================================================ */
 
-            <h2>
-              Dados
-            </h2>
+.manual-warning {
+  display: flex;
+  flex-direction: column;
 
+  gap: 5px;
 
-            <div class="setting-option">
+  margin-bottom: 17px;
 
-              <div>
-                <strong>Exportar dados</strong>
-                <span>Baixe suas informações</span>
-              </div>
+  padding: 14px 16px;
 
-              <button>
-                Exportar
-              </button>
+  border:
+    1px solid #d9ece0;
 
-            </div>
+  border-radius: 12px;
 
+  background: #f0f9f3;
 
-            <div class="setting-option">
+  color: var(--green-dark);
+}
 
-              <div>
-                <strong>Backup</strong>
-                <span>Faça uma cópia dos seus dados</span>
-              </div>
 
-              <button>
-                Backup
-              </button>
+.manual-warning strong {
+  font-size: 10px;
+}
 
-            </div>
 
-          </div>
+.manual-warning span {
+  color: #688076;
 
-        </div>
+  font-size: 8px;
+}
 
-      </section>
 
-    </main>
+.finance-card {
+  min-height: 230px;
+}
 
-  </div>
 
-</body>
+.finance-icon {
+  width: 44px;
+  height: 44px;
 
-</html>
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 18px;
+
+  border-radius: 12px;
+
+  background: var(--orange-light);
+
+  color: var(--orange);
+
+  font-weight: 800;
+}
+
+
+.finance-card > strong {
+  display: block;
+
+  font-size: 12px;
+
+  margin-bottom: 15px;
+}
+
+
+.finance-card > small {
+  display: block;
+
+  color: var(--muted);
+
+  font-size: 8px;
+
+  margin-bottom: 5px;
+}
+
+
+.finance-card > b {
+  display: block;
+
+  font-size: 23px;
+
+  margin-bottom: 18px;
+}
+
+
+.finance-card.add {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  border:
+    2px dashed var(--border);
+
+  box-shadow: none;
+}
+
+
+.plus {
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--orange-light);
+
+  color: var(--orange);
+
+  font-size: 22px;
+}
+
+
+.finance-card.add strong {
+  margin-top: 12px;
+  margin-bottom: 5px;
+}
+
+
+.finance-card.add small {
+  max-width: 180px;
+
+  line-height: 1.5;
+}
+
+
+/* ============================================================
+   REPORTS
+============================================================ */
+
+.report-card {
+  padding: 28px;
+}
+
+
+.report-bars {
+  display: flex;
+  flex-direction: column;
+
+  gap: 20px;
+}
+
+
+.report-bars > div {
+  display: grid;
+
+  grid-template-columns:
+    90px 1fr;
+
+  align-items: center;
+
+  gap: 15px;
+}
+
+
+.report-bars span {
+  color: var(--muted);
+
+  font-size: 9px;
+}
+
+
+.bar {
+  height: 11px;
+
+  background: #eff2f0;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+}
+
+
+.bar i {
+  display: block;
+
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--green),
+      var(--green-light)
+    );
+
+  border-radius: inherit;
+}
+
+
+/* ============================================================
+   CATEGORIES
+============================================================ */
+
+.category-card {
+  min-height: 150px;
+}
+
+
+.category-card > div {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 17px;
+
+  border-radius: 11px;
+
+  background: var(--orange-light);
+
+  color: var(--orange);
+
+  font-weight: 800;
+}
+
+
+.category-card strong {
+  display: block;
+
+  font-size: 11px;
+
+  margin-bottom: 5px;
+}
+
+
+.category-card span {
+  color: var(--muted);
+
+  font-size: 8px;
+
+  line-height: 1.5;
+}
+
+
+/* ============================================================
+   SETTINGS
+============================================================ */
+
+.settings-grid {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 16px;
+}
+
+
+.settings-card {
+  padding: 25px;
+}
+
+
+.settings-card h2 {
+  font-size: 14px;
+
+  margin-bottom: 20px;
+}
+
+
+.setting-user {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+
+.setting-user > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+}
+
+
+.setting-user strong {
+  font-size: 11px;
+}
+
+
+.setting-user span {
+  color: var(--muted);
+
+  font-size: 8px;
+
+  margin-top: 3px;
+}
+
+
+.setting {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 13px 0;
+
+  border-bottom:
+    1px solid var(--border);
+}
+
+
+.setting:last-child {
+  border-bottom: 0;
+}
+
+
+.setting > div {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+}
+
+
+.setting strong {
+  font-size: 10px;
+}
+
+
+.setting span {
+  color: var(--muted);
+
+  font-size: 8px;
+
+  margin-top: 4px;
+}
+
+
+.toggle {
+  width: 38px;
+  height: 21px;
+
+  position: relative;
+
+  background: #dce2df;
+
+  border-radius: 20px;
+}
+
+
+.toggle::after {
+  content: "";
+
+  position: absolute;
+
+  left: 3px;
+  top: 3px;
+
+  width: 15px;
+  height: 15px;
+
+  background: white;
+
+  border-radius: 50%;
+}
+
+
+.toggle.active {
+  background: var(--green);
+}
+
+
+.toggle.active::after {
+  left: 20px;
+}
+
+
+.mode-grid {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 10px;
+}
+
+
+.mode {
+  padding: 15px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius: 12px;
+}
+
+
+.mode.active {
+  background: var(--orange-light);
+
+  border-color: var(--orange);
+}
+
+
+.mode strong {
+  display: block;
+
+  font-size: 10px;
+
+  margin-bottom: 5px;
+}
+
+
+.mode span {
+  color: var(--muted);
+
+  font-size: 8px;
+}
+
+
+/* ============================================================
+   RESPONSIVIDADE
+============================================================ */
+
+@media (max-width: 1200px) {
+
+  .summary-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+
+  .dashboard-grid,
+  .dashboard-grid.lower {
+    grid-template-columns: 1fr;
+  }
+
+
+  .cards-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+}
+
+
+@media (max-width: 900px) {
+
+  .sidebar {
+    width: 210px;
+  }
+
+
+  .main {
+    margin-left: 210px;
+  }
+
+
+  .page {
+    padding-left: 23px;
+    padding-right: 23px;
+  }
+
+
+  .receipt-layout {
+    grid-template-columns: 1fr;
+  }
+
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .sidebar {
+    display: none;
+  }
+
+
+  .main {
+    margin-left: 0;
+  }
+
+
+  .topbar {
+    height: 66px;
+
+    padding:
+      0 15px;
+  }
+
+
+  .mobile-logo {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 15px;
+  }
+
+
+  .search {
+    display: none;
+  }
+
+
+  .profile > div:last-child {
+    display: none;
+  }
+
+
+  .top-actions {
+    gap: 5px;
+  }
+
+
+  .page {
+    padding:
+      24px 15px 45px;
+  }
+
+
+  .page-heading {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 15px;
+  }
+
+
+  .page-heading h1 {
+    font-size: 24px;
+  }
+
+
+  .primary-button {
+    width: 100%;
+  }
+
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .hero-balance {
+    min-height: 180px;
+
+    padding: 23px;
+  }
+
+
+  .balance-value {
+    font-size: 31px;
+  }
+
+
+  .hero-decoration {
+    display: none;
+  }
+
+
+  .chart-card,
+  .goals-card,
+  .transactions-card,
+  .accounts-card {
+    padding: 18px;
+  }
+
+
+  .chart {
+    height: 220px;
+  }
+
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .table-card {
+    overflow-x: auto;
+  }
+
+
+  .table-header,
+  .table-row {
+    min-width: 620px;
+  }
+
+
+  .filter-bar {
+    flex-wrap: wrap;
+  }
+
+
+  .search-filter {
+    flex-basis: 100%;
+  }
+
+
+  .calendar-card {
+    padding: 10px;
+  }
+
+
+  .calendar > div {
+    min-height: 62px;
+
+    padding: 7px;
+
+    font-size: 8px;
+  }
+
+
+  .week span {
+    font-size: 7px;
+  }
+
+
+  .reminder {
+    flex-wrap: wrap;
+  }
+
+
+  .reminder > div:nth-child(2) {
+    min-width: 120px;
+  }
+
+
+  .reminder > b {
+    margin-left: 65px;
+  }
+
+
+  .receipt {
+    padding: 23px;
+
+    min-height: 440px;
+  }
+
+}
+
+
+@media (max-width: 430px) {
+
+  .icon-button {
+    display: none;
+  }
+
+
+  .topbar {
+    padding: 0 12px;
+  }
+
+
+  .page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+
+  .balance-value {
+    font-size: 28px;
+  }
+
+
+  .balance-growth {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+
+  .stat-card {
+    padding: 15px;
+  }
+
+
+  .chart {
+    height: 190px;
+  }
+
+
+  .calendar > div {
+    min-height: 53px;
+
+    padding: 5px;
+  }
+
+
+  .mode-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
