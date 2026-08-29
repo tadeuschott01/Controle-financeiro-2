@@ -1,1858 +1,996 @@
-/* ============================================================
-   CONTROLES — CONTROLE FINANCEIRO
-   Frontend completo
-   LocalStorage + gráficos + navegação + CRUD
-   Estrutura preparada para integração com Supabase
-============================================================ */
+:root {
+  --green-dark: #102d22;
+  --green: #1f513d;
+  --green-light: #2f6b50;
 
-"use strict";
+  --orange: #f28c28;
+  --orange-dark: #d96f12;
+  --orange-light: #fff1df;
 
+  --bg: #f5f7f6;
+  --card: #ffffff;
+  --text: #17221d;
+  --muted: #7a8780;
+  --border: #e7ebe8;
 
-/* ============================================================
-   CONFIGURAÇÃO
-============================================================ */
+  --danger: #dc4c4c;
+  --success: #27966b;
 
-const STORAGE_KEY = "controles_transactions";
-const THEME_KEY = "controles_theme";
-const USER_KEY = "controles_user";
+  --shadow: 0 12px 35px rgba(16, 45, 34, .07);
 
-let transactions = [];
-let editingId = null;
-let currentType = "income";
-let currentFilter = "all";
-let balanceVisible = true;
+  --radius: 18px;
+}
 
-let flowChart = null;
-let categoryChart = null;
-let reportChart = null;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
 
-/* ============================================================
-   CATEGORIAS
-============================================================ */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
 
-const categoryIcons = {
-  "Alimentação": "🍔",
-  "Moradia": "🏠",
-  "Transporte": "🚗",
-  "Lazer": "🎮",
-  "Saúde": "❤️",
-  "Educação": "📚",
-  "Compras": "🛍️",
-  "Contas": "📄",
-  "Salário": "💼",
-  "Investimentos": "📈",
-  "Outros": "✦"
-};
+button {
+  cursor: pointer;
+  border: 0;
+}
 
-
-/* ============================================================
-   ELEMENTOS
-============================================================ */
-
-const $ = selector => document.querySelector(selector);
-const $$ = selector => document.querySelectorAll(selector);
+.hidden {
+  display: none !important;
+}
 
 
-/* ============================================================
-   INICIALIZAÇÃO
-============================================================ */
+/* ================= AUTH ================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(242,140,40,.16), transparent 30%),
+    radial-gradient(circle at 85% 80%, rgba(31,81,61,.15), transparent 30%),
+    var(--bg);
+}
 
-  loadUser();
-  loadTheme();
-  loadTransactions();
+.auth-brand {
+  position: absolute;
+  top: 45px;
+  left: 55px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
 
-  setupNavigation();
-  setupModal();
-  setupFilters();
-  setupSearch();
-  setupTheme();
-  setupClearData();
-  setupMobileMenu();
-  setupBalanceToggle();
+.auth-brand h1,
+.sidebar-logo strong {
+  font-size: 25px;
+  color: var(--green-dark);
+}
 
-  setToday();
+.auth-brand h1 span,
+.sidebar-logo strong span {
+  color: var(--orange);
+}
 
-  renderAll();
+.auth-brand p {
+  font-size: 11px;
+  color: var(--muted);
+}
 
-});
+.brand-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 15px;
+  background: var(--green-dark);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27px;
+  font-weight: 800;
+  box-shadow: 0 10px 25px rgba(16,45,34,.2);
+}
+
+.brand-icon.small {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  font-size: 22px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  padding: 38px;
+  border-radius: 25px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.auth-header {
+  margin-bottom: 30px;
+}
+
+.auth-header h2 {
+  font-size: 27px;
+  margin-bottom: 8px;
+}
+
+.auth-header p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
 
 
-/* ============================================================
-   USUÁRIO
-============================================================ */
+/* ================= INPUTS ================= */
 
-function loadUser() {
+.input-group {
+  margin-bottom: 18px;
+}
 
-  let user = localStorage.getItem(USER_KEY);
+.input-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
 
-  if (!user) {
+.input-group input,
+.input-group select,
+.input-group textarea,
+.filters input,
+.filters select {
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fbfcfb;
+  outline: none;
+  font-size: 14px;
+  color: var(--text);
+  transition: .2s;
+}
 
-    user = {
-      name: "Felipe"
-    };
+.input-group textarea {
+  resize: vertical;
+}
 
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus,
+.filters input:focus,
+.filters select:focus {
+  border-color: var(--orange);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(242,140,40,.08);
+}
 
-  } else {
 
-    try {
-      user = JSON.parse(user);
-    } catch {
-      user = { name: "Felipe" };
-    }
+/* ================= BUTTONS ================= */
 
+.primary-btn {
+  background: var(--orange);
+  color: white;
+  padding: 13px 19px;
+  border-radius: 12px;
+  font-weight: 700;
+  transition: .2s;
+}
+
+.primary-btn:hover {
+  background: var(--orange-dark);
+  transform: translateY(-1px);
+}
+
+.full {
+  width: 100%;
+}
+
+.add-btn {
+  white-space: nowrap;
+}
+
+.text-btn {
+  background: transparent;
+  color: var(--orange-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid var(--border);
+  font-size: 17px;
+}
+
+
+/* ================= AUTH ================= */
+
+.auth-switch {
+  text-align: center;
+  margin-top: 22px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.auth-switch button {
+  background: none;
+  color: var(--orange-dark);
+  font-weight: 700;
+  margin-left: 5px;
+}
+
+.auth-message {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 13px;
+}
+
+
+/* ================= APP ================= */
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+  width: 245px;
+  background: var(--green-dark);
+  color: white;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  padding: 27px 16px;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 10px;
+  margin-bottom: 42px;
+}
+
+.sidebar-logo strong {
+  color: white;
+  display: block;
+}
+
+.sidebar-logo small {
+  color: rgba(255,255,255,.5);
+  font-size: 10px;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-item {
+  width: 100%;
+  background: transparent;
+  color: rgba(255,255,255,.68);
+  padding: 13px 14px;
+  border-radius: 11px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  font-size: 13px;
+  transition: .2s;
+}
+
+.nav-item span {
+  width: 19px;
+  text-align: center;
+  font-size: 17px;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background: rgba(255,255,255,.09);
+  color: white;
+}
+
+.nav-item.active {
+  border-left: 3px solid var(--orange);
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav-item.logout {
+  color: #ffb1a9;
+}
+
+
+/* ================= MAIN ================= */
+
+.main {
+  margin-left: 245px;
+  width: calc(100% - 245px);
+  min-height: 100vh;
+  padding: 0 38px 50px;
+}
+
+.topbar {
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topbar-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+
+.topbar h2 {
+  font-size: 20px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 39px;
+  height: 39px;
+  border-radius: 50%;
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.user-profile strong {
+  display: block;
+  font-size: 12px;
+}
+
+.user-profile small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.mobile-menu {
+  display: none;
+}
+
+
+/* ================= PAGE ================= */
+
+.page-section {
+  max-width: 1400px;
+  margin: auto;
+}
+
+.welcome-row,
+.page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin: 25px 0 28px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--orange-dark);
+  margin-bottom: 7px;
+}
+
+.welcome-row h1,
+.page-heading h1 {
+  font-size: 28px;
+  letter-spacing: -.7px;
+}
+
+.welcome-row p:not(.eyebrow),
+.page-heading p:not(.eyebrow) {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+
+/* ================= STATS ================= */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 21px;
+  box-shadow: 0 5px 18px rgba(16,45,34,.035);
+}
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stat-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 800;
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 24px;
+  margin: 18px 0 7px;
+  letter-spacing: -.7px;
+}
+
+.stat-card small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.stat-card.balance {
+  background: var(--green-dark);
+  color: white;
+}
+
+.stat-card.balance .stat-top,
+.stat-card.balance small {
+  color: rgba(255,255,255,.62);
+}
+
+.stat-card.balance .stat-icon {
+  background: rgba(255,255,255,.1);
+  color: white;
+}
+
+
+/* ================= PANELS ================= */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.panel {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: 0 5px 18px rgba(16,45,34,.035);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.panel-header h3 {
+  font-size: 15px;
+}
+
+.panel-header p {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.panel-header select {
+  padding: 8px 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: white;
+  font-size: 11px;
+}
+
+
+/* ================= CHART ================= */
+
+.chart-wrapper {
+  height: 280px;
+}
+
+.category-chart {
+  height: 205px;
+}
+
+.category-legend {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.legend-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+
+/* ================= TRANSACTIONS ================= */
+
+.transactions-panel {
+  margin-bottom: 20px;
+}
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.transaction {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 2px;
+  border-bottom: 1px solid #f0f2f0;
+}
+
+.transaction:last-child {
+  border-bottom: 0;
+}
+
+.transaction-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #f3f6f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.transaction-info {
+  flex: 1;
+}
+
+.transaction-info strong {
+  display: block;
+  font-size: 12px;
+}
+
+.transaction-info small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.transaction-value {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.transaction-value.income {
+  color: var(--success);
+}
+
+.transaction-value.expense {
+  color: var(--danger);
+}
+
+.transaction-delete {
+  background: transparent;
+  color: #aaa;
+  font-size: 15px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 45px 20px;
+  color: var(--muted);
+}
+
+.empty-state div {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.empty-state h4 {
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.empty-state p {
+  font-size: 12px;
+}
+
+
+/* ================= FILTERS ================= */
+
+.filters {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+
+/* ================= CATEGORIES ================= */
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.category-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.category-card .category-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--orange-light);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.category-card strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.category-card span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+
+/* ================= REPORT ================= */
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.report-card span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.report-card strong {
+  display: block;
+  font-size: 26px;
+  margin-top: 13px;
+}
+
+
+/* ================= MODAL ================= */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8,20,15,.58);
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 23px;
+  padding: 30px;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 25px 70px rgba(0,0,0,.18);
+}
+
+.modal-close {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  background: transparent;
+  font-size: 26px;
+  color: var(--muted);
+}
+
+.modal-header {
+  margin-bottom: 25px;
+}
+
+.modal-header h2 {
+  font-size: 24px;
+}
+
+.modal-header p:last-child {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.type-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.type-option {
+  cursor: pointer;
+}
+
+.type-option input {
+  display: none;
+}
+
+.type-option span {
+  display: block;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.type-option.active span {
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  border-color: var(--orange);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+
+/* ================= DARK MODE ================= */
+
+body.dark {
+  --bg: #0d1713;
+  --card: #14231c;
+  --text: #edf5f0;
+  --muted: #91a199;
+  --border: #26362e;
+}
+
+body.dark .panel,
+body.dark .stat-card,
+body.dark .modal-card,
+body.dark .icon-btn,
+body.dark .category-card,
+body.dark .input-group input,
+body.dark .input-group select,
+body.dark .input-group textarea,
+body.dark .filters input,
+body.dark .filters select {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+body.dark .panel-header select {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+body.dark .auth-card {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+body.dark .auth-brand h1 {
+  color: white;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 1050px) {
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  const name = user.name || "Felipe";
-
-  $("#helloName").textContent = name;
-  $("#topUserName").textContent = name;
-  $("#sidebarUserName").textContent = name;
-  $("#profileName").textContent = name;
-
-}
-
-
-/* ============================================================
-   LOCAL STORAGE
-============================================================ */
-
-function loadTransactions() {
-
-  try {
-
-    const saved = localStorage.getItem(STORAGE_KEY);
-
-    transactions = saved
-      ? JSON.parse(saved)
-      : [];
-
-    if (!Array.isArray(transactions)) {
-      transactions = [];
-    }
-
-  } catch {
-
-    transactions = [];
-
+  .dashboard-grid {
+    grid-template-columns: 1fr;
   }
 
-}
-
-
-function saveTransactions() {
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(transactions)
-  );
-
-}
-
-
-/* ============================================================
-   NAVEGAÇÃO
-============================================================ */
-
-function setupNavigation() {
-
-  $$("[data-page]").forEach(button => {
-
-    button.addEventListener("click", () => {
-
-      const page = button.dataset.page;
-
-      navigateTo(page);
-
-    });
-
-  });
-
-}
-
-
-function navigateTo(page) {
-
-  $$(".page").forEach(section => {
-
-    section.classList.remove("active");
-
-  });
-
-  const target = document.getElementById(page);
-
-  if (target) {
-    target.classList.add("active");
-  }
-
-  $$(".menu-item").forEach(item => {
-
-    item.classList.toggle(
-      "active",
-      item.dataset.page === page
-    );
-
-  });
-
-  $$(".mobile-nav button[data-page]").forEach(item => {
-
-    item.classList.toggle(
-      "active",
-      item.dataset.page === page
-    );
-
-  });
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-  if (page === "reports") {
-    setTimeout(renderReportChart, 100);
-  }
-
-}
-
-
-/* ============================================================
-   MODAL
-============================================================ */
-
-function setupModal() {
-
-  $("#newTransaction").addEventListener(
-    "click",
-    () => openModal()
-  );
-
-  $("#newTransaction2").addEventListener(
-    "click",
-    () => openModal()
-  );
-
-  $("#mobileAdd").addEventListener(
-    "click",
-    () => openModal()
-  );
-
-  $("#closeModal").addEventListener(
-    "click",
-    () => closeModal()
-  );
-
-  $("#cancelModal").addEventListener(
-    "click",
-    () => closeModal()
-  );
-
-  $("#modal").addEventListener("click", event => {
-
-    if (event.target === $("#modal")) {
-      closeModal();
-    }
-
-  });
-
-
-  $$(".type-option").forEach(button => {
-
-    button.addEventListener("click", () => {
-
-      $$(".type-option").forEach(item => {
-        item.classList.remove("active");
-      });
-
-      button.classList.add("active");
-
-      currentType = button.dataset.type;
-
-    });
-
-  });
-
-
-  $("#transactionForm").addEventListener(
-    "submit",
-    handleTransactionSubmit
-  );
-
-}
-
-
-function openModal(transaction = null) {
-
-  $("#modal").classList.add("show");
-
-  if (transaction) {
-
-    editingId = transaction.id;
-
-    $("#modalTitle").textContent =
-      "Editar movimentação";
-
-    currentType = transaction.type;
-
-    $("#amount").value = transaction.amount;
-    $("#description").value = transaction.description;
-    $("#category").value = transaction.category;
-    $("#date").value = transaction.date;
-
-    $$(".type-option").forEach(button => {
-
-      button.classList.toggle(
-        "active",
-        button.dataset.type === transaction.type
-      );
-
-    });
-
-  } else {
-
-    editingId = null;
-
-    $("#modalTitle").textContent =
-      "Adicionar movimentação";
-
-    $("#transactionForm").reset();
-
-    currentType = "income";
-
-    $$(".type-option").forEach(button => {
-
-      button.classList.toggle(
-        "active",
-        button.dataset.type === "income"
-      );
-
-    });
-
-    setToday();
-
-  }
-
-}
-
-
-function closeModal() {
-
-  $("#modal").classList.remove("show");
-
-  editingId = null;
-
-  $("#transactionForm").reset();
-
-  currentType = "income";
-
-}
-
-
-/* ============================================================
-   SALVAR TRANSAÇÃO
-============================================================ */
-
-function handleTransactionSubmit(event) {
-
-  event.preventDefault();
-
-  const amount = Number($("#amount").value);
-
-  const description =
-    $("#description").value.trim();
-
-  const category =
-    $("#category").value;
-
-  const date =
-    $("#date").value;
-
-
-  if (!amount || amount <= 0) {
-
-    showToast(
-      "Informe um valor válido.",
-      "!"
-    );
-
-    return;
-
-  }
-
-
-  if (!description) {
-
-    showToast(
-      "Informe uma descrição.",
-      "!"
-    );
-
-    return;
-
-  }
-
-
-  if (!date) {
-
-    showToast(
-      "Informe a data.",
-      "!"
-    );
-
-    return;
-
-  }
-
-
-  if (editingId) {
-
-    const index = transactions.findIndex(
-      item => item.id === editingId
-    );
-
-    if (index !== -1) {
-
-      transactions[index] = {
-        ...transactions[index],
-        type: currentType,
-        amount,
-        description,
-        category,
-        date
-      };
-
-    }
-
-    showToast(
-      "Movimentação atualizada!",
-      "✓"
-    );
-
-  } else {
-
-    transactions.push({
-
-      id:
-        Date.now().toString() +
-        Math.random().toString(16).slice(2),
-
-      type: currentType,
-
-      amount,
-
-      description,
-
-      category,
-
-      date,
-
-      createdAt:
-        new Date().toISOString()
-
-    });
-
-    showToast(
-      "Movimentação salva!",
-      "✓"
-    );
-
-  }
-
-
-  saveTransactions();
-
-  closeModal();
-
-  renderAll();
-
-}
-
-
-/* ============================================================
-   CRUD
-============================================================ */
-
-function editTransaction(id) {
-
-  const transaction =
-    transactions.find(
-      item => item.id === id
-    );
-
-  if (!transaction) return;
-
-  openModal(transaction);
-
-}
-
-
-function deleteTransaction(id) {
-
-  const transaction =
-    transactions.find(
-      item => item.id === id
-    );
-
-  if (!transaction) return;
-
-
-  const confirmed =
-    confirm(
-      `Excluir "${transaction.description}"?`
-    );
-
-  if (!confirmed) return;
-
-
-  transactions =
-    transactions.filter(
-      item => item.id !== id
-    );
-
-  saveTransactions();
-
-  renderAll();
-
-  showToast(
-    "Movimentação excluída.",
-    "✓"
-  );
-
-}
-
-
-/* ============================================================
-   CÁLCULOS
-============================================================ */
-
-function calculateTotals() {
-
-  let income = 0;
-  let expense = 0;
-
-  transactions.forEach(transaction => {
-
-    if (transaction.type === "income") {
-      income += Number(transaction.amount);
-    } else {
-      expense += Number(transaction.amount);
-    }
-
-  });
-
-  return {
-    income,
-    expense,
-    balance: income - expense
-  };
-
-}
-
-
-function formatMoney(value) {
-
-  return Number(value).toLocaleString(
-    "pt-BR",
-    {
-      style: "currency",
-      currency: "BRL"
-    }
-  );
-
-}
-
-
-function formatDate(date) {
-
-  if (!date) return "";
-
-  const parts = date.split("-");
-
-  if (parts.length !== 3) {
-    return date;
-  }
-
-  return `${parts[2]}/${parts[1]}/${parts[0]}`;
-
-}
-
-
-/* ============================================================
-   RENDER GERAL
-============================================================ */
-
-function renderAll() {
-
-  renderDashboard();
-  renderTransactions();
-  renderCategories();
-  renderReports();
-  renderFlowChart();
-  renderCategoryChart();
-
-}
-
-
-/* ============================================================
-   DASHBOARD
-============================================================ */
-
-function renderDashboard() {
-
-  const totals =
-    calculateTotals();
-
-  $("#balanceValue").textContent =
-    balanceVisible
-      ? formatMoney(totals.balance)
-      : "R$ •••••";
-
-
-  $("#incomeValue").textContent =
-    formatMoney(totals.income);
-
-  $("#expenseValue").textContent =
-    formatMoney(totals.expense);
-
-  $("#resultValue").textContent =
-    formatMoney(totals.balance);
-
-
-  const total =
-    totals.income + totals.expense;
-
-
-  const incomePercent =
-    total > 0
-      ? Math.round(
-          totals.income / total * 100
-        )
-      : 0;
-
-
-  const expensePercent =
-    total > 0
-      ? Math.round(
-          totals.expense / total * 100
-        )
-      : 0;
-
-
-  $("#incomePercent").textContent =
-    `${incomePercent}%`;
-
-  $("#expensePercent").textContent =
-    `${expensePercent}%`;
-
-  $("#resultPercent").textContent =
-    totals.balance >= 0
-      ? "Positivo"
-      : "Negativo";
-
-
-  renderRecentTransactions();
-
-}
-
-
-/* ============================================================
-   RECENTES
-============================================================ */
-
-function renderRecentTransactions() {
-
-  const container =
-    $("#recentTransactions");
-
-  const recent =
-    [...transactions]
-      .sort(
-        (a, b) =>
-          new Date(b.date) -
-          new Date(a.date)
-      )
-      .slice(0, 6);
-
-
-  if (!recent.length) {
-
-    container.innerHTML = emptyState(
-      "Nenhuma movimentação",
-      "Comece adicionando sua primeira receita ou despesa."
-    );
-
-    return;
-
-  }
-
-
-  container.innerHTML =
-    recent.map(
-      transactionHTML
-    ).join("");
-
-}
-
-
-/* ============================================================
-   TRANSAÇÕES
-============================================================ */
-
-function renderTransactions() {
-
-  const totals =
-    calculateTotals();
-
-  $("#transactionIncome").textContent =
-    formatMoney(totals.income);
-
-  $("#transactionExpense").textContent =
-    formatMoney(totals.expense);
-
-  $("#transactionResult").textContent =
-    formatMoney(totals.balance);
-
-
-  const search =
-    ($("#transactionSearch")?.value || "")
-      .toLowerCase()
-      .trim();
-
-
-  let filtered =
-    [...transactions];
-
-
-  if (currentFilter !== "all") {
-
-    filtered =
-      filtered.filter(
-        item =>
-          item.type === currentFilter
-      );
-
-  }
-
-
-  if (search) {
-
-    filtered =
-      filtered.filter(item =>
-
-        item.description
-          .toLowerCase()
-          .includes(search)
-
-        ||
-
-        item.category
-          .toLowerCase()
-          .includes(search)
-
-      );
-
-  }
-
-
-  filtered.sort(
-    (a, b) =>
-      new Date(b.date) -
-      new Date(a.date)
-  );
-
-
-  const container =
-    $("#transactionsList");
-
-
-  if (!filtered.length) {
-
-    container.innerHTML =
-      emptyState(
-        "Nenhuma transação encontrada",
-        "Tente alterar os filtros ou adicionar uma movimentação."
-      );
-
-    return;
-
-  }
-
-
-  container.innerHTML =
-    filtered
-      .map(transactionHTML)
-      .join("");
-
-}
-
-
-/* ============================================================
-   HTML DE TRANSAÇÃO
-============================================================ */
-
-function transactionHTML(transaction) {
-
-  const isIncome =
-    transaction.type === "income";
-
-
-  const icon =
-    categoryIcons[transaction.category] ||
-    "✦";
-
-
-  const sign =
-    isIncome ? "+" : "-";
-
-
-  return `
-
-    <div class="transaction-row">
-
-      <div class="transaction-icon ${transaction.type}">
-        ${icon}
-      </div>
-
-      <div class="transaction-info">
-
-        <strong>
-          ${escapeHTML(transaction.description)}
-        </strong>
-
-        <small>
-          ${escapeHTML(transaction.category)}
-          •
-          ${formatDate(transaction.date)}
-        </small>
-
-      </div>
-
-      <div class="transaction-value ${transaction.type}">
-        ${sign} ${formatMoney(transaction.amount)}
-      </div>
-
-      <div class="transaction-actions">
-
-        <button
-          onclick="editTransaction('${transaction.id}')"
-          title="Editar"
-        >
-          ✎
-        </button>
-
-        <button
-          onclick="deleteTransaction('${transaction.id}')"
-          title="Excluir"
-        >
-          ×
-        </button>
-
-      </div>
-
-    </div>
-
-  `;
-
-}
-
-
-function emptyState(title, text) {
-
-  return `
-
-    <div class="empty-state">
-
-      <div class="empty-icon">
-        ✦
-      </div>
-
-      <strong>
-        ${title}
-      </strong>
-
-      <p>
-        ${text}
-      </p>
-
-    </div>
-
-  `;
-
-}
-
-
-/* ============================================================
-   FILTROS
-============================================================ */
-
-function setupFilters() {
-
-  $$(".filter").forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        $$(".filter").forEach(item => {
-          item.classList.remove("active");
-        });
-
-        button.classList.add("active");
-
-        currentFilter =
-          button.dataset.filter;
-
-        renderTransactions();
-
-      }
-    );
-
-  });
-
-}
-
-
-function setupSearch() {
-
-  $("#transactionSearch")
-    .addEventListener(
-      "input",
-      renderTransactions
-    );
-
-
-  $("#globalSearch")
-    .addEventListener(
-      "input",
-      event => {
-
-        const value =
-          event.target.value.trim();
-
-        navigateTo("transactions");
-
-        $("#transactionSearch").value =
-          value;
-
-        renderTransactions();
-
-      }
-    );
-
-}
-
-
-/* ============================================================
-   GRÁFICO DE FLUXO
-============================================================ */
-
-function renderFlowChart() {
-
-  const canvas =
-    $("#flowChart");
-
-  if (!canvas) return;
-
-
-  const ctx =
-    canvas.getContext("2d");
-
-
-  const days = 30;
-
-  const labels =
-    Array.from(
-      { length: days },
-      (_, index) =>
-        index + 1
-    );
-
-
-  const incomeData =
-    labels.map(day => {
-
-      return transactions
-        .filter(t =>
-          t.type === "income" &&
-          new Date(t.date).getDate() === day
-        )
-        .reduce(
-          (sum, t) =>
-            sum + Number(t.amount),
-          0
-        );
-
-    });
-
-
-  const expenseData =
-    labels.map(day => {
-
-      return transactions
-        .filter(t =>
-          t.type === "expense" &&
-          new Date(t.date).getDate() === day
-        )
-        .reduce(
-          (sum, t) =>
-            sum + Number(t.amount),
-          0
-        );
-
-    });
-
-
-  if (flowChart) {
-    flowChart.destroy();
-  }
-
-
-  flowChart =
-    new Chart(
-      ctx,
-      {
-
-        type: "line",
-
-        data: {
-
-          labels,
-
-          datasets: [
-
-            {
-              label: "Receitas",
-              data: incomeData,
-              borderColor: "#29965e",
-              backgroundColor:
-                "rgba(41,150,94,.08)",
-              fill: true,
-              tension: .4,
-              pointRadius: 0,
-              borderWidth: 2
-            },
-
-            {
-              label: "Despesas",
-              data: expenseData,
-              borderColor: "#f28c28",
-              backgroundColor:
-                "rgba(242,140,40,.06)",
-              fill: true,
-              tension: .4,
-              pointRadius: 0,
-              borderWidth: 2
-            }
-
-          ]
-
-        },
-
-        options: {
-
-          responsive: true,
-
-          maintainAspectRatio: false,
-
-          interaction: {
-            intersect: false,
-            mode: "index"
-          },
-
-          plugins: {
-
-            legend: {
-              display: true,
-              position: "bottom",
-              labels: {
-                usePointStyle: true,
-                boxWidth: 7,
-                font: {
-                  size: 9
-                }
-              }
-            }
-
-          },
-
-          scales: {
-
-            x: {
-              grid: {
-                display: false
-              },
-              ticks: {
-                font: {
-                  size: 8
-                }
-              }
-            },
-
-            y: {
-              beginAtZero: true,
-              grid: {
-                color:
-                  "rgba(120,130,125,.08)"
-              },
-              ticks: {
-                font: {
-                  size: 8
-                }
-              }
-            }
-
-          }
-
-        }
-
-      }
-    );
-
-}
-
-
-/* ============================================================
-   CATEGORIAS
-============================================================ */
-
-function getCategoryTotals() {
-
-  const totals = {};
-
-  transactions
-    .filter(
-      t => t.type === "expense"
-    )
-    .forEach(transaction => {
-
-      if (!totals[transaction.category]) {
-        totals[transaction.category] = 0;
-      }
-
-      totals[transaction.category] +=
-        Number(transaction.amount);
-
-    });
-
-  return totals;
-
-}
-
-
-function renderCategoryChart() {
-
-  const canvas =
-    $("#categoryChart");
-
-  if (!canvas) return;
-
-
-  const categoryTotals =
-    getCategoryTotals();
-
-
-  const entries =
-    Object.entries(categoryTotals)
-      .sort(
-        (a, b) => b[1] - a[1]
-      )
-      .slice(0, 6);
-
-
-  const labels =
-    entries.length
-      ? entries.map(item => item[0])
-      : ["Sem gastos"];
-
-
-  const values =
-    entries.length
-      ? entries.map(item => item[1])
-      : [1];
-
-
-  const colors = [
-    "#f28c28",
-    "#24583f",
-    "#6a9f80",
-    "#e5a14e",
-    "#8c6f55",
-    "#b6c7bf"
-  ];
-
-
-  if (categoryChart) {
-    categoryChart.destroy();
-  }
-
-
-  categoryChart =
-    new Chart(
-      canvas,
-      {
-
-        type: "doughnut",
-
-        data: {
-
-          labels,
-
-          datasets: [
-            {
-              data: values,
-              backgroundColor: colors,
-              borderWidth: 0,
-              spacing: 3
-            }
-          ]
-
-        },
-
-        options: {
-
-          responsive: true,
-
-          maintainAspectRatio: false,
-
-          cutout: "72%",
-
-          plugins: {
-            legend: {
-              display: false
-            }
-          }
-
-        }
-
-      }
-    );
-
-
-  const total =
-    entries.reduce(
-      (sum, item) =>
-        sum + item[1],
-      0
-    );
-
-
-  $("#categoryTotal").textContent =
-    formatCompactMoney(total);
-
-
-  $("#categoryLegend").innerHTML =
-    entries.length
-      ? entries.map(
-          ([name, value], index) => `
-
-            <div class="legend-item">
-
-              <div class="legend-left">
-
-                <span
-                  class="legend-dot"
-                  style="background:${colors[index]}"
-                ></span>
-
-                <span>
-                  ${escapeHTML(name)}
-                </span>
-
-              </div>
-
-              <span class="legend-value">
-                ${formatCompactMoney(value)}
-              </span>
-
-            </div>
-
-          `
-        ).join("")
-      : `
-        <div class="empty-state">
-          <p>Nenhum gasto registrado.</p>
-        </div>
-      `;
-
-}
-
-
-function formatCompactMoney(value) {
-
-  if (value >= 1000000) {
-    return `R$ ${(value / 1000000).toFixed(1)}M`;
-  }
-
-  if (value >= 1000) {
-    return `R$ ${(value / 1000).toFixed(1)}k`;
-  }
-
-  return formatMoney(value);
-
-}
-
-
-/* ============================================================
-   CATEGORIAS PAGE
-============================================================ */
-
-function renderCategories() {
-
-  const totals =
-    getCategoryTotals();
-
-  const allCategories =
-    Object.keys(categoryIcons);
-
-
-  $("#categoryCards").innerHTML =
-    allCategories.map(category => {
-
-      const value =
-        totals[category] || 0;
-
-      return `
-
-        <div class="category-card">
-
-          <div class="category-card-icon">
-            ${categoryIcons[category]}
-          </div>
-
-          <h3>
-            ${category}
-          </h3>
-
-          <strong>
-            ${formatMoney(value)}
-          </strong>
-
-          <small>
-            gastos registrados
-          </small>
-
-        </div>
-
-      `;
-
-    }).join("");
-
-}
-
-
-/* ============================================================
-   RELATÓRIOS
-============================================================ */
-
-function renderReports() {
-
-  const totals =
-    calculateTotals();
-
-  $("#reportIncome").textContent =
-    formatMoney(totals.income);
-
-  $("#reportExpense").textContent =
-    formatMoney(totals.expense);
-
-  $("#reportResult").textContent =
-    formatMoney(totals.balance);
-
-
-  const categoryTotals =
-    getCategoryTotals();
-
-
-  const entries =
-    Object.entries(categoryTotals)
-      .sort(
-        (a, b) => b[1] - a[1]
-      );
-
-
-  const max =
-    entries.length
-      ? entries[0][1]
-      : 1;
-
-
-  $("#reportCategories").innerHTML =
-    entries.length
-      ? entries.map(
-          ([category, value]) => `
-
-            <div class="report-category">
-
-              <div class="report-category-top">
-
-                <span>
-                  ${categoryIcons[category] || "✦"}
-                  ${escapeHTML(category)}
-                </span>
-
-                <strong>
-                  ${formatMoney(value)}
-                </strong>
-
-              </div>
-
-              <div class="progress">
-                <span
-                  style="width:${Math.max(
-                    4,
-                    value / max * 100
-                  )}%"
-                ></span>
-              </div>
-
-            </div>
-
-          `
-        ).join("")
-      : emptyState(
-          "Sem dados",
-          "Adicione despesas para gerar seu relatório."
-        );
-
-}
-
-
-function renderReportChart() {
-
-  const canvas =
-    $("#reportChart");
-
-  if (!canvas) return;
-
-
-  const months = [];
-
-  const income = [];
-
-  const expense = [];
-
-
-  for (let i = 5; i >= 0; i--) {
-
-    const date =
-      new Date();
-
-    date.setMonth(
-      date.getMonth() - i
-    );
-
-
-    const month =
-      date.getMonth();
-
-    const year =
-      date.getFullYear();
-
-
-    const monthName =
-      date.toLocaleDateString(
-        "pt-BR",
-        {
-          month: "short"
-        }
-      );
-
-
-    months.push(
-      monthName.replace(".", "")
-    );
-
-
-    let inc = 0;
-    let exp = 0;
-
-
-    transactions.forEach(t => {
-
-      const d =
-        new Date(t.date);
-
-      if (
-        d.getMonth() === month &&
-        d.getFullYear() === year
-      ) {
-
-        if (t.type === "income") {
-          inc += Number(t.amount);
-        } else {
-          exp += Number(t.amount);
-        }
-
-      }
-
-    });
-
-
-    income.push(inc);
-    expense.push(exp);
-
-  }
-
-
-  if (reportChart) {
-    reportChart.destroy();
-  }
-
-
-  reportChart =
-    new Chart(
-      canvas,
-      {
-
-        type: "bar",
-
-        data: {
-
-          labels: months,
-
-          datasets: [
-
-            {
-              label: "Receitas",
-              data: income,
-              backgroundColor: "#29965e",
-              borderRadius: 6
-            },
-
-            {
-              label: "Despesas",
-              data: expense,
-              backgroundColor: "#f28c28",
-              borderRadius: 6
-            }
-
-          ]
-
-        },
-
-        options: {
-
-          responsive: true,
-
-          maintainAspectRatio: false,
-
-          plugins: {
-
-            legend: {
-              position: "bottom",
-              labels: {
-                usePointStyle: true,
-                font: {
-                  size: 9
-                }
-              }
-            }
-
-          },
-
-          scales: {
-
-            x: {
-              grid: {
-                display: false
-              }
-            },
-
-            y: {
-              beginAtZero: true
-            }
-
-          }
-
-        }
-
-      }
-    );
-
-}
-
-
-/* ============================================================
-   TEMA
-============================================================ */
-
-function setupTheme() {
-
-  $("#themeButton")
-    .addEventListener(
-      "click",
-      toggleTheme
-    );
-
-  $("#sidebarTheme")
-    .addEventListener(
-      "click",
-      toggleTheme
-    );
-
-  $("#profileTheme")
-    .addEventListener(
-      "click",
-      toggleTheme
-    );
-
-}
-
-
-function toggleTheme() {
-
-  document.body.classList.toggle("dark");
-
-  const dark =
-    document.body.classList.contains("dark");
-
-  localStorage.setItem(
-    THEME_KEY,
-    dark ? "dark" : "light"
-  );
-
-}
-
-
-function loadTheme() {
-
-  const theme =
-    localStorage.getItem(
-      THEME_KEY
-    );
-
-  if (theme === "dark") {
-    document.body.classList.add("dark");
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
 }
 
+@media (max-width: 760px) {
 
-/* ============================================================
-   BALANCE
-============================================================ */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: .25s;
+  }
 
-function setupBalanceToggle() {
+  .sidebar.open {
+    transform: translateX(0);
+  }
 
-  $("#toggleBalance")
-    .addEventListener(
-      "click",
-      () => {
+  .main {
+    margin-left: 0;
+    width: 100%;
+    padding: 0 17px 40px;
+  }
 
-        balanceVisible =
-          !balanceVisible;
+  .mobile-menu {
+    display: block;
+    background: transparent;
+    font-size: 20px;
+    margin-right: 10px;
+  }
 
-        renderDashboard();
+  .topbar {
+    height: 75px;
+  }
 
-      }
-    );
+  .topbar > div:first-of-type {
+    flex: 1;
+  }
 
-}
+  .topbar-actions {
+    gap: 7px;
+  }
 
+  .user-profile > div:last-child {
+    display: none;
+  }
 
-/* ============================================================
-   LIMPAR DADOS
-============================================================ */
+  .welcome-row,
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 17px;
+  }
 
-function setupClearData() {
+  .welcome-row h1,
+  .page-heading h1 {
+    font-size: 23px;
+  }
 
-  $("#clearData")
-    .addEventListener(
-      "click",
-      () => {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
 
-        if (!transactions.length) {
+  .stat-card {
+    padding: 16px;
+  }
 
-          showToast(
-            "Não existem movimentações.",
-            "!"
-          );
+  .stat-card strong {
+    font-size: 18px;
+  }
 
-          return;
+  .panel {
+    padding: 16px;
+  }
 
-        }
+  .filters {
+    grid-template-columns: 1fr;
+  }
 
+  .categories-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 
-        const confirmed =
-          confirm(
-            "Tem certeza que deseja apagar todas as movimentações?"
-          );
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
 
+  .auth-brand {
+    position: static;
+    margin-bottom: 20px;
+  }
 
-        if (!confirmed) return;
+  .auth-screen {
+    flex-direction: column;
+    justify-content: center;
+  }
 
+  .auth-card {
+    padding: 25px 20px;
+  }
 
-        transactions = [];
-
-        saveTransactions();
-
-        renderAll();
-
-        showToast(
-          "Dados apagados.",
-          "✓"
-        );
-
-      }
-    );
-
-}
-
-
-/* ============================================================
-   MOBILE
-============================================================ */
-
-function setupMobileMenu() {
-
-  $("#mobileMenu")
-    .addEventListener(
-      "click",
-      () => {
-
-        $("#sidebar")
-          .classList.toggle("open");
-
-      }
-    );
-
-
-  $$(".menu-item")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          $("#sidebar")
-            .classList.remove("open");
-
-        }
-      );
-
-    });
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 
 }
 
+@media (max-width: 450px) {
 
-/* ============================================================
-   DATA
-============================================================ */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 
-function setToday() {
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
 
-  const today =
-    new Date();
-
-  const year =
-    today.getFullYear();
-
-  const month =
-    String(
-      today.getMonth() + 1
-    ).padStart(2, "0");
-
-  const day =
-    String(
-      today.getDate()
-    ).padStart(2, "0");
-
-
-  $("#date").value =
-    `${year}-${month}-${day}`;
+  .topbar h2 {
+    font-size: 17px;
+  }
 
 }
-
-
-/* ============================================================
-   TOAST
-============================================================ */
-
-function showToast(
-  message,
-  icon = "✓"
-) {
-
-  $("#toastMessage")
-    .textContent = message;
-
-  $("#toastIcon")
-    .textContent = icon;
-
-  $("#toast")
-    .classList.add("show");
-
-
-  clearTimeout(
-    showToast.timer
-  );
-
-
-  showToast.timer =
-    setTimeout(
-      () => {
-
-        $("#toast")
-          .classList.remove("show");
-
-      },
-      2500
-    );
-
-}
-
-
-/* ============================================================
-   SEGURANÇA BÁSICA DE TEXTO
-============================================================ */
-
-function escapeHTML(value) {
-
-  return String(value)
-    .replace(
-      /[&<>"']/g,
-      char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      }[char])
-    );
-
-}
-
-
-/* ============================================================
-   SUPABASE
-============================================================
-
-   IMPORTANTE:
-
-   A interface acima funciona independente do Supabase.
-
-   Quando formos conectar novamente:
-
-   1. autenticação
-   2. profiles
-   3. transactions
-   4. categorias
-   5. RLS
-   6. sincronização entre dispositivos
-
-   serão ligados aqui sem precisar alterar o CSS.
-
-============================================================ */
-
-
-/* ============================================================
-   ATALHOS
-============================================================ */
-
-window.editTransaction =
-  editTransaction;
-
-window.deleteTransaction =
-  deleteTransaction;
