@@ -4,232 +4,547 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>ControleS — Controle Financeiro</title>
+  <title>ControlS — Controle Financeiro</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="app">
+  <!-- ================= LOGIN ================= -->
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
+  <section id="authScreen" class="auth-screen">
 
-    <div class="brand">
+    <div class="auth-brand">
       <div class="brand-icon">$</div>
-
       <div>
-        <strong>Controle<span>S</span></strong>
-        <small>FINANCEIRO</small>
+        <h1>Control<span>S</span></h1>
+        <p>Controle financeiro inteligente</p>
       </div>
     </div>
 
-    <nav class="menu">
+    <div class="auth-card">
 
-      <p class="menu-title">MENU</p>
-
-      <button class="menu-item active" data-page="dashboard">
-        <span>⌂</span>
-        <div>
-          <strong>Visão geral</strong>
-          <small>Dashboard</small>
-        </div>
-      </button>
-
-      <button class="menu-item" data-page="transactions">
-        <span>↔</span>
-        <div>
-          <strong>Transações</strong>
-          <small>Receitas e despesas</small>
-        </div>
-      </button>
-
-      <button class="menu-item" data-page="reports">
-        <span>◔</span>
-        <div>
-          <strong>Relatórios</strong>
-          <small>Análise financeira</small>
-        </div>
-      </button>
-
-      <button class="menu-item" data-page="categories">
-        <span>◫</span>
-        <div>
-          <strong>Categorias</strong>
-          <small>Organize seus gastos</small>
-        </div>
-      </button>
-
-      <p class="menu-title menu-space">CONTA</p>
-
-      <button class="menu-item" data-page="profile">
-        <span>♙</span>
-        <div>
-          <strong>Meu perfil</strong>
-          <small>Conta e preferências</small>
-        </div>
-      </button>
-
-    </nav>
-
-    <div class="sidebar-bottom">
-
-      <div class="tip-box">
-        <div class="tip-icon">✦</div>
-
-        <strong>Controle seu dinheiro</strong>
-
-        <p>
-          Pequenos hábitos fazem grandes diferenças.
-        </p>
+      <div class="auth-header">
+        <h2 id="authTitle">Bem-vindo de volta</h2>
+        <p id="authSubtitle">Entre para acessar seu controle financeiro.</p>
       </div>
 
-      <div class="sidebar-user">
-        <div class="avatar">F</div>
+      <form id="authForm">
 
-        <div>
-          <strong id="sidebarUserName">Felipe</strong>
-          <small>Conta ControleS</small>
+        <div class="input-group register-field hidden">
+          <label>Nome</label>
+          <input id="nameInput" type="text" placeholder="Seu nome">
         </div>
 
-        <button id="sidebarTheme">◐</button>
-      </div>
+        <div class="input-group">
+          <label>E-mail</label>
+          <input id="emailInput" type="email" placeholder="seu@email.com" required>
+        </div>
 
-    </div>
+        <div class="input-group">
+          <label>Senha</label>
+          <input id="passwordInput" type="password" placeholder="••••••••" required>
+        </div>
 
-  </aside>
-
-
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- TOPBAR -->
-    <header class="topbar">
-
-      <button class="mobile-menu" id="mobileMenu">
-        ☰
-      </button>
-
-      <div class="top-brand">
-        <div class="mini-logo">$</div>
-        <strong>Controle<span>S</span></strong>
-      </div>
-
-      <div class="search">
-        <span>⌕</span>
-        <input
-          type="text"
-          id="globalSearch"
-          placeholder="Pesquisar transações..."
-        >
-      </div>
-
-      <div class="top-actions">
-
-        <button class="icon-btn" id="themeButton">
-          ◐
+        <button type="submit" class="primary-btn">
+          <span id="authButtonText">Entrar</span>
         </button>
 
-        <div class="user-menu">
+      </form>
 
-          <div class="avatar">F</div>
+      <div class="auth-switch">
+        <span id="switchText">Ainda não possui uma conta?</span>
+        <button id="switchAuth" type="button">Criar conta</button>
+      </div>
 
-          <div class="user-text">
-            <strong id="topUserName">Felipe</strong>
-            <small>Meu perfil</small>
-          </div>
+      <p id="authMessage" class="auth-message"></p>
 
-          <span>⌄</span>
+    </div>
 
+  </section>
+
+
+  <!-- ================= APP ================= -->
+
+  <div id="app" class="app hidden">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+      <div class="sidebar-logo">
+        <div class="brand-icon small">$</div>
+
+        <div>
+          <strong>Control<span>S</span></strong>
+          <small>Financeiro</small>
         </div>
+      </div>
+
+      <nav>
+
+        <button class="nav-item active" data-section="dashboard">
+          <span>⌂</span>
+          Dashboard
+        </button>
+
+        <button class="nav-item" data-section="transactions">
+          <span>↕</span>
+          Transações
+        </button>
+
+        <button class="nav-item" data-section="categories">
+          <span>◈</span>
+          Categorias
+        </button>
+
+        <button class="nav-item" data-section="reports">
+          <span>▥</span>
+          Relatórios
+        </button>
+
+      </nav>
+
+      <div class="sidebar-bottom">
+
+        <button class="nav-item">
+          <span>⚙</span>
+          Configurações
+        </button>
+
+        <button id="logoutBtn" class="nav-item logout">
+          <span>↪</span>
+          Sair
+        </button>
 
       </div>
 
-    </header>
+    </aside>
 
 
-    <!-- CONTENT -->
-    <div class="content">
+    <!-- MAIN -->
 
+    <main class="main">
 
-      <!-- DASHBOARD -->
-      <section class="page active" id="dashboard">
+      <!-- TOPBAR -->
 
-        <div class="page-header">
+      <header class="topbar">
 
-          <div>
-            <span class="eyebrow">VISÃO GERAL</span>
+        <button id="mobileMenu" class="mobile-menu">☰</button>
 
-            <h1>
-              Olá, <span id="helloName">Felipe</span> 👋
-            </h1>
+        <div>
+          <p class="topbar-label">Visão geral</p>
+          <h2 id="pageTitle">Dashboard</h2>
+        </div>
 
-            <p>
-              Veja como estão suas finanças hoje.
-            </p>
+        <div class="topbar-actions">
+
+          <button id="themeBtn" class="icon-btn" title="Alternar tema">
+            ◐
+          </button>
+
+          <div class="user-profile">
+            <div id="userAvatar" class="avatar">U</div>
+
+            <div>
+              <strong id="userName">Usuário</strong>
+              <small>Minha conta</small>
+            </div>
           </div>
 
-          <button class="primary-btn" id="newTransaction">
-            <span>+</span>
-            Nova movimentação
+        </div>
+
+      </header>
+
+
+      <!-- ================= DASHBOARD ================= -->
+
+      <section id="dashboardSection" class="page-section">
+
+        <div class="welcome-row">
+
+          <div>
+            <p class="eyebrow">Resumo financeiro</p>
+            <h1>Olá, <span id="welcomeName">usuário</span> 👋</h1>
+            <p>Acompanhe sua vida financeira em um só lugar.</p>
+          </div>
+
+          <button id="openTransactionBtn" class="primary-btn add-btn">
+            + Nova movimentação
           </button>
 
         </div>
 
 
-        <!-- BALANCE -->
-        <div class="balance-card">
+        <!-- CARDS -->
 
-          <div class="balance-left">
+        <div class="stats-grid">
 
-            <div class="balance-label">
-              <span>Saldo disponível</span>
-              <button id="toggleBalance">◉</button>
+          <article class="stat-card balance">
+
+            <div class="stat-top">
+              <span>Saldo atual</span>
+              <div class="stat-icon">$</div>
             </div>
 
-            <h2 id="balanceValue">R$ 0,00</h2>
+            <strong id="balanceValue">R$ 0,00</strong>
 
-            <div class="balance-status">
-              <span class="status-dot"></span>
-              <span>Este mês</span>
+            <small>
+              Disponível no período
+            </small>
+
+          </article>
+
+
+          <article class="stat-card income">
+
+            <div class="stat-top">
+              <span>Receitas</span>
+              <div class="stat-icon">↗</div>
             </div>
 
-          </div>
+            <strong id="incomeValue">R$ 0,00</strong>
 
-          <div class="balance-decoration">
-            <div class="circle circle-one"></div>
-            <div class="circle circle-two"></div>
-            <div class="balance-symbol">$</div>
-          </div>
+            <small>Entradas registradas</small>
+
+          </article>
+
+
+          <article class="stat-card expense">
+
+            <div class="stat-top">
+              <span>Despesas</span>
+              <div class="stat-icon">↘</div>
+            </div>
+
+            <strong id="expenseValue">R$ 0,00</strong>
+
+            <small>Saídas registradas</small>
+
+          </article>
+
+
+          <article class="stat-card economy">
+
+            <div class="stat-top">
+              <span>Economia</span>
+              <div class="stat-icon">%</div>
+            </div>
+
+            <strong id="economyValue">0%</strong>
+
+            <small>Taxa de economia</small>
+
+          </article>
 
         </div>
 
 
-        <!-- STAT CARDS -->
-        <div class="stats-grid">
+        <!-- GRID PRINCIPAL -->
 
-          <div class="stat-card">
+        <div class="dashboard-grid">
 
-            <div class="stat-top">
-              <div class="stat-icon income">↗</div>
-              <span id="incomePercent">0%</span>
+          <section class="panel chart-panel">
+
+            <div class="panel-header">
+
+              <div>
+                <h3>Fluxo financeiro</h3>
+                <p>Receitas x despesas</p>
+              </div>
+
+              <select id="periodSelect">
+                <option value="month">Este mês</option>
+                <option value="all">Todos</option>
+              </select>
+
             </div>
 
-            <div class="stat-label">Receitas</div>
-            <strong id="incomeValue">R$ 0,00</strong>
+            <div class="chart-wrapper">
+              <canvas id="financeChart"></canvas>
+            </div>
 
-            <small>
-              Total recebido
-            </small>
+          </section>
+
+
+          <section class="panel">
+
+            <div class="panel-header">
+
+              <div>
+                <h3>Distribuição</h3>
+                <p>Despesas por categoria</p>
+              </div>
+
+            </div>
+
+            <div class="category-chart">
+
+              <canvas id="categoryChart"></canvas>
+
+            </div>
+
+            <div id="categoryLegend" class="category-legend"></div>
+
+          </section>
+
+        </div>
+
+
+        <!-- TRANSAÇÕES -->
+
+        <section class="panel transactions-panel">
+
+          <div class="panel-header">
+
+            <div>
+              <h3>Transações recentes</h3>
+              <p>Últimas movimentações financeiras</p>
+            </div>
+
+            <button class="text-btn" data-section-target="transactions">
+              Ver todas
+            </button>
 
           </div>
 
+          <div id="recentTransactions" class="transactions-list">
 
-          <
+            <div class="empty-state">
+              <div>₱</div>
+              <h4>Nenhuma movimentação</h4>
+              <p>Adicione sua primeira receita ou despesa.</p>
+            </div>
+
+          </div>
+
+        </section>
+
+      </section>
+
+
+      <!-- ================= TRANSACTIONS ================= -->
+
+      <section id="transactionsSection" class="page-section hidden">
+
+        <div class="page-heading">
+
+          <div>
+            <p class="eyebrow">Financeiro</p>
+            <h1>Transações</h1>
+            <p>Gerencie todas as suas movimentações.</p>
+          </div>
+
+          <button id="openTransactionBtn2" class="primary-btn">
+            + Nova movimentação
+          </button>
+
+        </div>
+
+
+        <section class="panel">
+
+          <div class="filters">
+
+            <input id="searchInput" type="search" placeholder="Pesquisar transação...">
+
+            <select id="typeFilter">
+              <option value="all">Todos os tipos</option>
+              <option value="income">Receitas</option>
+              <option value="expense">Despesas</option>
+            </select>
+
+            <select id="categoryFilter">
+              <option value="all">Todas categorias</option>
+            </select>
+
+          </div>
+
+          <div id="allTransactions" class="transactions-list"></div>
+
+        </section>
+
+      </section>
+
+
+      <!-- ================= CATEGORIES ================= -->
+
+      <section id="categoriesSection" class="page-section hidden">
+
+        <div class="page-heading">
+
+          <div>
+            <p class="eyebrow">Organização</p>
+            <h1>Categorias</h1>
+            <p>Visualize como seu dinheiro está sendo utilizado.</p>
+          </div>
+
+        </div>
+
+        <div id="categoriesGrid" class="categories-grid"></div>
+
+      </section>
+
+
+      <!-- ================= REPORTS ================= -->
+
+      <section id="reportsSection" class="page-section hidden">
+
+        <div class="page-heading">
+
+          <div>
+            <p class="eyebrow">Análise</p>
+            <h1>Relatórios</h1>
+            <p>Tenha uma visão geral da sua evolução financeira.</p>
+          </div>
+
+        </div>
+
+        <div class="report-grid">
+
+          <div class="panel report-card">
+            <span>Total de receitas</span>
+            <strong id="reportIncome">R$ 0,00</strong>
+          </div>
+
+          <div class="panel report-card">
+            <span>Total de despesas</span>
+            <strong id="reportExpense">R$ 0,00</strong>
+          </div>
+
+          <div class="panel report-card">
+            <span>Saldo</span>
+            <strong id="reportBalance">R$ 0,00</strong>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- ================= MODAL ================= -->
+
+  <div id="transactionModal" class="modal hidden">
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-card">
+
+      <button id="closeModal" class="modal-close">×</button>
+
+      <div class="modal-header">
+        <p class="eyebrow">Movimentação</p>
+        <h2>Nova transação</h2>
+        <p>Registre uma entrada ou saída.</p>
+      </div>
+
+      <form id="transactionForm">
+
+        <div class="type-selector">
+
+          <label class="type-option active">
+            <input type="radio" name="transactionType" value="income" checked>
+            <span>↗ Receita</span>
+          </label>
+
+          <label class="type-option">
+            <input type="radio" name="transactionType" value="expense">
+            <span>↘ Despesa</span>
+          </label>
+
+        </div>
+
+        <div class="input-group">
+
+          <label>Descrição</label>
+
+          <input
+            id="descriptionInput"
+            type="text"
+            placeholder="Ex.: Salário, mercado..."
+            required
+          >
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="input-group">
+
+            <label>Valor</label>
+
+            <input
+              id="amountInput"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0,00"
+              required
+            >
+
+          </div>
+
+          <div class="input-group">
+
+            <label>Data</label>
+
+            <input id="dateInput" type="date" required>
+
+          </div>
+
+        </div>
+
+        <div class="input-group">
+
+          <label>Categoria</label>
+
+          <select id="transactionCategory" required>
+            <option value="Salário">Salário</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Moradia">Moradia</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Lazer">Lazer</option>
+            <option value="Saúde">Saúde</option>
+            <option value="Educação">Educação</option>
+            <option value="Outros">Outros</option>
+          </select>
+
+        </div>
+
+        <div class="input-group">
+
+          <label>Observação</label>
+
+          <textarea
+            id="noteInput"
+            placeholder="Opcional..."
+            rows="3"
+          ></textarea>
+
+        </div>
+
+        <button type="submit" class="primary-btn full">
+          Salvar movimentação
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
