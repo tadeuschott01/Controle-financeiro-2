@@ -9,12 +9,9 @@
 
 <title>ControleS - Controle Financeiro</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="style.css">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -25,27 +22,34 @@
 <div class="app">
 
 
-<!-- MENU LATERAL -->
+<!-- SIDEBAR -->
 
 <aside class="sidebar">
 
+<div class="brand">
 
-<div class="logo">
-
-<div class="logo-icon">
+<div class="brand-logo">
 $
 </div>
 
-<div>
-<h2>Controle<span>S</span></h2>
-<p>Financeiro inteligente</p>
-</div>
+
+<div class="brand-text">
+
+<h2>
+Controle<span>S</span>
+</h2>
+
+<p>
+Financeiro inteligente
+</p>
 
 </div>
 
+</div>
 
 
-<nav>
+
+<nav class="menu">
 
 
 <a class="active">
@@ -89,7 +93,7 @@ $
 
 
 <a>
-📂 Relatórios
+📁 Relatórios
 </a>
 
 
@@ -98,29 +102,40 @@ $
 </a>
 
 
-
 </nav>
+
 
 
 
 <div class="premium-box">
 
 
-<h3>ControleS Premium</h3>
+<h3>
+ControleS Premium
+</h3>
+
 
 <p>
-Tenha recursos avançados
+Recursos avançados para seu controle financeiro
 </p>
 
 
+<div class="premium-value">
+
 <strong>
-R$ 24,99/mês
+R$ 24,99
 </strong>
 
-
 <span>
-Plano anual R$19,99/mês
+/mês
 </span>
+
+</div>
+
+
+<small>
+Plano anual R$ 19,99/mês
+</small>
 
 
 <button>
@@ -139,12 +154,11 @@ Conhecer Premium
 
 <!-- CONTEÚDO -->
 
-
-<main>
-
+<main class="main">
 
 
-<header class="top">
+
+<header class="topbar">
 
 
 <div>
@@ -153,9 +167,11 @@ Conhecer Premium
 Olá, Felipe 👋
 </h1>
 
+
 <p>
-Aqui está seu resumo financeiro
+Seu resumo financeiro
 </p>
+
 
 </div>
 
@@ -163,18 +179,24 @@ Aqui está seu resumo financeiro
 
 <div class="profile">
 
+
 <div class="avatar">
 F
 </div>
 
+
 <div>
+
 <strong>
 Felipe
 </strong>
 
-<small>
-Plano gratuito
-</small>
+
+<span>
+Conta pessoal
+</span>
+
+
 </div>
 
 
@@ -191,16 +213,15 @@ Plano gratuito
 
 
 
-<!-- SALDO PRINCIPAL -->
+<!-- SALDO -->
 
-
-<div class="balance">
+<div class="balance-card">
 
 
 <div>
 
 <span>
-Saldo disponível
+Saldo atual
 </span>
 
 
@@ -210,78 +231,97 @@ R$ 8.540,00
 
 
 <p>
-Atualizado manualmente
+Informado manualmente pelo usuário
 </p>
 
 
 </div>
 
 
-<div class="balance-actions">
 
-<button>
-+ Entrada
-</button>
-
-<button>
-- Saída
+<button class="primary-button">
++ Novo lançamento
 </button>
 
 
 </div>
 
 
+
+
+
+<!-- RESUMO -->
+
+<div class="stats-grid">
+
+
+
+<div class="stat-card">
+
+<div class="stat-icon income">
+↑
 </div>
 
 
-
-<!-- CARDS -->
-
-
-<div class="cards">
-
-
-<div class="card">
+<div>
 
 <span>
-Entradas do mês
+Entradas
 </span>
 
-<strong class="green">
+<strong>
 R$ 5.200,00
 </strong>
 
+<small>
+Este mês
+</small>
 
-<p>
-↑ 12% comparado ao mês anterior
-</p>
-
+</div>
 
 </div>
 
 
 
-<div class="card">
+
+
+<div class="stat-card">
+
+<div class="stat-icon expense">
+↓
+</div>
+
+
+<div>
 
 <span>
-Gastos do mês
+Despesas
 </span>
 
-<strong class="red">
+<strong>
 R$ 1.840,00
 </strong>
 
+<small>
+Este mês
+</small>
 
-<p>
-Controle suas despesas
-</p>
-
+</div>
 
 </div>
 
 
 
-<div class="card">
+
+
+<div class="stat-card">
+
+<div class="stat-icon save">
+$
+</div>
+
+
+<div>
 
 <span>
 Economia
@@ -291,17 +331,26 @@ Economia
 R$ 3.360,00
 </strong>
 
-
-<p>
+<small>
 Meta mensal
-</p>
+</small>
 
+</div>
 
 </div>
 
 
 
-<div class="card">
+
+
+<div class="stat-card">
+
+<div class="stat-icon future">
+✓
+</div>
+
+
+<div>
 
 <span>
 Contas futuras
@@ -311,14 +360,1019 @@ Contas futuras
 R$ 620,00
 </strong>
 
+<small>
+Próximos pagamentos
+</small>
+
+</div>
+
+</div>
+
+
+
+</div>
+
+<!-- ÁREA PRINCIPAL DO DASHBOARD -->
+
+<div class="dashboard-grid">
+
+
+
+<!-- GRÁFICO -->
+
+<div class="panel chart-panel">
+
+
+<div class="panel-header">
+
+<div>
+
+<h3>
+Evolução financeira
+</h3>
 
 <p>
-Próximos pagamentos
+Entradas x despesas
+</p>
+
+</div>
+
+
+<select>
+
+<option>
+Últimos 6 meses
+</option>
+
+<option>
+Este ano
+</option>
+
+</select>
+
+
+</div>
+
+
+
+<div class="chart-box">
+
+<div class="fake-chart">
+
+
+<div class="line income-line"></div>
+
+<div class="line expense-line"></div>
+
+
+</div>
+
+
+
+<div class="months">
+
+<span>Jan</span>
+<span>Fev</span>
+<span>Mar</span>
+<span>Abr</span>
+<span>Mai</span>
+<span>Jun</span>
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<!-- PRÓXIMAS CONTAS -->
+
+
+<div class="panel">
+
+
+<div class="panel-header">
+
+
+<div>
+
+<h3>
+Próximas contas
+</h3>
+
+<p>
+Organize seus pagamentos
+</p>
+
+</div>
+
+
+<button class="text-button">
+Ver todas
+</button>
+
+
+</div>
+
+
+
+<div class="bill-list">
+
+
+
+<div class="bill-item">
+
+
+<div class="date">
+
+<strong>
+10
+</strong>
+
+<span>
+SET
+</span>
+
+</div>
+
+
+<div>
+
+<strong>
+Internet
+</strong>
+
+<p>
+Conta mensal
+</p>
+
+</div>
+
+
+<b>
+R$120
+</b>
+
+
+</div>
+
+
+
+
+
+<div class="bill-item">
+
+
+<div class="date">
+
+<strong>
+15
+</strong>
+
+<span>
+SET
+</span>
+
+</div>
+
+
+<div>
+
+<strong>
+Energia
+</strong>
+
+<p>
+Conta da casa
+</p>
+
+</div>
+
+
+<b>
+R$240
+</b>
+
+
+</div>
+
+
+
+
+
+<div class="bill-item">
+
+
+<div class="date">
+
+<strong>
+20
+</strong>
+
+<span>
+SET
+</span>
+
+</div>
+
+
+<div>
+
+<strong>
+Streaming
+</strong>
+
+<p>
+Assinatura
+</p>
+
+</div>
+
+
+<b>
+R$60
+</b>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+<!-- PARTE INFERIOR -->
+
+<div class="bottom-grid">
+
+
+
+
+
+<!-- MOVIMENTAÇÕES -->
+
+
+<div class="panel">
+
+
+<div class="panel-header">
+
+
+<div>
+
+<h3>
+Últimos lançamentos
+</h3>
+
+<p>
+Movimentações adicionadas manualmente
 </p>
 
 
 </div>
 
 
+<button class="text-button">
+Ver tudo
+</button>
+
 
 </div>
+
+
+
+
+<div class="transactions">
+
+
+
+<div class="transaction">
+
+
+<div class="transaction-icon income">
++
+</div>
+
+
+<div>
+
+<strong>
+Salário
+</strong>
+
+
+<span>
+Entrada
+</span>
+
+
+</div>
+
+
+<b class="green-text">
++ R$5.000
+</b>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="transaction">
+
+
+<div class="transaction-icon expense">
+-
+</div>
+
+
+<div>
+
+<strong>
+Mercado
+</strong>
+
+
+<span>
+Alimentação
+</span>
+
+
+</div>
+
+
+<b class="red-text">
+- R$450
+</b>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="transaction">
+
+
+<div class="transaction-icon expense">
+-
+</div>
+
+
+<div>
+
+<strong>
+Combustível
+</strong>
+
+
+<span>
+Transporte
+</span>
+
+
+</div>
+
+
+<b class="red-text">
+- R$180
+</b>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- METAS -->
+
+
+<div class="panel">
+
+
+<div class="panel-header">
+
+
+<div>
+
+<h3>
+Metas financeiras
+</h3>
+
+<p>
+Planeje seus objetivos
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="goal">
+
+
+<div class="goal-top">
+
+
+<div class="goal-icon">
+🎯
+</div>
+
+
+<div>
+
+<strong>
+Reserva de emergência
+</strong>
+
+<span>
+R$8.000 de R$20.000
+</span>
+
+
+</div>
+
+
+</div>
+
+
+
+<div class="progress">
+
+<div style="width:40%"></div>
+
+</div>
+
+
+<small>
+40% concluído
+</small>
+
+
+</div>
+
+
+
+
+
+<div class="goal">
+
+
+<div class="goal-top">
+
+
+<div class="goal-icon">
+🏠
+</div>
+
+
+<div>
+
+<strong>
+Casa própria
+</strong>
+
+<span>
+R$30.000 de R$100.000
+</span>
+
+
+</div>
+
+
+</div>
+
+
+
+<div class="progress">
+
+<div style="width:30%"></div>
+
+</div>
+
+
+<small>
+30% concluído
+</small>
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+</div>
+
+  <!-- CONTAS FINANCEIRAS MANUAIS -->
+
+<div class="panel account-panel">
+
+<div class="panel-header">
+
+<div>
+
+<h3>
+Minhas contas
+</h3>
+
+<p>
+Cadastre seus saldos manualmente
+</p>
+
+</div>
+
+
+<button class="primary small">
++ Nova conta
+</button>
+
+
+</div>
+
+
+
+<div class="accounts-grid">
+
+
+<div class="account-card">
+
+<div class="account-icon">
+🏦
+</div>
+
+
+<div>
+
+<strong>
+Banco principal
+</strong>
+
+
+<span>
+Saldo informado manualmente
+</span>
+
+
+</div>
+
+
+<b>
+R$ 5.000,00
+</b>
+
+
+</div>
+
+
+
+
+
+<div class="account-card">
+
+<div class="account-icon">
+💵
+</div>
+
+
+<div>
+
+<strong>
+Carteira
+</strong>
+
+
+<span>
+Dinheiro disponível
+</span>
+
+
+</div>
+
+
+<b>
+R$ 300,00
+</b>
+
+
+</div>
+
+
+
+
+
+<div class="account-card add">
+
+<strong>
++</strong>
+
+<span>
+Adicionar conta
+</span>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- MODO PESSOA / EMPRESA -->
+
+
+<div class="panel business-panel">
+
+
+<div class="panel-header">
+
+
+<div>
+
+<h3>
+Modo financeiro
+</h3>
+
+
+<p>
+Escolha como deseja controlar
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="mode-grid">
+
+
+<div class="mode active">
+
+<span>
+👤
+</span>
+
+
+<strong>
+Pessoa
+</strong>
+
+
+<p>
+Controle suas finanças pessoais</p>
+
+
+</div>
+
+
+
+
+
+<div class="mode">
+
+<span>
+🏢
+</span>
+
+
+<strong>
+Empresa
+</strong>
+
+
+<p>
+Controle financeiro empresarial</p>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- RECIBOS -->
+
+
+<div class="panel receipt-panel">
+
+
+<div class="panel-header">
+
+
+<div>
+
+<h3>
+Recibos
+</h3>
+
+
+<p>
+Gere comprovantes financeiros</p>
+
+
+</div>
+
+
+
+<button class="secondary">
+Criar recibo
+</button>
+
+
+</div>
+
+
+
+
+<div class="receipt-box">
+
+
+<h4>
+Recibo de pagamento
+</h4>
+
+
+<p>
+Documento gerado pelo ControleS
+</p>
+
+
+<div class="receipt-value">
+R$ ________
+</div>
+
+
+<div class="signature">
+Assinatura
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- RELATÓRIOS -->
+
+
+<div class="panel report-panel">
+
+
+<div class="panel-header">
+
+
+<div>
+
+<h3>
+Relatórios financeiros
+</h3>
+
+
+<p>
+Acompanhe sua evolução
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+<div class="report-grid">
+
+
+<div>
+
+<span>
+Receitas
+</span>
+
+
+<strong>
+R$ 5.200
+</strong>
+
+
+</div>
+
+
+
+
+<div>
+
+<span>
+Despesas
+</span>
+
+
+<strong>
+R$ 1.840
+</strong>
+
+
+</div>
+
+
+
+
+<div>
+
+<span>
+Economia
+</span>
+
+
+<strong>
+R$ 3.360
+</strong>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- CONFIGURAÇÕES -->
+
+
+<div class="panel settings-panel">
+
+
+<div class="panel-header">
+
+
+<div>
+
+<h3>
+Configurações
+</h3>
+
+
+<p>
+Personalize seu ControleS
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="setting-row">
+
+
+<div>
+
+<strong>
+Notificações</strong>
+
+<span>
+Receba lembretes de contas</span>
+
+
+</div>
+
+
+<div class="toggle active"></div>
+
+
+</div>
+
+
+
+
+
+<div class="setting-row">
+
+
+<div>
+
+<strong>
+Tema escuro</strong>
+
+<span>
+Altere a aparência do aplicativo</span>
+
+
+</div>
+
+
+<div class="toggle"></div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+</section>
+
+
+
+</main>
+
+
+
+</div>
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
