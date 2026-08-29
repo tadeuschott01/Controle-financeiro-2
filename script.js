@@ -1,87 +1,26 @@
 // ============================================================
-// CONTROLES - SCRIPT COMPLETO ATUALIZADO
-// Supabase + Login + Cadastro + Confirmação de E-mail + Finanças
+// CONTROLES - SCRIPT COMPLETO
+// Supabase + Login + Cadastro + Sessão + Finanças
 // ============================================================
 
 
 // ============================================================
-// SUPABASE
+// CONFIGURAÇÃO DO SUPABASE
 // ============================================================
 
 const SUPABASE_URL =
   "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
 
-const SUPABASE_KEY =
-  "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
+const SUPABASE_ANON_KEY =
+  "COLE_AQUI_SUA_CHAVE_ANON_DO_SUPABASE";
 
 
-// IMPORTANTE:
-// URL para onde o Supabase deve mandar o usuário
-// depois da confirmação do e-mail.
-const REDIRECT_URL =
-  "https://tadeuschott01.github.io/Controle-financeiro-2/";
-
-
-// ============================================================
-// CARREGAR SUPABASE JS
-// ============================================================
-
-function carregarSupabase() {
-
-  return new Promise((resolve, reject) => {
-
-    if (window.supabase) {
-
-      resolve(window.supabase);
-
-      return;
-    }
-
-    const script =
-      document.createElement("script");
-
-    script.src =
-      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-
-    script.onload = () => {
-
-      if (!window.supabase) {
-
-        reject(
-          new Error(
-            "Biblioteca do Supabase não carregou."
-          )
-        );
-
-        return;
-      }
-
-      resolve(window.supabase);
-    };
-
-    script.onerror = () => {
-
-      reject(
-        new Error(
-          "Não foi possível carregar a biblioteca do Supabase."
-        )
-      );
-    };
-
-    document.head.appendChild(script);
-  });
-}
-
-
-// ============================================================
-// VARIÁVEIS
-// ============================================================
-
-let supabaseClient = null;
-
-let usuarioAtual = null;
-
-let idEditando = null;
+// Inicialização
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
 
 
 // ============================================================
@@ -100,88 +39,67 @@ const loginForm =
 const registerForm =
   document.getElementById("registerForm");
 
-const loginEmail =
-  document.getElementById("loginEmail");
+const authMessage =
+  document.getElementById("authMessage");
 
-const loginPassword =
-  document.getElementById("loginPassword");
-
-const loginButton =
-  document.getElementById("loginButton");
-
-const loginMessage =
-  document.getElementById("loginMessage");
-
-const registerName =
-  document.getElementById("registerName");
-
-const registerEmail =
-  document.getElementById("registerEmail");
-
-const registerPassword =
-  document.getElementById("registerPassword");
-
-const registerAccountType =
-  document.getElementById("registerAccountType");
-
-const registerCompany =
-  document.getElementById("registerCompany");
-
-const registerButton =
-  document.getElementById("registerButton");
-
-const registerMessage =
-  document.getElementById("registerMessage");
-
-const companyField =
-  document.getElementById("companyField");
-
-const showRegisterButton =
-  document.getElementById("showRegisterButton");
-
-const showLoginButton =
-  document.getElementById("showLoginButton");
+const userName =
+  document.getElementById("userName");
 
 const logoutButton =
   document.getElementById("logoutButton");
 
 
 // ============================================================
+// VARIÁVEIS
+// ============================================================
+
+let currentUser = null;
+let transactions = [];
+let financeChart = null;
+
+
+// ============================================================
 // MENSAGENS
 // ============================================================
 
-function mostrarMensagem(
-  elemento,
-  mensagem,
-  sucesso = false
-) {
+function showMessage(message, type = "error") {
 
-  if (!elemento) return;
+  if (!authMessage) return;
 
-  elemento.textContent =
-    mensagem;
+  authMessage.textContent = message;
 
-  elemento.style.color =
-    sucesso
-      ? "#1f513d"
-      : "#d94b4b";
+  authMessage.className =
+    "auth-message " + type;
+
+}
+
+
+function clearMessage() {
+
+  if (!authMessage) return;
+
+  authMessage.textContent = "";
+
+  authMessage.className =
+    "auth-message";
+
 }
 
 
 // ============================================================
-// DINHEIRO
+// FORMATAÇÃO DE DINHEIRO
 // ============================================================
 
-function dinheiro(valor) {
+function formatMoney(value) {
 
-  return Number(valor || 0)
-    .toLocaleString(
-      "pt-BR",
-      {
-        style: "currency",
-        currency: "BRL"
-      }
-    );
+  return Number(value || 0).toLocaleString(
+    "pt-BR",
+    {
+      style: "currency",
+      currency: "BRL"
+    }
+  );
+
 }
 
 
@@ -189,346 +107,274 @@ function dinheiro(valor) {
 // DATA
 // ============================================================
 
-function formatarData(data) {
+function today() {
 
-  if (!data) return "";
+  const date = new Date();
 
-  const partes =
-    String(data).split("-");
+  const year =
+    date.getFullYear();
 
-  if (partes.length !== 3) {
+  const month =
+    String(date.getMonth() + 1)
+      .padStart(2, "0");
 
-    return data;
+  const day =
+    String(date.getDate())
+      .padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+
+}
+
+
+// ============================================================
+// MOSTRAR APP
+// ============================================================
+
+function showApp(user) {
+
+  currentUser = user;
+
+  if (authScreen) {
+
+    authScreen.style.display =
+      "none";
+
   }
 
-  return (
-    partes[2] +
-    "/" +
-    partes[1] +
-    "/" +
-    partes[0]
-  );
-}
+  if (appScreen) {
 
+    appScreen.style.display =
+      "block";
 
-// ============================================================
-// ESCAPAR HTML
-// ============================================================
-
-function escaparHTML(texto) {
-
-  return String(texto || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-
-// ============================================================
-// CATEGORIAS
-// ============================================================
-
-const categorias = {
-
-  salario: "Salário",
-
-  alimentacao: "Alimentação",
-
-  moradia: "Moradia",
-
-  transporte: "Transporte",
-
-  saude: "Saúde",
-
-  educacao: "Educação",
-
-  lazer: "Lazer",
-
-  contas: "Contas",
-
-  compras: "Compras",
-
-  empresa: "Empresa",
-
-  outros: "Outros"
-};
-
-
-function nomeCategoria(categoria) {
-
-  return (
-    categorias[categoria] ||
-    categoria ||
-    "Outros"
-  );
-}
-
-
-// ============================================================
-// LOGIN / APP
-// ============================================================
-
-function mostrarLogin() {
-
-  authScreen?.classList.remove(
-    "hidden"
-  );
-
-  appScreen?.classList.add(
-    "hidden"
-  );
-
-  registerForm?.classList.add(
-    "hidden"
-  );
-
-  loginForm?.classList.remove(
-    "hidden"
-  );
-}
-
-
-function mostrarAplicacao() {
-
-  authScreen?.classList.add(
-    "hidden"
-  );
-
-  appScreen?.classList.remove(
-    "hidden"
-  );
-}
-
-
-// ============================================================
-// TROCAR LOGIN / CADASTRO
-// ============================================================
-
-showRegisterButton?.addEventListener(
-  "click",
-  function () {
-
-    loginForm?.classList.add(
-      "hidden"
-    );
-
-    registerForm?.classList.remove(
-      "hidden"
-    );
-
-    mostrarMensagem(
-      registerMessage,
-      ""
-    );
   }
-);
 
+  if (userName) {
 
-showLoginButton?.addEventListener(
-  "click",
-  function () {
+    const email =
+      user?.email || "";
 
-    registerForm?.classList.add(
-      "hidden"
-    );
+    userName.textContent =
+      "Olá, " + email;
 
-    loginForm?.classList.remove(
-      "hidden"
-    );
-
-    mostrarMensagem(
-      loginMessage,
-      ""
-    );
   }
-);
+
+  loadTransactions();
+
+}
 
 
 // ============================================================
-// CAMPO EMPRESA
+// MOSTRAR LOGIN
 // ============================================================
 
-registerAccountType?.addEventListener(
-  "change",
-  function () {
+function showAuth() {
 
-    if (!companyField) {
+  currentUser = null;
+
+  if (authScreen) {
+
+    authScreen.style.display =
+      "flex";
+
+  }
+
+  if (appScreen) {
+
+    appScreen.style.display =
+      "none";
+
+  }
+
+}
+
+
+// ============================================================
+// VERIFICAR SESSÃO
+// ============================================================
+
+async function checkSession() {
+
+  try {
+
+    const {
+      data,
+      error
+    } = await supabaseClient.auth.getSession();
+
+
+    if (error) {
+
+      console.error(
+        "Erro ao verificar sessão:",
+        error
+      );
+
+      showAuth();
+
       return;
+
     }
 
-    if (
-      registerAccountType.value === "empresa" ||
-      registerAccountType.value === "ambos"
-    ) {
 
-      companyField.classList.remove(
-        "hidden"
-      );
+    const session =
+      data?.session;
+
+
+    if (session?.user) {
+
+      showApp(session.user);
 
     } else {
 
-      companyField.classList.add(
-        "hidden"
-      );
+      showAuth();
+
     }
-  }
-);
 
-
-// ============================================================
-// SALVAR PERFIL
-// ============================================================
-
-async function salvarPerfil(usuario) {
-
-  if (!usuario || !usuario.id) {
-
-    throw new Error(
-      "Usuário inválido para salvar o perfil."
-    );
-  }
-
-  const dados = {
-
-    id:
-      usuario.id,
-
-    email:
-      usuario.email || "",
-
-    nome:
-      usuario.nome || "",
-
-    tipo:
-      usuario.tipo || "pessoal",
-
-    empresa:
-      usuario.empresa || ""
-  };
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .upsert(
-        dados,
-        {
-          onConflict: "id"
-        }
-      );
-
-
-  if (error) {
+  } catch (error) {
 
     console.error(
-      "Erro ao salvar perfil:",
+      "Erro na sessão:",
       error
     );
 
-    throw error;
+    showAuth();
+
   }
+
 }
 
 
 // ============================================================
-// PEGAR PERFIL
+// LOGIN
 // ============================================================
 
-async function pegarPerfil(user) {
+if (loginForm) {
 
-  if (!user) {
+  loginForm.addEventListener(
+    "submit",
+    async function (event) {
 
-    throw new Error(
-      "Usuário não encontrado."
-    );
-  }
+      event.preventDefault();
 
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq(
-        "id",
-        user.id
-      )
-      .maybeSingle();
+      clearMessage();
 
 
-  if (error) {
-
-    console.error(
-      "Erro ao buscar perfil:",
-      error
-    );
-
-    throw error;
-  }
+      const email =
+        document
+          .getElementById("loginEmail")
+          ?.value
+          .trim();
 
 
-  if (data) {
-
-    return {
-
-      id:
-        user.id,
-
-      email:
-        user.email || "",
-
-      nome:
-        data.nome ||
-        user.user_metadata?.nome ||
-        "Usuário",
-
-      tipo:
-        data.tipo ||
-        user.user_metadata?.tipo ||
-        "pessoal",
-
-      empresa:
-        data.empresa ||
-        user.user_metadata?.empresa ||
-        ""
-    };
-  }
+      const password =
+        document
+          .getElementById("loginPassword")
+          ?.value;
 
 
-  const novoPerfil = {
+      if (!email || !password) {
 
-    id:
-      user.id,
+        showMessage(
+          "Preencha o e-mail e a senha."
+        );
 
-    email:
-      user.email || "",
+        return;
 
-    nome:
-      user.user_metadata?.nome ||
-      "Usuário",
-
-    tipo:
-      user.user_metadata?.tipo ||
-      "pessoal",
-
-    empresa:
-      user.user_metadata?.empresa ||
-      ""
-  };
+      }
 
 
-  await salvarPerfil(
-    novoPerfil
+      const button =
+        document.getElementById(
+          "loginButton"
+        );
+
+
+      if (button) {
+
+        button.disabled = true;
+
+        button.textContent =
+          "Entrando...";
+
+      }
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth
+            .signInWithPassword({
+
+              email: email,
+
+              password: password
+
+            });
+
+
+        if (error) {
+
+          console.error(
+            "Erro no login:",
+            error
+          );
+
+          showMessage(
+            traduzirErroSupabase(
+              error.message
+            )
+          );
+
+          return;
+
+        }
+
+
+        if (!data?.user) {
+
+          showMessage(
+            "Não foi possível entrar na conta."
+          );
+
+          return;
+
+        }
+
+
+        showApp(data.user);
+
+
+      } catch (error) {
+
+        console.error(
+          "Erro inesperado no login:",
+          error
+        );
+
+        showMessage(
+          "Erro ao comunicar com o Supabase."
+        );
+
+      } finally {
+
+        if (button) {
+
+          button.disabled = false;
+
+          button.textContent =
+            "Entrar";
+
+        }
+
+      }
+
+    }
   );
 
-
-  return novoPerfil;
 }
 
 
@@ -536,534 +382,193 @@ async function pegarPerfil(user) {
 // CADASTRO
 // ============================================================
 
-registerButton?.addEventListener(
-  "click",
-  async function () {
+if (registerForm) {
 
-    const nome =
-      registerName?.value.trim();
+  registerForm.addEventListener(
+    "submit",
+    async function (event) {
 
-    const email =
-      registerEmail?.value.trim();
+      event.preventDefault();
 
-    const senha =
-      registerPassword?.value;
-
-    const tipo =
-      registerAccountType?.value ||
-      "pessoal";
-
-    const empresa =
-      registerCompany?.value.trim() ||
-      "";
+      clearMessage();
 
 
-    if (!nome) {
-
-      mostrarMensagem(
-        registerMessage,
-        "Digite seu nome."
-      );
-
-      return;
-    }
+      const name =
+        document
+          .getElementById("registerName")
+          ?.value
+          .trim();
 
 
-    if (
-      !email ||
-      !email.includes("@")
-    ) {
-
-      mostrarMensagem(
-        registerMessage,
-        "Digite um e-mail válido."
-      );
-
-      return;
-    }
+      const email =
+        document
+          .getElementById("registerEmail")
+          ?.value
+          .trim();
 
 
-    if (
-      !senha ||
-      senha.length < 6
-    ) {
-
-      mostrarMensagem(
-        registerMessage,
-        "A senha precisa ter pelo menos 6 caracteres."
-      );
-
-      return;
-    }
+      const password =
+        document
+          .getElementById("registerPassword")
+          ?.value;
 
 
-    registerButton.disabled =
-      true;
+      if (!name) {
 
-    registerButton.textContent =
-      "Criando...";
-
-
-    try {
-
-      console.log(
-        "Criando usuário no Supabase..."
-      );
-
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.auth.signUp({
-
-          email:
-            email,
-
-          password:
-            senha,
-
-          options: {
-
-            emailRedirectTo:
-              REDIRECT_URL,
-
-            data: {
-
-              nome:
-                nome,
-
-              tipo:
-                tipo,
-
-              empresa:
-                empresa
-            }
-          }
-        });
-
-
-      console.log(
-        "Resultado cadastro:",
-        data,
-        error
-      );
-
-
-      if (error) {
-
-        throw error;
-      }
-
-
-      if (!data || !data.user) {
-
-        throw new Error(
-          "O Supabase não retornou o usuário criado."
+        showMessage(
+          "Digite seu nome."
         );
+
+        return;
+
       }
 
 
-      // ======================================================
-      // CASO O SUPABASE JÁ TENHA CRIADO UMA SESSÃO
-      // ======================================================
+      if (!email) {
 
-      if (data.session) {
+        showMessage(
+          "Digite seu e-mail."
+        );
 
-        usuarioAtual = {
+        return;
 
-          id:
-            data.user.id,
-
-          email:
-            data.user.email || email,
-
-          nome:
-            nome,
-
-          tipo:
-            tipo,
-
-          empresa:
-            empresa
-        };
+      }
 
 
-        try {
+      if (!password || password.length < 6) {
 
-          await salvarPerfil(
-            usuarioAtual
-          );
+        showMessage(
+          "A senha precisa ter pelo menos 6 caracteres."
+        );
 
-        } catch (perfilErro) {
+        return;
+
+      }
+
+
+      const button =
+        document.getElementById(
+          "registerButton"
+        );
+
+
+      if (button) {
+
+        button.disabled = true;
+
+        button.textContent =
+          "Criando conta...";
+
+      }
+
+
+      try {
+
+        /*
+          IMPORTANTE:
+
+          Aqui usamos somente o Auth do Supabase.
+
+          Não fazemos INSERT em profiles.
+
+          Isso evita o erro anterior:
+          "Database error saving new user."
+        */
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth
+            .signUp({
+
+              email: email,
+
+              password: password,
+
+              options: {
+
+                data: {
+
+                  name: name
+
+                }
+
+              }
+
+            });
+
+
+        if (error) {
 
           console.error(
-            "Erro ao criar perfil:",
-            perfilErro
+            "Erro no cadastro:",
+            error
           );
+
+          showMessage(
+            traduzirErroSupabase(
+              error.message
+            )
+          );
+
+          return;
+
         }
 
 
-        mostrarMensagem(
-          registerMessage,
-          "Conta criada com sucesso!",
-          true
+        /*
+          Dependendo da configuração
+          de confirmação de e-mail
+          do Supabase, o usuário pode
+          precisar confirmar o e-mail.
+        */
+
+        if (data?.session) {
+
+          showApp(data.user);
+
+          return;
+
+        }
+
+
+        showMessage(
+          "Conta criada! Verifique seu e-mail para confirmar o cadastro.",
+          "success"
         );
 
 
-        mostrarAplicacao();
-
-        atualizarPerfilTela();
-
-        await atualizarTudo();
-
-        return;
-      }
+        registerForm.reset();
 
 
-      // ======================================================
-      // CONFIRMAÇÃO DE E-MAIL
-      // ======================================================
-
-      mostrarMensagem(
-        registerMessage,
-        "Conta criada! Verifique seu e-mail e clique no link de confirmação.",
-        true
-      );
-
-
-      if (loginEmail) {
-
-        loginEmail.value =
-          email;
-      }
-
-
-      if (loginPassword) {
-
-        loginPassword.value =
-          "";
-      }
-
-
-      setTimeout(
-        function () {
-
-          registerForm?.classList.add(
-            "hidden"
-          );
-
-          loginForm?.classList.remove(
-            "hidden"
-          );
-
-        },
-        2000
-      );
-
-
-    } catch (erro) {
-
-      console.error(
-        "ERRO AO CRIAR CONTA:",
-        erro
-      );
-
-
-      let mensagem =
-        erro?.message ||
-        "Não foi possível criar a conta.";
-
-
-      if (
-        mensagem.toLowerCase().includes(
-          "already registered"
-        )
-      ) {
-
-        mensagem =
-          "Este e-mail já possui uma conta.";
-      }
-
-
-      mostrarMensagem(
-        registerMessage,
-        mensagem
-      );
-
-
-    } finally {
-
-      registerButton.disabled =
-        false;
-
-      registerButton.textContent =
-        "Criar minha conta";
-    }
-  }
-);
-
-
-// ============================================================
-// LOGIN
-// ============================================================
-
-loginButton?.addEventListener(
-  "click",
-  async function () {
-
-    const email =
-      loginEmail?.value.trim();
-
-    const senha =
-      loginPassword?.value;
-
-
-    if (!email || !senha) {
-
-      mostrarMensagem(
-        loginMessage,
-        "Digite seu e-mail e sua senha."
-      );
-
-      return;
-    }
-
-
-    loginButton.disabled =
-      true;
-
-    loginButton.textContent =
-      "Entrando...";
-
-
-    mostrarMensagem(
-      loginMessage,
-      ""
-    );
-
-
-    try {
-
-      console.log(
-        "Iniciando login..."
-      );
-
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.auth.signInWithPassword({
-
-          email:
-            email,
-
-          password:
-            senha
-        });
-
-
-      if (error) {
+      } catch (error) {
 
         console.error(
-          "Erro login:",
+          "Erro inesperado no cadastro:",
           error
         );
 
-        throw error;
-      }
-
-
-      if (
-        !data ||
-        !data.user
-      ) {
-
-        throw new Error(
-          "O Supabase não retornou o usuário."
-        );
-      }
-
-
-      usuarioAtual =
-        await pegarPerfil(
-          data.user
+        showMessage(
+          "Erro ao comunicar com o Supabase."
         );
 
+      } finally {
 
-      mostrarAplicacao();
+        if (button) {
 
-      atualizarPerfilTela();
+          button.disabled = false;
 
-      await atualizarTudo();
+          button.textContent =
+            "Criar conta";
 
+        }
 
-    } catch (erro) {
-
-      console.error(
-        "ERRO COMPLETO NO LOGIN:",
-        erro
-      );
-
-
-      let mensagem =
-        erro?.message ||
-        "Não foi possível fazer login.";
-
-
-      if (
-        mensagem.toLowerCase().includes(
-          "email not confirmed"
-        )
-      ) {
-
-        mensagem =
-          "Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada.";
       }
 
-
-      if (
-        mensagem.toLowerCase().includes(
-          "invalid login credentials"
-        )
-      ) {
-
-        mensagem =
-          "E-mail ou senha incorretos.";
-      }
-
-
-      mostrarMensagem(
-        loginMessage,
-        mensagem
-      );
-
-
-    } finally {
-
-      loginButton.disabled =
-        false;
-
-      loginButton.textContent =
-        "Entrar";
     }
-  }
-);
+  );
 
-
-// ============================================================
-// ENTER LOGIN
-// ============================================================
-
-loginPassword?.addEventListener(
-  "keydown",
-  function (event) {
-
-    if (
-      event.key === "Enter"
-    ) {
-
-      loginButton?.click();
-    }
-  }
-);
-
-
-// ============================================================
-// ATUALIZAR PERFIL NA TELA
-// ============================================================
-
-function atualizarPerfilTela() {
-
-  if (!usuarioAtual) {
-    return;
-  }
-
-
-  const userName =
-    document.getElementById(
-      "userName"
-    );
-
-
-  const profileName =
-    document.getElementById(
-      "profileName"
-    );
-
-
-  const profileEmail =
-    document.getElementById(
-      "profileEmail"
-    );
-
-
-  const profileAccountType =
-    document.getElementById(
-      "profileAccountType"
-    );
-
-
-  const profileCompany =
-    document.getElementById(
-      "profileCompany"
-    );
-
-
-  if (userName) {
-
-    userName.textContent =
-      usuarioAtual.nome ||
-      "Usuário";
-  }
-
-
-  if (profileName) {
-
-    profileName.textContent =
-      usuarioAtual.nome ||
-      "Usuário";
-  }
-
-
-  if (profileEmail) {
-
-    profileEmail.textContent =
-      usuarioAtual.email ||
-      "—";
-  }
-
-
-  if (profileAccountType) {
-
-    const tipos = {
-
-      pessoal:
-        "Pessoal",
-
-      empresa:
-        "Empresa",
-
-      ambos:
-        "Pessoal + Empresa"
-    };
-
-
-    profileAccountType.textContent =
-      tipos[
-        usuarioAtual.tipo
-      ] ||
-      "Pessoal";
-  }
-
-
-  if (profileCompany) {
-
-    profileCompany.textContent =
-      usuarioAtual.empresa ||
-      "—";
-  }
 }
 
 
@@ -1071,450 +576,452 @@ function atualizarPerfilTela() {
 // LOGOUT
 // ============================================================
 
-logoutButton?.addEventListener(
-  "click",
-  async function () {
+async function logout() {
 
-    try {
+  try {
 
+    const {
+      error
+    } =
       await supabaseClient.auth.signOut();
 
-    } catch (erro) {
+
+    if (error) {
 
       console.error(
         "Erro ao sair:",
-        erro
+        error
       );
+
+      return;
+
     }
 
 
-    usuarioAtual =
-      null;
+    transactions = [];
+
+    showAuth();
 
 
-    mostrarLogin();
+  } catch (error) {
+
+    console.error(
+      "Erro no logout:",
+      error
+    );
+
+  }
+
+}
+
+
+if (logoutButton) {
+
+  logoutButton.addEventListener(
+    "click",
+    logout
+  );
+
+}
+
+
+const mobileLogout =
+  document.getElementById(
+    "mobileLogout"
+  );
+
+
+if (mobileLogout) {
+
+  mobileLogout.addEventListener(
+    "click",
+    logout
+  );
+
+}
+
+
+// ============================================================
+// OBSERVAR MUDANÇAS DE AUTENTICAÇÃO
+// ============================================================
+
+supabaseClient.auth.onAuthStateChange(
+  function (event, session) {
+
+    console.log(
+      "Auth:",
+      event
+    );
+
+
+    if (
+      session?.user &&
+      event !== "SIGNED_OUT"
+    ) {
+
+      currentUser =
+        session.user;
+
+    }
+
+
+    if (event === "SIGNED_OUT") {
+
+      showAuth();
+
+    }
+
   }
 );
 
 
 // ============================================================
-// LANÇAMENTOS
+// TRANSAÇÕES
 // ============================================================
 
-async function pegarLancamentos() {
+async function loadTransactions() {
 
-  if (!usuarioAtual) {
+  /*
+    Por enquanto usamos localStorage
+    para as transações.
 
-    return [];
-  }
+    Assim conseguimos testar todo o
+    sistema financeiro sem depender
+    da tabela do banco.
+  */
 
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("transactions")
-      .select("*")
-      .eq(
-        "user_id",
-        usuarioAtual.id
-      )
-      .order(
-        "data",
-        {
-          ascending: false
-        }
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
+  if (!currentUser) return;
 
 
-  if (error) {
+  const key =
+    "controles_transactions_" +
+    currentUser.id;
+
+
+  try {
+
+    const saved =
+      localStorage.getItem(key);
+
+
+    if (saved) {
+
+      transactions =
+        JSON.parse(saved);
+
+    } else {
+
+      transactions = [];
+
+    }
+
+  } catch (error) {
 
     console.error(
-      "Erro ao buscar lançamentos:",
+      "Erro ao carregar transações:",
       error
     );
 
-    throw error;
+    transactions = [];
+
   }
 
 
-  return (
-    data || []
-  ).map(
-    function (item) {
+  updateDashboard();
 
-      return {
-
-        id:
-          item.id,
-
-        tipo:
-          item.tipo,
-
-        descricao:
-          item.descricao,
-
-        valor:
-          Number(item.valor) || 0,
-
-        categoria:
-          item.categoria,
-
-        dataISO:
-          item.data,
-
-        data:
-          formatarData(
-            item.data
-          ),
-
-        criadoEm:
-          item.created_at
-      };
-    }
-  );
 }
 
 
 // ============================================================
-// SALVAR LANÇAMENTO
+// SALVAR TRANSAÇÕES
 // ============================================================
 
-async function salvarLancamento(
-  dados
-) {
+function saveTransactions() {
 
-  if (!usuarioAtual) {
+  if (!currentUser) return;
 
-    throw new Error(
-      "Usuário não autenticado."
+
+  const key =
+    "controles_transactions_" +
+    currentUser.id;
+
+
+  try {
+
+    localStorage.setItem(
+      key,
+      JSON.stringify(transactions)
     );
+
+  } catch (error) {
+
+    console.error(
+      "Erro ao salvar transações:",
+      error
+    );
+
   }
 
+}
 
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("transactions")
-      .insert({
 
-        user_id:
-          usuarioAtual.id,
+// ============================================================
+// ADICIONAR ENTRADA
+// ============================================================
 
-        tipo:
-          dados.tipo,
+const incomeForm =
+  document.getElementById(
+    "incomeForm"
+  );
 
-        descricao:
-          dados.descricao,
 
-        valor:
-          dados.valor,
+if (incomeForm) {
 
-        categoria:
-          dados.categoria,
+  incomeForm.addEventListener(
+    "submit",
+    function (event) {
 
-        data:
-          dados.data
+      event.preventDefault();
+
+
+      const description =
+        document
+          .getElementById(
+            "incomeDescription"
+          )
+          ?.value
+          .trim();
+
+
+      const amount =
+        Number(
+          document
+            .getElementById(
+              "incomeAmount"
+            )
+            ?.value
+        );
+
+
+      const category =
+        document
+          .getElementById(
+            "incomeCategory"
+          )
+          ?.value;
+
+
+      const date =
+        document
+          .getElementById(
+            "incomeDate"
+          )
+          ?.value || today();
+
+
+      if (!description) {
+
+        alert(
+          "Digite uma descrição."
+        );
+
+        return;
+
+      }
+
+
+      if (!amount || amount <= 0) {
+
+        alert(
+          "Digite um valor válido."
+        );
+
+        return;
+
+      }
+
+
+      transactions.push({
+
+        id:
+          Date.now().toString(),
+
+        description:
+
+          description,
+
+        amount:
+
+          amount,
+
+        category:
+
+          category,
+
+        date:
+
+          date,
+
+        type:
+
+          "income"
+
       });
 
 
-  if (error) {
+      saveTransactions();
 
-    console.error(
-      "Erro ao salvar lançamento:",
-      error
-    );
+      incomeForm.reset();
 
-    throw error;
-  }
-}
+      setDefaultDates();
 
+      updateDashboard();
 
-// ============================================================
-// EDITAR LANÇAMENTO
-// ============================================================
-
-async function editarLancamento(
-  id,
-  dados
-) {
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("transactions")
-      .update({
-
-        tipo:
-          dados.tipo,
-
-        descricao:
-          dados.descricao,
-
-        valor:
-          dados.valor,
-
-        categoria:
-          dados.categoria,
-
-        data:
-          dados.data
-      })
-      .eq(
-        "id",
-        id
-      )
-      .eq(
-        "user_id",
-        usuarioAtual.id
+      alert(
+        "Entrada adicionada com sucesso!"
       );
 
+    }
+  );
 
-  if (error) {
-
-    console.error(
-      "Erro ao editar lançamento:",
-      error
-    );
-
-    throw error;
-  }
 }
 
 
 // ============================================================
-// EXCLUIR LANÇAMENTO
+// ADICIONAR DESPESA
 // ============================================================
 
-async function excluirLancamento(
-  id
-) {
+const expenseForm =
+  document.getElementById(
+    "expenseForm"
+  );
 
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("transactions")
-      .delete()
-      .eq(
-        "id",
-        id
-      )
-      .eq(
-        "user_id",
-        usuarioAtual.id
+
+if (expenseForm) {
+
+  expenseForm.addEventListener(
+    "submit",
+    function (event) {
+
+      event.preventDefault();
+
+
+      const description =
+        document
+          .getElementById(
+            "expenseDescription"
+          )
+          ?.value
+          .trim();
+
+
+      const amount =
+        Number(
+          document
+            .getElementById(
+              "expenseAmount"
+            )
+            ?.value
+        );
+
+
+      const category =
+        document
+          .getElementById(
+            "expenseCategory"
+          )
+          ?.value;
+
+
+      const date =
+        document
+          .getElementById(
+            "expenseDate"
+          )
+          ?.value || today();
+
+
+      if (!description) {
+
+        alert(
+          "Digite uma descrição."
+        );
+
+        return;
+
+      }
+
+
+      if (!amount || amount <= 0) {
+
+        alert(
+          "Digite um valor válido."
+        );
+
+        return;
+
+      }
+
+
+      transactions.push({
+
+        id:
+          Date.now().toString(),
+
+        description:
+
+          description,
+
+        amount:
+
+          amount,
+
+        category:
+
+          category,
+
+        date:
+
+          date,
+
+        type:
+
+          "expense"
+
+      });
+
+
+      saveTransactions();
+
+      expenseForm.reset();
+
+      setDefaultDates();
+
+      updateDashboard();
+
+      alert(
+        "Despesa adicionada com sucesso!"
       );
 
+    }
+  );
 
-  if (error) {
-
-    console.error(
-      "Erro ao excluir lançamento:",
-      error
-    );
-
-    throw error;
-  }
 }
 
 
 // ============================================================
-// MODAL
+// DASHBOARD
 // ============================================================
 
-const transactionModal =
-  document.getElementById(
-    "transactionModal"
-  );
+function updateDashboard() {
 
+  let income = 0;
 
-const closeTransactionModal =
-  document.getElementById(
-    "closeTransactionModal"
-  );
+  let expense = 0;
 
 
-const cancelTransactionButton =
-  document.getElementById(
-    "cancelTransactionButton"
-  );
+  transactions.forEach(
+    function (transaction) {
 
-
-const saveTransactionButton =
-  document.getElementById(
-    "saveTransactionButton"
-  );
-
-
-function fecharModal() {
-
-  transactionModal?.classList.add(
-    "hidden"
-  );
-
-  idEditando =
-    null;
-
-  const message =
-    document.getElementById(
-      "transactionMessage"
-    );
-
-  if (message) {
-
-    message.textContent = "";
-  }
-}
-
-
-function abrirModal(
-  tipo = "income",
-  id = null
-) {
-
-  idEditando =
-    id;
-
-
-  const type =
-    document.getElementById(
-      "transactionType"
-    );
-
-
-  const description =
-    document.getElementById(
-      "transactionDescription"
-    );
-
-
-  const amount =
-    document.getElementById(
-      "transactionAmount"
-    );
-
-
-  const category =
-    document.getElementById(
-      "transactionCategory"
-    );
-
-
-  const date =
-    document.getElementById(
-      "transactionDate"
-    );
-
-
-  if (type) {
-
-    type.value =
-      tipo;
-  }
-
-
-  if (description) {
-
-    description.value =
-      "";
-  }
-
-
-  if (amount) {
-
-    amount.value =
-      "";
-  }
-
-
-  if (category) {
-
-    category.value =
-      "outros";
-  }
-
-
-  if (date) {
-
-    const hoje =
-      new Date()
-        .toISOString()
-        .split("T")[0];
-
-    date.value =
-      hoje;
-  }
-
-
-  if (id !== null) {
-
-    pegarLancamentos()
-      .then(
-        function (lancamentos) {
-
-          const item =
-            lancamentos.find(
-              function (l) {
-
-                return String(l.id) ===
-                  String(id);
-              }
-            );
-
-
-          if (!item) {
-
-            alert(
-              "Lançamento não encontrado."
-            );
-
-            fecharModal();
-
-            return;
-          }
-
-
-          if (type) {
-
-            type.value =
-              item.tipo;
-          }
-
-
-          if (description) {
-
-            description.value =
-              item.descricao || "";
-          }
-
-
-          if (amount) {
-
-            amount.value =
-              item.valor
-                .toFixed(2)
-                .replace(".", ",");
-          }
-
-
-          if (category) {
-
-            category.value =
-              item.categoria ||
-              "outros";
-          }
-
-
-          if (date) {
-
-            date.value =
-              item.data
+      const amount =
+        Number
