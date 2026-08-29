@@ -1,3 +1,4 @@
+alert("APP JS CARREGOU");
 /* =====================================================
    CONTROLES - APP JAVASCRIPT
    Sistema financeiro
@@ -1193,3 +1194,8 @@ location.reload();
 
 
 });
+document.getElementById("openTransactionBtn").onclick = function(){
+
+alert("BOTÃO FUNCIONOU");
+
+};
