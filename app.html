@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ControleS - Dashboard</title>
+
+<link rel="stylesheet" href="app.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+</head>
+
+
+<body>
+
+
+<div class="app-layout">
+
+
+<!-- MENU LATERAL -->
+
+<aside class="sidebar">
+
+
+<div class="brand">
+
+<div class="logo-icon">
+$
+</div>
+
+<span>
+ControleS
+</span>
+
+</div>
+
+
+
+<nav>
+
+
+<button class="menu-item active">
+📊 Dashboard
+</button>
+
+
+<button class="menu-item">
+💰 Receitas
+</button>
+
+
+<button class="menu-item">
+💸 Despesas
+</button>
+
+
+<button class="menu-item">
+🎯 Metas
+</button>
+
+
+<button class="menu-item">
+📅 Calendário
+</button>
+
+
+<button class="menu-item">
+🧾 Recibos
+</button>
+
+
+<button class="menu-item">
+📈 Relatórios
+</button>
+
+
+</nav>
+
+
+
+<div class="sidebar-footer">
+
+<button>
+⚙ Configurações
+</button>
+
+
+<button>
+🚪 Sair
+</button>
+
+
+</div>
+
+
+</aside>
+
+
+
+
+
+<!-- CONTEÚDO PRINCIPAL -->
+
+<main class="main-content">
+
+
+<header class="topbar">
+
+
+<div>
+
+<h1>
+Olá, Felipe 👋
+</h1>
+
+<p>
+Aqui está sua visão financeira.
+</p>
+
+</div>
+
+
+
+<div class="profile">
+
+<div class="avatar">
+F
+</div>
+
+
+<div>
+
+<strong>
+Felipe
+</strong>
+
+<span>
+Premium
+</span>
+
+</div>
+
+
+</div>
+
+
+</header>
+
+  <!-- ================= CARDS PRINCIPAIS ================= -->
+
+<section class="summary-cards">
+
+
+<div class="summary-card balance">
+
+<span>
+Saldo disponível
+</span>
+
+<h2 id="balanceValue">
+R$ 0,00
+</h2>
+
+<small>
+▲ 12% este mês
+</small>
+
+</div>
+
+
+
+<div class="summary-card income">
+
+<span>
+Receitas
+</span>
+
+<h2 id="incomeValue">
+R$ 0,00
+</h2>
+
+<small>
+Entradas financeiras
+</small>
+
+</div>
+
+
+
+
+<div class="summary-card expense">
+
+<span>
+Despesas
+</span>
+
+<h2 id="expenseValue">
+R$ 0,00
+</h2>
+
+<small>
+Gastos realizados
+</small>
+
+</div>
+
+
+
+
+<div class="summary-card goal">
+
+<span>
+Economia
+</span>
+
+<h2 id="economyValue">
+0%
+</h2>
+
+<small>
+Meta mensal
+</small>
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+<!-- ================= AÇÕES ================= -->
+
+<section class="quick-actions">
+
+
+<button id="addIncomeBtn">
+
+💰
+Adicionar receita
+
+</button>
+
+
+
+<button id="addExpenseBtn">
+
+💸
+Adicionar despesa
+
+</button>
+
+
+
+<button id="exportBtn">
+
+📄
+Exportar dados
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+
+<!-- ================= ÁREA DE GRÁFICOS ================= -->
+
+
+<section class="dashboard-grid">
+
+
+
+<div class="panel chart-panel">
+
+
+<div class="panel-header">
+
+<h3>
+Evolução financeira
+</h3>
+
+</div>
+
+
+<div class="chart-container">
+
+<canvas id="financeChart"></canvas>
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="panel">
+
+
+<div class="panel-header">
+
+<h3>
+Análise por categoria
+</h3>
+
+</div>
+
+
+<div class="chart-container">
+
+<canvas id="categoryChart"></canvas>
+
+</div>
+
+
+</div>
+
+
+
+</section>
+
+<!-- ================= ÚLTIMAS MOVIMENTAÇÕES ================= -->
+
+<section class="panel transactions-panel">
+
+
+<div class="panel-header">
+
+
+<h3>
+Últimas movimentações
+</h3>
+
+
+<button class="view-all">
+Ver todas
+</button>
+
+
+</div>
+
+
+
+
+
+<div id="recentTransactions" class="transactions-list">
+
+
+<div class="empty-state">
+
+<p>
+Nenhuma movimentação registrada.
+</p>
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<!-- ================= TABELA DE TRANSAÇÕES ================= -->
+
+
+<section class="panel">
+
+
+<div class="panel-header">
+
+
+<h3>
+Todas as transações
+</h3>
+
+
+</div>
+
+
+
+
+
+<div class="filters">
+
+
+<input
+type="text"
+id="searchInput"
+placeholder="Pesquisar..."
+>
+
+
+
+<select id="typeFilter">
+
+<option value="all">
+Todos
+</option>
+
+<option value="income">
+Receitas
+</option>
+
+<option value="expense">
+Despesas
+</option>
+
+
+</select>
+
+
+
+
+<select id="categoryFilter">
+
+<option value="all">
+Todas categorias
+</option>
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+<div id="allTransactions">
+
+
+<div class="empty-state">
+
+<p>
+Suas movimentações aparecerão aqui.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+<!-- ================= MODAL LANÇAMENTO ================= -->
+
+
+<div id="transactionModal" class="modal hidden">
+
+
+
+<div class="modal-overlay"></div>
+
+
+
+
+<div class="modal-box">
+
+
+
+<div class="modal-header">
+
+
+<h2>
+Novo lançamento
+</h2>
+
+
+<button id="closeModal">
+×
+</button>
+
+
+</div>
+
+
+
+
+
+
+<form id="transactionForm">
+
+
+
+<div class="type-selector">
+
+
+<label class="type-option active">
+
+
+<input 
+type="radio"
+name="transactionType"
+value="income"
+checked
+>
+
+
+<span>
+💰 Receita
+</span>
+
+
+</label>
+
+
+
+
+
+<label class="type-option">
+
+
+<input
+type="radio"
+name="transactionType"
+value="expense"
+>
+
+
+<span>
+💸 Despesa
+</span>
+
+
+</label>
+
+
+
+</div>
+
+
+
+
+
+
+
+<input
+id="descriptionInput"
+type="text"
+placeholder="Descrição"
+required
+>
+
+
+
+
+
+<input
+id="amountInput"
+type="number"
+placeholder="Valor"
+required
+>
+
+
+
+
+
+<input
+id="dateInput"
+type="date"
+required
+>
+
+
+
+
+
+<select id="transactionCategory">
+
+
+<option>
+Alimentação
+</option>
+
+
+<option>
+Moradia
+</option>
+
+
+<option>
+Transporte
+</option>
+
+
+<option>
+Salário
+</option>
+
+
+<option>
+Outros
+</option>
+
+
+</select>
+
+
+
+
+
+
+<textarea
+id="noteInput"
+placeholder="Observação"
+></textarea>
+
+
+
+
+
+<button type="submit">
+
+Salvar lançamento
+
+</button>
+
+
+
+</form>
+
+
+
+</div>
+
+
+
+</div>
+
+<!-- ================= RELATÓRIOS ================= -->
+
+<section class="dashboard-grid">
+
+
+<div class="panel">
+
+
+<div class="panel-header">
+
+<h3>
+Resumo financeiro
+</h3>
+
+</div>
+
+
+<div class="report-item">
+
+<span>
+Total recebido
+</span>
+
+<strong id="reportIncome">
+R$ 0,00
+</strong>
+
+</div>
+
+
+
+
+<div class="report-item">
+
+<span>
+Total gasto
+</span>
+
+<strong id="reportExpense">
+R$ 0,00
+</strong>
+
+</div>
+
+
+
+
+<div class="report-item">
+
+<span>
+Saldo final
+</span>
+
+<strong id="reportBalance">
+R$ 0,00
+</strong>
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="panel">
+
+
+<div class="panel-header">
+
+<h3>
+Categorias
+</h3>
+
+</div>
+
+
+<div id="categoriesGrid" class="categories-grid">
+
+
+<p>
+Nenhuma categoria cadastrada.
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+<!-- ================= RODAPÉ DO APP ================= -->
+
+
+<footer class="app-footer">
+
+
+<p>
+© 2026 ControleS - Controle financeiro inteligente
+</p>
+
+
+</footer>
+
+
+
+</main>
+
+
+</div>
+
+
+
+
+
+
+<!-- JAVASCRIPT -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="app.js"></script>
+
+
+
+</body>
+
+</html>
