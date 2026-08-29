@@ -9,24 +9,550 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Controle Financeiro</title>
+  <title>ControleS - Controle Financeiro</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
 
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    :root {
+      --green-dark: #12372a;
+      --green: #1f513d;
+      --green-light: #2f6b50;
+
+      --orange: #f28c28;
+      --orange-dark: #d96f12;
+      --orange-light: #fff1df;
+
+      --white: #ffffff;
+      --gray-bg: #f5f7f6;
+      --gray: #6b7280;
+      --gray-light: #e5e7eb;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: var(--gray-bg);
+      color: #1f2937;
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /* =========================
+       LOGIN
+    ========================= */
+
+    #authScreen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background:
+        linear-gradient(
+          135deg,
+          var(--green-dark),
+          var(--green)
+        );
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 430px;
+    }
+
+    .brand {
+      text-align: center;
+      color: white;
+      margin-bottom: 25px;
+    }
+
+    .brand-icon {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 15px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--orange);
+      color: white;
+      font-size: 38px;
+      font-weight: 800;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .brand h1 {
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .brand p {
+      margin-top: 7px;
+      opacity: 0.8;
+      font-size: 14px;
+    }
+
+    .auth-card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 5px;
+      background: #f3f4f6;
+      padding: 5px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      border: none;
+      padding: 12px;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--gray);
+      font-weight: 600;
+    }
+
+    .auth-tab.active {
+      background: white;
+      color: var(--green-dark);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-group {
+      margin-bottom: 17px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--gray-light);
+      border-radius: 10px;
+      outline: none;
+      font-size: 14px;
+      background: white;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(242, 140, 40, 0.12);
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      background: var(--orange);
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+
+    .primary-btn:hover {
+      background: var(--orange-dark);
+      transform: translateY(-1px);
+    }
+
+    .secondary-btn {
+      border: none;
+      padding: 12px 16px;
+      border-radius: 9px;
+      background: var(--green);
+      color: white;
+      font-weight: 600;
+    }
+
+    .auth-message {
+      margin-top: 15px;
+      padding: 11px;
+      border-radius: 9px;
+      font-size: 13px;
+      display: none;
+    }
+
+    .auth-message.error {
+      display: block;
+      background: var(--red-light);
+      color: var(--red);
+    }
+
+    .auth-message.success {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    /* =========================
+       APP
+    ========================= */
+
+    #appScreen {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 250px;
+      background: var(--green-dark);
+      color: white;
+      padding: 22px 15px;
+      z-index: 20;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 10px 25px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .sidebar-logo span {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--orange);
+      border-radius: 11px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .menu button {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.75);
+      padding: 13px;
+      text-align: left;
+      border-radius: 9px;
+      font-weight: 500;
+    }
+
+    .menu button:hover,
+    .menu button.active {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .logout-btn {
+      position: absolute;
+      left: 15px;
+      right: 15px;
+      bottom: 20px;
+      border: none;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      padding: 12px;
+      border-radius: 9px;
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 30px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
+    .topbar h2 {
+      font-size: 26px;
+      color: var(--green-dark);
+    }
+
+    .user-name {
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    /* =========================
+       CARDS
+    ========================= */
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .summary-card {
+      background: white;
+      border-radius: 15px;
+      padding: 22px;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.05);
+    }
+
+    .summary-card .label {
+      font-size: 13px;
+      color: var(--gray);
+      margin-bottom: 10px;
+    }
+
+    .summary-card .value {
+      font-size: 25px;
+      font-weight: 800;
+      color: var(--green-dark);
+    }
+
+    .summary-card.income .value {
+      color: var(--green-light);
+    }
+
+    .summary-card.expense .value {
+      color: var(--red);
+    }
+
+    /* =========================
+       DASHBOARD
+    ========================= */
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 15px;
+      padding: 22px;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.05);
+    }
+
+    .panel h3 {
+      color: var(--green-dark);
+      margin-bottom: 18px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+    }
+
+    /* =========================
+       TRANSAÇÕES
+    ========================= */
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      color: var(--green-dark);
+    }
+
+    .transaction-form {
+      background: white;
+      padding: 22px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.05);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .transactions-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    .transactions-table th,
+    .transactions-table td {
+      padding: 14px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .transactions-table th {
+      color: var(--gray);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .income-text {
+      color: var(--green-light);
+      font-weight: 700;
+    }
+
+    .expense-text {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    .mobile-header {
+      display: none;
+    }
+
+    @media (max-width: 850px) {
+
+      .sidebar {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+        padding-top: 75px;
+      }
+
+      .mobile-header {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: var(--green-dark);
+        color: white;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 18px;
+        z-index: 30;
+      }
+
+      .mobile-header strong {
+        font-size: 18px;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .transactions-table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      .topbar {
+        margin-bottom: 20px;
+      }
+
+      .topbar h2 {
+        font-size: 22px;
+      }
+    }
+
+    @media (max-width: 480px) {
+
+      .auth-card {
+        padding: 22px;
+      }
+
+      .brand h1 {
+        font-size: 26px;
+      }
+
+      .main-content {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- =====================================================
-       LOGIN / CADASTRO
-       ===================================================== -->
+  <!-- ==========================================
+       TELA DE LOGIN / CADASTRO
+  =========================================== -->
 
-  <div id="authScreen" class="auth-screen">
+  <div id="authScreen">
 
-    <div class="auth-card">
+    <div class="auth-container">
 
       <div class="brand">
 
@@ -34,188 +560,163 @@
           $
         </div>
 
-        <h1>Controle Financeiro</h1>
+        <h1>ControleS</h1>
 
-        <p>
-          Organize sua vida financeira de forma simples.
-        </p>
+        <p>Seu controle financeiro inteligente</p>
 
       </div>
 
+      <div class="auth-card">
 
-      <!-- =================================================
-           LOGIN
-           ================================================= -->
-
-      <div id="loginForm">
-
-        <h2>Entrar</h2>
-
-        <p class="form-description">
-          Acesse sua conta financeira.
-        </p>
-
-        <label for="loginEmail">
-          E-mail
-        </label>
-
-        <input
-          type="email"
-          id="loginEmail"
-          placeholder="seu@email.com"
-          autocomplete="email"
-        >
-
-        <label for="loginPassword">
-          Senha
-        </label>
-
-        <input
-          type="password"
-          id="loginPassword"
-          placeholder="Sua senha"
-          autocomplete="current-password"
-        >
-
-        <div
-          id="loginMessage"
-          class="message"
-        ></div>
-
-        <button
-          id="loginButton"
-          class="primary-button"
-          type="button"
-        >
-          Entrar
-        </button>
-
-        <div class="switch-auth">
-
-          Ainda não possui uma conta?
+        <div class="auth-tabs">
 
           <button
-            id="showRegisterButton"
             type="button"
+            id="loginTab"
+            class="auth-tab active"
+          >
+            Entrar
+          </button>
+
+          <button
+            type="button"
+            id="registerTab"
+            class="auth-tab"
           >
             Criar conta
           </button>
 
         </div>
 
-      </div>
+
+        <!-- LOGIN -->
+
+        <form id="loginForm">
+
+          <div class="form-group">
+
+            <label for="loginEmail">
+              E-mail
+            </label>
+
+            <input
+              type="email"
+              id="loginEmail"
+              name="email"
+              placeholder="seu@email.com"
+              autocomplete="email"
+              required
+            >
+
+          </div>
 
 
-      <!-- =================================================
-           CADASTRO
-           ================================================= -->
+          <div class="form-group">
 
-      <div
-        id="registerForm"
-        class="hidden"
-      >
+            <label for="loginPassword">
+              Senha
+            </label>
 
-        <h2>Criar conta</h2>
+            <input
+              type="password"
+              id="loginPassword"
+              name="password"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+              required
+            >
 
-        <p class="form-description">
-          Cadastre-se para começar seu controle financeiro.
-        </p>
+          </div>
 
-        <label for="registerName">
-          Nome
-        </label>
-
-        <input
-          type="text"
-          id="registerName"
-          placeholder="Seu nome"
-          autocomplete="name"
-        >
-
-        <label for="registerEmail">
-          E-mail
-        </label>
-
-        <input
-          type="email"
-          id="registerEmail"
-          placeholder="seu@email.com"
-          autocomplete="email"
-        >
-
-        <label for="registerPassword">
-          Senha
-        </label>
-
-        <input
-          type="password"
-          id="registerPassword"
-          placeholder="Mínimo de 6 caracteres"
-          autocomplete="new-password"
-        >
-
-        <label for="registerAccountType">
-          Tipo de controle
-        </label>
-
-        <select id="registerAccountType">
-
-          <option value="pessoal">
-            Pessoal
-          </option>
-
-          <option value="empresa">
-            Empresa
-          </option>
-
-          <option value="ambos">
-            Pessoal + Empresa
-          </option>
-
-        </select>
-
-        <div
-          id="companyField"
-          class="hidden"
-        >
-
-          <label for="registerCompany">
-            Nome da empresa
-          </label>
-
-          <input
-            type="text"
-            id="registerCompany"
-            placeholder="Nome da empresa"
-          >
-
-        </div>
-
-        <div
-          id="registerMessage"
-          class="message"
-        ></div>
-
-        <button
-          id="registerButton"
-          class="primary-button"
-          type="button"
-        >
-          Criar minha conta
-        </button>
-
-        <div class="switch-auth">
-
-          Já possui uma conta?
 
           <button
-            id="showLoginButton"
-            type="button"
+            type="submit"
+            id="loginButton"
+            class="primary-btn"
           >
             Entrar
           </button>
 
-        </div>
+        </form>
+
+
+        <!-- CADASTRO -->
+
+        <form
+          id="registerForm"
+          style="display: none;"
+        >
+
+          <div class="form-group">
+
+            <label for="registerName">
+              Nome
+            </label>
+
+            <input
+              type="text"
+              id="registerName"
+              name="name"
+              placeholder="Seu nome"
+              autocomplete="name"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="registerEmail">
+              E-mail
+            </label>
+
+            <input
+              type="email"
+              id="registerEmail"
+              name="email"
+              placeholder="seu@email.com"
+              autocomplete="email"
+              required
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="registerPassword">
+              Senha
+            </label>
+
+            <input
+              type="password"
+              id="registerPassword"
+              name="password"
+              placeholder="Crie uma senha"
+              autocomplete="new-password"
+              minlength="6"
+              required
+            >
+
+          </div>
+
+
+          <button
+            type="submit"
+            id="registerButton"
+            class="primary-btn"
+          >
+            Criar conta
+          </button>
+
+        </form>
+
+
+        <div
+          id="authMessage"
+          class="auth-message"
+        ></div>
 
       </div>
 
@@ -224,36 +725,47 @@
   </div>
 
 
-  <!-- =====================================================
+  <!-- ==========================================
        APLICAÇÃO
-       ===================================================== -->
+  =========================================== -->
 
-  <div
-    id="appScreen"
-    class="app-screen hidden"
-  >
+  <div id="appScreen">
+
+    <!-- MOBILE HEADER -->
+
+    <div class="mobile-header">
+
+      <strong>
+        ControleS
+      </strong>
+
+      <button
+        type="button"
+        id="mobileLogout"
+        style="
+          border:none;
+          background:transparent;
+          color:white;
+          font-size:20px;
+        "
+      >
+        ⇥
+      </button>
+
+    </div>
+
 
     <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
-      <div class="sidebar-brand">
+      <div class="sidebar-logo">
 
-        <div class="brand-icon small">
+        <span>
           $
-        </div>
+        </span>
 
-        <div>
-
-          <strong>
-            Controle Financeiro
-          </strong>
-
-          <span>
-            Gestão simples
-          </span>
-
-        </div>
+        ControleS
 
       </div>
 
@@ -261,59 +773,696 @@
       <nav class="menu">
 
         <button
-          class="menu-item active"
-          data-section="dashboard"
           type="button"
+          id="dashboardMenu"
+          class="active"
         >
-          <span>📊</span>
-          Dashboard
+          📊 Dashboard
         </button>
 
         <button
-          class="menu-item"
-          data-section="transactions"
           type="button"
+          id="incomeMenu"
         >
-          <span>💰</span>
-          Lançamentos
+          💰 Entradas
         </button>
 
         <button
-          class="menu-item"
-          data-section="reports"
           type="button"
+          id="expenseMenu"
         >
-          <span>📈</span>
-          Relatórios
+          💸 Despesas
         </button>
 
         <button
-          class="menu-item"
-          data-section="profile"
           type="button"
+          id="transactionsMenu"
         >
-          <span>👤</span>
-          Meu perfil
+          📋 Transações
         </button>
 
       </nav>
 
 
-      <div class="sidebar-bottom">
-
-        <button
-          id="logoutButton"
-          class="logout-button"
-          type="button"
-        >
-          <span>🚪</span>
-          Sair
-        </button>
-
-      </div>
+      <button
+        type="button"
+        id="logoutButton"
+        class="logout-btn"
+      >
+        Sair da conta
+      </button>
 
     </aside>
 
 
-    <!-- =====================================================
-        
+    <!-- CONTEÚDO -->
+
+    <main class="main-content">
+
+      <div class="topbar">
+
+        <div>
+
+          <h2 id="pageTitle">
+            Dashboard
+          </h2>
+
+          <div
+            class="user-name"
+            id="userName"
+          >
+            Olá!
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================
+           DASHBOARD
+      ====================================== -->
+
+      <section
+        id="dashboardSection"
+        class="section active"
+      >
+
+        <div class="summary-grid">
+
+          <div class="summary-card">
+
+            <div class="label">
+              Saldo atual
+            </div>
+
+            <div
+              class="value"
+              id="balanceValue"
+            >
+              R$ 0,00
+            </div>
+
+          </div>
+
+
+          <div class="summary-card income">
+
+            <div class="label">
+              Total de entradas
+            </div>
+
+            <div
+              class="value"
+              id="incomeValue"
+            >
+              R$ 0,00
+            </div>
+
+          </div>
+
+
+          <div class="summary-card expense">
+
+            <div class="label">
+              Total de despesas
+            </div>
+
+            <div
+              class="value"
+              id="expenseValue"
+            >
+              R$ 0,00
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="dashboard-grid">
+
+          <div class="panel">
+
+            <h3>
+              Resumo financeiro
+            </h3>
+
+            <div class="chart-container">
+
+              <canvas
+                id="financeChart"
+              ></canvas>
+
+            </div>
+
+          </div>
+
+
+          <div class="panel">
+
+            <h3>
+              Últimas transações
+            </h3>
+
+            <div id="recentTransactions">
+
+              <p
+                style="
+                  color:#6b7280;
+                  font-size:14px;
+                "
+              >
+                Nenhuma transação encontrada.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           ENTRADAS
+      ====================================== -->
+
+      <section
+        id="incomeSection"
+        class="section"
+      >
+
+        <div class="section-header">
+
+          <h2>
+            Entradas
+          </h2>
+
+        </div>
+
+
+        <div class="transaction-form">
+
+          <form id="incomeForm">
+
+            <div class="form-grid">
+
+              <div class="form-group">
+
+                <label>
+                  Descrição
+                </label>
+
+                <input
+                  type="text"
+                  id="incomeDescription"
+                  placeholder="Ex.: Salário"
+                  required
+                >
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>
+                  Valor
+                </label>
+
+                <input
+                  type="number"
+                  id="incomeAmount"
+                  placeholder="0,00"
+                  step="0.01"
+                  min="0"
+                  required
+                >
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>
+                  Categoria
+                </label>
+
+                <select id="incomeCategory">
+
+                  <option value="Salário">
+                    Salário
+                  </option>
+
+                  <option value="Freelance">
+                    Freelance
+                  </option>
+
+                  <option value="Investimentos">
+                    Investimentos
+                  </option>
+
+                  <option value="Outros">
+                    Outros
+                  </option>
+
+                </select>
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>
+                  Data
+                </label>
+
+                <input
+                  type="date"
+                  id="incomeDate"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <button
+              type="submit"
+              class="primary-btn"
+            >
+              Adicionar entrada
+            </button>
+
+          </form>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           DESPESAS
+      ====================================== -->
+
+      <section
+        id="expenseSection"
+        class="section"
+      >
+
+        <div class="section-header">
+
+          <h2>
+            Despesas
+          </h2>
+
+        </div>
+
+
+        <div class="transaction-form">
+
+          <form id="expenseForm">
+
+            <div class="form-grid">
+
+              <div class="form-group">
+
+                <label>
+                  Descrição
+                </label>
+
+                <input
+                  type="text"
+                  id="expenseDescription"
+                  placeholder="Ex.: Mercado"
+                  required
+                >
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>
+                  Valor
+                </label>
+
+                <input
+                  type="number"
+                  id="expenseAmount"
+                  placeholder="0,00"
+                  step="0.01"
+                  min="0"
+                  required
+                >
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>
+                  Categoria
+                </label>
+
+                <select id="expenseCategory">
+
+                  <option value="Alimentação">
+                    Alimentação
+                  </option>
+
+                  <option value="Moradia">
+                    Moradia
+                  </option>
+
+                  <option value="Transporte">
+                    Transporte
+                  </option>
+
+                  <option value="Lazer">
+                    Lazer
+                  </option>
+
+                  <option value="Contas">
+                    Contas
+                  </option>
+
+                  <option value="Outros">
+                    Outros
+                  </option>
+
+                </select>
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>
+                  Data
+                </label>
+
+                <input
+                  type="date"
+                  id="expenseDate"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <button
+              type="submit"
+              class="primary-btn"
+            >
+              Adicionar despesa
+            </button>
+
+          </form>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================
+           TRANSAÇÕES
+      ====================================== -->
+
+      <section
+        id="transactionsSection"
+        class="section"
+      >
+
+        <div class="section-header">
+
+          <h2>
+            Transações
+          </h2>
+
+        </div>
+
+
+        <div style="overflow-x:auto;">
+
+          <table class="transactions-table">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Descrição
+                </th>
+
+                <th>
+                  Categoria
+                </th>
+
+                <th>
+                  Data
+                </th>
+
+                <th>
+                  Tipo
+                </th>
+
+                <th>
+                  Valor
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody id="transactionsTableBody">
+
+              <tr>
+
+                <td colspan="5">
+                  Nenhuma transação encontrada.
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- ==========================================
+       SUPABASE
+  =========================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <!-- ==========================================
+       CHART.JS
+  =========================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/chart.js"
+  ></script>
+
+
+  <!-- ==========================================
+       SEU JAVASCRIPT
+  =========================================== -->
+
+  <script src="./script.js"></script>
+
+
+  <!-- ==========================================
+       CONTROLE DAS TELAS
+       NÃO SUBSTITUI O SCRIPT.JS
+  =========================================== -->
+
+  <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+      const loginTab =
+        document.getElementById("loginTab");
+
+      const registerTab =
+        document.getElementById("registerTab");
+
+      const loginForm =
+        document.getElementById("loginForm");
+
+      const registerForm =
+        document.getElementById("registerForm");
+
+
+      if (loginTab) {
+
+        loginTab.addEventListener("click", function () {
+
+          loginTab.classList.add("active");
+
+          registerTab.classList.remove("active");
+
+          loginForm.style.display = "block";
+
+          registerForm.style.display = "none";
+
+        });
+
+      }
+
+
+      if (registerTab) {
+
+        registerTab.addEventListener("click", function () {
+
+          registerTab.classList.add("active");
+
+          loginTab.classList.remove("active");
+
+          loginForm.style.display = "none";
+
+          registerForm.style.display = "block";
+
+        });
+
+      }
+
+
+      const menuMap = {
+
+        dashboardMenu: "dashboardSection",
+
+        incomeMenu: "incomeSection",
+
+        expenseMenu: "expenseSection",
+
+        transactionsMenu: "transactionsSection"
+
+      };
+
+
+      Object.keys(menuMap).forEach(function (menuId) {
+
+        const button =
+          document.getElementById(menuId);
+
+        if (!button) return;
+
+
+        button.addEventListener("click", function () {
+
+          Object.values(menuMap).forEach(function (sectionId) {
+
+            const section =
+              document.getElementById(sectionId);
+
+            if (section) {
+
+              section.classList.remove("active");
+
+            }
+
+          });
+
+
+          Object.keys(menuMap).forEach(function (id) {
+
+            const btn =
+              document.getElementById(id);
+
+            if (btn) {
+
+              btn.classList.remove("active");
+
+            }
+
+          });
+
+
+          const section =
+            document.getElementById(menuMap[menuId]);
+
+          if (section) {
+
+            section.classList.add("active");
+
+          }
+
+
+          button.classList.add("active");
+
+
+          const titles = {
+
+            dashboardMenu: "Dashboard",
+
+            incomeMenu: "Entradas",
+
+            expenseMenu: "Despesas",
+
+            transactionsMenu: "Transações"
+
+          };
+
+
+          const title =
+            document.getElementById("pageTitle");
+
+          if (title) {
+
+            title.textContent =
+              titles[menuId];
+
+          }
+
+        });
+
+      });
+
+
+      const mobileLogout =
+        document.getElementById("mobileLogout");
+
+      const logoutButton =
+        document.getElementById("logoutButton");
+
+
+      if (
+        mobileLogout &&
+        logoutButton
+      ) {
+
+        mobileLogout.addEventListener(
+          "click",
+          function () {
+
+            logoutButton.click();
+
+          }
+        );
+
+      }
+
+    });
+
+  </script>
+
+</body>
+
+</html>
