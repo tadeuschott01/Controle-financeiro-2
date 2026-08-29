@@ -1,9 +1,3 @@
-/* =====================================================
-   CONTROLES - IDENTIDADE VISUAL
-   CSS PARTE 1/3
-===================================================== */
-
-
 :root{
 
 --green-dark:#12372A;
@@ -13,8 +7,8 @@
 --orange:#F28C28;
 --orange-dark:#D96F12;
 
---white:#FFFFFF;
 --background:#F7F7F4;
+--white:#FFFFFF;
 
 --text:#17211B;
 --gray:#6B7280;
@@ -22,7 +16,6 @@
 --border:#E5E7EB;
 
 }
-
 
 
 *{
@@ -34,13 +27,11 @@ box-sizing:border-box;
 }
 
 
-
 html{
 
 scroll-behavior:smooth;
 
 }
-
 
 
 body{
@@ -50,8 +41,6 @@ font-family:'Inter',sans-serif;
 background:var(--background);
 
 color:var(--text);
-
-line-height:1.6;
 
 }
 
@@ -66,29 +55,22 @@ color:inherit;
 }
 
 
-
 button{
 
-border:none;
+font-family:inherit;
 
 cursor:pointer;
 
-font-family:inherit;
+border:none;
 
 }
 
 
 
-
-
-/* =========================
- HEADER
-========================= */
+/* ================= HEADER ================= */
 
 
 .header{
-
-width:100%;
 
 height:80px;
 
@@ -150,33 +132,32 @@ justify-content:center;
 
 border-radius:14px;
 
-font-size:25px;
-
 font-weight:800;
+
+font-size:24px;
 
 }
 
 
 
 
-
-.menu{
+.header nav{
 
 display:flex;
 
 align-items:center;
 
-gap:35px;
+gap:30px;
 
 }
 
 
 
-.menu a{
+.header nav a{
 
 font-size:15px;
 
-font-weight:500;
+font-weight:600;
 
 color:#374151;
 
@@ -184,40 +165,29 @@ color:#374151;
 
 
 
-.menu a:hover{
-
-color:var(--orange);
-
-}
-
-
-
-
-
-.btn-login{
-
-padding:12px 25px;
-
-border-radius:12px;
+.login-button{
 
 background:var(--green-dark);
 
 color:white!important;
 
+padding:12px 25px;
+
+border-radius:12px;
+
 }
 
 
 
 
 
-/* =========================
- HERO
-========================= */
+
+/* ================= HERO ================= */
 
 
 .hero{
 
-min-height:720px;
+min-height:750px;
 
 padding:80px 8%;
 
@@ -233,17 +203,18 @@ background:
 
 linear-gradient(
 135deg,
-#ffffff 0%,
-#f5f8f5 100%
+#ffffff,
+#f3f7f3
 );
 
 }
 
 
 
-.hero-content{
 
-max-width:600px;
+.hero-text{
+
+max-width:620px;
 
 }
 
@@ -253,17 +224,17 @@ max-width:600px;
 
 display:inline-block;
 
-padding:8px 18px;
-
-border-radius:30px;
-
 background:#fff1df;
 
 color:var(--orange-dark);
 
+padding:8px 18px;
+
+border-radius:30px;
+
 font-size:14px;
 
-font-weight:600;
+font-weight:700;
 
 margin-bottom:25px;
 
@@ -272,8 +243,7 @@ margin-bottom:25px;
 
 
 
-
-.hero h1{
+.hero-text h1{
 
 font-size:60px;
 
@@ -290,8 +260,7 @@ margin-bottom:25px;
 
 
 
-
-.hero p{
+.hero-text p{
 
 font-size:19px;
 
@@ -304,37 +273,34 @@ margin-bottom:35px;
 
 
 
-
 .hero-buttons{
 
 display:flex;
 
-gap:20px;
+gap:18px;
 
 }
 
 
 
 
-.btn-primary{
+.primary-button{
 
 background:var(--orange);
 
 color:white;
 
-padding:15px 32px;
+padding:16px 35px;
 
 border-radius:14px;
 
 font-weight:700;
 
-font-size:16px;
-
 }
 
 
 
-.btn-primary:hover{
+.primary-button:hover{
 
 background:var(--orange-dark);
 
@@ -343,17 +309,17 @@ background:var(--orange-dark);
 
 
 
-.btn-secondary{
+.secondary-button{
 
 background:white;
 
 border:1px solid var(--border);
 
-padding:15px 32px;
+padding:16px 35px;
 
 border-radius:14px;
 
-font-weight:600;
+font-weight:700;
 
 }
 
@@ -361,24 +327,19 @@ font-weight:600;
 
 
 
-/* =========================
- NÚMEROS
-========================= */
-
-
-.numbers{
+.hero-info{
 
 display:flex;
 
-gap:45px;
+gap:35px;
 
-margin-top:50px;
+margin-top:45px;
 
 }
 
 
 
-.numbers div{
+.hero-info div{
 
 display:flex;
 
@@ -388,9 +349,9 @@ flex-direction:column;
 
 
 
-.numbers strong{
+.hero-info strong{
 
-font-size:25px;
+font-size:22px;
 
 color:var(--green-dark);
 
@@ -398,9 +359,9 @@ color:var(--green-dark);
 
 
 
-.numbers span{
+.hero-info span{
 
-font-size:14px;
+font-size:13px;
 
 color:var(--gray);
 
@@ -411,12 +372,11 @@ color:var(--gray);
 
 
 
-/* =========================
- PREVIEW DASHBOARD
-========================= */
+
+/* ================= MOCKUP APP ================= */
 
 
-.system-preview{
+.app-preview{
 
 width:520px;
 
@@ -424,25 +384,24 @@ width:520px;
 
 
 
-.dashboard-window{
+.app-window{
 
 background:white;
 
-padding:20px;
+border-radius:28px;
 
-border-radius:25px;
+padding:20px;
 
 box-shadow:
 
-0 30px 70px rgba(18,55,42,.15);
+0 30px 80px rgba(18,55,42,.18);
 
 }
 
 
 
 
-
-.window-header{
+.app-top{
 
 display:flex;
 
@@ -454,25 +413,97 @@ margin-bottom:20px;
 
 
 
-.window-header div{
+.app-top span{
 
 width:10px;
 
 height:10px;
 
+background:#ddd;
+
 border-radius:50%;
 
-background:#ddd;
+}
+
+
+
+.app-content{
+
+display:flex;
+
+gap:20px;
 
 }
 
 
 
 
+.app-content aside{
 
-.dashboard-title{
+background:var(--green-dark);
 
-font-weight:700;
+width:150px;
+
+border-radius:18px;
+
+padding:20px;
+
+color:white;
+
+}
+
+
+
+.mini-logo{
+
+font-weight:800;
+
+margin-bottom:25px;
+
+}
+
+
+
+.app-content ul{
+
+list-style:none;
+
+}
+
+
+
+.app-content li{
+
+font-size:13px;
+
+padding:12px 8px;
+
+border-radius:10px;
+
+margin-bottom:8px;
+
+}
+
+
+
+.app-content li.active{
+
+background:rgba(255,255,255,.15);
+
+}
+
+
+
+
+.app-content main{
+
+flex:1;
+
+}
+
+
+
+.app-content h3{
 
 margin-bottom:20px;
 
@@ -480,21 +511,21 @@ margin-bottom:20px;
 
 
 
-.balance-card{
+.balance-box{
 
 background:var(--green-dark);
 
 color:white;
 
-padding:25px;
+padding:22px;
 
-border-radius:20px;
+border-radius:18px;
 
 }
 
 
 
-.balance-card span{
+.balance-box p{
 
 opacity:.8;
 
@@ -502,64 +533,56 @@ opacity:.8;
 
 
 
-.balance-card h2{
+.balance-box h2{
 
-font-size:35px;
+font-size:30px;
 
-margin:10px 0;
+margin:8px 0;
 
 }
 
 
 
-.balance-card p{
+.balance-box span{
 
 color:#9ee7b4;
 
-font-size:14px;
+font-size:13px;
 
 }
 
-/* =====================================================
-   CONTROLES - CSS PARTE 2/3
-===================================================== */
 
 
 
-/* =========================
- MINI CARDS DASHBOARD
-========================= */
-
-
-.mini-cards{
+.small-cards{
 
 display:grid;
 
 grid-template-columns:1fr 1fr;
 
-gap:15px;
+gap:12px;
 
-margin-top:18px;
-
-}
-
-
-
-.mini-cards div{
-
-background:#f8faf8;
-
-padding:18px;
-
-border-radius:16px;
+margin-top:15px;
 
 }
 
 
 
-.mini-cards span{
+.small-cards div{
 
-font-size:13px;
+background:#f5f7f5;
+
+padding:15px;
+
+border-radius:15px;
+
+}
+
+
+
+.small-cards p{
+
+font-size:12px;
 
 color:var(--gray);
 
@@ -567,38 +590,26 @@ color:var(--gray);
 
 
 
-.mini-cards strong{
-
-display:block;
-
-font-size:22px;
+.small-cards strong{
 
 color:var(--green-dark);
 
-margin-top:8px;
+font-size:18px;
 
 }
 
 
 
 
+.fake-chart{
 
+height:120px;
 
-
-/* =========================
- GRÁFICO HERO
-========================= */
-
-
-.chart-box{
-
-height:130px;
+margin-top:15px;
 
 background:#fafafa;
 
-margin-top:20px;
-
-border-radius:18px;
+border-radius:15px;
 
 display:flex;
 
@@ -606,65 +617,57 @@ align-items:end;
 
 justify-content:center;
 
-gap:15px;
+gap:10px;
 
-padding:20px;
+padding:15px;
 
 }
 
 
 
-.chart-bar{
+.fake-chart div{
 
-width:35px;
-
-height:60px;
+width:20px;
 
 background:var(--orange);
 
-border-radius:10px 10px 0 0;
+border-radius:8px 8px 0 0;
+
+height:50%;
 
 }
 
 
 
-.chart-bar:nth-child(2){
+.fake-chart div:nth-child(2){
 
-height:90px;
-
-}
-
-
-
-.chart-bar:nth-child(3){
-
-height:55px;
+height:80%;
 
 }
 
 
+.fake-chart div:nth-child(3){
 
-.chart-bar:nth-child(4){
-
-height:110px;
-
-}
-
-
-
-.chart-bar:nth-child(5){
-
-height:75px;
+height:45%;
 
 }
 
 
+.fake-chart div:nth-child(4){
+
+height:90%;
+
+}
 
 
+.fake-chart div:nth-child(5){
 
+height:65%;
+
+}
 
 /* =========================
- TÍTULOS DE SEÇÃO
+ SEÇÕES GERAIS
 ========================= */
 
 
@@ -716,86 +719,12 @@ font-size:17px;
 
 
 
-
-
-
 /* =========================
- SOLUÇÃO
+ SISTEMA
 ========================= */
 
 
-.solution{
-
-padding:100px 8%;
-
-}
-
-
-
-.solution-cards{
-
-display:flex;
-
-justify-content:center;
-
-gap:30px;
-
-}
-
-
-
-.solution-card{
-
-background:white;
-
-padding:35px;
-
-border-radius:25px;
-
-width:380px;
-
-box-shadow:0 10px 30px rgba(0,0,0,.06);
-
-}
-
-
-
-.solution-card h3{
-
-font-size:22px;
-
-margin-bottom:15px;
-
-}
-
-
-
-.solution-card p{
-
-color:var(--gray);
-
-}
-
-
-
-.solution-card.active{
-
-border:2px solid var(--orange);
-
-}
-
-
-
-
-
-
-
-/* =========================
- BENEFÍCIOS
-========================= */
-
-
-.benefits{
+.system-section{
 
 padding:100px 8%;
 
@@ -805,7 +734,7 @@ background:white;
 
 
 
-.benefit-grid{
+.system-cards{
 
 display:grid;
 
@@ -817,13 +746,13 @@ gap:25px;
 
 
 
-.benefit-card{
+.system-card{
 
-background:#fafafa;
+background:#f8faf8;
 
 padding:35px;
 
-border-radius:22px;
+border-radius:24px;
 
 transition:.3s;
 
@@ -831,7 +760,7 @@ transition:.3s;
 
 
 
-.benefit-card:hover{
+.system-card:hover{
 
 transform:translateY(-8px);
 
@@ -841,7 +770,7 @@ box-shadow:0 15px 35px rgba(0,0,0,.08);
 
 
 
-.icon{
+.system-card div{
 
 font-size:35px;
 
@@ -851,17 +780,19 @@ margin-bottom:20px;
 
 
 
-.benefit-card h3{
+.system-card h3{
 
 color:var(--green-dark);
 
 margin-bottom:12px;
 
+font-size:22px;
+
 }
 
 
 
-.benefit-card p{
+.system-card p{
 
 color:var(--gray);
 
@@ -871,111 +802,26 @@ color:var(--gray);
 
 
 
-
 /* =========================
- SISTEMA COMPLETO
+ DEMONSTRAÇÃO
 ========================= */
 
 
-.product-showcase{
+.demo-section{
 
 padding:100px 8%;
 
-}
-
-
-
-.app-layout{
-
-background:white;
-
-border-radius:30px;
-
-padding:25px;
-
 display:flex;
 
-gap:25px;
+align-items:center;
 
-box-shadow:0 20px 50px rgba(0,0,0,.08);
-
-}
-
-
-
-.sidebar-demo{
-
-width:220px;
-
-background:var(--green-dark);
-
-color:white;
-
-padding:25px;
-
-border-radius:22px;
+gap:60px;
 
 }
 
 
 
-.sidebar-logo{
-
-font-size:22px;
-
-font-weight:800;
-
-margin-bottom:35px;
-
-}
-
-
-
-.sidebar-logo span{
-
-background:var(--orange);
-
-padding:8px 12px;
-
-border-radius:10px;
-
-margin-right:8px;
-
-}
-
-
-
-.sidebar-demo ul{
-
-list-style:none;
-
-}
-
-
-
-.sidebar-demo li{
-
-padding:14px;
-
-border-radius:12px;
-
-margin-bottom:8px;
-
-font-size:14px;
-
-}
-
-
-
-.sidebar-demo li.active{
-
-background:rgba(255,255,255,.15);
-
-}
-
-
-
-.dashboard-demo{
+.demo-text{
 
 flex:1;
 
@@ -983,9 +829,82 @@ flex:1;
 
 
 
+.demo-text span{
+
+color:var(--orange-dark);
+
+font-weight:700;
+
+}
 
 
-.top-dashboard{
+
+.demo-text h2{
+
+font-size:42px;
+
+color:var(--green-dark);
+
+margin:15px 0;
+
+}
+
+
+
+.demo-text p{
+
+color:var(--gray);
+
+margin-bottom:25px;
+
+}
+
+
+
+.demo-text ul{
+
+list-style:none;
+
+}
+
+
+
+.demo-text li{
+
+margin:12px 0;
+
+color:#374151;
+
+font-weight:500;
+
+}
+
+
+
+
+
+/* =========================
+ DASHBOARD DEMO
+========================= */
+
+
+.demo-dashboard{
+
+flex:1;
+
+background:white;
+
+padding:25px;
+
+border-radius:25px;
+
+box-shadow:0 20px 50px rgba(0,0,0,.08);
+
+}
+
+
+
+.demo-header{
 
 display:flex;
 
@@ -999,13 +918,13 @@ margin-bottom:25px;
 
 
 
-.top-dashboard button{
+.demo-header button{
 
 background:var(--orange);
 
 color:white;
 
-padding:12px 20px;
+padding:12px 18px;
 
 border-radius:12px;
 
@@ -1016,34 +935,33 @@ font-weight:700;
 
 
 
-
-.finance-cards{
+.dashboard-cards{
 
 display:grid;
 
 grid-template-columns:repeat(3,1fr);
 
-gap:20px;
+gap:15px;
 
 }
 
 
 
-.finance-card{
+.dashboard-cards div{
 
-background:#f8faf8;
+background:#f5f7f5;
 
-padding:25px;
+padding:18px;
 
-border-radius:20px;
+border-radius:18px;
 
 }
 
 
 
-.finance-card span{
+.dashboard-cards span{
 
-font-size:14px;
+font-size:13px;
 
 color:var(--gray);
 
@@ -1051,11 +969,15 @@ color:var(--gray);
 
 
 
-.finance-card h2{
+.dashboard-cards strong{
+
+display:block;
+
+font-size:22px;
 
 color:var(--green-dark);
 
-margin-top:10px;
+margin-top:8px;
 
 }
 
@@ -1063,21 +985,15 @@ margin-top:10px;
 
 
 
-
-/* =========================
- GRÁFICO FINANCEIRO
-========================= */
-
-
-.financial-chart{
+.chart-area{
 
 background:#fafafa;
 
-padding:25px;
+padding:20px;
 
 border-radius:20px;
 
-margin-top:25px;
+margin-top:20px;
 
 }
 
@@ -1085,7 +1001,7 @@ margin-top:25px;
 
 .bars{
 
-height:180px;
+height:170px;
 
 display:flex;
 
@@ -1093,7 +1009,7 @@ align-items:end;
 
 justify-content:center;
 
-gap:25px;
+gap:18px;
 
 }
 
@@ -1101,7 +1017,7 @@ gap:25px;
 
 .bars div{
 
-width:35px;
+width:30px;
 
 background:var(--orange);
 
@@ -1113,27 +1029,21 @@ border-radius:10px 10px 0 0;
 
 
 
+.recent{
 
-/* TRANSAÇÕES */
-
-
-.transactions{
-
-margin-top:25px;
-
-background:#fff;
+margin-top:20px;
 
 }
 
 
 
-.transaction{
+.movement{
 
 display:flex;
 
 justify-content:space-between;
 
-padding:15px;
+padding:15px 0;
 
 border-bottom:1px solid var(--border);
 
@@ -1141,7 +1051,7 @@ border-bottom:1px solid var(--border);
 
 
 
-.transaction strong{
+.movement strong{
 
 color:var(--green-dark);
 
@@ -1151,13 +1061,12 @@ color:var(--green-dark);
 
 
 
-
 /* =========================
- RECURSOS COMPLETOS
+ RECURSOS
 ========================= */
 
 
-.features-complete{
+.resources{
 
 padding:100px 8%;
 
@@ -1165,7 +1074,7 @@ padding:100px 8%;
 
 
 
-.features-grid{
+.resource-grid{
 
 display:grid;
 
@@ -1177,13 +1086,13 @@ gap:25px;
 
 
 
-.feature-box{
+.resource-item{
 
 background:white;
 
-padding:30px;
+padding:35px;
 
-border-radius:20px;
+border-radius:22px;
 
 box-shadow:0 8px 25px rgba(0,0,0,.05);
 
@@ -1191,17 +1100,25 @@ box-shadow:0 8px 25px rgba(0,0,0,.05);
 
 
 
-.feature-box h3{
+.resource-item:first-letter{
 
-color:var(--green-dark);
-
-margin-bottom:12px;
+font-size:30px;
 
 }
 
 
 
-.feature-box p{
+.resource-item h3{
+
+color:var(--green-dark);
+
+margin:15px 0;
+
+}
+
+
+
+.resource-item p{
 
 color:var(--gray);
 
@@ -1211,13 +1128,12 @@ color:var(--gray);
 
 
 
-
 /* =========================
- COMO FUNCIONA
+ PESSOA EMPRESA
 ========================= */
 
 
-.how-it-works{
+.business-section{
 
 padding:100px 8%;
 
@@ -1227,59 +1143,7 @@ background:white;
 
 
 
-.steps{
-
-display:flex;
-
-justify-content:center;
-
-gap:30px;
-
-}
-
-
-
-.step{
-
-background:#fafafa;
-
-padding:35px;
-
-border-radius:20px;
-
-width:300px;
-
-}
-
-
-
-.step strong{
-
-font-size:40px;
-
-color:var(--orange);
-
-}
-
-/* =====================================================
-   CONTROLES - CSS PARTE 3/3
-===================================================== */
-
-
-/* =========================
- PESSOA E EMPRESA
-========================= */
-
-
-.business-area{
-
-padding:100px 8%;
-
-}
-
-
-
-.business-cards{
+.business-options{
 
 display:flex;
 
@@ -1293,15 +1157,13 @@ gap:30px;
 
 .business-card{
 
-background:white;
-
-width:380px;
+background:#f8faf8;
 
 padding:40px;
 
-border-radius:25px;
+width:380px;
 
-box-shadow:0 10px 30px rgba(0,0,0,.06);
+border-radius:25px;
 
 }
 
@@ -1311,13 +1173,25 @@ box-shadow:0 10px 30px rgba(0,0,0,.06);
 
 border:2px solid var(--orange);
 
+background:white;
+
+}
+
+
+
+.business-icon{
+
+font-size:40px;
+
+margin-bottom:20px;
+
 }
 
 
 
 .business-card h3{
 
-font-size:25px;
+font-size:26px;
 
 color:var(--green-dark);
 
@@ -1331,7 +1205,23 @@ margin-bottom:15px;
 
 color:var(--gray);
 
-margin-bottom:25px;
+}
+
+
+
+.business-card ul{
+
+list-style:none;
+
+margin:25px 0;
+
+}
+
+
+
+.business-card li{
+
+margin:10px 0;
 
 }
 
@@ -1343,9 +1233,272 @@ background:var(--green-dark);
 
 color:white;
 
-padding:13px 25px;
+padding:14px 25px;
 
 border-radius:12px;
+
+}
+
+
+
+
+/* =========================
+ MÓDULOS
+========================= */
+
+
+.modules-section{
+
+padding:100px 8%;
+
+}
+
+
+
+.modules{
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:25px;
+
+}
+
+
+
+.module-card{
+
+background:white;
+
+padding:30px;
+
+border-radius:25px;
+
+box-shadow:0 10px 30px rgba(0,0,0,.06);
+
+}
+
+
+
+.module-card h3{
+
+color:var(--green-dark);
+
+margin-bottom:12px;
+
+}
+
+
+
+.module-card p{
+
+color:var(--gray);
+
+}
+
+
+
+.module-preview{
+
+margin-top:25px;
+
+background:#f8faf8;
+
+padding:15px;
+
+border-radius:15px;
+
+}
+
+
+
+.module-preview button{
+
+background:var(--orange);
+
+color:white;
+
+padding:10px;
+
+border-radius:10px;
+
+margin-bottom:15px;
+
+}
+
+
+
+.module-preview div{
+
+display:flex;
+
+justify-content:space-between;
+
+padding:12px 0;
+
+border-bottom:1px solid var(--border);
+
+}
+
+/* =========================
+ METAS FINANCEIRAS
+========================= */
+
+
+.progress{
+
+margin-top:25px;
+
+background:#f8faf8;
+
+padding:20px;
+
+border-radius:15px;
+
+}
+
+
+
+.progress span{
+
+display:block;
+
+font-weight:600;
+
+margin-bottom:10px;
+
+}
+
+
+
+.progress > div{
+
+height:12px;
+
+background:#e5e7eb;
+
+border-radius:20px;
+
+overflow:hidden;
+
+}
+
+
+
+.progress > div div{
+
+height:100%;
+
+width:70%;
+
+background:var(--orange);
+
+border-radius:20px;
+
+}
+
+
+
+.progress strong{
+
+display:block;
+
+margin-top:10px;
+
+color:var(--green-dark);
+
+}
+
+
+
+
+
+
+/* =========================
+ CALENDÁRIO
+========================= */
+
+
+.calendar-preview{
+
+display:grid;
+
+grid-template-columns:repeat(5,1fr);
+
+gap:8px;
+
+margin-top:20px;
+
+}
+
+
+
+.calendar-preview div{
+
+background:var(--green-dark);
+
+color:white;
+
+padding:15px 5px;
+
+text-align:center;
+
+border-radius:10px;
+
+font-size:12px;
+
+}
+
+
+
+
+
+/* =========================
+ RECIBOS
+========================= */
+
+
+.receipt-preview{
+
+background:white;
+
+border:1px dashed var(--green-dark);
+
+padding:25px;
+
+margin-top:20px;
+
+text-align:center;
+
+font-weight:700;
+
+color:var(--green-dark);
+
+}
+
+
+
+
+
+/* =========================
+ RELATÓRIOS
+========================= */
+
+
+.report-preview{
+
+background:#f8faf8;
+
+padding:20px;
+
+border-radius:15px;
+
+margin-top:20px;
+
+line-height:2;
+
+color:var(--green-dark);
 
 }
 
@@ -1358,7 +1511,7 @@ border-radius:12px;
 ========================= */
 
 
-.plans{
+.plans-section{
 
 padding:100px 8%;
 
@@ -1382,9 +1535,9 @@ gap:30px;
 
 .plan-card{
 
-background:#fafafa;
+width:360px;
 
-width:350px;
+background:#f8faf8;
 
 padding:40px;
 
@@ -1424,8 +1577,6 @@ margin:20px 0;
 
 font-size:16px;
 
-font-weight:500;
-
 color:var(--gray);
 
 }
@@ -1446,7 +1597,7 @@ margin-bottom:30px;
 
 margin:12px 0;
 
-color:#4b5563;
+color:#374151;
 
 }
 
@@ -1458,11 +1609,11 @@ width:100%;
 
 padding:15px;
 
-border-radius:14px;
-
 background:var(--green-dark);
 
 color:white;
+
+border-radius:14px;
 
 font-weight:700;
 
@@ -1470,11 +1621,11 @@ font-weight:700;
 
 
 
+
+
 .plan-card.premium{
 
 background:var(--green-dark);
-
-color:white;
 
 }
 
@@ -1506,7 +1657,7 @@ background:var(--orange);
 
 
 
-.badge{
+.popular{
 
 position:absolute;
 
@@ -1518,7 +1669,7 @@ background:var(--orange);
 
 color:white;
 
-padding:8px 15px;
+padding:8px 18px;
 
 border-radius:20px;
 
@@ -1527,7 +1678,6 @@ font-size:13px;
 font-weight:700;
 
 }
-
 
 
 
@@ -1548,57 +1698,81 @@ background:#f5f7f5;
 
 
 
-.login-box{
+.login-container{
 
-max-width:420px;
+max-width:900px;
 
 margin:auto;
 
 background:white;
 
-padding:40px;
+padding:50px;
 
-border-radius:25px;
+border-radius:30px;
 
-box-shadow:0 15px 40px rgba(0,0,0,.08);
+display:flex;
 
-text-align:center;
+align-items:center;
+
+justify-content:space-between;
+
+gap:40px;
+
+box-shadow:0 20px 50px rgba(0,0,0,.08);
 
 }
 
 
 
-.login-box h2{
+.login-text{
+
+flex:1;
+
+}
+
+
+
+.login-text h2{
+
+font-size:35px;
 
 color:var(--green-dark);
 
-margin-bottom:10px;
+margin-bottom:15px;
 
 }
 
 
 
-.login-box p{
+.login-text p{
 
 color:var(--gray);
 
-margin-bottom:25px;
+}
+
+
+
+
+
+.login-form{
+
+width:350px;
 
 }
 
 
 
-.login-box input{
+.login-form input{
 
 width:100%;
 
 padding:15px;
 
-margin-bottom:15px;
-
 border:1px solid var(--border);
 
 border-radius:12px;
+
+margin-bottom:15px;
 
 font-size:15px;
 
@@ -1606,15 +1780,31 @@ font-size:15px;
 
 
 
-.login-box button{
+.login-form button{
 
 width:100%;
+
+padding:15px;
+
+background:var(--orange);
+
+color:white;
+
+border-radius:12px;
+
+font-weight:700;
 
 }
 
 
 
-.login-box a{
+.login-form a{
+
+display:block;
+
+text-align:center;
+
+margin-top:15px;
 
 color:var(--orange-dark);
 
@@ -1626,15 +1816,75 @@ font-weight:700;
 
 
 
+/* =========================
+ SEGURANÇA
+========================= */
+
+
+.security-section{
+
+padding:70px 8%;
+
+}
+
+
+
+.security-box{
+
+max-width:700px;
+
+margin:auto;
+
+background:white;
+
+padding:40px;
+
+border-radius:25px;
+
+text-align:center;
+
+box-shadow:0 10px 30px rgba(0,0,0,.06);
+
+}
+
+
+
+.security-box div{
+
+font-size:45px;
+
+margin-bottom:15px;
+
+}
+
+
+
+.security-box h2{
+
+color:var(--green-dark);
+
+margin-bottom:15px;
+
+}
+
+
+
+.security-box p{
+
+color:var(--gray);
+
+}
 
 /* =========================
  FAQ
 ========================= */
 
 
-.faq{
+.faq-section{
 
 padding:100px 8%;
+
+background:white;
 
 }
 
@@ -1642,7 +1892,7 @@ padding:100px 8%;
 
 .faq-list{
 
-max-width:800px;
+max-width:850px;
 
 margin:auto;
 
@@ -1652,15 +1902,13 @@ margin:auto;
 
 .faq-item{
 
-background:white;
+background:#f8faf8;
 
 padding:25px;
 
-margin-bottom:15px;
-
 border-radius:18px;
 
-box-shadow:0 8px 20px rgba(0,0,0,.05);
+margin-bottom:15px;
 
 }
 
@@ -1669,6 +1917,8 @@ box-shadow:0 8px 20px rgba(0,0,0,.05);
 .faq-item h3{
 
 color:var(--green-dark);
+
+font-size:18px;
 
 margin-bottom:10px;
 
@@ -1686,15 +1936,14 @@ color:var(--gray);
 
 
 
-
 /* =========================
  CTA FINAL
 ========================= */
 
 
-.final-cta{
+.final-section{
 
-padding:80px 8%;
+padding:90px 8%;
 
 background:var(--green-dark);
 
@@ -1706,32 +1955,43 @@ color:white;
 
 
 
-.final-cta h2{
+.final-section h2{
 
-font-size:40px;
+font-size:42px;
 
-margin-bottom:15px;
+margin-bottom:20px;
 
 }
 
 
 
-.final-cta p{
+.final-section p{
 
-margin-bottom:30px;
+font-size:18px;
 
 color:#d1d5db;
 
+margin-bottom:35px;
+
 }
 
 
 
-.final-cta .btn-primary{
+.final-section button{
 
 background:var(--orange);
 
-}
+color:white;
 
+padding:16px 35px;
+
+border-radius:14px;
+
+font-weight:700;
+
+font-size:16px;
+
+}
 
 
 
@@ -1748,33 +2008,39 @@ background:#0c241b;
 
 color:white;
 
-padding:40px 8%;
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-flex-wrap:wrap;
-
-gap:20px;
+padding:60px 8% 30px;
 
 }
 
 
 
-.footer-logo{
+.footer-brand{
 
 display:flex;
 
 align-items:center;
 
-gap:10px;
+gap:15px;
 
-font-size:22px;
+margin-bottom:40px;
 
-font-weight:800;
+}
+
+
+
+.footer-brand h3{
+
+font-size:25px;
+
+}
+
+
+
+.footer-brand p{
+
+color:#d1d5db;
+
+margin-left:10px;
 
 }
 
@@ -1784,7 +2050,31 @@ font-weight:800;
 
 display:flex;
 
-gap:25px;
+justify-content:space-between;
+
+max-width:800px;
+
+}
+
+
+
+.footer-links div{
+
+display:flex;
+
+flex-direction:column;
+
+gap:12px;
+
+}
+
+
+
+.footer-links h4{
+
+font-size:18px;
+
+margin-bottom:10px;
 
 }
 
@@ -1800,6 +2090,26 @@ font-size:14px;
 
 
 
+.copyright{
+
+margin-top:40px;
+
+padding-top:20px;
+
+border-top:1px solid rgba(255,255,255,.15);
+
+text-align:center;
+
+color:#9ca3af;
+
+font-size:14px;
+
+}
+
+
+
+
+
 
 
 /* =========================
@@ -1807,7 +2117,7 @@ font-size:14px;
 ========================= */
 
 
-@media(max-width:1100px){
+@media(max-width:1200px){
 
 
 .hero{
@@ -1819,23 +2129,15 @@ text-align:center;
 }
 
 
-.system-preview{
+.app-preview{
 
-width:100%;
-
-max-width:520px;
+width:90%;
 
 }
 
 
-.menu{
 
-display:none;
-
-}
-
-
-.numbers{
+.hero-info{
 
 justify-content:center;
 
@@ -1843,7 +2145,7 @@ justify-content:center;
 
 
 
-.app-layout{
+.demo-section{
 
 flex-direction:column;
 
@@ -1851,28 +2153,13 @@ flex-direction:column;
 
 
 
-.sidebar-demo{
-
-width:100%;
-
-}
-
-
-
-.finance-cards{
-
-grid-template-columns:1fr;
-
-}
-
-
-
 }
 
 
 
 
-@media(max-width:768px){
+
+@media(max-width:900px){
 
 
 
@@ -1884,17 +2171,102 @@ padding:0 5%;
 
 
 
-.hero{
+.header nav{
 
-padding:60px 5%;
+display:none;
 
 }
 
 
 
-.hero h1{
 
-font-size:40px;
+.hero-text h1{
+
+font-size:42px;
+
+}
+
+
+
+.system-cards,
+
+.resource-grid,
+
+.modules{
+
+grid-template-columns:1fr;
+
+}
+
+
+
+.business-options,
+
+.plans-container{
+
+flex-direction:column;
+
+align-items:center;
+
+}
+
+
+
+.dashboard-cards{
+
+grid-template-columns:1fr;
+
+}
+
+
+
+.login-container{
+
+flex-direction:column;
+
+}
+
+
+
+.login-form{
+
+width:100%;
+
+}
+
+
+
+.footer-links{
+
+flex-direction:column;
+
+gap:30px;
+
+}
+
+
+
+}
+
+
+
+
+
+@media(max-width:600px){
+
+
+
+.hero{
+
+padding:50px 5%;
+
+}
+
+
+
+.hero-text h1{
+
+font-size:34px;
 
 }
 
@@ -1908,7 +2280,7 @@ flex-direction:column;
 
 
 
-.numbers{
+.hero-info{
 
 flex-direction:column;
 
@@ -1918,57 +2290,23 @@ gap:20px;
 
 
 
-.section-title h2{
-
-font-size:32px;
-
-}
-
-
-
-.solution-cards,
-
-.business-cards,
-
-.plans-container,
-
-.steps{
+.app-content{
 
 flex-direction:column;
 
-align-items:center;
-
 }
 
 
 
-.solution-card,
-
-.business-card,
-
-.plan-card,
-
-.step{
+.app-content aside{
 
 width:100%;
 
-max-width:400px;
-
 }
 
 
 
-.benefit-grid,
-
-.features-grid{
-
-grid-template-columns:1fr;
-
-}
-
-
-
-.final-cta h2{
+.section-title h2{
 
 font-size:30px;
 
@@ -1976,19 +2314,35 @@ font-size:30px;
 
 
 
-.footer{
+.demo-text h2{
 
-flex-direction:column;
-
-text-align:center;
+font-size:30px;
 
 }
 
 
 
-.footer-links{
+.final-section h2{
 
-flex-direction:column;
+font-size:30px;
+
+}
+
+
+
+.plan-card,
+
+.business-card{
+
+width:100%;
+
+}
+
+
+
+.calendar-preview{
+
+grid-template-columns:repeat(3,1fr);
 
 }
 
