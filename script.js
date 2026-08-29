@@ -1,8 +1,9 @@
 // ============================================================
-// CONTROLES - SCRIPT.JS
-// Login + Cadastro + Sessão + Finanças
-// Compatível com o HTML enviado
+// CONTROLES - SCRIPT COMPLETO
+// Login + Cadastro + Sessão + Entradas + Despesas
+// Transações + Saldo + Gráfico + Editar + Excluir
 // ============================================================
+
 
 // ============================================================
 // SUPABASE
@@ -14,16 +15,21 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
 
-let supabaseClient = null;
 
-if (window.supabase) {
-  supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-} else {
+// Verifica se a biblioteca do Supabase foi carregada
+if (!window.supabase) {
   console.error("Supabase não foi carregado.");
+  alert("Erro: o Supabase não foi carregado.");
 }
+
+const supabaseClient =
+  window.supabase
+    ? window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      )
+    : null;
+
 
 // ============================================================
 // VARIÁVEIS
@@ -33,53 +39,80 @@ let currentUser = null;
 let transactions = [];
 let financeChart = null;
 
+
 // ============================================================
 // ELEMENTOS
 // ============================================================
 
-const authScreen = document.getElementById("authScreen");
-const appScreen = document.getElementById("appScreen");
+const authScreen =
+  document.getElementById("authScreen");
 
-const loginForm = document.getElementById("loginForm");
-const registerForm = document.getElementById("registerForm");
+const appScreen =
+  document.getElementById("appScreen");
 
-const loginTab = document.getElementById("loginTab");
-const registerTab = document.getElementById("registerTab");
+const loginForm =
+  document.getElementById("loginForm");
 
-const authMessage = document.getElementById("authMessage");
+const registerForm =
+  document.getElementById("registerForm");
 
-const loginButton = document.getElementById("loginButton");
-const registerButton = document.getElementById("registerButton");
+const loginTab =
+  document.getElementById("loginTab");
 
-const logoutButton = document.getElementById("logoutButton");
-const mobileLogout = document.getElementById("mobileLogout");
+const registerTab =
+  document.getElementById("registerTab");
+
+const authMessage =
+  document.getElementById("authMessage");
+
+const loginButton =
+  document.getElementById("loginButton");
+
+const registerButton =
+  document.getElementById("registerButton");
+
+const logoutButton =
+  document.getElementById("logoutButton");
+
+const mobileLogout =
+  document.getElementById("mobileLogout");
+
 
 // ============================================================
 // MENSAGENS
 // ============================================================
 
 function showMessage(message, type = "error") {
+
   if (!authMessage) {
     alert(message);
     return;
   }
 
   authMessage.textContent = message;
-  authMessage.className = "auth-message " + type;
+
+  authMessage.className =
+    "auth-message " + type;
 }
 
+
 function clearMessage() {
+
   if (!authMessage) return;
 
   authMessage.textContent = "";
-  authMessage.className = "auth-message";
+
+  authMessage.className =
+    "auth-message";
 }
+
 
 // ============================================================
 // ABAS
 // ============================================================
 
 function showLoginForm() {
+
   if (loginForm) {
     loginForm.style.display = "block";
   }
@@ -97,7 +130,9 @@ function showLoginForm() {
   }
 }
 
+
 function showRegisterForm() {
+
   if (loginForm) {
     loginForm.style.display = "none";
   }
@@ -115,29 +150,41 @@ function showRegisterForm() {
   }
 }
 
-if (loginTab) {
-  loginTab.addEventListener("click", function (event) {
-    event.preventDefault();
 
-    clearMessage();
-    showLoginForm();
-  });
+if (loginTab) {
+
+  loginTab.addEventListener(
+    "click",
+    function () {
+
+      clearMessage();
+
+      showLoginForm();
+    }
+  );
 }
+
 
 if (registerTab) {
-  registerTab.addEventListener("click", function (event) {
-    event.preventDefault();
 
-    clearMessage();
-    showRegisterForm();
-  });
+  registerTab.addEventListener(
+    "click",
+    function () {
+
+      clearMessage();
+
+      showRegisterForm();
+    }
+  );
 }
 
+
 // ============================================================
-// MOSTRAR APLICAÇÃO
+// MOSTRAR APP
 // ============================================================
 
 function showApp(user) {
+
   currentUser = user;
 
   if (authScreen) {
@@ -148,28 +195,43 @@ function showApp(user) {
     appScreen.style.display = "block";
   }
 
+
   const userName =
     document.getElementById("userName");
 
+
   if (userName) {
+
     const name =
       user?.user_metadata?.name ||
       user?.user_metadata?.nome ||
       user?.email ||
       "Usuário";
 
-    userName.textContent = "Olá, " + name;
+    userName.textContent =
+      "Olá, " + name;
   }
+
+
+  activateSection(
+    "dashboardSection",
+    "dashboardMenu",
+    "Dashboard"
+  );
 
   loadTransactions();
 }
 
+
 // ============================================================
-// MOSTRAR LOGIN
+// MOSTRAR AUTENTICAÇÃO
 // ============================================================
 
 function showAuth() {
+
   currentUser = null;
+
+  transactions = [];
 
   if (appScreen) {
     appScreen.style.display = "none";
@@ -178,367 +240,61 @@ function showAuth() {
   if (authScreen) {
     authScreen.style.display = "flex";
   }
+
+  updateDashboard();
 }
 
-// ============================================================
-// LOGIN
-// ============================================================
-
-if (loginForm) {
-  loginForm.addEventListener("submit", async function (event) {
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
-    clearMessage();
-
-    const emailInput =
-      document.getElementById("loginEmail");
-
-    const passwordInput =
-      document.getElementById("loginPassword");
-
-    const email =
-      emailInput
-        ? emailInput.value.trim()
-        : "";
-
-    const password =
-      passwordInput
-        ? passwordInput.value
-        : "";
-
-    if (!email) {
-      showMessage("Digite seu e-mail.");
-      return;
-    }
-
-    if (!password) {
-      showMessage("Digite sua senha.");
-      return;
-    }
-
-    if (!supabaseClient) {
-      showMessage(
-        "Erro: o Supabase não foi carregado."
-      );
-      return;
-    }
-
-    if (loginButton) {
-      loginButton.disabled = true;
-      loginButton.textContent = "Entrando...";
-    }
-
-    try {
-      const result =
-        await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
-
-      const data = result.data;
-      const error = result.error;
-
-      console.log("LOGIN:", data, error);
-
-      if (error) {
-        const message =
-          String(error.message || "").toLowerCase();
-
-        if (
-          message.includes("email not confirmed") ||
-          message.includes("email not verified")
-        ) {
-          showMessage(
-            "Seu e-mail ainda não foi confirmado. Confirme o e-mail da sua conta antes de entrar."
-          );
-          return;
-        }
-
-        if (
-          message.includes("invalid login credentials")
-        ) {
-          showMessage(
-            "E-mail ou senha incorretos."
-          );
-          return;
-        }
-
-        showMessage(
-          error.message ||
-          "Não foi possível entrar."
-        );
-
-        return;
-      }
-
-      if (data && data.user) {
-        showApp(data.user);
-      } else {
-        showMessage(
-          "Não foi possível iniciar sua sessão."
-        );
-      }
-
-    } catch (error) {
-      console.error(
-        "Erro inesperado no login:",
-        error
-      );
-
-      showMessage(
-        "Erro ao comunicar com o Supabase."
-      );
-
-    } finally {
-      if (loginButton) {
-        loginButton.disabled = false;
-        loginButton.textContent = "Entrar";
-      }
-    }
-  });
-}
 
 // ============================================================
-// CADASTRO
-// ============================================================
-
-if (registerForm) {
-  registerForm.addEventListener(
-    "submit",
-    async function (event) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-
-      clearMessage();
-
-      const nameInput =
-        document.getElementById("registerName");
-
-      const emailInput =
-        document.getElementById("registerEmail");
-
-      const passwordInput =
-        document.getElementById("registerPassword");
-
-      const name =
-        nameInput
-          ? nameInput.value.trim()
-          : "";
-
-      const email =
-        emailInput
-          ? emailInput.value.trim()
-          : "";
-
-      const password =
-        passwordInput
-          ? passwordInput.value
-          : "";
-
-      if (!name) {
-        showMessage("Digite seu nome.");
-        return;
-      }
-
-      if (!email) {
-        showMessage("Digite seu e-mail.");
-        return;
-      }
-
-      if (!password || password.length < 6) {
-        showMessage(
-          "A senha precisa ter pelo menos 6 caracteres."
-        );
-        return;
-      }
-
-      if (!supabaseClient) {
-        showMessage(
-          "Erro: o Supabase não foi carregado."
-        );
-        return;
-      }
-
-      if (registerButton) {
-        registerButton.disabled = true;
-        registerButton.textContent =
-          "Criando conta...";
-      }
-
-      try {
-        const result =
-          await supabaseClient.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-              data: {
-                name: name
-              }
-            }
-          });
-
-        const data = result.data;
-        const error = result.error;
-
-        console.log(
-          "CADASTRO:",
-          data,
-          error
-        );
-
-        if (error) {
-          const message =
-            String(error.message || "")
-              .toLowerCase();
-
-          if (
-            message.includes(
-              "user already registered"
-            )
-          ) {
-            showMessage(
-              "Este e-mail já possui uma conta."
-            );
-            return;
-          }
-
-          showMessage(
-            error.message ||
-            "Não foi possível criar a conta."
-          );
-
-          return;
-        }
-
-        if (data && data.session && data.user) {
-          showApp(data.user);
-          return;
-        }
-
-        showMessage(
-          "Conta criada! Se o Supabase estiver exigindo confirmação, confirme seu e-mail antes de entrar.",
-          "success"
-        );
-
-        registerForm.reset();
-
-        setTimeout(function () {
-          showLoginForm();
-        }, 1500);
-
-      } catch (error) {
-        console.error(
-          "Erro inesperado no cadastro:",
-          error
-        );
-
-        showMessage(
-          "Erro ao comunicar com o Supabase."
-        );
-
-      } finally {
-        if (registerButton) {
-          registerButton.disabled = false;
-          registerButton.textContent =
-            "Criar conta";
-        }
-      }
-    }
-  );
-}
-
-// ============================================================
-// LOGOUT
-// ============================================================
-
-async function logout() {
-  if (!supabaseClient) {
-    showAuth();
-    return;
-  }
-
-  try {
-    const result =
-      await supabaseClient.auth.signOut();
-
-    if (result.error) {
-      console.error(
-        "Erro ao sair:",
-        result.error
-      );
-    }
-
-  } catch (error) {
-    console.error(
-      "Erro no logout:",
-      error
-    );
-
-  } finally {
-    transactions = [];
-    showAuth();
-  }
-}
-
-if (logoutButton) {
-  logoutButton.addEventListener(
-    "click",
-    function (event) {
-      event.preventDefault();
-      logout();
-    }
-  );
-}
-
-if (mobileLogout) {
-  mobileLogout.addEventListener(
-    "click",
-    function (event) {
-      event.preventDefault();
-      logout();
-    }
-  );
-}
-
-// ============================================================
-// SESSÃO
+// VERIFICAR SESSÃO
 // ============================================================
 
 async function checkSession() {
+
   if (!supabaseClient) {
     showAuth();
     return;
   }
 
   try {
-    const result =
+
+    const {
+      data,
+      error
+    } =
       await supabaseClient.auth.getSession();
 
-    const data = result.data;
-    const error = result.error;
 
     if (error) {
+
       console.error(
         "Erro ao verificar sessão:",
         error
       );
 
       showAuth();
+
       return;
     }
+
 
     if (
       data &&
       data.session &&
       data.session.user
     ) {
-      showApp(data.session.user);
+
+      showApp(
+        data.session.user
+      );
+
     } else {
+
       showAuth();
     }
 
   } catch (error) {
+
     console.error(
       "Erro na sessão:",
       error
@@ -548,49 +304,617 @@ async function checkSession() {
   }
 }
 
+
 // ============================================================
-// MONITORAR AUTENTICAÇÃO
+// LOGIN
 // ============================================================
 
-if (supabaseClient) {
-  supabaseClient.auth.onAuthStateChange(
-    function (event, session) {
-      console.log(
-        "Supabase Auth:",
-        event
-      );
+if (loginForm) {
 
-      if (event === "SIGNED_OUT") {
-        showAuth();
+  loginForm.addEventListener(
+    "submit",
+    async function (event) {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      clearMessage();
+
+
+      const emailInput =
+        document.getElementById(
+          "loginEmail"
+        );
+
+      const passwordInput =
+        document.getElementById(
+          "loginPassword"
+        );
+
+
+      const email =
+        emailInput
+          ? emailInput.value.trim()
+          : "";
+
+
+      const password =
+        passwordInput
+          ? passwordInput.value
+          : "";
+
+
+      if (!email) {
+
+        showMessage(
+          "Digite seu e-mail."
+        );
+
+        return;
+      }
+
+
+      if (!password) {
+
+        showMessage(
+          "Digite sua senha."
+        );
+
+        return;
+      }
+
+
+      if (!supabaseClient) {
+
+        showMessage(
+          "Supabase não foi carregado."
+        );
+
+        return;
+      }
+
+
+      if (loginButton) {
+
+        loginButton.disabled = true;
+
+        loginButton.textContent =
+          "Entrando...";
+      }
+
+
+      try {
+
+        console.log(
+          "Tentando fazer login..."
+        );
+
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth
+            .signInWithPassword({
+
+              email: email,
+
+              password: password
+
+            });
+
+
+        console.log(
+          "Resposta do login:",
+          data,
+          error
+        );
+
+
+        if (error) {
+
+          console.error(
+            "Erro no login:",
+            error
+          );
+
+
+          const message =
+            String(
+              error.message || ""
+            ).toLowerCase();
+
+
+          if (
+            message.includes(
+              "email not confirmed"
+            )
+          ) {
+
+            showMessage(
+              "Seu e-mail ainda não foi confirmado. Confirme o e-mail recebido antes de entrar."
+            );
+
+            return;
+          }
+
+
+          if (
+            message.includes(
+              "invalid login credentials"
+            )
+          ) {
+
+            showMessage(
+              "E-mail ou senha incorretos."
+            );
+
+            return;
+          }
+
+
+          showMessage(
+            error.message ||
+            "Não foi possível entrar."
+          );
+
+          return;
+        }
+
+
+        if (
+          data &&
+          data.user
+        ) {
+
+          console.log(
+            "Login realizado com sucesso."
+          );
+
+
+          showApp(
+            data.user
+          );
+
+        } else {
+
+          showMessage(
+            "Login realizado, mas a sessão não foi encontrada."
+          );
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Erro inesperado no login:",
+          error
+        );
+
+
+        showMessage(
+          "Erro ao comunicar com o Supabase."
+        );
+
+      } finally {
+
+        if (loginButton) {
+
+          loginButton.disabled = false;
+
+          loginButton.textContent =
+            "Entrar";
+        }
       }
     }
   );
 }
 
+
 // ============================================================
-// TRANSAÇÕES
+// CADASTRO
 // ============================================================
 
-async function loadTransactions() {
-  if (!currentUser) {
+if (registerForm) {
+
+  registerForm.addEventListener(
+    "submit",
+    async function (event) {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      clearMessage();
+
+
+      const nameInput =
+        document.getElementById(
+          "registerName"
+        );
+
+      const emailInput =
+        document.getElementById(
+          "registerEmail"
+        );
+
+      const passwordInput =
+        document.getElementById(
+          "registerPassword"
+        );
+
+
+      const name =
+        nameInput
+          ? nameInput.value.trim()
+          : "";
+
+
+      const email =
+        emailInput
+          ? emailInput.value.trim()
+          : "";
+
+
+      const password =
+        passwordInput
+          ? passwordInput.value
+          : "";
+
+
+      if (!name) {
+
+        showMessage(
+          "Digite seu nome."
+        );
+
+        return;
+      }
+
+
+      if (!email) {
+
+        showMessage(
+          "Digite seu e-mail."
+        );
+
+        return;
+      }
+
+
+      if (
+        !password ||
+        password.length < 6
+      ) {
+
+        showMessage(
+          "A senha precisa ter pelo menos 6 caracteres."
+        );
+
+        return;
+      }
+
+
+      if (!supabaseClient) {
+
+        showMessage(
+          "Supabase não foi carregado."
+        );
+
+        return;
+      }
+
+
+      if (registerButton) {
+
+        registerButton.disabled = true;
+
+        registerButton.textContent =
+          "Criando conta...";
+      }
+
+
+      try {
+
+        console.log(
+          "Criando conta..."
+        );
+
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth
+            .signUp({
+
+              email: email,
+
+              password: password,
+
+              options: {
+
+                data: {
+
+                  name: name
+
+                }
+
+              }
+
+            });
+
+
+        console.log(
+          "Resposta do cadastro:",
+          data,
+          error
+        );
+
+
+        if (error) {
+
+          console.error(
+            "Erro no cadastro:",
+            error
+          );
+
+
+          const message =
+            String(
+              error.message || ""
+            ).toLowerCase();
+
+
+          if (
+            message.includes(
+              "user already registered"
+            )
+          ) {
+
+            showMessage(
+              "Este e-mail já possui uma conta."
+            );
+
+            return;
+          }
+
+
+          showMessage(
+            error.message ||
+            "Não foi possível criar a conta."
+          );
+
+          return;
+        }
+
+
+        if (
+          data &&
+          data.session &&
+          data.user
+        ) {
+
+          showApp(
+            data.user
+          );
+
+          return;
+        }
+
+
+        showMessage(
+          "Conta criada! Confira seu e-mail para confirmar o cadastro.",
+          "success"
+        );
+
+
+        registerForm.reset();
+
+        showLoginForm();
+
+      } catch (error) {
+
+        console.error(
+          "Erro inesperado no cadastro:",
+          error
+        );
+
+
+        showMessage(
+          "Erro ao comunicar com o Supabase."
+        );
+
+      } finally {
+
+        if (registerButton) {
+
+          registerButton.disabled = false;
+
+          registerButton.textContent =
+            "Criar conta";
+        }
+      }
+    }
+  );
+}
+
+
+// ============================================================
+// LOGOUT
+// ============================================================
+
+async function logout() {
+
+  if (!supabaseClient) {
+
+    showAuth();
+
     return;
   }
 
-  const key =
-    "controles_transactions_" +
-    currentUser.id;
 
   try {
+
+    const {
+      error
+    } =
+      await supabaseClient.auth
+        .signOut();
+
+
+    if (error) {
+
+      console.error(
+        "Erro ao sair:",
+        error
+      );
+
+      return;
+    }
+
+
+    transactions = [];
+
+    showAuth();
+
+  } catch (error) {
+
+    console.error(
+      "Erro no logout:",
+      error
+    );
+  }
+}
+
+
+if (logoutButton) {
+
+  logoutButton.addEventListener(
+    "click",
+    logout
+  );
+}
+
+
+if (mobileLogout) {
+
+  mobileLogout.addEventListener(
+    "click",
+    logout
+  );
+}
+
+
+// ============================================================
+// MONITORAR AUTENTICAÇÃO
+// ============================================================
+
+if (supabaseClient) {
+
+  supabaseClient.auth.onAuthStateChange(
+    function (
+      event,
+      session
+    ) {
+
+      console.log(
+        "Supabase Auth:",
+        event
+      );
+
+
+      if (
+        event ===
+        "SIGNED_OUT"
+      ) {
+
+        showAuth();
+
+        return;
+      }
+
+
+      if (
+        session &&
+        session.user
+      ) {
+
+        currentUser =
+          session.user;
+      }
+
+    }
+  );
+}
+
+
+// ============================================================
+// CHAVE DO LOCALSTORAGE
+// ============================================================
+
+function getStorageKey() {
+
+  if (!currentUser) {
+    return null;
+  }
+
+  return (
+    "controles_transactions_" +
+    currentUser.id
+  );
+}
+
+
+// ============================================================
+// CARREGAR TRANSAÇÕES
+// ============================================================
+
+async function loadTransactions() {
+
+  if (!currentUser) {
+
+    transactions = [];
+
+    updateDashboard();
+
+    return;
+  }
+
+
+  const key =
+    getStorageKey();
+
+
+  try {
+
     const saved =
-      localStorage.getItem(key);
+      localStorage.getItem(
+        key
+      );
+
 
     if (saved) {
-      transactions = JSON.parse(saved);
+
+      const parsed =
+        JSON.parse(saved);
+
+
+      if (Array.isArray(parsed)) {
+
+        transactions =
+          parsed;
+
+      } else {
+
+        transactions = [];
+      }
+
     } else {
+
       transactions = [];
     }
 
   } catch (error) {
+
     console.error(
       "Erro ao carregar transações:",
       error
@@ -599,240 +923,419 @@ async function loadTransactions() {
     transactions = [];
   }
 
+
   updateDashboard();
 }
+
 
 // ============================================================
 // SALVAR TRANSAÇÕES
 // ============================================================
 
 function saveTransactions() {
+
   if (!currentUser) {
-    return;
+
+    alert(
+      "Você precisa estar conectado para salvar uma transação."
+    );
+
+    return false;
   }
 
+
   const key =
-    "controles_transactions_" +
-    currentUser.id;
+    getStorageKey();
+
 
   try {
+
     localStorage.setItem(
       key,
-      JSON.stringify(transactions)
+      JSON.stringify(
+        transactions
+      )
     );
+
+    return true;
+
   } catch (error) {
+
     console.error(
       "Erro ao salvar transações:",
       error
     );
+
+    alert(
+      "Não foi possível salvar a transação."
+    );
+
+    return false;
   }
 }
 
+
 // ============================================================
-// ENTRADAS
+// ADICIONAR ENTRADA
 // ============================================================
 
 const incomeForm =
-  document.getElementById("incomeForm");
+  document.getElementById(
+    "incomeForm"
+  );
+
 
 if (incomeForm) {
+
   incomeForm.addEventListener(
     "submit",
     function (event) {
+
       event.preventDefault();
 
+
       if (!currentUser) {
-        alert("Faça login primeiro.");
+
+        alert(
+          "Faça login para adicionar uma entrada."
+        );
+
         return;
       }
 
+
       const description =
         document
-          .getElementById("incomeDescription")
+          .getElementById(
+            "incomeDescription"
+          )
           ?.value
           .trim();
+
 
       const amount =
         Number(
           document
-            .getElementById("incomeAmount")
+            .getElementById(
+              "incomeAmount"
+            )
             ?.value
         );
 
+
       const category =
         document
-          .getElementById("incomeCategory")
-          ?.value || "Outros";
+          .getElementById(
+            "incomeCategory"
+          )
+          ?.value ||
+        "Outros";
+
 
       const date =
         document
-          .getElementById("incomeDate")
-          ?.value || today();
+          .getElementById(
+            "incomeDate"
+          )
+          ?.value ||
+        today();
+
 
       if (!description) {
-        alert("Digite uma descrição.");
+
+        alert(
+          "Digite uma descrição."
+        );
+
         return;
       }
 
-      if (!amount || amount <= 0) {
-        alert("Digite um valor válido.");
+
+      if (
+        !amount ||
+        amount <= 0
+      ) {
+
+        alert(
+          "Digite um valor válido."
+        );
+
         return;
       }
 
-      transactions.push({
-        id: Date.now().toString(),
-        description: description,
-        amount: amount,
-        category: category,
-        date: date,
-        type: "income"
-      });
 
-      saveTransactions();
+      const transaction = {
 
-      incomeForm.reset();
+        id:
+          Date.now().toString(),
 
-      setDefaultDates();
+        description:
+          description,
 
-      updateDashboard();
+        amount:
+          amount,
 
-      alert(
-        "Entrada adicionada com sucesso!"
+        category:
+          category,
+
+        date:
+          date,
+
+        type:
+          "income"
+
+      };
+
+
+      transactions.push(
+        transaction
       );
+
+
+      if (
+        saveTransactions()
+      ) {
+
+        incomeForm.reset();
+
+        setDefaultDates();
+
+        updateDashboard();
+
+        alert(
+          "Entrada adicionada com sucesso!"
+        );
+      }
     }
   );
 }
 
+
 // ============================================================
-// DESPESAS
+// ADICIONAR DESPESA
 // ============================================================
 
 const expenseForm =
-  document.getElementById("expenseForm");
+  document.getElementById(
+    "expenseForm"
+  );
+
 
 if (expenseForm) {
+
   expenseForm.addEventListener(
     "submit",
     function (event) {
+
       event.preventDefault();
 
+
       if (!currentUser) {
-        alert("Faça login primeiro.");
+
+        alert(
+          "Faça login para adicionar uma despesa."
+        );
+
         return;
       }
 
+
       const description =
         document
-          .getElementById("expenseDescription")
+          .getElementById(
+            "expenseDescription"
+          )
           ?.value
           .trim();
+
 
       const amount =
         Number(
           document
-            .getElementById("expenseAmount")
+            .getElementById(
+              "expenseAmount"
+            )
             ?.value
         );
 
+
       const category =
         document
-          .getElementById("expenseCategory")
-          ?.value || "Outros";
+          .getElementById(
+            "expenseCategory"
+          )
+          ?.value ||
+        "Outros";
+
 
       const date =
         document
-          .getElementById("expenseDate")
-          ?.value || today();
+          .getElementById(
+            "expenseDate"
+          )
+          ?.value ||
+        today();
+
 
       if (!description) {
-        alert("Digite uma descrição.");
+
+        alert(
+          "Digite uma descrição."
+        );
+
         return;
       }
 
-      if (!amount || amount <= 0) {
-        alert("Digite um valor válido.");
+
+      if (
+        !amount ||
+        amount <= 0
+      ) {
+
+        alert(
+          "Digite um valor válido."
+        );
+
         return;
       }
 
-      transactions.push({
-        id: Date.now().toString(),
-        description: description,
-        amount: amount,
-        category: category,
-        date: date,
-        type: "expense"
-      });
 
-      saveTransactions();
+      const transaction = {
 
-      expenseForm.reset();
+        id:
+          Date.now().toString(),
 
-      setDefaultDates();
+        description:
+          description,
 
-      updateDashboard();
+        amount:
+          amount,
 
-      alert(
-        "Despesa adicionada com sucesso!"
+        category:
+          category,
+
+        date:
+          date,
+
+        type:
+          "expense"
+
+      };
+
+
+      transactions.push(
+        transaction
       );
+
+
+      if (
+        saveTransactions()
+      ) {
+
+        expenseForm.reset();
+
+        setDefaultDates();
+
+        updateDashboard();
+
+        alert(
+          "Despesa adicionada com sucesso!"
+        );
+      }
     }
   );
 }
+
 
 // ============================================================
 // DASHBOARD
 // ============================================================
 
 function updateDashboard() {
+
   let income = 0;
+
   let expense = 0;
+
 
   transactions.forEach(
     function (transaction) {
-      const value =
-        Number(transaction.amount || 0);
 
-      if (transaction.type === "income") {
+      const value =
+        Number(
+          transaction.amount || 0
+        );
+
+
+      if (
+        transaction.type ===
+        "income"
+      ) {
+
         income += value;
       }
 
-      if (transaction.type === "expense") {
+
+      if (
+        transaction.type ===
+        "expense"
+      ) {
+
         expense += value;
       }
+
     }
   );
 
+
   const balance =
     income - expense;
+
 
   const balanceValue =
     document.getElementById(
       "balanceValue"
     );
 
+
   const incomeValue =
     document.getElementById(
       "incomeValue"
     );
+
 
   const expenseValue =
     document.getElementById(
       "expenseValue"
     );
 
+
   if (balanceValue) {
+
     balanceValue.textContent =
-      formatMoney(balance);
+      formatMoney(
+        balance
+      );
   }
+
 
   if (incomeValue) {
+
     incomeValue.textContent =
-      formatMoney(income);
+      formatMoney(
+        income
+      );
   }
 
+
   if (expenseValue) {
+
     expenseValue.textContent =
-      formatMoney(expense);
+      formatMoney(
+        expense
+      );
   }
+
 
   renderTransactions();
 
@@ -844,69 +1347,94 @@ function updateDashboard() {
   );
 }
 
+
 // ============================================================
-// TABELA
+// TRANSAÇÕES
 // ============================================================
 
 function renderTransactions() {
+
   const tbody =
     document.getElementById(
       "transactionsTableBody"
     );
 
+
   if (!tbody) {
     return;
   }
+
 
   if (
     !transactions ||
     transactions.length === 0
   ) {
+
     tbody.innerHTML = `
+
       <tr>
-        <td colspan="5">
+
+        <td colspan="6">
+
           Nenhuma transação encontrada.
+
         </td>
+
       </tr>
+
     `;
 
     return;
   }
 
+
   const sorted =
     [...transactions].sort(
       function (a, b) {
+
         return String(
           b.date || ""
         ).localeCompare(
-          String(a.date || "")
+          String(
+            a.date || ""
+          )
         );
+
       }
     );
+
 
   tbody.innerHTML =
     sorted.map(
       function (transaction) {
+
         const isIncome =
-          transaction.type === "income";
+          transaction.type ===
+          "income";
+
 
         const type =
           isIncome
             ? "Entrada"
             : "Despesa";
 
+
         const sign =
           isIncome
             ? "+"
             : "-";
+
 
         const className =
           isIncome
             ? "income-text"
             : "expense-text";
 
+
         return `
+
           <tr>
+
             <td>
               ${escapeHTML(
                 transaction.description
@@ -935,79 +1463,140 @@ function renderTransactions() {
                 transaction.amount
               )}
             </td>
+
+            <td>
+
+              <button
+                type="button"
+                onclick="editTransaction('${transaction.id}')"
+                style="
+                  border:none;
+                  background:#1f513d;
+                  color:white;
+                  padding:7px 10px;
+                  border-radius:6px;
+                  margin-right:5px;
+                "
+              >
+                Editar
+              </button>
+
+              <button
+                type="button"
+                onclick="deleteTransaction('${transaction.id}')"
+                style="
+                  border:none;
+                  background:#dc2626;
+                  color:white;
+                  padding:7px 10px;
+                  border-radius:6px;
+                "
+              >
+                Excluir
+              </button>
+
+            </td>
+
           </tr>
+
         `;
       }
     ).join("");
 }
+
 
 // ============================================================
 // ÚLTIMAS TRANSAÇÕES
 // ============================================================
 
 function renderRecentTransactions() {
+
   const container =
     document.getElementById(
       "recentTransactions"
     );
 
+
   if (!container) {
     return;
   }
+
 
   if (
     !transactions ||
     transactions.length === 0
   ) {
+
     container.innerHTML = `
-      <p style="
-        color:#6b7280;
-        font-size:14px;
-      ">
+
+      <p
+        style="
+          color:#6b7280;
+          font-size:14px;
+        "
+      >
         Nenhuma transação encontrada.
       </p>
+
     `;
 
     return;
   }
 
+
   const recent =
     [...transactions]
       .sort(
         function (a, b) {
+
           return String(
             b.date || ""
           ).localeCompare(
-            String(a.date || "")
+            String(
+              a.date || ""
+            )
           );
+
         }
       )
-      .slice(0, 5);
+      .slice(
+        0,
+        5
+      );
+
 
   container.innerHTML =
     recent.map(
       function (transaction) {
+
         const isIncome =
-          transaction.type === "income";
+          transaction.type ===
+          "income";
+
 
         const sign =
           isIncome
             ? "+"
             : "-";
 
+
         const className =
           isIncome
             ? "income-text"
             : "expense-text";
 
+
         return `
-          <div style="
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            padding:12px 0;
-            border-bottom:1px solid #eee;
-          ">
+
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              align-items:center;
+              padding:12px 0;
+              border-bottom:1px solid #eee;
+            "
+          >
 
             <div>
 
@@ -1017,11 +1606,13 @@ function renderRecentTransactions() {
                 )}
               </strong>
 
-              <div style="
-                font-size:12px;
-                color:#6b7280;
-                margin-top:4px;
-              ">
+              <div
+                style="
+                  font-size:12px;
+                  color:#6b7280;
+                  margin-top:4px;
+                "
+              >
                 ${escapeHTML(
                   transaction.category || ""
                 )}
@@ -1037,10 +1628,12 @@ function renderRecentTransactions() {
             </strong>
 
           </div>
+
         `;
       }
     ).join("");
 }
+
 
 // ============================================================
 // GRÁFICO
@@ -1050,62 +1643,318 @@ function renderChart(
   income,
   expense
 ) {
+
   const canvas =
     document.getElementById(
       "financeChart"
     );
 
+
   if (!canvas) {
     return;
   }
 
-  if (typeof Chart === "undefined") {
+
+  if (
+    typeof Chart ===
+    "undefined"
+  ) {
+
     console.warn(
       "Chart.js não foi carregado."
     );
+
     return;
   }
 
+
   if (financeChart) {
+
     financeChart.destroy();
+
+    financeChart = null;
   }
+
+
+  const hasData =
+    income > 0 ||
+    expense > 0;
+
+
+  if (!hasData) {
+
+    return;
+  }
+
 
   financeChart =
     new Chart(
       canvas,
       {
-        type: "doughnut",
+
+        type:
+          "doughnut",
 
         data: {
+
           labels: [
             "Entradas",
             "Despesas"
           ],
 
           datasets: [
+
             {
+
               data: [
                 income,
                 expense
               ]
+
             }
+
           ]
+
         },
 
         options: {
-          responsive: true,
 
-          maintainAspectRatio: false,
+          responsive:
+            true,
+
+          maintainAspectRatio:
+            false,
 
           plugins: {
+
             legend: {
-              position: "bottom"
+
+              position:
+                "bottom"
+
             }
+
           }
+
         }
+
       }
     );
 }
+
+
+// ============================================================
+// EDITAR TRANSAÇÃO
+// ============================================================
+
+function editTransaction(id) {
+
+  const transaction =
+    transactions.find(
+      function (item) {
+
+        return item.id === id;
+
+      }
+    );
+
+
+  if (!transaction) {
+
+    alert(
+      "Transação não encontrada."
+    );
+
+    return;
+  }
+
+
+  const newDescription =
+    prompt(
+      "Descrição:",
+      transaction.description
+    );
+
+
+  if (
+    newDescription ===
+    null
+  ) {
+
+    return;
+  }
+
+
+  const newAmount =
+    prompt(
+      "Valor:",
+      transaction.amount
+    );
+
+
+  if (
+    newAmount ===
+    null
+  ) {
+
+    return;
+  }
+
+
+  const newCategory =
+    prompt(
+      "Categoria:",
+      transaction.category || ""
+    );
+
+
+  if (
+    newCategory ===
+    null
+  ) {
+
+    return;
+  }
+
+
+  const newDate =
+    prompt(
+      "Data (AAAA-MM-DD):",
+      transaction.date
+    );
+
+
+  if (
+    newDate ===
+    null
+  ) {
+
+    return;
+  }
+
+
+  const amount =
+    Number(
+      String(
+        newAmount
+      ).replace(
+        ",",
+        "."
+      )
+    );
+
+
+  if (
+    !newDescription.trim()
+  ) {
+
+    alert(
+      "A descrição não pode ficar vazia."
+    );
+
+    return;
+  }
+
+
+  if (
+    !amount ||
+    amount <= 0
+  ) {
+
+    alert(
+      "Digite um valor válido."
+    );
+
+    return;
+  }
+
+
+  transaction.description =
+    newDescription.trim();
+
+
+  transaction.amount =
+    amount;
+
+
+  transaction.category =
+    newCategory.trim() ||
+    "Outros";
+
+
+  transaction.date =
+    newDate ||
+    today();
+
+
+  saveTransactions();
+
+  updateDashboard();
+
+
+  alert(
+    "Transação atualizada com sucesso!"
+  );
+}
+
+
+// ============================================================
+// EXCLUIR TRANSAÇÃO
+// ============================================================
+
+function deleteTransaction(id) {
+
+  const transaction =
+    transactions.find(
+      function (item) {
+
+        return item.id === id;
+
+      }
+    );
+
+
+  if (!transaction) {
+
+    alert(
+      "Transação não encontrada."
+    );
+
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      "Deseja realmente excluir esta transação?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  transactions =
+    transactions.filter(
+      function (item) {
+
+        return item.id !== id;
+
+      }
+    );
+
+
+  saveTransactions();
+
+  updateDashboard();
+
+
+  alert(
+    "Transação excluída com sucesso!"
+  );
+}
+
 
 // ============================================================
 // NAVEGAÇÃO
@@ -1116,153 +1965,210 @@ function activateSection(
   menuId,
   title
 ) {
+
   document
-    .querySelectorAll(".section")
+    .querySelectorAll(
+      ".section"
+    )
     .forEach(
       function (section) {
+
         section.classList.remove(
           "active"
         );
+
       }
     );
+
 
   const section =
     document.getElementById(
       sectionId
     );
 
+
   if (section) {
-    section.classList.add("active");
+
+    section.classList.add(
+      "active"
+    );
   }
 
+
   document
-    .querySelectorAll(".menu button")
+    .querySelectorAll(
+      ".menu button"
+    )
     .forEach(
       function (button) {
+
         button.classList.remove(
           "active"
         );
+
       }
     );
+
 
   const menu =
     document.getElementById(
       menuId
     );
 
+
   if (menu) {
-    menu.classList.add("active");
+
+    menu.classList.add(
+      "active"
+    );
   }
+
 
   const pageTitle =
     document.getElementById(
       "pageTitle"
     );
 
+
   if (pageTitle) {
-    pageTitle.textContent = title;
+
+    pageTitle.textContent =
+      title;
   }
 }
+
+
+// ============================================================
+// MENUS
+// ============================================================
 
 const dashboardMenu =
   document.getElementById(
     "dashboardMenu"
   );
 
+
 if (dashboardMenu) {
+
   dashboardMenu.addEventListener(
     "click",
-    function (event) {
-      event.preventDefault();
+    function () {
 
       activateSection(
         "dashboardSection",
         "dashboardMenu",
         "Dashboard"
       );
+
+      updateDashboard();
     }
   );
 }
+
 
 const incomeMenu =
   document.getElementById(
     "incomeMenu"
   );
 
+
 if (incomeMenu) {
+
   incomeMenu.addEventListener(
     "click",
-    function (event) {
-      event.preventDefault();
+    function () {
 
       activateSection(
         "incomeSection",
         "incomeMenu",
         "Entradas"
       );
+
+      setDefaultDates();
     }
   );
 }
+
 
 const expenseMenu =
   document.getElementById(
     "expenseMenu"
   );
 
+
 if (expenseMenu) {
+
   expenseMenu.addEventListener(
     "click",
-    function (event) {
-      event.preventDefault();
+    function () {
 
       activateSection(
         "expenseSection",
         "expenseMenu",
         "Despesas"
       );
+
+      setDefaultDates();
     }
   );
 }
+
 
 const transactionsMenu =
   document.getElementById(
     "transactionsMenu"
   );
 
+
 if (transactionsMenu) {
+
   transactionsMenu.addEventListener(
     "click",
-    function (event) {
-      event.preventDefault();
+    function () {
 
       activateSection(
         "transactionsSection",
         "transactionsMenu",
         "Transações"
       );
+
+      renderTransactions();
     }
   );
 }
+
 
 // ============================================================
 // DATA
 // ============================================================
 
 function today() {
-  const date = new Date();
+
+  const date =
+    new Date();
+
 
   const year =
     date.getFullYear();
 
+
   const month =
     String(
       date.getMonth() + 1
-    ).padStart(2, "0");
+    ).padStart(
+      2,
+      "0"
+    );
+
 
   const day =
     String(
       date.getDate()
-    ).padStart(2, "0");
+    ).padStart(
+      2,
+      "0"
+    );
+
 
   return (
     year +
@@ -1273,41 +2179,67 @@ function today() {
   );
 }
 
+
 function setDefaultDates() {
+
   const incomeDate =
     document.getElementById(
       "incomeDate"
     );
+
 
   const expenseDate =
     document.getElementById(
       "expenseDate"
     );
 
-  if (incomeDate) {
-    incomeDate.value = today();
+
+  if (
+    incomeDate &&
+    !incomeDate.value
+  ) {
+
+    incomeDate.value =
+      today();
   }
 
-  if (expenseDate) {
-    expenseDate.value = today();
+
+  if (
+    expenseDate &&
+    !expenseDate.value
+  ) {
+
+    expenseDate.value =
+      today();
   }
 }
 
+
 // ============================================================
-// DATA FORMATADA
+// FORMATAR DATA
 // ============================================================
 
 function formatDate(value) {
+
   if (!value) {
     return "-";
   }
 
-  const parts =
-    String(value).split("-");
 
-  if (parts.length !== 3) {
+  const parts =
+    String(value).split(
+      "-"
+    );
+
+
+  if (
+    parts.length !==
+    3
+  ) {
+
     return value;
   }
+
 
   return (
     parts[2] +
@@ -1318,39 +2250,61 @@ function formatDate(value) {
   );
 }
 
+
 // ============================================================
-// DINHEIRO
+// FORMATAR DINHEIRO
 // ============================================================
 
 function formatMoney(value) {
+
   return Number(
     value || 0
   ).toLocaleString(
     "pt-BR",
     {
-      style: "currency",
-      currency: "BRL"
+
+      style:
+        "currency",
+
+      currency:
+        "BRL"
+
     }
   );
 }
 
+
 // ============================================================
-// SEGURANÇA
+// SEGURANÇA HTML
 // ============================================================
 
 function escapeHTML(value) {
+
   return String(
     value ?? ""
   )
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
     .replace(
       /'/g,
       "&#039;"
     );
 }
+
 
 // ============================================================
 // INICIALIZAÇÃO
@@ -1359,14 +2313,25 @@ function escapeHTML(value) {
 document.addEventListener(
   "DOMContentLoaded",
   function () {
+
     console.log(
       "ControleS iniciado."
     );
 
+
     setDefaultDates();
 
-    showLoginForm();
+
+    if (
+      loginForm &&
+      registerForm
+    ) {
+
+      showLoginForm();
+    }
+
 
     checkSession();
+
   }
 );
