@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
   >
 
-  <meta name="theme-color" content="#0d2b20">
+  <meta name="theme-color" content="#0b241b">
 
   <title>ControleS</title>
 
@@ -24,876 +23,678 @@
   <link rel="stylesheet" href="style.css">
 </head>
 
-
 <body>
 
-  <div class="app">
+<div class="app">
+
+  <!-- ================= TOPBAR ================= -->
+
+  <header class="topbar">
+
+    <div>
+      <span class="greeting">Olá 👋</span>
+      <h1>Controle<span>S</span></h1>
+    </div>
+
+    <button
+      class="profile-button"
+      id="profileButton"
+    >
+      F
+    </button>
+
+  </header>
 
 
-    <!-- =====================================================
-         TOPO
-    ====================================================== -->
+  <!-- ================= CONTEÚDO ================= -->
 
-    <header class="topbar">
+  <main>
 
-      <div>
-        <span class="hello">Olá 👋</span>
+    <!-- ================= HOME ================= -->
 
-        <h1>ControleS</h1>
+    <section
+      class="page active"
+      id="page-home"
+    >
+
+      <div class="balance-card">
+
+        <div class="balance-top">
+
+          <div>
+            <span>Saldo disponível</span>
+
+            <button
+              id="toggleBalance"
+              class="eye"
+            >
+              👁
+            </button>
+          </div>
+
+          <small>● Atualizado</small>
+
+        </div>
+
+        <strong
+          id="balanceValue"
+          class="balance-value"
+        >
+          R$ 0,00
+        </strong>
+
+        <div class="balance-bottom">
+
+          <span>Seu dinheiro sob controle</span>
+
+          <b id="balancePercent">
+            +0%
+          </b>
+
+        </div>
+
       </div>
 
 
-      <button
-        class="profile-circle"
-        id="profileTop"
-        aria-label="Perfil"
-      >
-        F
-      </button>
+      <!-- RESUMO -->
 
-    </header>
+      <div class="summary">
 
+        <div class="summary-card">
 
-
-    <!-- =====================================================
-         CONTEÚDO PRINCIPAL
-    ====================================================== -->
-
-    <main id="mainContent">
-
-
-      <!-- ===================================================
-           INÍCIO
-      ==================================================== -->
-
-      <section
-        class="page active-page"
-        id="page-home"
-      >
-
-
-        <!-- SALDO -->
-
-        <div class="balance-card">
-
-          <div class="balance-header">
-
-            <div>
-              <span>Saldo disponível</span>
-
-              <button
-                id="toggleBalance"
-                class="eye-button"
-              >
-                👁
-              </button>
-            </div>
-
-            <span class="balance-status">
-              ● Atualizado
-            </span>
-
+          <div class="summary-icon income">
+            ↑
           </div>
-
-
-          <div
-            class="balance-value"
-            id="balanceValue"
-          >
-            R$ 0,00
-          </div>
-
-
-          <div class="balance-footer">
-
-            <span>Seu dinheiro sob controle</span>
-
-            <span id="balanceVariation">
-              +0%
-            </span>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- RECEITA / DESPESA -->
-
-        <div class="summary-grid">
-
-
-          <div class="summary-card">
-
-            <div class="summary-icon income-icon">
-              ↑
-            </div>
-
-            <div>
-
-              <span>Receitas</span>
-
-              <strong id="incomeValue">
-                R$ 0,00
-              </strong>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="summary-card">
-
-            <div class="summary-icon expense-icon">
-              ↓
-            </div>
-
-            <div>
-
-              <span>Despesas</span>
-
-              <strong id="expenseValue">
-                R$ 0,00
-              </strong>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- AÇÕES RÁPIDAS -->
-
-        <div class="quick-actions">
-
-          <button
-            class="quick-button"
-            data-type="income"
-          >
-
-            <span class="quick-plus income-plus">
-              +
-            </span>
-
-            <span>
-              Nova receita
-            </span>
-
-          </button>
-
-
-          <button
-            class="quick-button"
-            data-type="expense"
-          >
-
-            <span class="quick-plus expense-plus">
-              −
-            </span>
-
-            <span>
-              Nova despesa
-            </span>
-
-          </button>
-
-        </div>
-
-
-
-        <!-- GRÁFICO -->
-
-        <div class="section-header">
 
           <div>
+            <span>Receitas</span>
 
-            <small>
-              VISÃO GERAL
-            </small>
-
-            <h2>
-              Evolução financeira
-            </h2>
-
-          </div>
-
-
-          <select id="chartPeriod">
-
-            <option value="month">
-              Este mês
-            </option>
-
-            <option value="all">
-              Geral
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div class="chart-card">
-
-          <div class="chart-empty" id="chartEmpty">
-
-            <div>
-              📊
-            </div>
-
-            <span>
-              Adicione movimentações para visualizar sua evolução.
-            </span>
-
-          </div>
-
-
-          <div
-            class="chart"
-            id="chart"
-          ></div>
-
-        </div>
-
-
-
-        <!-- CATEGORIAS -->
-
-        <div class="section-header">
-
-          <div>
-
-            <small>
-              DESPESAS
-            </small>
-
-            <h2>
-              Por categoria
-            </h2>
-
-          </div>
-
-        </div>
-
-
-        <div
-          class="category-list"
-          id="categoryList"
-        >
-
-        </div>
-
-
-
-        <!-- ÚLTIMAS TRANSAÇÕES -->
-
-        <div class="section-header">
-
-          <div>
-
-            <small>
-              HISTÓRICO
-            </small>
-
-            <h2>
-              Últimas movimentações
-            </h2>
-
-          </div>
-
-
-          <button
-            class="see-all"
-            data-page="transactions"
-          >
-            Ver todas
-          </button>
-
-        </div>
-
-
-        <div
-          class="transaction-list"
-          id="homeTransactions"
-        >
-
-        </div>
-
-
-      </section>
-
-
-
-      <!-- ===================================================
-           TRANSAÇÕES
-      ==================================================== -->
-
-      <section
-        class="page"
-        id="page-transactions"
-      >
-
-        <div class="page-heading">
-
-          <div>
-
-            <small>
-              HISTÓRICO
-            </small>
-
-            <h2>
-              Transações
-            </h2>
-
-          </div>
-
-
-          <button
-            class="filter-button"
-            id="filterButton"
-          >
-            ⚙
-          </button>
-
-        </div>
-
-
-        <div class="transaction-filters">
-
-          <button
-            class="filter active"
-            data-filter="all"
-          >
-            Todas
-          </button>
-
-          <button
-            class="filter"
-            data-filter="income"
-          >
-            Receitas
-          </button>
-
-          <button
-            class="filter"
-            data-filter="expense"
-          >
-            Despesas
-          </button>
-
-        </div>
-
-
-        <div
-          class="transaction-list full-list"
-          id="allTransactions"
-        >
-
-        </div>
-
-      </section>
-
-
-
-      <!-- ===================================================
-           RELATÓRIOS
-      ==================================================== -->
-
-      <section
-        class="page"
-        id="page-reports"
-      >
-
-        <div class="page-heading">
-
-          <div>
-
-            <small>
-              ANÁLISE
-            </small>
-
-            <h2>
-              Relatórios
-            </h2>
-
-          </div>
-
-        </div>
-
-
-        <div class="report-summary">
-
-          <div>
-
-            <span>
-              Receitas
-            </span>
-
-            <strong id="reportIncome">
+            <strong id="incomeValue">
               R$ 0,00
             </strong>
-
           </div>
 
+        </div>
+
+
+        <div class="summary-card">
+
+          <div class="summary-icon expense">
+            ↓
+          </div>
 
           <div>
+            <span>Despesas</span>
 
-            <span>
-              Despesas
-            </span>
-
-            <strong id="reportExpense">
+            <strong id="expenseValue">
               R$ 0,00
             </strong>
-
           </div>
 
         </div>
 
-
-        <div class="report-card">
-
-          <div class="report-title">
-
-            <div>
-
-              <small>
-                DISTRIBUIÇÃO
-              </small>
-
-              <h3>
-                Gastos por categoria
-              </h3>
-
-            </div>
-
-          </div>
+      </div>
 
 
-          <div
-            id="reportCategories"
-            class="report-categories"
-          >
+      <!-- AÇÕES -->
 
-          </div>
+      <div class="quick-actions">
 
+        <button
+          class="quick income-action"
+          data-open-type="income"
+        >
+          <b>+</b>
+          Nova receita
+        </button>
+
+        <button
+          class="quick expense-action"
+          data-open-type="expense"
+        >
+          <b>−</b>
+          Nova despesa
+        </button>
+
+      </div>
+
+
+      <!-- GRÁFICO -->
+
+      <div class="section-title">
+
+        <div>
+          <small>VISÃO GERAL</small>
+          <h2>Movimentação</h2>
         </div>
 
+        <select id="periodSelect">
+          <option value="all">Geral</option>
+          <option value="month">Este mês</option>
+        </select>
 
-        <div class="report-card">
-
-          <div class="report-title">
-
-            <div>
-
-              <small>
-                RESULTADO
-              </small>
-
-              <h3>
-                Resumo financeiro
-              </h3>
-
-            </div>
-
-          </div>
+      </div>
 
 
-          <div class="result-box">
+      <div class="chart-card">
 
-            <span>
-              Resultado atual
-            </span>
-
-            <strong id="reportBalance">
-              R$ 0,00
-            </strong>
-
-            <small id="reportMessage">
-              Comece adicionando suas movimentações.
-            </small>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- ===================================================
-           PERFIL
-      ==================================================== -->
-
-      <section
-        class="page"
-        id="page-profile"
-      >
-
-        <div class="page-heading">
-
-          <div>
-
-            <small>
-              CONTA
-            </small>
-
-            <h2>
-              Meu perfil
-            </h2>
-
-          </div>
-
-        </div>
-
-
-        <div class="profile-card">
-
-          <div class="big-profile">
-            F
-          </div>
-
-          <div>
-
-            <strong>
-              Usuário ControleS
-            </strong>
-
-            <span>
-              Controle financeiro pessoal
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="settings-list">
-
-          <button class="setting-item">
-
-            <span>
-              🎨
-            </span>
-
-            <div>
-
-              <strong>
-                Aparência
-              </strong>
-
-              <small>
-                Verde + laranja
-              </small>
-
-            </div>
-
-            <b>
-              ›
-            </b>
-
-          </button>
-
-
-          <button
-            class="setting-item"
-            id="clearData"
-          >
-
-            <span>
-              🗑️
-            </span>
-
-            <div>
-
-              <strong>
-                Limpar dados
-              </strong>
-
-              <small>
-                Apagar movimentações
-              </small>
-
-            </div>
-
-            <b>
-              ›
-            </b>
-
-          </button>
-
-        </div>
-
-
-        <div class="about-box">
+        <div
+          id="chartEmpty"
+          class="empty-chart"
+        >
+          <div>📊</div>
 
           <strong>
-            ControleS
+            Ainda não há movimentações
           </strong>
 
           <span>
-            Seu dinheiro. Seu controle.
+            Adicione uma receita ou despesa para começar.
           </span>
+        </div>
 
-          <small>
-            Versão 2.0
+        <div
+          id="financialChart"
+          class="financial-chart"
+        ></div>
+
+      </div>
+
+
+      <!-- CATEGORIAS -->
+
+      <div class="section-title">
+
+        <div>
+          <small>DESPESAS</small>
+          <h2>Por categoria</h2>
+        </div>
+
+      </div>
+
+
+      <div
+        id="categoryList"
+        class="category-list"
+      ></div>
+
+
+      <!-- ÚLTIMAS -->
+
+      <div class="section-title">
+
+        <div>
+          <small>HISTÓRICO</small>
+          <h2>Últimas movimentações</h2>
+        </div>
+
+        <button
+          class="see-all"
+          data-page="transactions"
+        >
+          Ver todas
+        </button>
+
+      </div>
+
+
+      <div
+        id="recentTransactions"
+        class="transactions"
+      ></div>
+
+    </section>
+
+
+    <!-- ================= TRANSAÇÕES ================= -->
+
+    <section
+      class="page"
+      id="page-transactions"
+    >
+
+      <div class="page-header">
+
+        <div>
+          <small>HISTÓRICO</small>
+          <h2>Transações</h2>
+        </div>
+
+        <button
+          class="header-add"
+          id="headerAdd"
+        >
+          +
+        </button>
+
+      </div>
+
+
+      <div class="search-box">
+
+        <span>⌕</span>
+
+        <input
+          type="search"
+          id="searchInput"
+          placeholder="Buscar lançamento..."
+        >
+
+      </div>
+
+
+      <div class="filters">
+
+        <button
+          class="filter active"
+          data-filter="all"
+        >
+          Todas
+        </button>
+
+        <button
+          class="filter"
+          data-filter="income"
+        >
+          Receitas
+        </button>
+
+        <button
+          class="filter"
+          data-filter="expense"
+        >
+          Despesas
+        </button>
+
+      </div>
+
+
+      <select
+        id="categoryFilter"
+        class="category-filter"
+      >
+
+        <option value="all">
+          Todas as categorias
+        </option>
+
+        <option value="Alimentação">
+          🛒 Alimentação
+        </option>
+
+        <option value="Transporte">
+          🚗 Transporte
+        </option>
+
+        <option value="Casa">
+          🏠 Casa
+        </option>
+
+        <option value="Lazer">
+          🎮 Lazer
+        </option>
+
+        <option value="Saúde">
+          ❤️ Saúde
+        </option>
+
+        <option value="Educação">
+          📚 Educação
+        </option>
+
+        <option value="Trabalho">
+          💼 Trabalho
+        </option>
+
+        <option value="Outros">
+          📦 Outros
+        </option>
+
+      </select>
+
+
+      <div
+        id="allTransactions"
+        class="transactions full"
+      ></div>
+
+    </section>
+
+
+    <!-- ================= RELATÓRIOS ================= -->
+
+    <section
+      class="page"
+      id="page-reports"
+    >
+
+      <div class="page-header">
+
+        <div>
+          <small>ANÁLISE</small>
+          <h2>Relatórios</h2>
+        </div>
+
+      </div>
+
+
+      <div class="report-summary">
+
+        <div>
+          <span>Receitas</span>
+          <strong id="reportIncome">R$ 0,00</strong>
+        </div>
+
+        <div>
+          <span>Despesas</span>
+          <strong id="reportExpense">R$ 0,00</strong>
+        </div>
+
+      </div>
+
+
+      <div class="report-card">
+
+        <small>DISTRIBUIÇÃO</small>
+
+        <h3>Gastos por categoria</h3>
+
+        <div
+          id="reportCategories"
+          class="report-categories"
+        ></div>
+
+      </div>
+
+
+      <div class="report-card">
+
+        <small>RESULTADO</small>
+
+        <h3>Resumo financeiro</h3>
+
+        <div class="result">
+
+          <span>Saldo atual</span>
+
+          <strong id="reportBalance">
+            R$ 0,00
+          </strong>
+
+          <small id="reportMessage">
+            Comece adicionando suas movimentações.
           </small>
 
         </div>
 
-      </section>
+      </div>
 
-    </main>
+    </section>
 
 
+    <!-- ================= PERFIL ================= -->
 
-    <!-- =====================================================
-         BOTÃO FLUTUANTE
-    ====================================================== -->
+    <section
+      class="page"
+      id="page-profile"
+    >
+
+      <div class="page-header">
+
+        <div>
+          <small>CONTA</small>
+          <h2>Meu perfil</h2>
+        </div>
+
+      </div>
+
+
+      <div class="profile-card">
+
+        <div class="avatar">
+          F
+        </div>
+
+        <div>
+          <strong>Usuário ControleS</strong>
+          <span>Controle financeiro pessoal</span>
+        </div>
+
+      </div>
+
+
+      <div class="settings">
+
+        <button class="setting">
+
+          <div class="setting-icon">
+            🎨
+          </div>
+
+          <div>
+            <strong>Aparência</strong>
+            <span>Verde + laranja</span>
+          </div>
+
+          <b>›</b>
+
+        </button>
+
+
+        <button
+          class="setting"
+          id="clearData"
+        >
+
+          <div class="setting-icon">
+            🗑️
+          </div>
+
+          <div>
+            <strong>Limpar dados</strong>
+            <span>Apagar todas as movimentações</span>
+          </div>
+
+          <b>›</b>
+
+        </button>
+
+      </div>
+
+
+      <div class="about">
+
+        <strong>ControleS</strong>
+
+        <span>
+          Seu dinheiro. Seu controle.
+        </span>
+
+        <small>
+          Versão 2.1
+        </small>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ================= BOTÃO FLUTUANTE ================= -->
+
+  <button
+    id="floatingAdd"
+    class="floating-add"
+  >
+    +
+  </button>
+
+
+  <!-- ================= MENU ================= -->
+
+  <nav class="bottom-nav">
 
     <button
-      class="floating-add"
-      id="floatingAdd"
-      aria-label="Adicionar"
+      class="nav-item active"
+      data-page="home"
+    >
+      <span>⌂</span>
+      <small>Início</small>
+    </button>
+
+
+    <button
+      class="nav-item"
+      data-page="transactions"
+    >
+      <span>↔</span>
+      <small>Transações</small>
+    </button>
+
+
+    <button
+      class="nav-center"
+      id="navAdd"
     >
       +
     </button>
 
 
-
-    <!-- =====================================================
-         MENU INFERIOR
-    ====================================================== -->
-
-    <nav class="bottom-nav">
-
-      <button
-        class="nav-item active"
-        data-page="home"
-      >
-
-        <span>⌂</span>
-
-        <small>
-          Início
-        </small>
-
-      </button>
-
-
-      <button
-        class="nav-item"
-        data-page="transactions"
-      >
-
-        <span>↔</span>
-
-        <small>
-          Transações
-        </small>
-
-      </button>
-
-
-      <button
-        class="nav-add"
-        id="navAdd"
-      >
-
-        <span>
-          +
-        </span>
-
-      </button>
-
-
-      <button
-        class="nav-item"
-        data-page="reports"
-      >
-
-        <span>◔</span>
-
-        <small>
-          Relatórios
-        </small>
-
-      </button>
-
-
-      <button
-        class="nav-item"
-        data-page="profile"
-      >
-
-        <span>♙</span>
-
-        <small>
-          Perfil
-        </small>
-
-      </button>
-
-    </nav>
-
-
-
-    <!-- =====================================================
-         MODAL DE LANÇAMENTO
-    ====================================================== -->
-
-    <div
-      class="modal"
-      id="transactionModal"
+    <button
+      class="nav-item"
+      data-page="reports"
     >
+      <span>◔</span>
+      <small>Relatórios</small>
+    </button>
 
-      <div class="modal-content">
+
+    <button
+      class="nav-item"
+      data-page="profile"
+    >
+      <span>♙</span>
+      <small>Perfil</small>
+    </button>
+
+  </nav>
+
+
+  <!-- ================= MODAL ================= -->
+
+  <div
+    id="modal"
+    class="modal"
+  >
+
+    <div class="modal-box">
+
+      <button
+        id="closeModal"
+        class="modal-close"
+      >
+        ×
+      </button>
+
+
+      <small>LANÇAMENTO</small>
+
+      <h2 id="modalTitle">
+        Nova movimentação
+      </h2>
+
+
+      <div class="type-buttons">
 
         <button
-          class="close-modal"
-          id="closeModal"
+          class="type-button active"
+          data-type="income"
         >
-          ×
+          ↑ Receita
         </button>
 
-
-        <small>
-          NOVA MOVIMENTAÇÃO
-        </small>
-
-        <h2>
-          Adicionar lançamento
-        </h2>
-
-
-        <div class="type-selector">
-
-          <button
-            class="type active"
-            data-type="income"
-          >
-            ↑ Receita
-          </button>
-
-          <button
-            class="type"
-            data-type="expense"
-          >
-            ↓ Despesa
-          </button>
-
-        </div>
-
-
-        <label>
-          Valor
-        </label>
-
-
-        <div class="money-input">
-
-          <span>
-            R$
-          </span>
-
-          <input
-            type="number"
-            id="transactionAmount"
-            placeholder="0,00"
-            min="0"
-            step="0.01"
-          >
-
-        </div>
-
-
-        <label>
-          Descrição
-        </label>
-
-        <input
-          class="input"
-          type="text"
-          id="transactionDescription"
-          placeholder="Ex: Mercado"
-        >
-
-
-        <label>
-          Categoria
-        </label>
-
-        <select
-          class="input"
-          id="transactionCategory"
-        >
-
-          <option value="Alimentação">
-            🛒 Alimentação
-          </option>
-
-          <option value="Transporte">
-            🚗 Transporte
-          </option>
-
-          <option value="Casa">
-            🏠 Casa
-          </option>
-
-          <option value="Lazer">
-            🎮 Lazer
-          </option>
-
-          <option value="Saúde">
-            ❤️ Saúde
-          </option>
-
-          <option value="Educação">
-            📚 Educação
-          </option>
-
-          <option value="Trabalho">
-            💼 Trabalho
-          </option>
-
-          <option value="Outros">
-            📦 Outros
-          </option>
-
-        </select>
-
-
-        <label>
-          Data
-        </label>
-
-        <input
-          class="input"
-          type="date"
-          id="transactionDate"
-        >
-
-
         <button
-          class="save-button"
-          id="saveTransaction"
+          class="type-button"
+          data-type="expense"
         >
-          Salvar lançamento
+          ↓ Despesa
         </button>
 
       </div>
 
-    </div>
 
+      <label>Valor</label>
+
+      <div class="money-field">
+
+        <span>R$</span>
+
+        <input
+          id="amount"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="0,00"
+        >
+
+      </div>
+
+
+      <label>Descrição</label>
+
+      <input
+        id="description"
+        class="field"
+        type="text"
+        maxlength="80"
+        placeholder="Ex: Salário"
+      >
+
+
+      <label>Categoria</label>
+
+      <select
+        id="category"
+        class="field"
+      >
+
+        <option value="Alimentação">🛒 Alimentação</option>
+        <option value="Transporte">🚗 Transporte</option>
+        <option value="Casa">🏠 Casa</option>
+        <option value="Lazer">🎮 Lazer</option>
+        <option value="Saúde">❤️ Saúde</option>
+        <option value="Educação">📚 Educação</option>
+        <option value="Trabalho">💼 Trabalho</option>
+        <option value="Outros">📦 Outros</option>
+
+      </select>
+
+
+      <label>Data</label>
+
+      <input
+        id="date"
+        class="field"
+        type="date"
+      >
+
+
+      <button
+        id="saveButton"
+        class="save-button"
+      >
+        Salvar lançamento
+      </button>
+
+    </div>
 
   </div>
 
 
   <script src="script.js"></script>
 
-</body>
+</div>
 
+</body>
 </html>
