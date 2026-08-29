@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,11 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -16,7 +21,7 @@
 <body>
 
   <!-- =====================================================
-       TELA DE LOGIN
+       LOGIN — MODO DEMONSTRAÇÃO
   ====================================================== -->
 
   <div class="auth-screen" id="authScreen">
@@ -26,91 +31,173 @@
     <div class="auth-wrapper">
 
       <div class="auth-brand">
+
         <div class="logo-mark">$</div>
 
         <div>
           <h1>Control<span>S</span></h1>
           <p>Controle financeiro inteligente</p>
         </div>
+
       </div>
+
 
       <div class="auth-card">
 
         <div class="auth-heading">
+
           <span class="mini-label">BEM-VINDO</span>
+
           <h2>Entre na sua conta</h2>
-          <p>Tenha uma visão clara do seu dinheiro.</p>
+
+          <p>
+            Tenha uma visão clara do seu dinheiro.
+          </p>
+
         </div>
 
-        <form id="loginForm">
+
+        <!--
+          IMPORTANTE:
+          Este formulário é somente demonstração visual.
+          Ele não usa Supabase.
+        -->
+
+        <form
+          id="demoLoginForm"
+          onsubmit="entrarDemo(event)"
+        >
 
           <div class="field">
-            <label for="email">E-mail</label>
 
-            <div class="input-box">
-              <span>✉</span>
-              <input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-              >
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="password">Senha</label>
-
-            <div class="input-box">
-              <span>•••</span>
-              <input
-                id="password"
-                type="password"
-                placeholder="Digite sua senha"
-              >
-            </div>
-          </div>
-
-          <div class="login-options">
-            <label class="remember">
-              <input type="checkbox">
-              <span>Lembrar de mim</span>
+            <label for="demoEmail">
+              E-mail
             </label>
 
-            <a href="#">Esqueci minha senha</a>
+            <div class="input-box">
+
+              <span>✉</span>
+
+              <input
+                id="demoEmail"
+                type="email"
+                placeholder="seu@email.com"
+                value="demo@controls.com"
+              >
+
+            </div>
+
           </div>
 
-          <button type="button" class="main-button">
-            Entrar na conta
+
+          <div class="field">
+
+            <label for="demoPassword">
+              Senha
+            </label>
+
+            <div class="input-box">
+
+              <span>•••</span>
+
+              <input
+                id="demoPassword"
+                type="password"
+                placeholder="Digite sua senha"
+                value="123456"
+              >
+
+            </div>
+
+          </div>
+
+
+          <div class="login-options">
+
+            <label class="remember">
+
+              <input type="checkbox">
+
+              <span>
+                Lembrar de mim
+              </span>
+
+            </label>
+
+            <a
+              href="#"
+              onclick="return false;"
+            >
+              Esqueci minha senha
+            </a>
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="main-button"
+          >
+
+            Entrar na demonstração
+
             <span>→</span>
+
           </button>
 
         </form>
 
+
         <div class="auth-divider">
+
           <span>ou</span>
+
         </div>
 
+
         <p class="create-account">
+
           Ainda não possui uma conta?
-          <a href="#">Criar conta</a>
+
+          <a
+            href="#"
+            onclick="return false;"
+          >
+            Criar conta
+          </a>
+
         </p>
 
       </div>
 
+
       <div class="auth-footer">
-        <span>© 2026 ControlS</span>
-        <span>Finanças mais simples.</span>
+
+        <span>
+          © 2026 ControlS
+        </span>
+
+        <span>
+          Finanças mais simples.
+        </span>
+
       </div>
 
     </div>
+
   </div>
 
 
+
   <!-- =====================================================
-       APLICAÇÃO
+       APLICAÇÃO / DASHBOARD
   ====================================================== -->
 
-  <div class="app" id="app">
+  <div
+    class="app"
+    id="app"
+    style="display:none;"
+  >
 
     <!-- SIDEBAR -->
 
@@ -120,35 +207,76 @@
 
         <div class="brand">
 
-          <div class="logo-mark small">$</div>
+          <div class="logo-mark small">
+            $
+          </div>
 
           <div class="brand-text">
-            <strong>Control<span>S</span></strong>
-            <small>Financeiro</small>
+
+            <strong>
+              Control<span>S</span>
+            </strong>
+
+            <small>
+              Financeiro
+            </small>
+
           </div>
 
         </div>
 
+
         <nav class="main-nav">
 
           <button class="nav-link active">
-            <span class="nav-icon">⌂</span>
-            <span>Visão geral</span>
+
+            <span class="nav-icon">
+              ⌂
+            </span>
+
+            <span>
+              Visão geral
+            </span>
+
           </button>
 
-          <button class="nav-link">
-            <span class="nav-icon">↕</span>
-            <span>Transações</span>
-          </button>
 
           <button class="nav-link">
-            <span class="nav-icon">◈</span>
-            <span>Categorias</span>
+
+            <span class="nav-icon">
+              ↕
+            </span>
+
+            <span>
+              Transações
+            </span>
+
           </button>
 
+
           <button class="nav-link">
-            <span class="nav-icon">▥</span>
-            <span>Relatórios</span>
+
+            <span class="nav-icon">
+              ◈
+            </span>
+
+            <span>
+              Categorias
+            </span>
+
+          </button>
+
+
+          <button class="nav-link">
+
+            <span class="nav-icon">
+              ▥
+            </span>
+
+            <span>
+              Relatórios
+            </span>
+
           </button>
 
         </nav>
@@ -159,20 +287,39 @@
       <div class="sidebar-bottom">
 
         <button class="nav-link">
-          <span class="nav-icon">⚙</span>
-          <span>Configurações</span>
+
+          <span class="nav-icon">
+            ⚙
+          </span>
+
+          <span>
+            Configurações
+          </span>
+
         </button>
+
 
         <div class="sidebar-user">
 
-          <div class="user-avatar">F</div>
-
-          <div class="sidebar-user-info">
-            <strong>Felipe</strong>
-            <span>Minha conta</span>
+          <div class="user-avatar">
+            F
           </div>
 
-          <button class="more-button">•••</button>
+          <div class="sidebar-user-info">
+
+            <strong>
+              Felipe
+            </strong>
+
+            <span>
+              Minha conta
+            </span>
+
+          </div>
+
+          <button class="more-button">
+            •••
+          </button>
 
         </div>
 
@@ -181,7 +328,8 @@
     </aside>
 
 
-    <!-- CONTEÚDO PRINCIPAL -->
+
+    <!-- CONTEÚDO -->
 
     <main class="main-content">
 
@@ -190,17 +338,30 @@
       <header class="top-header">
 
         <div class="mobile-logo">
-          <div class="logo-mark small">$</div>
-          <strong>Control<span>S</span></strong>
+
+          <div class="logo-mark small">
+            $
+          </div>
+
+          <strong>
+            Control<span>S</span>
+          </strong>
+
         </div>
+
 
         <div class="header-title">
 
-          <span>VISÃO GERAL</span>
+          <span>
+            VISÃO GERAL
+          </span>
 
-          <h2>Dashboard</h2>
+          <h2>
+            Dashboard
+          </h2>
 
         </div>
+
 
         <div class="header-actions">
 
@@ -208,18 +369,32 @@
             ◐
           </button>
 
+
           <button class="header-icon notification">
+
             ♢
+
             <i></i>
+
           </button>
+
 
           <div class="header-user">
 
-            <div class="user-avatar">F</div>
+            <div class="user-avatar">
+              F
+            </div>
 
             <div>
-              <strong>Felipe</strong>
-              <span>Conta pessoal</span>
+
+              <strong>
+                Felipe
+              </strong>
+
+              <span>
+                Conta pessoal
+              </span>
+
             </div>
 
           </div>
@@ -229,16 +404,20 @@
       </header>
 
 
+
       <!-- DASHBOARD -->
 
       <section class="dashboard">
 
-        <!-- BOAS VINDAS -->
+        <!-- BOAS-VINDAS -->
 
         <div class="welcome-section">
 
           <div>
-            <span class="mini-label">SEU RESUMO FINANCEIRO</span>
+
+            <span class="mini-label">
+              SEU RESUMO FINANCEIRO
+            </span>
 
             <h1>
               Olá, Felipe
@@ -248,53 +427,88 @@
             <p>
               Aqui está um resumo das suas finanças.
             </p>
+
           </div>
 
+
           <button class="main-button new-transaction">
-            <span>＋</span>
+
+            <span>
+              ＋
+            </span>
+
             Nova movimentação
+
           </button>
 
         </div>
 
 
-        <!-- SALDO PRINCIPAL -->
+
+        <!-- SALDO -->
 
         <section class="balance-card">
 
           <div class="balance-background-shape shape-one"></div>
+
           <div class="balance-background-shape shape-two"></div>
+
 
           <div class="balance-content">
 
             <div class="balance-top">
 
               <div>
-                <span>Saldo disponível</span>
+
+                <span>
+                  Saldo disponível
+                </span>
 
                 <button class="eye-button">
                   ◉
                 </button>
+
               </div>
 
+
               <div class="balance-period">
+
                 Este mês
-                <span>⌄</span>
+
+                <span>
+                  ⌄
+                </span>
+
               </div>
 
             </div>
 
+
             <strong class="balance-value">
+
               R$ 8.450,00
+
             </strong>
+
 
             <div class="balance-bottom">
 
               <div class="balance-growth">
-                <span>↗</span>
-                <strong>12,4%</strong>
-                <small>vs. mês anterior</small>
+
+                <span>
+                  ↗
+                </span>
+
+                <strong>
+                  12,4%
+                </strong>
+
+                <small>
+                  vs. mês anterior
+                </small>
+
               </div>
+
 
               <div class="balance-brand">
                 ControlS
@@ -307,9 +521,11 @@
         </section>
 
 
-        <!-- CARDS DE RESUMO -->
+
+        <!-- RESUMO -->
 
         <div class="summary-grid">
+
 
           <article class="summary-card">
 
@@ -318,12 +534,23 @@
             </div>
 
             <div class="summary-info">
-              <span>Receitas</span>
-              <strong>R$ 5.200,00</strong>
-              <small class="positive">+8,2% este mês</small>
+
+              <span>
+                Receitas
+              </span>
+
+              <strong>
+                R$ 5.200,00
+              </strong>
+
+              <small class="positive">
+                +8,2% este mês
+              </small>
+
             </div>
 
           </article>
+
 
 
           <article class="summary-card">
@@ -333,12 +560,23 @@
             </div>
 
             <div class="summary-info">
-              <span>Despesas</span>
-              <strong>R$ 2.180,00</strong>
-              <small class="negative">+3,1% este mês</small>
+
+              <span>
+                Despesas
+              </span>
+
+              <strong>
+                R$ 2.180,00
+              </strong>
+
+              <small class="negative">
+                +3,1% este mês
+              </small>
+
             </div>
 
           </article>
+
 
 
           <article class="summary-card">
@@ -348,9 +586,19 @@
             </div>
 
             <div class="summary-info">
-              <span>Economia</span>
-              <strong>R$ 3.020,00</strong>
-              <small class="positive">58% da receita</small>
+
+              <span>
+                Economia
+              </span>
+
+              <strong>
+                R$ 3.020,00
+              </strong>
+
+              <small class="positive">
+                58% da receita
+              </small>
+
             </div>
 
           </article>
@@ -358,34 +606,66 @@
         </div>
 
 
+
         <!-- GRÁFICOS -->
 
         <div class="analytics-grid">
+
 
           <section class="content-card chart-card">
 
             <div class="card-heading">
 
               <div>
-                <h3>Fluxo financeiro</h3>
-                <p>Acompanhe suas entradas e saídas.</p>
+
+                <h3>
+                  Fluxo financeiro
+                </h3>
+
+                <p>
+                  Acompanhe suas entradas e saídas.
+                </p>
+
               </div>
 
+
               <select>
-                <option>Últimos 6 meses</option>
-                <option>Este ano</option>
+
+                <option>
+                  Últimos 6 meses
+                </option>
+
+                <option>
+                  Este ano
+                </option>
+
               </select>
 
             </div>
 
+
             <div class="fake-chart">
 
               <div class="chart-y">
-                <span>6k</span>
-                <span>4k</span>
-                <span>2k</span>
-                <span>0</span>
+
+                <span>
+                  6k
+                </span>
+
+                <span>
+                  4k
+                </span>
+
+                <span>
+                  2k
+                </span>
+
+                <span>
+                  0
+                </span>
+
               </div>
+
 
               <div class="chart-area">
 
@@ -393,6 +673,7 @@
                 <div class="grid-line"></div>
                 <div class="grid-line"></div>
                 <div class="grid-line"></div>
+
 
                 <svg
                   class="chart-svg"
@@ -412,34 +693,46 @@
 
                 </svg>
 
+
                 <div class="chart-months">
+
                   <span>Mar</span>
                   <span>Abr</span>
                   <span>Mai</span>
                   <span>Jun</span>
                   <span>Jul</span>
                   <span>Ago</span>
+
                 </div>
 
               </div>
 
             </div>
 
+
             <div class="chart-legend">
 
               <span>
+
                 <i class="dot green"></i>
+
                 Receitas
+
               </span>
 
+
               <span>
+
                 <i class="dot orange"></i>
+
                 Despesas
+
               </span>
 
             </div>
 
           </section>
+
 
 
           <!-- CATEGORIAS -->
@@ -449,9 +742,17 @@
             <div class="card-heading">
 
               <div>
-                <h3>Despesas por categoria</h3>
-                <p>Onde seu dinheiro está indo.</p>
+
+                <h3>
+                  Despesas por categoria
+                </h3>
+
+                <p>
+                  Onde seu dinheiro está indo.
+                </p>
+
               </div>
+
 
               <button class="small-link">
                 Ver tudo →
@@ -459,51 +760,95 @@
 
             </div>
 
+
             <div class="donut-area">
 
               <div class="donut">
 
                 <div class="donut-center">
-                  <strong>R$ 2.180</strong>
-                  <span>Total</span>
+
+                  <strong>
+                    R$ 2.180
+                  </strong>
+
+                  <span>
+                    Total
+                  </span>
+
                 </div>
 
               </div>
 
             </div>
 
+
             <div class="category-list">
 
               <div>
+
                 <span>
+
                   <i class="category-dot c1"></i>
+
                   Alimentação
+
                 </span>
-                <strong>32%</strong>
+
+                <strong>
+                  32%
+                </strong>
+
               </div>
 
+
               <div>
+
                 <span>
+
                   <i class="category-dot c2"></i>
+
                   Moradia
+
                 </span>
-                <strong>27%</strong>
+
+                <strong>
+                  27%
+                </strong>
+
               </div>
 
+
               <div>
+
                 <span>
+
                   <i class="category-dot c3"></i>
+
                   Transporte
+
                 </span>
-                <strong>18%</strong>
+
+                <strong>
+                  18%
+                </strong>
+
               </div>
 
+
               <div>
+
                 <span>
+
                   <i class="category-dot c4"></i>
+
                   Outros
+
                 </span>
-                <strong>23%</strong>
+
+                <strong>
+                  23%
+                </strong>
+
               </div>
 
             </div>
@@ -513,6 +858,7 @@
         </div>
 
 
+
         <!-- TRANSAÇÕES -->
 
         <section class="content-card transactions-card">
@@ -520,9 +866,17 @@
           <div class="card-heading">
 
             <div>
-              <span class="mini-label">MOVIMENTAÇÕES</span>
-              <h3>Transações recentes</h3>
+
+              <span class="mini-label">
+                MOVIMENTAÇÕES
+              </span>
+
+              <h3>
+                Transações recentes
+              </h3>
+
             </div>
+
 
             <button class="small-link">
               Ver todas →
@@ -533,6 +887,7 @@
 
           <div class="transaction-list">
 
+
             <div class="transaction-row">
 
               <div class="transaction-left">
@@ -542,17 +897,26 @@
                 </div>
 
                 <div>
-                  <strong>Salário</strong>
-                  <span>Hoje · Receita</span>
+
+                  <strong>
+                    Salário
+                  </strong>
+
+                  <span>
+                    Hoje · Receita
+                  </span>
+
                 </div>
 
               </div>
+
 
               <strong class="transaction-value income-value">
                 + R$ 5.000,00
               </strong>
 
             </div>
+
 
 
             <div class="transaction-row">
@@ -564,17 +928,26 @@
                 </div>
 
                 <div>
-                  <strong>Supermercado</strong>
-                  <span>Hoje · Alimentação</span>
+
+                  <strong>
+                    Supermercado
+                  </strong>
+
+                  <span>
+                    Hoje · Alimentação
+                  </span>
+
                 </div>
 
               </div>
+
 
               <strong class="transaction-value expense-value">
                 - R$ 320,50
               </strong>
 
             </div>
+
 
 
             <div class="transaction-row">
@@ -586,17 +959,26 @@
                 </div>
 
                 <div>
-                  <strong>Aluguel</strong>
-                  <span>Ontem · Moradia</span>
+
+                  <strong>
+                    Aluguel
+                  </strong>
+
+                  <span>
+                    Ontem · Moradia
+                  </span>
+
                 </div>
 
               </div>
+
 
               <strong class="transaction-value expense-value">
                 - R$ 1.200,00
               </strong>
 
             </div>
+
 
 
             <div class="transaction-row">
@@ -608,17 +990,26 @@
                 </div>
 
                 <div>
-                  <strong>Combustível</strong>
-                  <span>28 Ago · Transporte</span>
+
+                  <strong>
+                    Combustível
+                  </strong>
+
+                  <span>
+                    28 Ago · Transporte
+                  </span>
+
                 </div>
 
               </div>
+
 
               <strong class="transaction-value expense-value">
                 - R$ 180,00
               </strong>
 
             </div>
+
 
           </div>
 
@@ -631,11 +1022,46 @@
   </div>
 
 
-  <!-- MENU MOBILE -->
+
+  <!-- =====================================================
+       MENU MOBILE
+  ====================================================== -->
 
   <button class="mobile-menu-button">
     ☰
   </button>
+
+
+
+  <!-- =====================================================
+       MODO DEMONSTRAÇÃO
+       NÃO ALTERA O SCRIPT.JS
+  ====================================================== -->
+
+  <script>
+
+    function entrarDemo(event) {
+
+      event.preventDefault();
+
+      const auth = document.getElementById("authScreen");
+      const app = document.getElementById("app");
+
+      if (!auth || !app) {
+        return;
+      }
+
+      auth.style.display = "none";
+      app.style.display = "flex";
+
+      window.scrollTo({
+        top: 0,
+        behavior: "instant"
+      });
+
+    }
+
+  </script>
 
 </body>
 </html>
