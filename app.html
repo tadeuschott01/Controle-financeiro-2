@@ -7,7 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ControleS - Sistema Financeiro</title>
+<title>ControleS - Controle Financeiro</title>
 
 <link rel="stylesheet" href="app.css">
 
@@ -19,29 +19,42 @@
 <body>
 
 
-<div id="app">
+<div class="app-container" id="app">
 
 
-<!-- ================= SIDEBAR ================= -->
+<!-- SIDEBAR -->
 
 <aside class="sidebar">
 
 
 <div class="brand">
 
-<div class="logo-icon">
+
+<div class="brand-logo">
 $
 </div>
+
+
+<div>
 
 <h2>
 ControleS
 </h2>
 
+<span>
+Financeiro inteligente
+</span>
+
+</div>
+
+
 </div>
 
 
 
-<nav>
+
+
+<nav class="menu">
 
 
 <button class="nav-item active" data-section="dashboard">
@@ -51,11 +64,13 @@ ControleS
 </button>
 
 
+
 <button class="nav-item" data-section="transactions">
 
-💰 Transações
+💰 Lançamentos
 
 </button>
+
 
 
 <button class="nav-item" data-section="categories">
@@ -63,6 +78,7 @@ ControleS
 📂 Categorias
 
 </button>
+
 
 
 <button class="nav-item" data-section="reports">
@@ -75,6 +91,11 @@ ControleS
 
 </nav>
 
+
+
+
+
+<div class="sidebar-bottom">
 
 
 <button id="themeBtn">
@@ -92,6 +113,8 @@ Sair
 </button>
 
 
+</div>
+
 
 </aside>
 
@@ -99,17 +122,17 @@ Sair
 
 
 
-<!-- ================= CONTEÚDO ================= -->
+<!-- CONTEÚDO PRINCIPAL -->
 
 
-<main class="main-content">
+<main class="content">
 
 
-
-<header class="topbar">
+<header class="top-header">
 
 
 <div>
+
 
 <h1 id="pageTitle">
 
@@ -119,11 +142,15 @@ Dashboard
 
 
 <p>
-Olá, <span id="welcomeName">Felipe</span> 👋
+
+Olá, <span id="welcomeName">Usuário</span> 👋
+
 </p>
 
 
 </div>
+
+
 
 
 
@@ -132,23 +159,25 @@ Olá, <span id="welcomeName">Felipe</span> 👋
 
 <div class="avatar" id="userAvatar">
 
-F
+U
 
 </div>
 
 
+
 <div>
+
 
 <strong id="userName">
 
-Felipe
+Usuário
 
 </strong>
 
 
-<span>
+<span id="userPlan">
 
-Premium
+ControleS Grátis
 
 </span>
 
@@ -159,11 +188,7 @@ Premium
 </div>
 
 
-
 </header>
-
-
-
 
 
 <!-- ================= DASHBOARD ================= -->
@@ -172,10 +197,29 @@ Premium
 <section id="dashboard" class="section">
 
 
-<div class="quick-actions">
+
+<div class="dashboard-top">
 
 
-<button id="openTransactionBtn">
+<div>
+
+
+<h2>
+Resumo financeiro
+</h2>
+
+
+<p>
+Acompanhe sua evolução financeira.
+</p>
+
+
+</div>
+
+
+
+
+<button id="openTransactionBtn" class="primary-btn">
 
 + Novo lançamento
 
@@ -188,17 +232,31 @@ Premium
 
 
 
-<div class="summary-cards">
 
 
 
-<div class="summary-card balance">
+<!-- CARDS FINANCEIROS -->
+
+
+<div class="finance-cards">
+
+
+
+<div class="finance-card balance-card">
+
+
+<div class="card-icon">
+
+💰
+
+</div>
+
+
+<div>
 
 
 <span>
-
-Saldo atual
-
+Saldo disponível
 </span>
 
 
@@ -209,11 +267,7 @@ R$ 0,00
 </h2>
 
 
-<small>
-
-Controle financeiro
-
-</small>
+</div>
 
 
 </div>
@@ -222,13 +276,21 @@ Controle financeiro
 
 
 
-<div class="summary-card income">
+<div class="finance-card income-card">
+
+
+<div class="card-icon">
+
+📈
+
+</div>
+
+
+<div>
 
 
 <span>
-
 Receitas
-
 </span>
 
 
@@ -239,11 +301,7 @@ R$ 0,00
 </h2>
 
 
-<small>
-
-Entradas
-
-</small>
+</div>
 
 
 </div>
@@ -252,13 +310,22 @@ Entradas
 
 
 
-<div class="summary-card expense">
+
+<div class="finance-card expense-card">
+
+
+<div class="card-icon">
+
+📉
+
+</div>
+
+
+<div>
 
 
 <span>
-
 Despesas
-
 </span>
 
 
@@ -269,11 +336,7 @@ R$ 0,00
 </h2>
 
 
-<small>
-
-Gastos
-
-</small>
+</div>
 
 
 </div>
@@ -282,13 +345,22 @@ Gastos
 
 
 
-<div class="summary-card goal">
+
+<div class="finance-card economy-card">
+
+
+<div class="card-icon">
+
+🎯
+
+</div>
+
+
+<div>
 
 
 <span>
-
 Economia
-
 </span>
 
 
@@ -299,11 +371,7 @@ Economia
 </h2>
 
 
-<small>
-
-Meta mensal
-
-</small>
+</div>
 
 
 </div>
@@ -313,34 +381,43 @@ Meta mensal
 </div>
 
 
-<!-- ================= GRÁFICOS ================= -->
 
 
-<div class="dashboard-grid">
+
+
+
+
+<!-- GRÁFICOS -->
+
+
+<div class="charts-grid">
+
 
 
 <div class="panel">
 
 
-<div class="panel-header">
+<div class="panel-title">
 
 <h3>
-
-Evolução financeira
-
+Movimentação financeira
 </h3>
+
 
 </div>
 
 
-<div class="chart-container">
+
+<div class="chart-box">
 
 <canvas id="financeChart"></canvas>
 
 </div>
 
 
+
 </div>
+
 
 
 
@@ -349,33 +426,54 @@ Evolução financeira
 <div class="panel">
 
 
-<div class="panel-header">
+<div class="panel-title">
+
 
 <h3>
-
-Análise
-
+Plano atual
 </h3>
 
+
 </div>
 
 
-<div class="analysis">
+
+<div class="plan-box">
+
+
+<h3>
+ControleS Grátis
+</h3>
 
 
 <p>
-📈 Sua evolução financeira aparecerá aqui.
+
+Organize suas finanças pessoais.
+
 </p>
 
 
-<p>
-✅ Controle suas receitas e despesas.
-</p>
+<ul>
+
+<li>✔ Receitas e despesas</li>
+
+<li>✔ Dashboard financeiro</li>
+
+<li>✔ Categorias</li>
+
+</ul>
 
 
-<p>
-💡 Organize seus objetivos.
-</p>
+
+<button class="upgrade-btn">
+
+Conhecer Premium ⭐
+
+</button>
+
+
+</div>
+
 
 
 </div>
@@ -384,27 +482,23 @@ Análise
 </div>
 
 
-</div>
 
 
 
 
 
 
-
-<!-- ================= ÚLTIMAS MOVIMENTAÇÕES ================= -->
+<!-- ÚLTIMAS TRANSAÇÕES -->
 
 
 <div class="panel">
 
 
-<div class="panel-header">
+<div class="panel-title">
 
 
 <h3>
-
-Últimas movimentações
-
+Últimos lançamentos
 </h3>
 
 
@@ -412,7 +506,7 @@ Análise
 
 
 
-<div id="recentTransactions" class="transactions-list">
+<div id="recentTransactions">
 
 
 <div class="empty-state">
@@ -425,20 +519,15 @@ Nenhuma movimentação ainda.
 </div>
 
 
+
 </div>
 
 
 
 </section>
 
-
-
-
-
-
-
-
-<!-- ================= TRANSAÇÕES ================= -->
+  
+<!-- ================= LANÇAMENTOS ================= -->
 
 
 <section id="transactions" class="section hidden">
@@ -447,12 +536,11 @@ Nenhuma movimentação ainda.
 <div class="panel">
 
 
-<div class="panel-header">
-
+<div class="panel-title">
 
 <h3>
 
-Todas as transações
+Todos os lançamentos
 
 </h3>
 
@@ -465,16 +553,16 @@ Todas as transações
 <div class="filters">
 
 
-<input 
+<input
 id="searchInput"
 type="text"
-placeholder="Pesquisar..."
+placeholder="Pesquisar lançamento..."
 >
 
 
 
-<select id="typeFilter">
 
+<select id="typeFilter">
 
 <option value="all">
 
@@ -515,14 +603,13 @@ Todas categorias
 </select>
 
 
-
 </div>
 
 
 
 
 
-<div id="allTransactions" class="transactions-list">
+<div id="allTransactions">
 
 
 </div>
@@ -549,8 +636,7 @@ Todas categorias
 <div class="panel">
 
 
-<div class="panel-header">
-
+<div class="panel-title">
 
 <h3>
 
@@ -569,11 +655,11 @@ Categorias
 </div>
 
 
-
 </div>
 
 
 </section>
+
 
 
 
@@ -591,12 +677,12 @@ Categorias
 <div class="panel">
 
 
-<div class="panel-header">
+<div class="panel-title">
 
 
 <h3>
 
-Relatórios
+Relatórios financeiros
 
 </h3>
 
@@ -604,7 +690,9 @@ Relatórios
 </div>
 
 
-<div class="report-area">
+
+
+<div class="report-chart">
 
 
 <canvas id="categoryChart"></canvas>
@@ -620,17 +708,26 @@ Relatórios
 </section>
 
 
-<!-- ================= MODAL LANÇAMENTO ================= -->
+
+
+
+
+
+
+<!-- ================= MODAL NOVO LANÇAMENTO ================= -->
+
 
 
 <div id="transactionModal" class="modal hidden">
+
 
 
 <div class="modal-overlay"></div>
 
 
 
-<div class="modal-box">
+
+<div class="modal-content">
 
 
 
@@ -659,17 +756,20 @@ Novo lançamento
 
 
 
+
 <form id="transactionForm">
 
 
 
-<div class="type-buttons">
 
 
-<button 
+<div class="type-selector">
+
+
+<button
 type="button"
-data-type="income"
-class="type-option active">
+class="type-option active"
+data-type="income">
 
 💰 Receita
 
@@ -677,10 +777,11 @@ class="type-option active">
 
 
 
+
 <button
 type="button"
-data-type="expense"
-class="type-option">
+class="type-option"
+data-type="expense">
 
 💸 Despesa
 
@@ -695,23 +796,40 @@ class="type-option">
 
 
 
+
 <input
+
 id="descriptionInput"
+
 type="text"
+
 placeholder="Descrição"
+
 required
+
 >
+
+
+
 
 
 
 
 
 <input
+
 id="amountInput"
+
 type="number"
+
 placeholder="Valor"
+
 required
+
 >
+
+
+
 
 
 
@@ -720,35 +838,42 @@ required
 <select id="transactionCategory">
 
 
-<option value="Alimentação">
+<option>
 
 Alimentação
 
 </option>
 
 
-<option value="Moradia">
+<option>
 
 Moradia
 
 </option>
 
 
-<option value="Transporte">
+<option>
 
 Transporte
 
 </option>
 
 
-<option value="Salário">
+<option>
 
 Salário
 
 </option>
 
 
-<option value="Outros">
+<option>
+
+Lazer
+
+</option>
+
+
+<option>
 
 Outros
 
@@ -762,9 +887,16 @@ Outros
 
 
 
+
+
 <input
+
 id="dateInput"
+
 type="date"
+
+required
+
 >
 
 
@@ -772,17 +904,29 @@ type="date"
 
 
 
+
 <textarea
+
 id="noteInput"
-placeholder="Observação">
-</textarea>
+
+placeholder="Observação (opcional)"
+
+></textarea>
 
 
 
 
 
 
-<button type="submit">
+
+
+<button
+
+type="submit"
+
+class="save-btn"
+
+>
 
 Salvar lançamento
 
@@ -790,26 +934,49 @@ Salvar lançamento
 
 
 
-</form>
+<!-- ================= MENU MOBILE ================= -->
+
+
+<button id="mobileMenu" class="mobile-menu">
+
+☰
+
+</button>
+
+
+
+
+
+</main>
 
 
 </div>
 
 
-</div>
 
 
 
 
-
-
-
-
-<!-- ================= SCRIPTS ================= -->
+<!-- ================= JAVASCRIPT ================= -->
 
 
 <script src="app.js"></script>
 
+
+
 </body>
 
 </html>
+
+
+
+</form>
+
+
+
+</div>
+
+
+</div>
+
+  
