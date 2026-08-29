@@ -1,15 +1,7 @@
 <!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8"><meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
-
-«»
-
-  <title>ControleS - Controle Financeiro</title>  <link rel="preconnect" href="https://fonts.googleapis.com">  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
-  >  <link
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>ControleS - Controle Financeiro</title>  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   >  <style>
@@ -17,19 +9,16 @@ content="width=device-width, initial-scale=1.0"
       --green-dark: #12372a;
       --green: #1f513d;
       --green-light: #2f6b50;
-
       --orange: #f28c28;
       --orange-dark: #d96f12;
       --orange-light: #fff1df;
-
       --white: #ffffff;
       --gray-bg: #f5f7f6;
       --gray: #6b7280;
       --gray-light: #e5e7eb;
       --red: #dc2626;
       --red-light: #fee2e2;
-
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
 
     * {
@@ -54,9 +43,7 @@ content="width=device-width, initial-scale=1.0"
       cursor: pointer;
     }
 
-    /* =========================
-       LOGIN / CADASTRO
-    ========================= */
+    /* LOGIN */
 
     #authScreen {
       min-height: 100vh;
@@ -64,13 +51,7 @@ content="width=device-width, initial-scale=1.0"
       align-items: center;
       justify-content: center;
       padding: 20px;
-
-      background:
-        linear-gradient(
-          135deg,
-          var(--green-dark),
-          var(--green)
-        );
+      background: linear-gradient(135deg, var(--green-dark), var(--green));
     }
 
     .auth-container {
@@ -88,21 +69,14 @@ content="width=device-width, initial-scale=1.0"
       width: 70px;
       height: 70px;
       margin: 0 auto 15px;
-
       border-radius: 20px;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       background: var(--orange);
       color: white;
-
       font-size: 38px;
       font-weight: 800;
-
-      box-shadow:
-        0 10px 25px rgba(0, 0, 0, 0.2);
     }
 
     .brand h1 {
@@ -112,7 +86,7 @@ content="width=device-width, initial-scale=1.0"
 
     .brand p {
       margin-top: 7px;
-      opacity: 0.8;
+      opacity: .8;
       font-size: 14px;
     }
 
@@ -126,38 +100,25 @@ content="width=device-width, initial-scale=1.0"
     .auth-tabs {
       display: flex;
       gap: 5px;
-
       background: #f3f4f6;
-
       padding: 5px;
-
       border-radius: 12px;
-
       margin-bottom: 25px;
     }
 
     .auth-tab {
       flex: 1;
-
       border: none;
-
       padding: 12px;
-
       border-radius: 9px;
-
       background: transparent;
-
       color: var(--gray);
-
       font-weight: 600;
     }
 
     .auth-tab.active {
       background: white;
       color: var(--green-dark);
-
-      box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .form-group {
@@ -166,9 +127,7 @@ content="width=device-width, initial-scale=1.0"
 
     .form-group label {
       display: block;
-
       margin-bottom: 7px;
-
       font-size: 14px;
       font-weight: 600;
     }
@@ -176,91 +135,56 @@ content="width=device-width, initial-scale=1.0"
     .form-group input,
     .form-group select {
       width: 100%;
-
       padding: 13px 14px;
-
       border: 1px solid var(--gray-light);
-
       border-radius: 10px;
-
       outline: none;
-
       font-size: 14px;
-
       background: white;
     }
 
     .form-group input:focus,
     .form-group select:focus {
       border-color: var(--orange);
-
-      box-shadow:
-        0 0 0 3px rgba(242, 140, 40, 0.12);
+      box-shadow: 0 0 0 3px rgba(242,140,40,.12);
     }
 
     .primary-btn {
       width: 100%;
-
       border: none;
-
       padding: 14px;
-
       border-radius: 10px;
-
       background: var(--orange);
-
       color: white;
-
       font-weight: 700;
-
       font-size: 15px;
-
-      transition: 0.2s;
     }
 
     .primary-btn:hover {
       background: var(--orange-dark);
-
-      transform: translateY(-1px);
-    }
-
-    .primary-btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
     }
 
     .auth-message {
       margin-top: 15px;
-
       padding: 11px;
-
       border-radius: 9px;
-
       font-size: 13px;
-
       display: none;
     }
 
     .auth-message.error {
       display: block;
-
       background: var(--red-light);
-
       color: var(--red);
     }
 
     .auth-message.success {
       display: block;
-
       background: #dcfce7;
-
       color: #166534;
     }
 
-    /* =========================
-       APP
-    ========================= */
+    /* APP */
 
     #appScreen {
       display: none;
@@ -269,170 +193,118 @@ content="width=device-width, initial-scale=1.0"
 
     .sidebar {
       position: fixed;
-
       left: 0;
       top: 0;
       bottom: 0;
-
       width: 250px;
-
       background: var(--green-dark);
-
       color: white;
-
       padding: 22px 15px;
-
       z-index: 20;
     }
 
     .sidebar-logo {
       display: flex;
-
       align-items: center;
-
       gap: 10px;
-
       padding: 5px 10px 25px;
-
       font-size: 22px;
-
       font-weight: 800;
     }
 
     .sidebar-logo span {
       width: 40px;
       height: 40px;
-
       display: flex;
-
       align-items: center;
       justify-content: center;
-
       background: var(--orange);
-
       border-radius: 11px;
     }
 
     .menu {
       display: flex;
-
       flex-direction: column;
-
       gap: 6px;
     }
 
     .menu button {
       width: 100%;
-
       border: none;
-
       background: transparent;
-
-      color: rgba(255,255,255,0.75);
-
+      color: rgba(255,255,255,.75);
       padding: 13px;
-
       text-align: left;
-
       border-radius: 9px;
-
       font-weight: 500;
     }
 
     .menu button:hover,
     .menu button.active {
-      background: rgba(255,255,255,0.1);
-
+      background: rgba(255,255,255,.1);
       color: white;
     }
 
     .logout-btn {
       position: absolute;
-
       left: 15px;
       right: 15px;
       bottom: 20px;
-
       border: none;
-
-      background: rgba(255,255,255,0.08);
-
+      background: rgba(255,255,255,.08);
       color: white;
-
       padding: 12px;
-
       border-radius: 9px;
     }
 
     .main-content {
       margin-left: 250px;
-
       padding: 30px;
     }
 
     .topbar {
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
-
       margin-bottom: 30px;
     }
 
     .topbar h2 {
       font-size: 26px;
-
       color: var(--green-dark);
     }
 
     .user-name {
       color: var(--gray);
-
       font-size: 14px;
-
       margin-top: 5px;
     }
 
-    /* =========================
-       CARDS
-    ========================= */
+    /* CARDS */
 
     .summary-grid {
       display: grid;
-
-      grid-template-columns:
-        repeat(3, 1fr);
-
+      grid-template-columns: repeat(3,1fr);
       gap: 18px;
-
       margin-bottom: 25px;
     }
 
     .summary-card {
       background: white;
-
       border-radius: 15px;
-
       padding: 22px;
-
-      box-shadow:
-        0 5px 18px rgba(0,0,0,0.05);
+      box-shadow: 0 5px 18px rgba(0,0,0,.05);
     }
 
     .summary-card .label {
       font-size: 13px;
-
       color: var(--gray);
-
       margin-bottom: 10px;
     }
 
     .summary-card .value {
       font-size: 25px;
-
       font-weight: 800;
-
       color: var(--green-dark);
     }
 
@@ -444,45 +316,32 @@ content="width=device-width, initial-scale=1.0"
       color: var(--red);
     }
 
-    /* =========================
-       DASHBOARD
-    ========================= */
+    /* DASHBOARD */
 
     .dashboard-grid {
       display: grid;
-
-      grid-template-columns:
-        1.5fr 1fr;
-
+      grid-template-columns: 1.5fr 1fr;
       gap: 20px;
     }
 
     .panel {
       background: white;
-
       border-radius: 15px;
-
       padding: 22px;
-
-      box-shadow:
-        0 5px 18px rgba(0,0,0,0.05);
+      box-shadow: 0 5px 18px rgba(0,0,0,.05);
     }
 
     .panel h3 {
       color: var(--green-dark);
-
       margin-bottom: 18px;
     }
 
     .chart-container {
       position: relative;
-
       height: 300px;
     }
 
-    /* =========================
-       SEÇÕES
-    ========================= */
+    /* SEÇÕES */
 
     .section {
       display: none;
@@ -494,11 +353,8 @@ content="width=device-width, initial-scale=1.0"
 
     .section-header {
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
-
       margin-bottom: 20px;
     }
 
@@ -508,78 +364,63 @@ content="width=device-width, initial-scale=1.0"
 
     .transaction-form {
       background: white;
-
       padding: 22px;
-
       border-radius: 15px;
-
       margin-bottom: 20px;
-
-      box-shadow:
-        0 5px 18px rgba(0,0,0,0.05);
+      box-shadow: 0 5px 18px rgba(0,0,0,.05);
     }
 
     .form-grid {
       display: grid;
-
-      grid-template-columns:
-        repeat(2, 1fr);
-
+      grid-template-columns: repeat(2,1fr);
       gap: 15px;
+    }
+
+    /* TABELA */
+
+    .table-container {
+      overflow-x: auto;
     }
 
     .transactions-table {
       width: 100%;
-
       border-collapse: collapse;
-
       background: white;
-
       border-radius: 15px;
-
       overflow: hidden;
     }
 
     .transactions-table th,
     .transactions-table td {
       padding: 14px;
-
       text-align: left;
-
       border-bottom: 1px solid #eee;
-
       font-size: 14px;
     }
 
     .transactions-table th {
       color: var(--gray);
-
       font-size: 12px;
-
       text-transform: uppercase;
     }
 
     .income-text {
       color: var(--green-light);
-
       font-weight: 700;
     }
 
     .expense-text {
       color: var(--red);
-
       font-weight: 700;
     }
 
-    /* =========================
-       MOBILE
-    ========================= */
+    /* MOBILE */
 
     .mobile-header {
       display: none;
     }
 
-    @media (max-width: 850px) {
+    @media (max-width:850px) {
 
       .sidebar {
         display: none;
@@ -587,33 +428,22 @@ content="width=device-width, initial-scale=1.0"
 
       .main-content {
         margin-left: 0;
-
         padding: 20px;
-
         padding-top: 75px;
       }
 
       .mobile-header {
         display: flex;
-
         position: fixed;
-
         top: 0;
         left: 0;
         right: 0;
-
         height: 60px;
-
         background: var(--green-dark);
-
         color: white;
-
         align-items: center;
-
         justify-content: space-between;
-
         padding: 0 18px;
-
         z-index: 30;
       }
 
@@ -633,12 +463,6 @@ content="width=device-width, initial-scale=1.0"
         grid-template-columns: 1fr;
       }
 
-      .transactions-table {
-        display: block;
-
-        overflow-x: auto;
-      }
-
       .topbar {
         margin-bottom: 20px;
       }
@@ -648,7 +472,7 @@ content="width=device-width, initial-scale=1.0"
       }
     }
 
-    @media (max-width: 480px) {
+    @media (max-width:480px) {
 
       .auth-card {
         padding: 22px;
@@ -660,25 +484,20 @@ content="width=device-width, initial-scale=1.0"
 
       .main-content {
         padding-left: 15px;
-
         padding-right: 15px;
       }
     }
-  </style></head><body>  <!-- ==========================================
-       TELA DE LOGIN / CADASTRO
-  =========================================== -->  <div id="authScreen"><div class="auth-container">
+  </style></head><body>  <!-- =========================
+       LOGIN / CADASTRO
+  ========================== -->  <div id="authScreen"><div class="auth-container">
 
   <div class="brand">
 
-    <div class="brand-icon">
-      $
-    </div>
+    <div class="brand-icon">$</div>
 
     <h1>ControleS</h1>
 
-    <p>
-      Seu controle financeiro inteligente
-    </p>
+    <p>Seu controle financeiro inteligente</p>
 
   </div>
 
@@ -830,15 +649,13 @@ content="width=device-width, initial-scale=1.0"
 
 </div>
 
-  </div>  <!-- ==========================================
+  </div>  <!-- =========================
        APLICAÇÃO
-  =========================================== -->  <div id="appScreen"><!-- MOBILE HEADER -->
+  ========================== -->  <div id="appScreen"><!-- MOBILE -->
 
 <div class="mobile-header">
 
-  <strong>
-    ControleS
-  </strong>
+  <strong>ControleS</strong>
 
   <button
     type="button"
@@ -855,15 +672,14 @@ content="width=device-width, initial-scale=1.0"
 
 </div>
 
+
 <!-- SIDEBAR -->
 
 <aside class="sidebar">
 
   <div class="sidebar-logo">
 
-    <span>
-      $
-    </span>
+    <span>$</span>
 
     ControleS
 
@@ -912,6 +728,7 @@ content="width=device-width, initial-scale=1.0"
 
 </aside>
 
+
 <!-- CONTEÚDO -->
 
 <main class="main-content">
@@ -934,6 +751,7 @@ content="width=device-width, initial-scale=1.0"
     </div>
 
   </div>
+
 
   <!-- DASHBOARD -->
 
@@ -991,6 +809,7 @@ content="width=device-width, initial-scale=1.0"
 
     </div>
 
+
     <div class="dashboard-grid">
 
       <div class="panel">
@@ -1001,13 +820,12 @@ content="width=device-width, initial-scale=1.0"
 
         <div class="chart-container">
 
-          <canvas
-            id="financeChart"
-          ></canvas>
+          <canvas id="financeChart"></canvas>
 
         </div>
 
       </div>
+
 
       <div class="panel">
 
@@ -1017,12 +835,7 @@ content="width=device-width, initial-scale=1.0"
 
         <div id="recentTransactions">
 
-          <p
-            style="
-              color:#6b7280;
-              font-size:14px;
-            "
-          >
+          <p style="color:#6b7280;font-size:14px;">
             Nenhuma transação encontrada.
           </p>
 
@@ -1034,6 +847,7 @@ content="width=device-width, initial-scale=1.0"
 
   </section>
 
+
   <!-- ENTRADAS -->
 
   <section
@@ -1043,9 +857,7 @@ content="width=device-width, initial-scale=1.0"
 
     <div class="section-header">
 
-      <h2>
-        Entradas
-      </h2>
+      <h2>Entradas</h2>
 
     </div>
 
@@ -1079,9 +891,9 @@ content="width=device-width, initial-scale=1.0"
             <input
               type="number"
               id="incomeAmount"
-              placeholder="0,00"
+              placeholder="0.00"
               step="0.01"
-              min="0"
+              min="0.01"
               required
             >
 
@@ -1144,6 +956,7 @@ content="width=device-width, initial-scale=1.0"
 
   </section>
 
+
   <!-- DESPESAS -->
 
   <section
@@ -1153,9 +966,7 @@ content="width=device-width, initial-scale=1.0"
 
     <div class="section-header">
 
-      <h2>
-        Despesas
-      </h2>
+      <h2>Despesas</h2>
 
     </div>
 
@@ -1189,9 +1000,9 @@ content="width=device-width, initial-scale=1.0"
             <input
               type="number"
               id="expenseAmount"
-              placeholder="0,00"
+              placeholder="0.00"
               step="0.01"
-              min="0"
+              min="0.01"
               required
             >
 
@@ -1262,6 +1073,7 @@ content="width=device-width, initial-scale=1.0"
 
   </section>
 
+
   <!-- TRANSAÇÕES -->
 
   <section
@@ -1271,13 +1083,11 @@ content="width=device-width, initial-scale=1.0"
 
     <div class="section-header">
 
-      <h2>
-        Transações
-      </h2>
+      <h2>Transações</h2>
 
     </div>
 
-    <div style="overflow-x:auto;">
+    <div class="table-container">
 
       <table class="transactions-table">
 
@@ -1285,25 +1095,11 @@ content="width=device-width, initial-scale=1.0"
 
           <tr>
 
-            <th>
-              Descrição
-            </th>
-
-            <th>
-              Categoria
-            </th>
-
-            <th>
-              Data
-            </th>
-
-            <th>
-              Tipo
-            </th>
-
-            <th>
-              Valor
-            </th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor</th>
 
           </tr>
 
@@ -1329,15 +1125,4 @@ content="width=device-width, initial-scale=1.0"
 
 </main>
 
-  </div>  <!-- ==========================================
-       BIBLIOTECA SUPABASE
-  =========================================== -->  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>  <!-- ==========================================
-       BIBLIOTECA CHART.JS
-  =========================================== -->  <script
-    src="https://cdn.jsdelivr.net/npm/chart.js"
-  ></script>  <!-- ==========================================
-       SEU JAVASCRIPT
-       CARREGADO APENAS UMA VEZ
-  =========================================== -->  <script src="script.js?v=2"></script>
+  </div>  <!-- SUPABASE -->  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <!-- CHART.JS -->  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  <!-- SEU JAVASCRIPT -->  <script src="script.js?v=2"></script></body></html>
