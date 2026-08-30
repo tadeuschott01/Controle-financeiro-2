@@ -135,9 +135,11 @@ document
 .getElementById("openTransactionBtn")
 ?.addEventListener(
     "click",
-    openModal
+    ()=>{
+        console.log("CLICOU NO LANÇAMENTO");
+        openModal();
+    }
 );
-
 
 
 
