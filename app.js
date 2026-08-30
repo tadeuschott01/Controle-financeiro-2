@@ -113,12 +113,12 @@ function loadData(){
 
 
 function openModal(){
-
-    alert("Botão funcionando");
+function openModal(){
 
     modal?.classList.remove("hidden");
 
 }
+    
 
 
 function closeModal(){
