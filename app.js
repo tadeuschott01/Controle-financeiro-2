@@ -113,7 +113,7 @@ function loadData(){
 
 
 function openModal(){
-function openModal(){
+
 
     modal?.classList.remove("hidden");
 
