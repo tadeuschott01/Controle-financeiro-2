@@ -1,4 +1,3 @@
-alert("APP.JS CARREGOU");
 /* =====================================================
    CONTROLES - JAVASCRIPT
    Sistema financeiro
