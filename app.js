@@ -1267,54 +1267,55 @@ document
 
 });
 
-console.log("ControleS app.js carregado");
 
-/* ================= BOTÃO CONHECER PREMIUM ================= */
+/* =====================================================
+   BOTÃO CONHECER PREMIUM
+===================================================== */
 
-const goPremiumBtn = document.getElementById("goPremiumBtn");
+document.addEventListener("click", function(event) {
 
-if (goPremiumBtn) {
+    const button = event.target.closest("#goPremiumBtn");
 
-    goPremiumBtn.addEventListener("click", function () {
+    if (!button) return;
 
-        // Esconde todas as seções
-        document.querySelectorAll(".section").forEach(section => {
-            section.classList.add("hidden");
-        });
+    console.log("BOTÃO PREMIUM CLICADO");
 
-        // Mostra o Premium
-        const premiumSection = document.getElementById("premium");
-
-        if (premiumSection) {
-            premiumSection.classList.remove("hidden");
-        }
-
-        // Atualiza o título
-        const pageTitle = document.getElementById("pageTitle");
-
-        if (pageTitle) {
-            pageTitle.textContent = "Premium";
-        }
-
-        // Atualiza o menu lateral
-        document.querySelectorAll(".nav-item").forEach(item => {
-            item.classList.remove("active");
-        });
-
-        const premiumMenu = document.querySelector(
-            '.nav-item[data-section="premium"]'
-        );
-
-        if (premiumMenu) {
-            premiumMenu.classList.add("active");
-        }
-
-        // Volta para o topo
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-
+    // Esconde todas as seções
+    document.querySelectorAll(".section").forEach(section => {
+        section.classList.add("hidden");
     });
 
-}
+    // Mostra a seção Premium
+    const premiumSection = document.getElementById("premium");
+
+    if (premiumSection) {
+        premiumSection.classList.remove("hidden");
+    }
+
+    // Atualiza título
+    const pageTitle = document.getElementById("pageTitle");
+
+    if (pageTitle) {
+        pageTitle.textContent = "Premium";
+    }
+
+    // Atualiza menu lateral
+    document.querySelectorAll("[data-section]").forEach(item => {
+        item.classList.remove("active");
+    });
+
+    const premiumMenu = document.querySelector(
+        '[data-section="premium"]'
+    );
+
+    if (premiumMenu) {
+        premiumMenu.classList.add("active");
+    }
+
+    // Volta para o topo
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+});
