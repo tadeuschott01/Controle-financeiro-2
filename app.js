@@ -1268,3 +1268,53 @@ document
 });
 
 console.log("ControleS app.js carregado");
+
+/* ================= BOTÃO CONHECER PREMIUM ================= */
+
+const goPremiumBtn = document.getElementById("goPremiumBtn");
+
+if (goPremiumBtn) {
+
+    goPremiumBtn.addEventListener("click", function () {
+
+        // Esconde todas as seções
+        document.querySelectorAll(".section").forEach(section => {
+            section.classList.add("hidden");
+        });
+
+        // Mostra o Premium
+        const premiumSection = document.getElementById("premium");
+
+        if (premiumSection) {
+            premiumSection.classList.remove("hidden");
+        }
+
+        // Atualiza o título
+        const pageTitle = document.getElementById("pageTitle");
+
+        if (pageTitle) {
+            pageTitle.textContent = "Premium";
+        }
+
+        // Atualiza o menu lateral
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.classList.remove("active");
+        });
+
+        const premiumMenu = document.querySelector(
+            '.nav-item[data-section="premium"]'
+        );
+
+        if (premiumMenu) {
+            premiumMenu.classList.add("active");
+        }
+
+        // Volta para o topo
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    });
+
+}
