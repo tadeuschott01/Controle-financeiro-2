@@ -52,9 +52,6 @@ Controle financeiro
 </div>
 
 
-
-
-
 <nav class="menu">
 
 
@@ -65,13 +62,11 @@ Controle financeiro
 </button>
 
 
-
 <button class="nav-item" data-section="transactions">
 
 💰 Lançamentos
 
 </button>
-
 
 
 <button class="nav-item" data-section="categories">
@@ -81,7 +76,6 @@ Controle financeiro
 </button>
 
 
-
 <button class="nav-item" data-section="reports">
 
 📈 Relatórios
@@ -89,10 +83,14 @@ Controle financeiro
 </button>
 
 
+<button class="nav-item" data-section="premium">
+
+⭐ Premium
+
+</button>
+
+
 </nav>
-
-
-
 
 
 <div class="sidebar-bottom">
@@ -118,16 +116,10 @@ Sair
 </aside>
 
 
-
-
-
-
-
 <!-- ================= ÁREA PRINCIPAL ================= -->
 
 
 <main class="content">
-
 
 
 <header class="top-header">
@@ -152,8 +144,6 @@ Olá, <span id="welcomeName">Usuário</span> 👋
 </div>
 
 
-
-
 <div class="profile">
 
 
@@ -165,7 +155,6 @@ U
 
 
 <div>
-
 
 <strong id="userName">
 
@@ -180,7 +169,6 @@ ControleS Grátis
 
 </span>
 
-
 </div>
 
 
@@ -189,19 +177,17 @@ ControleS Grátis
 
 </header>
 
-  
+
 <!-- ================= DASHBOARD ================= -->
 
 
 <section id="dashboard" class="section">
 
 
-
 <div class="dashboard-top">
 
 
 <div>
-
 
 <h2>
 
@@ -216,9 +202,7 @@ Veja sua situação financeira atual.
 
 </p>
 
-
 </div>
-
 
 
 <button id="openTransactionBtn" class="primary-btn">
@@ -228,20 +212,13 @@ Veja sua situação financeira atual.
 </button>
 
 
-
 </div>
-
-
-
-
-
 
 
 <!-- CARDS -->
 
 
 <div class="finance-cards">
-
 
 
 <div class="finance-card balance-card">
@@ -256,7 +233,6 @@ Veja sua situação financeira atual.
 
 <div>
 
-
 <span>
 
 Saldo atual
@@ -270,15 +246,9 @@ R$ 0,00
 
 </h2>
 
-
 </div>
 
-
 </div>
-
-
-
-
 
 
 <div class="finance-card income-card">
@@ -293,7 +263,6 @@ R$ 0,00
 
 <div>
 
-
 <span>
 
 Receitas
@@ -307,15 +276,9 @@ R$ 0,00
 
 </h2>
 
-
 </div>
 
-
 </div>
-
-
-
-
 
 
 <div class="finance-card expense-card">
@@ -330,7 +293,6 @@ R$ 0,00
 
 <div>
 
-
 <span>
 
 Despesas
@@ -344,15 +306,9 @@ R$ 0,00
 
 </h2>
 
-
 </div>
 
-
 </div>
-
-
-
-
 
 
 <div class="finance-card economy-card">
@@ -367,7 +323,6 @@ R$ 0,00
 
 <div>
 
-
 <span>
 
 Economia
@@ -381,28 +336,18 @@ Economia
 
 </h2>
 
+</div>
 
 </div>
 
 
 </div>
-
-
-
-</div>
-
-
-
-
-
-
 
 
 <!-- GRÁFICOS -->
 
 
 <div class="charts-grid">
-
 
 
 <div class="panel">
@@ -419,7 +364,6 @@ Evolução financeira
 </div>
 
 
-
 <div class="chart-box">
 
 
@@ -432,16 +376,10 @@ Evolução financeira
 </div>
 
 
-
-
-
-
-
 <div class="panel">
 
 
 <div class="panel-title">
-
 
 <h3>
 
@@ -449,10 +387,7 @@ Plano
 
 </h3>
 
-
 </div>
-
-
 
 
 <div class="plan-box">
@@ -472,25 +407,17 @@ Organize sua vida financeira.
 </p>
 
 
-
 <ul>
-
 
 <li>✔ Controle de receitas</li>
 
-
 <li>✔ Controle de despesas</li>
-
 
 <li>✔ Dashboard financeiro</li>
 
-
 <li>✔ Categorias</li>
 
-
 </ul>
-
-
 
 
 <button class="upgrade-btn">
@@ -507,11 +434,6 @@ Conhecer Premium ⭐
 
 
 </div>
-
-
-
-
-
 
 
 <!-- ÚLTIMAS MOVIMENTAÇÕES -->
@@ -533,8 +455,6 @@ Conhecer Premium ⭐
 </div>
 
 
-
-
 <div id="recentTransactions">
 
 
@@ -551,10 +471,9 @@ Nenhuma movimentação ainda.
 </div>
 
 
-
 </section>
 
-  
+
 <!-- ================= LANÇAMENTOS ================= -->
 
 
@@ -575,9 +494,6 @@ Todos os lançamentos
 </div>
 
 
-
-
-
 <div class="filters">
 
 
@@ -586,8 +502,6 @@ id="searchInput"
 type="text"
 placeholder="Pesquisar..."
 >
-
-
 
 
 <select id="typeFilter">
@@ -600,13 +514,11 @@ Todos
 </option>
 
 
-
 <option value="income">
 
 Receitas
 
 </option>
-
 
 
 <option value="expense">
@@ -617,9 +529,6 @@ Despesas
 
 
 </select>
-
-
-
 
 
 <select id="categoryFilter">
@@ -635,15 +544,10 @@ Todas categorias
 </select>
 
 
-
 </div>
 
 
-
-
-
 <div id="allTransactions">
-
 
 </div>
 
@@ -652,12 +556,6 @@ Todas categorias
 
 
 </section>
-
-
-
-
-
-
 
 
 <!-- ================= CATEGORIAS ================= -->
@@ -680,26 +578,15 @@ Categorias
 </div>
 
 
-
-
 <div id="categoriesGrid" class="categories-grid">
 
-
 </div>
-
 
 
 </div>
 
 
 </section>
-
-
-
-
-
-
-
 
 <!-- ================= RELATÓRIOS ================= -->
 
@@ -723,7 +610,6 @@ Relatórios
 </div>
 
 
-
 <div class="report-chart">
 
 
@@ -739,10 +625,357 @@ Relatórios
 </section>
 
 
+<!-- ================= CONTROLES PREMIUM ================= -->
 
 
+<section id="premium" class="section hidden">
 
 
+<div class="premium-header">
+
+
+<div>
+
+
+<span class="premium-label">
+
+⭐ CONTROLES PREMIUM
+
+</span>
+
+
+<h2>
+
+Tenha o controle completo das suas finanças
+
+</h2>
+
+
+<p>
+
+Desbloqueie recursos avançados e leve sua organização financeira para outro nível.
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+<div class="premium-card">
+
+
+<div class="premium-card-top">
+
+
+<div>
+
+
+<span class="premium-badge">
+
+⭐ PREMIUM
+
+</span>
+
+
+<h2>
+
+ControleS Premium
+
+</h2>
+
+
+<p>
+
+Tudo o que você precisa para controlar suas finanças pessoais e empresariais.
+
+</p>
+
+
+</div>
+
+
+<div class="premium-price">
+
+
+<span>
+
+Por apenas
+
+</span>
+
+
+<strong>
+
+R$ 24,99
+
+</strong>
+
+
+<small>
+
+/ mês
+
+</small>
+
+
+</div>
+
+
+</div>
+
+
+<div class="premium-features">
+
+
+<div class="premium-feature">
+
+
+<span>🎯</span>
+
+
+<div>
+
+<strong>
+
+Metas de economia
+
+</strong>
+
+
+<p>
+
+Crie e acompanhe suas metas financeiras.
+
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="premium-feature">
+
+
+<span>📅</span>
+
+
+<div>
+
+<strong>
+
+Calendário financeiro
+
+</strong>
+
+
+<p>
+
+Visualize seus lançamentos e compromissos.
+
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="premium-feature">
+
+
+<span>🔔</span>
+
+
+<div>
+
+<strong>
+
+Lembretes
+
+</strong>
+
+
+<p>
+
+Não esqueça suas contas e compromissos.
+
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="premium-feature">
+
+
+<span>📊</span>
+
+
+<div>
+
+<strong>
+
+Indicadores avançados
+
+</strong>
+
+
+<p>
+
+Tenha uma visão mais completa da sua vida financeira.
+
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="premium-feature">
+
+
+<span>🧾</span>
+
+
+<div>
+
+<strong>
+
+Recibos
+
+</strong>
+
+
+<p>
+
+Crie recibos financeiros de forma rápida.
+
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="premium-feature">
+
+
+<span>🏢</span>
+
+
+<div>
+
+<strong>
+
+Pessoa e Empresa
+
+</strong>
+
+
+<p>
+
+Organize suas finanças pessoais e empresariais.
+
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="premium-feature">
+
+
+<span>💼</span>
+
+
+<div>
+
+<strong>
+
+Múltiplas contas
+
+</strong>
+
+
+<p>
+
+Controle diferentes contas financeiras.
+
+</p>
+
+</div>
+
+
+</div>
+
+
+<div class="premium-feature">
+
+
+<span>📥</span>
+
+
+<div>
+
+<strong>
+
+Exportação de dados
+
+</strong>
+
+
+<p>
+
+Exporte suas informações financeiras.
+
+</p>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="premium-action">
+
+
+<button
+class="premium-btn"
+id="subscribePremiumBtn"
+>
+
+Assinar Premium — R$ 24,99/mês
+
+</button>
+
+
+<p>
+
+Cancele quando quiser.
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</section>
 
 
 <!-- ================= MODAL NOVO LANÇAMENTO ================= -->
@@ -752,8 +985,6 @@ Relatórios
 
 
 <div class="modal-overlay"></div>
-
-
 
 
 <div class="modal-content">
@@ -769,7 +1000,6 @@ Novo lançamento
 </h2>
 
 
-
 <button id="closeModal">
 
 ×
@@ -780,28 +1010,16 @@ Novo lançamento
 </div>
 
 
-
-
-
-
-
 <form id="transactionForm">
-
-
-
 
 
 <div class="type-selector">
 
 
 <button
-
 type="button"
-
 class="type-option active"
-
 data-type="income"
-
 >
 
 💰 Receita
@@ -809,16 +1027,10 @@ data-type="income"
 </button>
 
 
-
-
 <button
-
 type="button"
-
 class="type-option"
-
 data-type="expense"
-
 >
 
 💸 Despesa
@@ -826,52 +1038,23 @@ data-type="expense"
 </button>
 
 
-
 </div>
 
 
-
-
-
-
-
-
 <input
-
 id="descriptionInput"
-
 type="text"
-
 placeholder="Descrição"
-
 required
-
 >
-
-
-
-
-
-
 
 
 <input
-
 id="amountInput"
-
 type="number"
-
 placeholder="Valor"
-
 required
-
 >
-
-
-
-
-
-
 
 
 <select id="transactionCategory">
@@ -884,13 +1067,11 @@ Alimentação
 </option>
 
 
-
 <option>
 
 Moradia
 
 </option>
-
 
 
 <option>
@@ -900,7 +1081,6 @@ Transporte
 </option>
 
 
-
 <option>
 
 Salário
@@ -908,13 +1088,11 @@ Salário
 </option>
 
 
-
 <option>
 
 Lazer
 
 </option>
-
 
 
 <option>
@@ -927,57 +1105,27 @@ Outros
 </select>
 
 
-
-
-
-
-
-
 <input
-
 id="dateInput"
-
 type="date"
-
 required
-
 >
 
 
-
-
-
-
-
-
 <textarea
-
 id="noteInput"
-
 placeholder="Observação"
-
 ></textarea>
 
 
-
-
-
-
-
-
 <button
-
 type="submit"
-
 class="save-btn"
-
 >
 
 Salvar lançamento
 
 </button>
-
-
 
 
 </form>
@@ -988,8 +1136,7 @@ Salvar lançamento
 
 </div>
 
-  
-<!-- ================= MENU MOBILE ================= -->
+  <!-- ================= MENU MOBILE ================= -->
 
 
 <button id="mobileMenu" class="mobile-menu">
@@ -999,24 +1146,16 @@ Salvar lançamento
 </button>
 
 
-
-
-
 </main>
 
 
 </div>
 
 
-
-
-
-
 <!-- ================= SCRIPT ================= -->
 
 
 <script src="app.js"></script>
-
 
 
 </body>
