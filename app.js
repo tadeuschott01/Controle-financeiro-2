@@ -111,6 +111,7 @@ function loadData(){
 
 
 
+
 function openModal(){
 
     modal?.classList.remove("hidden");
@@ -155,7 +156,6 @@ document
     "click",
     closeModal
 );
-
 
 /* ================= TIPO DE LANÇAMENTO ================= */
 
