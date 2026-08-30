@@ -1,287 +1,475 @@
 /* =====================================================
    CONTROLES - APP CSS
-   Sistema financeiro interno
+   Sistema financeiro moderno
 ===================================================== */
 
 
 /* ================= RESET ================= */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+
+
+:root{
+
+    --green-dark:#12372a;
+    --green:#1f513d;
+    --green-light:#2f6b50;
+
+    --orange:#f28c28;
+    --orange-dark:#d96f12;
+
+    --background:#f5f7f6;
+
+    --card:#ffffff;
+
+    --text:#1b1b1b;
+
+    --muted:#6b7280;
+
+    --border:#e5e7eb;
+
 }
 
 
-body {
 
-    font-family: "Inter", sans-serif;
 
-    background: #f5f7f6;
 
-    color: #12372a;
+body{
+
+    font-family:"Inter",Arial,sans-serif;
+
+    background:var(--background);
+
+    color:var(--text);
 
 }
+
+
+
+
+
+button{
+
+    cursor:pointer;
+
+    border:none;
+
+    font-family:inherit;
+
+}
+
+
+
+
+
+input,
+select,
+textarea{
+
+    font-family:inherit;
+
+}
+
+
+
+
 
 
 /* ================= LAYOUT ================= */
 
 
-.app-layout {
 
-    display: flex;
+.app-container{
 
-    min-height: 100vh;
+    display:flex;
+
+    min-height:100vh;
 
 }
+
+
+
+
+
+.content{
+
+    flex:1;
+
+    padding:30px;
+
+}
+
+
 
 
 
 /* ================= SIDEBAR ================= */
 
 
-.sidebar {
 
-    width: 260px;
+.sidebar{
 
-    background: #12372a;
+    width:260px;
 
-    color: white;
+    background:
+    linear-gradient(
+    180deg,
+    var(--green-dark),
+    var(--green)
+    );
 
-    padding: 25px 18px;
+    color:white;
 
-    display: flex;
+    padding:25px 18px;
 
-    flex-direction: column;
+    display:flex;
 
-    justify-content: space-between;
+    flex-direction:column;
 
-}
-
-
-
-.brand {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    font-size: 22px;
-
-    font-weight: 800;
+    justify-content:space-between;
 
 }
 
 
 
-.logo-icon {
 
-    width: 42px;
 
-    height: 42px;
+.brand{
 
-    border-radius: 12px;
+    display:flex;
 
-    background: #f28c28;
+    align-items:center;
 
-    display: flex;
+    gap:12px;
 
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 24px;
-
-    font-weight: 800;
-
-}
-
-
-
-.sidebar nav {
-
-    margin-top: 35px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 8px;
-
-}
-
-
-
-.menu-item {
-
-    border: none;
-
-    background: transparent;
-
-    color: #dce8e2;
-
-    padding: 14px;
-
-    border-radius: 12px;
-
-    text-align: left;
-
-    font-size: 15px;
-
-    cursor: pointer;
-
-    transition: .3s;
-
-}
-
-
-
-.menu-item:hover,
-.menu-item.active {
-
-    background: #1f513d;
-
-    color: white;
-
-}
-
-
-
-.sidebar-footer {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 10px;
-
-}
-
-
-
-.sidebar-footer button {
-
-    background: transparent;
-
-    border: 1px solid rgba(255,255,255,.2);
-
-    color: white;
-
-    padding: 12px;
-
-    border-radius: 12px;
-
-    cursor: pointer;
-
-}
-/* ================= CONTEÚDO PRINCIPAL ================= */
-
-
-.main-content {
-
-    flex: 1;
-
-    padding: 30px;
-
-    overflow-x: hidden;
-
-}
-
-
-
-/* ================= TOPO ================= */
-
-
-.topbar {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 30px;
-
-}
-
-
-
-.topbar h1 {
-
-    font-size: 28px;
-
-    color: #12372a;
-
-}
-
-
-
-.topbar p {
-
-    color: #6b7c74;
-
-    margin-top: 5px;
+    margin-bottom:35px;
 
 }
 
 
 
 
-.profile {
 
-    display: flex;
+.brand-logo{
 
-    align-items: center;
+    width:48px;
 
-    gap: 12px;
+    height:48px;
 
-    background: white;
+    border-radius:14px;
 
-    padding: 10px 18px;
+    background:var(--orange);
 
-    border-radius: 16px;
+    color:white;
 
-    box-shadow: 0 8px 25px rgba(0,0,0,.06);
+    display:flex;
 
-}
+    align-items:center;
 
+    justify-content:center;
 
+    font-size:28px;
 
-.profile span {
-
-    display: block;
-
-    color: #f28c28;
-
-    font-size: 13px;
+    font-weight:800;
 
 }
 
 
 
-.avatar {
 
-    width: 45px;
 
-    height: 45px;
+.brand h2{
 
-    border-radius: 50%;
-
-    background: #1f513d;
-
-    color: white;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-weight: 700;
+    font-size:22px;
 
 }
+
+
+
+.brand span{
+
+    font-size:12px;
+
+    opacity:.7;
+
+}
+
+
+
+
+
+.menu{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+
+
+
+
+.nav-item{
+
+    padding:14px;
+
+    border-radius:12px;
+
+    background:transparent;
+
+    color:white;
+
+    text-align:left;
+
+    font-size:15px;
+
+}
+
+
+
+
+
+.nav-item:hover,
+.nav-item.active{
+
+    background:rgba(255,255,255,.15);
+
+}
+
+
+
+
+
+.sidebar-bottom{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+
+
+.sidebar-bottom button{
+
+    padding:13px;
+
+    border-radius:12px;
+
+    background:rgba(255,255,255,.1);
+
+    color:white;
+
+}
+
+
+/* ================= HEADER ================= */
+
+
+.top-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+
+
+.top-header h1{
+
+    color:var(--green-dark);
+
+    font-size:28px;
+
+}
+
+
+
+.top-header p{
+
+    color:var(--muted);
+
+    margin-top:6px;
+
+}
+
+
+
+
+
+
+/* ================= PERFIL ================= */
+
+
+
+.profile{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    background:var(--card);
+
+    padding:10px 16px;
+
+    border-radius:16px;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.06);
+
+}
+
+
+
+
+
+.avatar{
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    background:var(--orange);
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-weight:700;
+
+    font-size:18px;
+
+}
+
+
+
+.profile strong{
+
+    display:block;
+
+}
+
+
+
+.profile span{
+
+    font-size:13px;
+
+    color:var(--green);
+
+}
+
+
+
+
+
+
+
+/* ================= DASHBOARD ================= */
+
+
+
+.dashboard-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+
+.dashboard-top h2{
+
+    color:var(--green-dark);
+
+}
+
+
+
+.dashboard-top p{
+
+    color:var(--muted);
+
+}
+
+
+
+
+
+
+
+
+/* ================= BOTÃO PRINCIPAL ================= */
+
+
+
+.primary-btn{
+
+    background:
+
+    linear-gradient(
+    135deg,
+    var(--orange),
+    var(--orange-dark)
+    );
+
+
+    color:white;
+
+    padding:14px 22px;
+
+    border-radius:14px;
+
+    font-weight:700;
+
+    box-shadow:
+
+    0 10px 25px rgba(242,140,40,.3);
+
+}
+
+
+
+
+
+.primary-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
 
 
 
@@ -290,792 +478,124 @@ body {
 /* ================= CARDS ================= */
 
 
-.summary-cards {
 
-    display: grid;
+.finance-cards{
 
-    grid-template-columns: repeat(4,1fr);
+    display:grid;
 
-    gap: 20px;
+    grid-template-columns:
+    repeat(4,1fr);
 
-    margin-bottom: 25px;
+    gap:20px;
 
-}
-
-
-
-.summary-card {
-
-    background: white;
-
-    padding: 22px;
-
-    border-radius: 20px;
-
-    box-shadow: 0 10px 30px rgba(0,0,0,.06);
-
-}
-
-
-
-.summary-card span {
-
-    color: #6b7c74;
-
-    font-size: 14px;
-
-}
-
-
-
-.summary-card h2 {
-
-    margin: 15px 0;
-
-    font-size: 26px;
-
-}
-
-
-
-.summary-card small {
-
-    color: #2f6b50;
-
-}
-
-
-
-.summary-card.balance {
-
-    border-left: 5px solid #f28c28;
-
-}
-
-
-
-.summary-card.income {
-
-    border-left: 5px solid #2f6b50;
-
-}
-
-
-
-.summary-card.expense {
-
-    border-left: 5px solid #d96f12;
-
-}
-
-
-
-.summary-card.goal {
-
-    border-left: 5px solid #12372a;
-
-}
-
-
-
-
-
-/* ================= AÇÕES RÁPIDAS ================= */
-
-
-.quick-actions {
-
-    display: flex;
-
-    gap: 15px;
-
-    margin-bottom: 30px;
-
-}
-
-
-
-.quick-actions button {
-
-    border: none;
-
-    background: #12372a;
-
-    color: white;
-
-    padding: 14px 22px;
-
-    border-radius: 14px;
-
-    cursor: pointer;
-
-    font-weight: 600;
-
-    transition: .3s;
-
-}
-
-
-
-.quick-actions button:hover {
-
-    transform: translateY(-2px);
-
-    background: #1f513d;
-
-}
-
-
-
-
-/* ================= GRID ================= */
-
-
-.dashboard-grid {
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 25px;
-
-    margin-bottom: 25px;
-
-}
-
-
-
-.panel {
-
-    background: white;
-
-    border-radius: 22px;
-
-    padding: 25px;
-
-    box-shadow: 0 10px 30px rgba(0,0,0,.06);
-
-}
-
-
-
-.panel-header {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 20px;
-
-}
-
-
-
-.panel-header h3 {
-
-    font-size: 18px;
-
-}
-
-
-
-.chart-container {
-
-    height: 300px;
-
-}
-
-/* ================= TRANSAÇÕES ================= */
-
-
-.transactions-panel {
-
-    margin-bottom: 25px;
-
-}
-
-
-
-.transactions-list {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 12px;
-
-}
-
-
-
-.transaction {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    background: #f8faf9;
-
-    padding: 15px;
-
-    border-radius: 15px;
-
-}
-
-
-
-.transaction-icon {
-
-    width: 40px;
-
-    height: 40px;
-
-    border-radius: 12px;
-
-    background: #eaf2ed;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-weight: bold;
-
-}
-
-
-
-.transaction-info {
-
-    flex: 1;
-
-    margin-left: 15px;
-
-}
-
-
-
-.transaction-info strong {
-
-    display: block;
-
-}
-
-
-
-.transaction-info small {
-
-    color: #718079;
-
-}
-
-
-
-.transaction-value {
-
-    font-weight: 700;
-
-}
-
-
-
-.transaction-value.income {
-
-    color: #2f6b50;
-
-}
-
-
-
-.transaction-value.expense {
-
-    color: #d96f12;
-
-}
-
-
-
-.transaction-delete {
-
-    border: none;
-
-    background: transparent;
-
-    color: #dc4c4c;
-
-    font-size: 22px;
-
-    cursor: pointer;
-
-    margin-left: 15px;
-
-}
-
-
-
-
-
-/* ================= FILTROS ================= */
-
-
-.filters {
-
-    display: flex;
-
-    gap: 12px;
-
-    margin-bottom: 20px;
-
-}
+    margin-bottom:25px;
 
-
-
-.filters input,
-.filters select {
-
-    padding: 12px;
-
-    border-radius: 12px;
-
-    border: 1px solid #ddd;
-
-    background: white;
-
-    outline: none;
-
-}
-
-
-
-
-
-/* ================= CATEGORIAS ================= */
-
-
-.categories-grid {
-
-    display: grid;
-
-    grid-template-columns: repeat(2,1fr);
-
-    gap: 15px;
-
-}
-
-
-
-.category-card {
-
-    background: #f8faf9;
-
-    padding: 18px;
-
-    border-radius: 16px;
-
-}
-
-
-
-.category-icon {
-
-    font-size: 25px;
-
-    margin-bottom: 10px;
-
-}
-
-
-
-.category-card span {
-
-    display: block;
-
-    margin-top: 8px;
-
-    color: #6b7c74;
-
-}
-
-
-
-
-
-/* ================= MODAL ================= */
-
-
-.modal {
-
-    position: fixed;
-
-    inset: 0;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    z-index: 1000;
-
-}
-
-
-
-.modal-overlay {
-
-    position: absolute;
-
-    inset: 0;
-
-    background: rgba(0,0,0,.45);
-
-}
-
-
-
-.modal-box {
-
-    position: relative;
-
-    background: white;
-
-    width: 450px;
-
-    max-width: 90%;
-
-    padding: 25px;
-
-    border-radius: 22px;
-
-    z-index: 2;
-
-}
-
-
-
-.modal-header {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 20px;
-
-}
-
-
-
-.modal-header button {
-
-    border: none;
-
-    background: transparent;
-
-    font-size: 25px;
-
-    cursor: pointer;
-
-}
-
-
-
-#transactionForm {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 15px;
-
-}
-
-
-
-#transactionForm input,
-#transactionForm select,
-#transactionForm textarea {
-
-    padding: 14px;
-
-    border-radius: 12px;
-
-    border: 1px solid #ddd;
-
-    font-family: inherit;
-
 }
 
 
 
-#transactionForm button {
 
-    background: #f28c28;
 
-    color: white;
+.finance-card{
 
-    border: none;
+    background:var(--card);
 
-    padding: 15px;
+    border-radius:20px;
 
-    border-radius: 14px;
+    padding:22px;
 
-    cursor: pointer;
+    display:flex;
 
-    font-weight: 700;
+    align-items:center;
 
-}
-
-/* ================= ESTADOS ================= */
-
-
-.hidden {
-
-    display: none !important;
-
-}
-
-
-
-.empty-state {
-
-    text-align: center;
-
-    padding: 30px;
-
-    color: #718079;
-
-}
-
-
-
-
-
-/* ================= RELATÓRIOS ================= */
-
-
-.report-item {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    padding: 15px 0;
-
-    border-bottom: 1px solid #eee;
-
-}
-
-
-
-.report-item span {
-
-    color: #718079;
-
-}
-
-
-
-.report-item strong {
-
-    font-size: 18px;
-
-}
-
-
-
-
-
-/* ================= FOOTER ================= */
-
-
-.app-footer {
-
-    text-align: center;
-
-    padding: 25px;
-
-    color: #718079;
-
-}
-
-
-
-
+    gap:15px;
 
-/* ================= MODO ESCURO ================= */
+    border:1px solid var(--border);
 
+    box-shadow:
 
-body.dark {
+    0 10px 30px rgba(0,0,0,.05);
 
-    background: #0f1915;
-
-    color: white;
-
-}
-
-
-
-body.dark .panel,
-body.dark .summary-card,
-body.dark .profile,
-body.dark .modal-box {
-
-    background: #17251f;
-
-    color: white;
-
-}
-
-
-
-body.dark .panel-header h3,
-body.dark .summary-card h2,
-body.dark .topbar h1 {
-
-    color: white;
-
-}
-
-
-
-body.dark .transaction {
-
-    background: #203129;
-
-}
-
-
-
-body.dark input,
-body.dark select,
-body.dark textarea {
-
-    background: #203129;
-
-    color: white;
-
-    border-color: #31463c;
-
-}
-
-
-
-
-
-/* ================= RESPONSIVO ================= */
-
-
-@media(max-width:1100px){
-
-
-.summary-cards {
-
-    grid-template-columns: repeat(2,1fr);
-
 }
-
 
 
-.dashboard-grid {
 
-    grid-template-columns: 1fr;
 
-}
 
-
-}
+.card-icon{
 
+    width:48px;
 
+    height:48px;
 
+    border-radius:14px;
 
+    display:flex;
 
-@media(max-width:800px){
+    align-items:center;
 
+    justify-content:center;
 
-.app-layout {
+    font-size:23px;
 
-    flex-direction: column;
+    background:#fff1df;
 
 }
 
 
-
-.sidebar {
-
-    width: 100%;
-
-}
 
 
+.finance-card span{
 
-.main-content {
+    color:var(--muted);
 
-    padding: 20px;
+    font-size:14px;
 
 }
 
 
 
-.topbar {
+.finance-card h2{
 
-    flex-direction: column;
+    margin-top:5px;
 
-    align-items: flex-start;
+    color:var(--green-dark);
 
-    gap: 15px;
-
 }
-
-
-
-.summary-cards {
 
-    grid-template-columns: 1fr;
 
-}
 
 
 
-.quick-actions {
+.balance-card .card-icon{
 
-    flex-direction: column;
+    background:#e5f5ec;
 
 }
 
 
 
-.filters {
+.income-card .card-icon{
 
-    flex-direction: column;
+    background:#e5f5ec;
 
 }
 
 
 
-.categories-grid {
+.expense-card .card-icon{
 
-    grid-template-columns: 1fr;
+    background:#ffe8e8;
 
 }
-
 
 
-.transaction {
 
-    flex-wrap: wrap;
+.economy-card .card-icon{
 
-    gap: 10px;
+    background:#fff1df;
 
 }
-
-
 
 /* ================= GRÁFICOS ================= */
 
@@ -1096,21 +616,23 @@ body.dark textarea {
 
 
 
+
 .panel{
 
-    background:white;
+    background:var(--card);
 
     border-radius:20px;
 
     padding:22px;
 
+    border:1px solid var(--border);
+
     box-shadow:
 
     0 10px 30px rgba(0,0,0,.05);
 
-    border:1px solid var(--border);
-
 }
+
 
 
 
@@ -1127,9 +649,9 @@ body.dark textarea {
 
     color:var(--green-dark);
 
-    font-size:18px;
-
 }
+
+
 
 
 
@@ -1145,6 +667,9 @@ body.dark textarea {
 
 
 
+
+
+
 /* ================= PLANO ================= */
 
 
@@ -1155,8 +680,8 @@ body.dark textarea {
 
     linear-gradient(
     135deg,
-    #12372a,
-    #1f513d
+    var(--green-dark),
+    var(--green)
     );
 
     color:white;
@@ -1169,23 +694,15 @@ body.dark textarea {
 
 
 
-.plan-box h3{
-
-    margin-bottom:10px;
-
-}
-
-
 
 .plan-box p{
 
+    margin:12px 0;
+
     opacity:.8;
 
-    font-size:14px;
-
-    margin-bottom:15px;
-
 }
+
 
 
 
@@ -1199,11 +716,13 @@ body.dark textarea {
 
 
 
+
+
 .upgrade-btn{
 
-    margin-top:15px;
-
     width:100%;
+
+    margin-top:15px;
 
     padding:12px;
 
@@ -1213,9 +732,10 @@ body.dark textarea {
 
     color:white;
 
-    font-weight:600;
+    font-weight:700;
 
 }
+
 
 
 
@@ -1242,6 +762,8 @@ body.dark textarea {
 
 
 
+
+
 .transaction-icon{
 
     width:42px;
@@ -1262,11 +784,15 @@ body.dark textarea {
 
 
 
+
+
 .transaction-info{
 
     flex:1;
 
 }
+
+
 
 
 
@@ -1278,11 +804,14 @@ body.dark textarea {
 
 
 
+
+
 .transaction-info small{
 
     color:var(--muted);
 
 }
+
 
 
 
@@ -1305,9 +834,11 @@ body.dark textarea {
 
 .transaction-value.expense{
 
-    color:var(--danger);
+    color:#dc3545;
 
 }
+
+
 
 
 
@@ -1315,7 +846,7 @@ body.dark textarea {
 
     background:none;
 
-    color:var(--danger);
+    color:#dc3545;
 
     font-size:22px;
 
@@ -1345,18 +876,15 @@ body.dark textarea {
 .filters input,
 .filters select{
 
+    flex:1;
+
     padding:12px;
 
     border-radius:12px;
 
     border:1px solid var(--border);
 
-    outline:none;
-
-    flex:1;
-
 }
-
 
 
 
@@ -1374,22 +902,10 @@ body.dark textarea {
     grid-template-columns:
     repeat(3,1fr);
 
-    gap:18px;
+    gap:15px;
 
 }
 
-
-
-
-.category-card{
-
-    padding:20px;
-
-    background:#f8faf9;
-
-    border-radius:16px;
-
-}
 
 
 
@@ -1430,15 +946,16 @@ body.dark textarea {
 
 
 
+
 .modal-content{
 
     position:relative;
 
-    background:white;
-
     width:420px;
 
     max-width:90%;
+
+    background:white;
 
     padding:25px;
 
@@ -1447,6 +964,8 @@ body.dark textarea {
     z-index:2;
 
 }
+
+
 
 
 
@@ -1459,6 +978,8 @@ body.dark textarea {
     margin-bottom:20px;
 
 }
+
+
 
 
 
@@ -1485,6 +1006,8 @@ body.dark textarea {
 
 
 
+
+
 .type-option{
 
     flex:1;
@@ -1499,24 +1022,30 @@ body.dark textarea {
 
 
 
+
+
 .type-option.active{
 
     background:var(--green);
 
     color:white;
 
+}
+
+
 /* ================= FORMULÁRIO ================= */
 
 
-.modal-content input,
-.modal-content select,
-.modal-content textarea{
+#transactionForm input,
+#transactionForm select,
+#transactionForm textarea{
+
 
     width:100%;
 
-    padding:14px;
+    padding:13px;
 
-    margin-bottom:14px;
+    margin-bottom:12px;
 
     border-radius:12px;
 
@@ -1524,21 +1053,27 @@ body.dark textarea {
 
     outline:none;
 
+
+}
+
+
+
+
+
+#transactionForm textarea{
+
+    height:90px;
+
     resize:none;
 
 }
 
 
 
-.modal-content textarea{
-
-    height:90px;
-
-}
-
 
 
 .save-btn{
+
 
     width:100%;
 
@@ -1546,19 +1081,12 @@ body.dark textarea {
 
     border-radius:14px;
 
-    background:
-
-    linear-gradient(
-    135deg,
-    var(--green),
-    var(--green-light)
-    );
+    background:var(--green);
 
     color:white;
 
     font-weight:700;
 
-    font-size:16px;
 
 }
 
@@ -1566,16 +1094,19 @@ body.dark textarea {
 
 
 
-/* ================= ESTADOS ================= */
+.save-btn:hover{
 
-
-
-.hidden{
-
-    display:none !important;
+    background:var(--green-light);
 
 }
 
+
+
+
+
+
+
+/* ================= ESTADO VAZIO ================= */
 
 
 
@@ -1583,7 +1114,7 @@ body.dark textarea {
 
     text-align:center;
 
-    padding:35px;
+    padding:30px;
 
     color:var(--muted);
 
@@ -1595,166 +1126,13 @@ body.dark textarea {
 
 
 
-/* ================= MOBILE ================= */
+/* ================= ESCONDER SEÇÕES ================= */
 
 
 
-.mobile-menu{
+.hidden{
 
-    display:none;
-
-}
-
-
-
-
-
-@media(max-width:900px){
-
-
-    .app-container{
-
-        display:block;
-
-    }
-
-
-
-    .sidebar{
-
-        position:fixed;
-
-        left:-270px;
-
-        top:0;
-
-        height:100%;
-
-        z-index:1000;
-
-        transition:.3s;
-
-    }
-
-
-
-    .sidebar.open{
-
-        left:0;
-
-    }
-
-
-
-    .mobile-menu{
-
-        display:block;
-
-        position:fixed;
-
-        top:20px;
-
-        left:20px;
-
-        z-index:1100;
-
-        background:var(--green);
-
-        color:white;
-
-        padding:12px;
-
-        border-radius:12px;
-
-    }
-
-
-
-
-    .content{
-
-        padding:20px;
-
-    }
-
-
-
-    .finance-cards{
-
-        grid-template-columns:
-
-        repeat(2,1fr);
-
-    }
-
-
-
-    .charts-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-
-
-    .top-header{
-
-        margin-top:60px;
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-        gap:15px;
-
-    }
-
-
-
-}
-
-
-
-
-@media(max-width:600px){
-
-
-
-    .finance-cards{
-
-        grid-template-columns:1fr;
-
-    }
-
-
-
-    .dashboard-top{
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-        gap:15px;
-
-    }
-
-
-
-    .filters{
-
-        flex-direction:column;
-
-    }
-
-
-
-    .content{
-
-        padding:15px;
-
-    }
-
-
+    display:none !important;
 
 }
 
@@ -1771,39 +1149,230 @@ body.dark textarea {
 body.dark{
 
 
-    --bg:#101615;
+    --background:#101614;
 
-    --card:#17201d;
+    --card:#18231f;
 
     --text:#ffffff;
 
-    --border:#263630;
+    --muted:#a5aaa8;
 
-    --muted:#b8c2bd;
+    --border:#26352f;
+
 
 }
+
+
 
 
 
 body.dark .panel,
 body.dark .finance-card,
-body.dark .profile,
-body.dark .modal-content{
+body.dark .profile{
 
-    background:var(--card);
 
     color:white;
 
+
 }
 
 
 
-body.dark .top-header h1,
-body.dark .panel-title h3,
-body.dark .finance-card h2{
+
+
+body.dark h1,
+body.dark h2,
+body.dark h3{
+
 
     color:white;
 
+
 }
+
+
+
+
+
+
+
+
+/* ================= MOBILE ================= */
+
+
+
+.mobile-menu{
+
+
+    display:none;
+
+
 }
+
+
+
+
+
+
+@media(max-width:900px){
+
+
+
+    .app-container{
+
+        flex-direction:column;
+
+    }
+
+
+
+
+
+    .sidebar{
+
+
+        width:100%;
+
+    }
+
+
+
+
+
+    .content{
+
+        padding:20px;
+
+    }
+
+
+
+
+
+    .finance-cards{
+
+
+        grid-template-columns:
+
+        1fr 1fr;
+
+
+    }
+
+
+
+
+
+
+    .charts-grid{
+
+
+        grid-template-columns:
+
+        1fr;
+
+
+    }
+
+
+
+
+
+}
+
+
+
+
+
+
+
+@media(max-width:600px){
+
+
+
+    .top-header{
+
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:15px;
+
+
+    }
+
+
+
+
+
+    .finance-cards{
+
+
+        grid-template-columns:
+
+        1fr;
+
+
+    }
+
+
+
+
+
+    .dashboard-top{
+
+
+        flex-direction:column;
+
+        gap:15px;
+
+        align-items:flex-start;
+
+
+    }
+
+
+
+
+
+    .filters{
+
+
+        flex-direction:column;
+
+    }
+
+
+
+
+
+    .mobile-menu{
+
+
+        display:block;
+
+        position:fixed;
+
+        bottom:20px;
+
+        right:20px;
+
+        width:55px;
+
+        height:55px;
+
+        border-radius:50%;
+
+        background:var(--orange);
+
+        color:white;
+
+        font-size:25px;
+
+
+    }
+
+
+
 }
