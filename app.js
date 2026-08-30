@@ -1266,3 +1266,5 @@ document
 
 
 });
+
+console.log("ControleS app.js carregado");
