@@ -12,6 +12,8 @@ let currentType = "income";
 
 let chart = null;
 
+let categoryChart = null;
+
 
 /* ================= ELEMENTOS ================= */
 
@@ -210,11 +212,12 @@ form?.addEventListener(
         .getElementById("dateInput")
         ?.value;
 
-        if (!description || !amount) {
+        /*
+           Não usamos mais alert().
+           Apenas interrompemos se faltar informação.
+        */
 
-            alert(
-                "Preencha os campos obrigatórios."
-            );
+        if (!description || !amount) {
 
             return;
 
@@ -369,7 +372,7 @@ function transactionHTML(item) {
                 </strong>
 
                 <small>
-                    ${item.category}
+                    ${item.category || "Sem categoria"}
                 </small>
 
             </div>
@@ -667,8 +670,6 @@ function navigateToSection(target) {
         target
     );
 
-    /* Esconde todas as seções */
-
     document
     .querySelectorAll(".section")
     .forEach(function(section) {
@@ -677,8 +678,6 @@ function navigateToSection(target) {
 
     });
 
-
-    /* Mostra a seção escolhida */
 
     const section =
     document.getElementById(target);
@@ -698,8 +697,6 @@ function navigateToSection(target) {
 
     }
 
-
-    /* Atualiza menu */
 
     document
     .querySelectorAll("[data-section]")
@@ -721,8 +718,6 @@ function navigateToSection(target) {
 
     }
 
-
-    /* Atualiza título */
 
     const pageTitle =
     document.getElementById("pageTitle");
@@ -749,7 +744,22 @@ function navigateToSection(target) {
     }
 
 
-    /* Volta para o topo */
+    /*
+       Quando entrar em Relatórios,
+       recria o gráfico depois que
+       a seção estiver visível.
+    */
+
+    if (target === "reports") {
+
+        setTimeout(function() {
+
+            createReport();
+
+        }, 50);
+
+    }
+
 
     window.scrollTo({
         top: 0,
@@ -827,9 +837,11 @@ document.addEventListener(
             "BOTÃO ASSINAR PREMIUM CLICADO"
         );
 
-        alert(
-            "A assinatura Premium será configurada na próxima etapa."
-        );
+        /*
+           Sem alert.
+           A assinatura será implementada
+           em uma etapa futura.
+        */
 
     }
 );
@@ -922,7 +934,9 @@ function loadPlan() {
 }
 
 
-/* ================= GRÁFICO ================= */
+/* =====================================================
+   GRÁFICO DO DASHBOARD
+===================================================== */
 
 function createChart() {
 
@@ -933,6 +947,16 @@ function createChart() {
 
     if (!canvas) {
         return;
+    }
+
+    if (typeof Chart === "undefined") {
+
+        console.error(
+            "Chart.js não foi carregado."
+        );
+
+        return;
+
     }
 
     const result =
@@ -997,6 +1021,364 @@ function createChart() {
 }
 
 
+/* =====================================================
+   RELATÓRIOS
+===================================================== */
+
+
+/* ================= RESUMO DO RELATÓRIO ================= */
+
+function createReportSummary() {
+
+    const reportsSection =
+    document.getElementById("reports");
+
+    if (!reportsSection) {
+        return;
+    }
+
+    /*
+       Evita criar o resumo várias vezes.
+    */
+
+    let summary =
+    document.getElementById(
+        "controleSReportSummary"
+    );
+
+    if (!summary) {
+
+        summary =
+        document.createElement("div");
+
+        summary.id =
+        "controleSReportSummary";
+
+        summary.style.display =
+        "grid";
+
+        summary.style.gridTemplateColumns =
+        "repeat(auto-fit, minmax(180px, 1fr))";
+
+        summary.style.gap =
+        "15px";
+
+        summary.style.marginBottom =
+        "25px";
+
+        /*
+           Coloca o resumo no começo
+           da tela de relatórios.
+        */
+
+        reportsSection.prepend(summary);
+
+    }
+
+
+    const result =
+    calculate();
+
+
+    let economyPercent = 0;
+
+    if (result.income > 0) {
+
+        economyPercent =
+        (
+            (result.income - result.expense)
+            /
+            result.income
+        ) * 100;
+
+    }
+
+
+    summary.innerHTML = `
+
+        <div style="
+            padding:18px;
+            border-radius:14px;
+            background:#f5f5f5;
+        ">
+
+            <small>Total de receitas</small>
+
+            <h3 style="margin:6px 0;">
+                ${money(result.income)}
+            </h3>
+
+        </div>
+
+
+        <div style="
+            padding:18px;
+            border-radius:14px;
+            background:#f5f5f5;
+        ">
+
+            <small>Total de despesas</small>
+
+            <h3 style="margin:6px 0;">
+                ${money(result.expense)}
+            </h3>
+
+        </div>
+
+
+        <div style="
+            padding:18px;
+            border-radius:14px;
+            background:#f5f5f5;
+        ">
+
+            <small>Saldo</small>
+
+            <h3 style="margin:6px 0;">
+                ${money(result.balance)}
+            </h3>
+
+        </div>
+
+
+        <div style="
+            padding:18px;
+            border-radius:14px;
+            background:#f5f5f5;
+        ">
+
+            <small>Economia</small>
+
+            <h3 style="margin:6px 0;">
+                ${economyPercent.toFixed(0)}%
+            </h3>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ================= GRÁFICO DE CATEGORIAS ================= */
+
+function createCategoryChart() {
+
+    const canvas =
+    document.getElementById(
+        "categoryChart"
+    );
+
+    if (!canvas) {
+
+        console.log(
+            "Canvas categoryChart não encontrado."
+        );
+
+        return;
+
+    }
+
+    if (typeof Chart === "undefined") {
+
+        console.error(
+            "Chart.js não foi carregado."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Soma somente as DESPESAS
+       por categoria.
+    */
+
+    const categories = {};
+
+
+    transactions.forEach(function(item) {
+
+        if (
+            item.type !== "expense"
+        ) {
+
+            return;
+
+        }
+
+
+        const category =
+        item.category
+        ||
+        "Sem categoria";
+
+
+        if (!categories[category]) {
+
+            categories[category] = 0;
+
+        }
+
+
+        categories[category] +=
+        Number(item.amount || 0);
+
+    });
+
+
+    const labels =
+    Object.keys(categories);
+
+
+    const values =
+    Object.values(categories);
+
+
+    if (categoryChart) {
+
+        categoryChart.destroy();
+
+        categoryChart = null;
+
+    }
+
+
+    /*
+       Se não existem despesas,
+       mostra o canvas vazio sem erro.
+    */
+
+    if (labels.length === 0) {
+
+        return;
+
+    }
+
+
+    categoryChart =
+    new Chart(
+        canvas,
+        {
+
+            type: "doughnut",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [{
+
+                    data: values,
+
+                    backgroundColor: [
+
+                        "#2f6b50",
+
+                        "#f28c28",
+
+                        "#12372a",
+
+                        "#d96f12",
+
+                        "#6b8f71",
+
+                        "#f5b971",
+
+                        "#3f7d5b",
+
+                        "#c65d0b"
+
+                    ]
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+
+                        position: "bottom"
+
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function(context) {
+
+                                const value =
+                                Number(
+                                    context.raw || 0
+                                );
+
+                                const total =
+                                values.reduce(
+                                    function(a, b) {
+                                        return a + b;
+                                    },
+                                    0
+                                );
+
+                                const percent =
+                                total > 0
+                                ?
+                                (
+                                    value / total
+                                ) * 100
+                                :
+                                0;
+
+                                return (
+                                    context.label
+                                    +
+                                    ": "
+                                    +
+                                    money(value)
+                                    +
+                                    " ("
+                                    +
+                                    percent.toFixed(1)
+                                    +
+                                    "%)"
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ================= RELATÓRIO COMPLETO ================= */
+
+function createReport() {
+
+    createReportSummary();
+
+    createCategoryChart();
+
+}
+
+
 /* ================= RENDERIZAÇÃO ================= */
 
 function renderAll() {
@@ -1010,6 +1392,8 @@ function renderAll() {
     filterTransactions();
 
     createChart();
+
+    createReport();
 
 }
 
