@@ -19,10 +19,11 @@
 <body>
 
 
-<div class="app-container" id="app">
+<div class="app-container">
 
 
-<!-- SIDEBAR -->
+<!-- ================= SIDEBAR ================= -->
+
 
 <aside class="sidebar">
 
@@ -42,7 +43,7 @@ ControleS
 </h2>
 
 <span>
-Financeiro inteligente
+Controle financeiro
 </span>
 
 </div>
@@ -88,7 +89,6 @@ Financeiro inteligente
 </button>
 
 
-
 </nav>
 
 
@@ -103,7 +103,6 @@ Financeiro inteligente
 🌙 Tema
 
 </button>
-
 
 
 <button id="logoutBtn">
@@ -122,17 +121,19 @@ Sair
 
 
 
-<!-- CONTEÚDO PRINCIPAL -->
+
+
+<!-- ================= ÁREA PRINCIPAL ================= -->
 
 
 <main class="content">
+
 
 
 <header class="top-header">
 
 
 <div>
-
 
 <h1 id="pageTitle">
 
@@ -153,7 +154,6 @@ Olá, <span id="welcomeName">Usuário</span> 👋
 
 
 
-
 <div class="profile">
 
 
@@ -162,7 +162,6 @@ Olá, <span id="welcomeName">Usuário</span> 👋
 U
 
 </div>
-
 
 
 <div>
@@ -190,7 +189,7 @@ ControleS Grátis
 
 </header>
 
-
+  
 <!-- ================= DASHBOARD ================= -->
 
 
@@ -205,17 +204,20 @@ ControleS Grátis
 
 
 <h2>
+
 Resumo financeiro
+
 </h2>
 
 
 <p>
-Acompanhe sua evolução financeira.
+
+Veja sua situação financeira atual.
+
 </p>
 
 
 </div>
-
 
 
 
@@ -226,6 +228,7 @@ Acompanhe sua evolução financeira.
 </button>
 
 
+
 </div>
 
 
@@ -234,8 +237,7 @@ Acompanhe sua evolução financeira.
 
 
 
-
-<!-- CARDS FINANCEIROS -->
+<!-- CARDS -->
 
 
 <div class="finance-cards">
@@ -256,7 +258,9 @@ Acompanhe sua evolução financeira.
 
 
 <span>
-Saldo disponível
+
+Saldo atual
+
 </span>
 
 
@@ -276,6 +280,7 @@ R$ 0,00
 
 
 
+
 <div class="finance-card income-card">
 
 
@@ -290,7 +295,9 @@ R$ 0,00
 
 
 <span>
+
 Receitas
+
 </span>
 
 
@@ -325,7 +332,9 @@ R$ 0,00
 
 
 <span>
+
 Despesas
+
 </span>
 
 
@@ -360,7 +369,9 @@ R$ 0,00
 
 
 <span>
+
 Economia
+
 </span>
 
 
@@ -400,9 +411,10 @@ Economia
 <div class="panel-title">
 
 <h3>
-Movimentação financeira
-</h3>
 
+Evolução financeira
+
+</h3>
 
 </div>
 
@@ -410,13 +422,15 @@ Movimentação financeira
 
 <div class="chart-box">
 
+
 <canvas id="financeChart"></canvas>
 
-</div>
-
-
 
 </div>
+
+
+</div>
+
 
 
 
@@ -430,7 +444,9 @@ Movimentação financeira
 
 
 <h3>
-Plano atual
+
+Plano
+
 </h3>
 
 
@@ -438,30 +454,42 @@ Plano atual
 
 
 
+
 <div class="plan-box">
 
 
 <h3>
+
 ControleS Grátis
+
 </h3>
 
 
 <p>
 
-Organize suas finanças pessoais.
+Organize sua vida financeira.
 
 </p>
 
 
+
 <ul>
 
-<li>✔ Receitas e despesas</li>
+
+<li>✔ Controle de receitas</li>
+
+
+<li>✔ Controle de despesas</li>
+
 
 <li>✔ Dashboard financeiro</li>
 
+
 <li>✔ Categorias</li>
 
+
 </ul>
+
 
 
 
@@ -475,7 +503,6 @@ Conhecer Premium ⭐
 </div>
 
 
-
 </div>
 
 
@@ -487,8 +514,7 @@ Conhecer Premium ⭐
 
 
 
-
-<!-- ÚLTIMAS TRANSAÇÕES -->
+<!-- ÚLTIMAS MOVIMENTAÇÕES -->
 
 
 <div class="panel">
@@ -498,11 +524,14 @@ Conhecer Premium ⭐
 
 
 <h3>
+
 Últimos lançamentos
+
 </h3>
 
 
 </div>
+
 
 
 
@@ -517,7 +546,6 @@ Nenhuma movimentação ainda.
 
 
 </div>
-
 
 
 </div>
@@ -544,8 +572,8 @@ Todos os lançamentos
 
 </h3>
 
-
 </div>
+
 
 
 
@@ -556,13 +584,14 @@ Todos os lançamentos
 <input
 id="searchInput"
 type="text"
-placeholder="Pesquisar lançamento..."
+placeholder="Pesquisar..."
 >
 
 
 
 
 <select id="typeFilter">
+
 
 <option value="all">
 
@@ -571,11 +600,13 @@ Todos
 </option>
 
 
+
 <option value="income">
 
 Receitas
 
 </option>
+
 
 
 <option value="expense">
@@ -586,6 +617,7 @@ Despesas
 
 
 </select>
+
 
 
 
@@ -601,6 +633,7 @@ Todas categorias
 
 
 </select>
+
 
 
 </div>
@@ -644,8 +677,8 @@ Categorias
 
 </h3>
 
-
 </div>
+
 
 
 
@@ -655,11 +688,11 @@ Categorias
 </div>
 
 
+
 </div>
 
 
 </section>
-
 
 
 
@@ -682,13 +715,12 @@ Categorias
 
 <h3>
 
-Relatórios financeiros
+Relatórios
 
 </h3>
 
 
 </div>
-
 
 
 
@@ -699,7 +731,6 @@ Relatórios financeiros
 
 
 </div>
-
 
 
 </div>
@@ -717,9 +748,7 @@ Relatórios financeiros
 <!-- ================= MODAL NOVO LANÇAMENTO ================= -->
 
 
-
 <div id="transactionModal" class="modal hidden">
-
 
 
 <div class="modal-overlay"></div>
@@ -728,7 +757,6 @@ Relatórios financeiros
 
 
 <div class="modal-content">
-
 
 
 <div class="modal-header">
@@ -767,9 +795,14 @@ Novo lançamento
 
 
 <button
+
 type="button"
+
 class="type-option active"
-data-type="income">
+
+data-type="income"
+
+>
 
 💰 Receita
 
@@ -779,13 +812,19 @@ data-type="income">
 
 
 <button
+
 type="button"
+
 class="type-option"
-data-type="expense">
+
+data-type="expense"
+
+>
 
 💸 Despesa
 
 </button>
+
 
 
 </div>
@@ -845,11 +884,13 @@ Alimentação
 </option>
 
 
+
 <option>
 
 Moradia
 
 </option>
+
 
 
 <option>
@@ -859,6 +900,7 @@ Transporte
 </option>
 
 
+
 <option>
 
 Salário
@@ -866,11 +908,13 @@ Salário
 </option>
 
 
+
 <option>
 
 Lazer
 
 </option>
+
 
 
 <option>
@@ -905,11 +949,12 @@ required
 
 
 
+
 <textarea
 
 id="noteInput"
 
-placeholder="Observação (opcional)"
+placeholder="Observação"
 
 ></textarea>
 
@@ -934,6 +979,16 @@ Salvar lançamento
 
 
 
+
+</form>
+
+
+</div>
+
+
+</div>
+
+  
 <!-- ================= MENU MOBILE ================= -->
 
 
@@ -957,7 +1012,7 @@ Salvar lançamento
 
 
 
-<!-- ================= JAVASCRIPT ================= -->
+<!-- ================= SCRIPT ================= -->
 
 
 <script src="app.js"></script>
@@ -967,16 +1022,3 @@ Salvar lançamento
 </body>
 
 </html>
-
-
-
-</form>
-
-
-
-</div>
-
-
-</div>
-
-  
