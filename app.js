@@ -471,6 +471,8 @@ function updateDashboard(){
     }
 
    
+}
+   
 /* ================= MOSTRAR TRANSAÇÕES ================= */
 
 
