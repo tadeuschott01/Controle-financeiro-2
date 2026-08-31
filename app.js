@@ -1,10 +1,12 @@
 /* =====================================================
-   CONTROLES - JAVASCRIPT
-   Sistema financeiro
+   CONTROLES APP
+   ControleS — Sistema Financeiro
 ===================================================== */
 
 
-/* ================= ESTADO ================= */
+/* =====================================================
+   ESTADO
+===================================================== */
 
 let transactions = [];
 
@@ -14,44 +16,68 @@ let chart = null;
 
 let categoryChart = null;
 
+let reportCategoryChart = null;
 
-/* ================= ELEMENTOS ================= */
+
+/* =====================================================
+   ELEMENTOS
+===================================================== */
+
+const loginScreen =
+    document.getElementById("loginScreen");
+
+const app =
+    document.getElementById("app");
+
+const loginForm =
+    document.getElementById("loginForm");
 
 const modal =
-document.getElementById("transactionModal");
+    document.getElementById("transactionModal");
 
 const form =
-document.getElementById("transactionForm");
+    document.getElementById("transactionForm");
 
 const balanceValue =
-document.getElementById("balanceValue");
+    document.getElementById("balanceValue");
 
 const incomeValue =
-document.getElementById("incomeValue");
+    document.getElementById("incomeValue");
 
 const expenseValue =
-document.getElementById("expenseValue");
+    document.getElementById("expenseValue");
 
 const economyValue =
-document.getElementById("economyValue");
+    document.getElementById("economyValue");
 
 const recentTransactions =
-document.getElementById("recentTransactions");
+    document.getElementById("recentTransactions");
 
 const allTransactions =
-document.getElementById("allTransactions");
+    document.getElementById("allTransactions");
 
 const searchInput =
-document.getElementById("searchInput");
+    document.getElementById("searchInput");
 
 const typeFilter =
-document.getElementById("typeFilter");
+    document.getElementById("typeFilter");
 
 const categoryFilter =
-document.getElementById("categoryFilter");
+    document.getElementById("categoryFilter");
+
+const categoryList =
+    document.getElementById("categoryList");
+
+const pageTitle =
+    document.getElementById("pageTitle");
+
+const sidebar =
+    document.getElementById("sidebar");
 
 
-/* ================= UTILIDADES ================= */
+/* =====================================================
+   UTILIDADES
+===================================================== */
 
 function money(value) {
 
@@ -66,13 +92,184 @@ function money(value) {
 }
 
 
-/* ================= DADOS ================= */
+function today() {
+
+    const date =
+        new Date();
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+function formatDate(date) {
+
+    if (!date) {
+        return "";
+    }
+
+    const parts =
+        date.split("-");
+
+    if (parts.length !== 3) {
+        return date;
+    }
+
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+function checkLogin() {
+
+    const user =
+        localStorage.getItem(
+            "controleS_user"
+        );
+
+    if (user) {
+
+        showApp();
+
+    } else {
+
+        showLogin();
+
+    }
+
+}
+
+
+function showLogin() {
+
+    if (loginScreen) {
+
+        loginScreen.classList.remove(
+            "hidden"
+        );
+
+    }
+
+    if (app) {
+
+        app.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+function showApp() {
+
+    if (loginScreen) {
+
+        loginScreen.classList.add(
+            "hidden"
+        );
+
+    }
+
+    if (app) {
+
+        app.classList.remove(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+loginForm?.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+        const nameInput =
+            document.getElementById(
+                "loginName"
+            );
+
+        const emailInput =
+            document.getElementById(
+                "loginEmail"
+            );
+
+        const passwordInput =
+            document.getElementById(
+                "loginPassword"
+            );
+
+        const name =
+            nameInput?.value.trim();
+
+        const email =
+            emailInput?.value.trim();
+
+        const password =
+            passwordInput?.value.trim();
+
+        if (
+            !name ||
+            !email ||
+            !password
+        ) {
+
+            return;
+
+        }
+
+        localStorage.setItem(
+            "controleS_user",
+            name
+        );
+
+        localStorage.setItem(
+            "controleS_email",
+            email
+        );
+
+        showApp();
+
+        loadUser();
+
+        renderAll();
+
+    }
+);
+
+
+/* =====================================================
+   DADOS
+===================================================== */
 
 function saveData() {
 
     localStorage.setItem(
         "controleS_transactions",
-        JSON.stringify(transactions)
+        JSON.stringify(
+            transactions
+        )
     );
 
 }
@@ -81,33 +278,176 @@ function saveData() {
 function loadData() {
 
     const data =
-    localStorage.getItem(
-        "controleS_transactions"
-    );
+        localStorage.getItem(
+            "controleS_transactions"
+        );
 
-    if (data) {
+    if (!data) {
 
-        try {
+        transactions = [];
 
-            transactions = JSON.parse(data);
+        return;
 
-        } catch (error) {
+    }
 
-            transactions = [];
+    try {
 
-        }
+        const parsed =
+            JSON.parse(data);
+
+        transactions =
+            Array.isArray(parsed)
+                ? parsed
+                : [];
+
+    } catch (error) {
+
+        transactions = [];
 
     }
 
 }
 
 
-/* ================= MODAL ================= */
+/* =====================================================
+   USUÁRIO
+===================================================== */
+
+function loadUser() {
+
+    const user =
+        localStorage.getItem(
+            "controleS_user"
+        ) || "Usuário";
+
+    const name =
+        document.getElementById(
+            "userName"
+        );
+
+    const avatar =
+        document.getElementById(
+            "userAvatar"
+        );
+
+    const welcome =
+        document.getElementById(
+            "welcomeName"
+        );
+
+    if (name) {
+
+        name.textContent =
+            user;
+
+    }
+
+    if (avatar) {
+
+        avatar.textContent =
+            user
+                .charAt(0)
+                .toUpperCase();
+
+    }
+
+    if (welcome) {
+
+        welcome.textContent =
+            user;
+
+    }
+
+}
+
+
+function loadPlan() {
+
+    const plan =
+        localStorage.getItem(
+            "controleS_plan"
+        ) || "free";
+
+    const element =
+        document.getElementById(
+            "userPlan"
+        );
+
+    if (!element) {
+        return;
+    }
+
+    if (plan === "premium") {
+
+        element.textContent =
+            "ControleS Premium ⭐";
+
+    } else {
+
+        element.textContent =
+            "ControleS Grátis";
+
+    }
+
+}
+
+
+/* =====================================================
+   DATA ATUAL
+===================================================== */
+
+function loadCurrentDate() {
+
+    const element =
+        document.getElementById(
+            "currentDate"
+        );
+
+    if (!element) {
+        return;
+    }
+
+    const date =
+        new Date();
+
+    element.textContent =
+        date.toLocaleDateString(
+            "pt-BR",
+            {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
 
 function openModal() {
 
-    if (modal) {
-        modal.classList.remove("hidden");
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+    const dateInput =
+        document.getElementById(
+            "dateInput"
+        );
+
+    if (dateInput && !dateInput.value) {
+
+        dateInput.value =
+            today();
+
     }
 
 }
@@ -115,109 +455,147 @@ function openModal() {
 
 function closeModal() {
 
-    if (modal) {
-        modal.classList.add("hidden");
+    if (!modal) {
+        return;
     }
+
+    modal.classList.add(
+        "hidden"
+    );
 
 }
 
 
 document
-.getElementById("openTransactionBtn")
-?.addEventListener(
-    "click",
-    function() {
-
-        console.log("CLICOU NO LANÇAMENTO");
-
-        openModal();
-
-    }
-);
-
-
-document
-.getElementById("closeModal")
-?.addEventListener(
-    "click",
-    closeModal
-);
-
-
-document
-.querySelector(".modal-overlay")
-?.addEventListener(
-    "click",
-    closeModal
-);
-
-
-/* ================= TIPO DE LANÇAMENTO ================= */
-
-document
-.querySelectorAll(".type-option")
-.forEach(function(button) {
-
-    button.addEventListener(
+    .getElementById(
+        "openTransactionBtn"
+    )
+    ?.addEventListener(
         "click",
-        function() {
+        openModal
+    );
 
-            currentType =
-            button.dataset.type;
 
-            document
-            .querySelectorAll(".type-option")
-            .forEach(function(btn) {
+document
+    .getElementById(
+        "newTransactionButton"
+    )
+    ?.addEventListener(
+        "click",
+        openModal
+    );
 
-                btn.classList.remove("active");
 
-            });
+document
+    .getElementById(
+        "closeModal"
+    )
+    ?.addEventListener(
+        "click",
+        closeModal
+    );
 
-            button.classList.add("active");
+
+document
+    .querySelector(
+        ".modal-overlay"
+    )
+    ?.addEventListener(
+        "click",
+        closeModal
+    );
+
+
+/* =====================================================
+   TIPO DE LANÇAMENTO
+===================================================== */
+
+document
+    .querySelectorAll(
+        ".type-option"
+    )
+    .forEach(
+        function(button) {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    currentType =
+                        button.dataset.type;
+
+                    document
+                        .querySelectorAll(
+                            ".type-option"
+                        )
+                        .forEach(
+                            function(btn) {
+
+                                btn.classList
+                                    .remove(
+                                        "active"
+                                    );
+
+                            }
+                        );
+
+                    button.classList.add(
+                        "active"
+                    );
+
+                }
+            );
 
         }
     );
 
-});
 
-
-/* ================= SALVAR LANÇAMENTO ================= */
+/* =====================================================
+   SALVAR LANÇAMENTO
+===================================================== */
 
 form?.addEventListener(
     "submit",
-    function(e) {
+    function(event) {
 
-        e.preventDefault();
+        event.preventDefault();
 
         const description =
-        document
-        .getElementById("descriptionInput")
-        ?.value
-        .trim();
+            document
+                .getElementById(
+                    "descriptionInput"
+                )
+                ?.value
+                .trim();
 
         const amount =
-        Number(
-            document
-            .getElementById("amountInput")
-            ?.value
-        );
+            Number(
+                document
+                    .getElementById(
+                        "amountInput"
+                    )
+                    ?.value
+            );
 
         const category =
-        document
-        .getElementById("transactionCategory")
-        ?.value;
+            document
+                .getElementById(
+                    "transactionCategory"
+                )
+                ?.value;
 
         const date =
-        document
-        .getElementById("dateInput")
-        ?.value;
+            document
+                .getElementById(
+                    "dateInput"
+                )
+                ?.value;
 
-        /*
-           Não usamos mais alert().
-           Apenas interrompemos se faltar informação.
-        */
-
-        if (!description || !amount) {
+        if (
+            !description ||
+            !amount ||
+            amount <= 0
+        ) {
 
             return;
 
@@ -225,39 +603,78 @@ form?.addEventListener(
 
         const transaction = {
 
-            id: Date.now(),
+            id:
+                Date.now(),
 
-            type: currentType,
+            type:
+                currentType,
 
-            description: description,
+            description:
+                description,
 
-            amount: amount,
+            amount:
+                amount,
 
-            category: category,
+            category:
+                category || "Sem categoria",
 
-            date: date
+            date:
+                date || today()
 
         };
 
-        transactions.unshift(transaction);
+
+        transactions.unshift(
+            transaction
+        );
+
 
         saveData();
 
+
         form.reset();
 
+
         const dateInput =
-        document.getElementById("dateInput");
+            document.getElementById(
+                "dateInput"
+            );
 
         if (dateInput) {
 
             dateInput.value =
-            new Date()
-            .toISOString()
-            .split("T")[0];
+                today();
 
         }
 
+
+        currentType =
+            "income";
+
+
+        document
+            .querySelectorAll(
+                ".type-option"
+            )
+            .forEach(
+                btn =>
+                    btn.classList.remove(
+                        "active"
+                    )
+            );
+
+
+        document
+            .querySelector(
+                '.type-option[data-type="income"]'
+            )
+            ?.classList.add(
+                "active"
+            );
+
+
         closeModal();
+
 
         renderAll();
 
@@ -265,7 +682,9 @@ form?.addEventListener(
 );
 
 
-/* ================= CÁLCULOS ================= */
+/* =====================================================
+   CÁLCULOS
+===================================================== */
 
 function calculate() {
 
@@ -273,85 +692,119 @@ function calculate() {
 
     let expense = 0;
 
-    transactions.forEach(function(item) {
 
-        if (item.type === "income") {
+    transactions.forEach(
+        function(item) {
 
-            income += Number(item.amount || 0);
+            const amount =
+                Number(
+                    item.amount || 0
+                );
 
-        } else {
 
-            expense += Number(item.amount || 0);
+            if (
+                item.type === "income"
+            ) {
+
+                income += amount;
+
+            } else {
+
+                expense += amount;
+
+            }
 
         }
+    );
 
-    });
 
     return {
 
-        income: income,
+        income:
+            income,
 
-        expense: expense,
+        expense:
+            expense,
 
-        balance: income - expense
+        balance:
+            income - expense
 
     };
 
 }
 
 
-/* ================= ATUALIZAR DASHBOARD ================= */
+/* =====================================================
+   DASHBOARD
+===================================================== */
 
 function updateDashboard() {
 
     const result =
-    calculate();
+        calculate();
+
 
     if (balanceValue) {
 
         balanceValue.textContent =
-        money(result.balance);
+            money(
+                result.balance
+            );
 
     }
+
 
     if (incomeValue) {
 
         incomeValue.textContent =
-        money(result.income);
+            money(
+                result.income
+            );
 
     }
+
 
     if (expenseValue) {
 
         expenseValue.textContent =
-        money(result.expense);
+            money(
+                result.expense
+            );
 
     }
+
 
     if (economyValue) {
 
         let percent = 0;
 
+
         if (result.income > 0) {
 
             percent =
-            (
-                (result.income - result.expense)
-                /
-                result.income
-            ) * 100;
+                (
+                    (
+                        result.income -
+                        result.expense
+                    )
+                    /
+                    result.income
+                ) * 100;
 
         }
 
+
         economyValue.textContent =
-        percent.toFixed(0) + "%";
+            percent.toFixed(0) + "%";
 
     }
 
 }
 
 
-/* ================= HTML DE TRANSAÇÃO ================= */
+/* =====================================================
+   HTML DE TRANSAÇÃO
+===================================================== */
 
 function transactionHTML(item) {
 
@@ -361,37 +814,61 @@ function transactionHTML(item) {
 
             <div class="transaction-icon">
 
-                ${item.type === "income" ? "↗" : "↘"}
+                ${item.type === "income"
+                    ? "↗"
+                    : "↘"}
 
             </div>
+
 
             <div class="transaction-info">
 
                 <strong>
-                    ${item.description}
+                    ${escapeHTML(
+                        item.description
+                    )}
                 </strong>
 
                 <small>
-                    ${item.category || "Sem categoria"}
+
+                    ${escapeHTML(
+                        item.category ||
+                        "Sem categoria"
+                    )}
+
+                    •
+
+                    ${formatDate(
+                        item.date
+                    )}
+
                 </small>
 
             </div>
 
-            <div class="transaction-value ${item.type}">
 
-                ${item.type === "income" ? "+" : "-"}
+            <div
+                class="transaction-value
+                ${item.type}"
+            >
 
-                ${money(item.amount)}
+                ${item.type === "income"
+                    ? "+"
+                    : "-"}
+
+                ${money(
+                    item.amount
+                )}
 
             </div>
+
 
             <button
                 class="transaction-delete"
                 onclick="deleteTransaction(${item.id})"
+                title="Excluir"
             >
-
                 ×
-
             </button>
 
         </div>
@@ -401,7 +878,25 @@ function transactionHTML(item) {
 }
 
 
-/* ================= ÚLTIMAS TRANSAÇÕES ================= */
+/* =====================================================
+   SEGURANÇA HTML
+===================================================== */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* =====================================================
+   ÚLTIMAS TRANSAÇÕES
+===================================================== */
 
 function renderTransactions() {
 
@@ -409,13 +904,24 @@ function renderTransactions() {
         return;
     }
 
-    if (transactions.length === 0) {
+
+    if (
+        transactions.length === 0
+    ) {
 
         recentTransactions.innerHTML = `
 
             <div class="empty-state">
 
                 Nenhuma movimentação ainda.
+
+                <br><br>
+
+                Clique em
+                <strong>
+                    "+ Novo lançamento"
+                </strong>
+                para começar.
 
             </div>
 
@@ -425,22 +931,30 @@ function renderTransactions() {
 
     }
 
+
     recentTransactions.innerHTML =
-    transactions
-    .slice(0, 10)
-    .map(transactionHTML)
-    .join("");
+        transactions
+            .slice(0, 6)
+            .map(
+                transactionHTML
+            )
+            .join("");
 
 }
 
 
-/* ================= TODAS AS TRANSAÇÕES ================= */
+/* =====================================================
+   TODAS TRANSAÇÕES
+===================================================== */
 
-function renderAllTransactions(list) {
+function renderAllTransactions(
+    list
+) {
 
     if (!allTransactions) {
         return;
     }
+
 
     if (list.length === 0) {
 
@@ -458,24 +972,43 @@ function renderAllTransactions(list) {
 
     }
 
+
     allTransactions.innerHTML =
-    list
-    .map(transactionHTML)
-    .join("");
+        list
+            .map(
+                transactionHTML
+            )
+            .join("");
 
 }
 
 
-/* ================= EXCLUIR ================= */
+/* =====================================================
+   EXCLUIR
+===================================================== */
 
 function deleteTransaction(id) {
 
+    const confirmed =
+        confirm(
+            "Deseja excluir este lançamento?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
     transactions =
-    transactions.filter(function(item) {
+        transactions.filter(
+            function(item) {
 
-        return item.id !== id;
+                return item.id !== id;
 
-    });
+            }
+        );
+
 
     saveData();
 
@@ -484,7 +1017,9 @@ function deleteTransaction(id) {
 }
 
 
-/* ================= CATEGORIAS ================= */
+/* =====================================================
+   CATEGORIAS
+===================================================== */
 
 function updateCategories() {
 
@@ -492,25 +1027,42 @@ function updateCategories() {
         return;
     }
 
+
     const currentValue =
-    categoryFilter.value;
+        categoryFilter.value;
 
-    let categories = [];
 
-    transactions.forEach(function(item) {
+    const categories = [];
 
-        if (
-            item.category &&
-            !categories.includes(item.category)
-        ) {
 
-            categories.push(item.category);
+    transactions.forEach(
+        function(item) {
+
+            if (
+                item.category &&
+                !categories.includes(
+                    item.category
+                )
+            ) {
+
+                categories.push(
+                    item.category
+                );
+
+            }
 
         }
+    );
 
-    });
 
-    categories.sort();
+    categories.sort(
+        (a, b) =>
+            a.localeCompare(
+                b,
+                "pt-BR"
+            )
+    );
+
 
     categoryFilter.innerHTML = `
 
@@ -520,56 +1072,89 @@ function updateCategories() {
 
     `;
 
-    categories.forEach(function(category) {
 
-        categoryFilter.innerHTML += `
+    categories.forEach(
+        function(category) {
 
-            <option value="${category}">
-                ${category}
-            </option>
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        `;
+            option.value =
+                category;
 
-    });
+            option.textContent =
+                category;
+
+            categoryFilter.appendChild(
+                option
+            );
+
+        }
+    );
+
 
     if (
-        categories.includes(currentValue)
+        categories.includes(
+            currentValue
+        )
     ) {
 
         categoryFilter.value =
-        currentValue;
+            currentValue;
 
     }
 
 }
 
 
-/* ================= FILTROS ================= */
+/* =====================================================
+   FILTROS
+===================================================== */
 
 function filterTransactions() {
 
     let list =
-    [...transactions];
+        [...transactions];
+
 
     const search =
-    searchInput?.value
-    ?.toLowerCase()
-    .trim();
+        searchInput
+            ?.value
+            ?.toLowerCase()
+            .trim();
+
 
     if (search) {
 
         list =
-        list.filter(function(item) {
+            list.filter(
+                function(item) {
 
-            return (
-                item.description
-                ?.toLowerCase()
-                .includes(search)
+                    return (
+
+                        item.description
+                            ?.toLowerCase()
+                            .includes(
+                                search
+                            )
+
+                        ||
+
+                        item.category
+                            ?.toLowerCase()
+                            .includes(
+                                search
+                            )
+
+                    );
+
+                }
             );
 
-        });
-
     }
+
 
     if (
         typeFilter &&
@@ -577,16 +1162,19 @@ function filterTransactions() {
     ) {
 
         list =
-        list.filter(function(item) {
+            list.filter(
+                function(item) {
 
-            return (
-                item.type ===
-                typeFilter.value
+                    return (
+                        item.type ===
+                        typeFilter.value
+                    );
+
+                }
             );
 
-        });
-
     }
+
 
     if (
         categoryFilter &&
@@ -594,18 +1182,23 @@ function filterTransactions() {
     ) {
 
         list =
-        list.filter(function(item) {
+            list.filter(
+                function(item) {
 
-            return (
-                item.category ===
-                categoryFilter.value
+                    return (
+                        item.category ===
+                        categoryFilter.value
+                    );
+
+                }
             );
-
-        });
 
     }
 
-    renderAllTransactions(list);
+
+    renderAllTransactions(
+        list
+    );
 
 }
 
@@ -628,135 +1221,966 @@ categoryFilter?.addEventListener(
 );
 
 
-/* ================= TEMA ================= */
-
-const themeBtn =
-document.getElementById("themeBtn");
-
-themeBtn?.addEventListener(
-    "click",
-    function() {
-
-        document.body.classList.toggle("dark");
-
-        localStorage.setItem(
-            "controleS_theme",
-            document.body.classList.contains("dark")
-        );
-
-    }
-);
-
-
-if (
-    localStorage.getItem(
-        "controleS_theme"
-    ) === "true"
-) {
-
-    document.body.classList.add("dark");
-
-}
-
-
 /* =====================================================
-   NAVEGAÇÃO PRINCIPAL
+   CATEGORIA — LISTA
 ===================================================== */
 
-function navigateToSection(target) {
+function renderCategoryList() {
 
-    console.log(
-        "Navegando para:",
-        target
+    if (!categoryList) {
+        return;
+    }
+
+
+    const categories = {};
+
+
+    transactions.forEach(
+        function(item) {
+
+            if (
+                item.type !== "expense"
+            ) {
+                return;
+            }
+
+
+            const category =
+                item.category ||
+                "Sem categoria";
+
+
+            categories[category] =
+                (
+                    categories[category] ||
+                    0
+                )
+                +
+                Number(
+                    item.amount || 0
+                );
+
+        }
     );
 
-    document
-    .querySelectorAll(".section")
-    .forEach(function(section) {
 
-        section.classList.add("hidden");
-
-    });
-
-
-    const section =
-    document.getElementById(target);
-
-    if (section) {
-
-        section.classList.remove("hidden");
-
-    } else {
-
-        console.error(
-            "Seção não encontrada:",
-            target
+    const entries =
+        Object.entries(
+            categories
+        )
+        .sort(
+            (a, b) =>
+                b[1] - a[1]
         );
+
+
+    if (!entries.length) {
+
+        categoryList.innerHTML = `
+
+            <div class="empty-state">
+
+                Ainda não existem
+                despesas cadastradas.
+
+            </div>
+
+        `;
 
         return;
 
     }
 
 
+    categoryList.innerHTML =
+        entries
+            .map(
+                function([
+                    category,
+                    value
+                ]) {
+
+                    return `
+
+                        <div
+                            class="category-summary-item"
+                        >
+
+                            <div
+                                class="category-summary-left"
+                            >
+
+                                <span
+                                    class="category-dot"
+                                ></span>
+
+                                <strong>
+                                    ${escapeHTML(
+                                        category
+                                    )}
+                                </strong>
+
+                            </div>
+
+                            <span>
+                                ${money(value)}
+                            </span>
+
+                        </div>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
+   GRÁFICO PRINCIPAL
+===================================================== */
+
+function createChart() {
+
+    const canvas =
+        document.getElementById(
+            "financeChart"
+        );
+
+
+    if (!canvas) {
+        return;
+    }
+
+
+    if (
+        typeof Chart ===
+        "undefined"
+    ) {
+
+        return;
+
+    }
+
+
+    const result =
+        calculate();
+
+
+    if (chart) {
+
+        chart.destroy();
+
+        chart = null;
+
+    }
+
+
+    chart =
+        new Chart(
+            canvas,
+            {
+
+                type:
+                    "doughnut",
+
+                data: {
+
+                    labels: [
+                        "Receitas",
+                        "Despesas"
+                    ],
+
+                    datasets: [
+
+                        {
+
+                            data: [
+
+                                result.income,
+
+                                result.expense
+
+                            ],
+
+                            backgroundColor: [
+
+                                "#2f6b50",
+
+                                "#f28c28"
+
+                            ],
+
+                            borderWidth: 0
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio:
+                        false,
+
+                    cutout: "70%",
+
+                    plugins: {
+
+                        legend: {
+
+                            position:
+                                "bottom",
+
+                            labels: {
+
+                                usePointStyle:
+                                    true,
+
+                                padding:
+                                    20
+
+                            }
+
+                        },
+
+                        tooltip: {
+
+                            callbacks: {
+
+                                label:
+                                    function(
+                                        context
+                                    ) {
+
+                                        return (
+                                            context.label
+                                            +
+                                            ": "
+                                            +
+                                            money(
+                                                context.raw
+                                            )
+                                        );
+
+                                    }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   GRÁFICO DE CATEGORIAS
+===================================================== */
+
+function getExpenseCategories() {
+
+    const categories = {};
+
+
+    transactions.forEach(
+        function(item) {
+
+            if (
+                item.type !== "expense"
+            ) {
+                return;
+            }
+
+
+            const category =
+                item.category ||
+                "Sem categoria";
+
+
+            categories[category] =
+                (
+                    categories[category] ||
+                    0
+                )
+                +
+                Number(
+                    item.amount || 0
+                );
+
+        }
+    );
+
+
+    return categories;
+
+}
+
+
+function createCategoryChart() {
+
+    const canvas =
+        document.getElementById(
+            "categoryChart"
+        );
+
+
+    if (!canvas) {
+        return;
+    }
+
+
+    if (
+        typeof Chart ===
+        "undefined"
+    ) {
+        return;
+    }
+
+
+    const categories =
+        getExpenseCategories();
+
+
+    const labels =
+        Object.keys(
+            categories
+        );
+
+
+    const values =
+        Object.values(
+            categories
+        );
+
+
+    if (categoryChart) {
+
+        categoryChart.destroy();
+
+        categoryChart = null;
+
+    }
+
+
+    if (!labels.length) {
+        return;
+    }
+
+
+    categoryChart =
+        new Chart(
+            canvas,
+            {
+
+                type:
+                    "doughnut",
+
+                data: {
+
+                    labels:
+                        labels,
+
+                    datasets: [
+
+                        {
+
+                            data:
+                                values,
+
+                            backgroundColor: [
+
+                                "#2f6b50",
+                                "#f28c28",
+                                "#12372a",
+                                "#d96f12",
+                                "#6b8f71",
+                                "#f5b971",
+                                "#3f7d5b",
+                                "#c65d0b",
+                                "#4d9b73",
+                                "#e9a24d"
+
+                            ],
+
+                            borderWidth:
+                                0
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false,
+
+                    cutout:
+                        "64%",
+
+                    plugins: {
+
+                        legend: {
+
+                            position:
+                                "bottom",
+
+                            labels: {
+
+                                usePointStyle:
+                                    true,
+
+                                padding:
+                                    15
+
+                            }
+
+                        },
+
+                        tooltip: {
+
+                            callbacks: {
+
+                                label:
+                                    function(
+                                        context
+                                    ) {
+
+                                        const value =
+                                            Number(
+                                                context.raw
+                                                ||
+                                                0
+                                            );
+
+                                        const total =
+                                            values.reduce(
+                                                (
+                                                    a,
+                                                    b
+                                                ) =>
+                                                    a + b,
+                                                0
+                                            );
+
+                                        const percent =
+                                            total
+                                            >
+                                            0
+                                                ?
+                                                (
+                                                    value
+                                                    /
+                                                    total
+                                                )
+                                                *
+                                                100
+                                                :
+                                                0;
+
+                                        return (
+                                            context.label
+                                            +
+                                            ": "
+                                            +
+                                            money(
+                                                value
+                                            )
+                                            +
+                                            " ("
+                                            +
+                                            percent.toFixed(
+                                                1
+                                            )
+                                            +
+                                            "%)"
+                                        );
+
+                                    }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   RELATÓRIO
+===================================================== */
+
+function createReportChart() {
+
+    const canvas =
+        document.getElementById(
+            "reportCategoryChart"
+        );
+
+
+    if (!canvas) {
+        return;
+    }
+
+
+    if (
+        typeof Chart ===
+        "undefined"
+    ) {
+        return;
+    }
+
+
+    const categories =
+        getExpenseCategories();
+
+
+    const labels =
+        Object.keys(
+            categories
+        );
+
+
+    const values =
+        Object.values(
+            categories
+        );
+
+
+    if (reportCategoryChart) {
+
+        reportCategoryChart.destroy();
+
+        reportCategoryChart = null;
+
+    }
+
+
+    if (!labels.length) {
+        return;
+    }
+
+
+    reportCategoryChart =
+        new Chart(
+            canvas,
+            {
+
+                type:
+                    "bar",
+
+                data: {
+
+                    labels:
+                        labels,
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Despesas",
+
+                            data:
+                                values,
+
+                            backgroundColor:
+                                "#f28c28",
+
+                            borderRadius:
+                                8
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false,
+
+                    plugins: {
+
+                        legend: {
+
+                            display:
+                                false
+
+                        },
+
+                        tooltip: {
+
+                            callbacks: {
+
+                                label:
+                                    function(
+                                        context
+                                    ) {
+
+                                        return (
+                                            " "
+                                            +
+                                            money(
+                                                context.raw
+                                            )
+                                        );
+
+                                    }
+
+                            }
+
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero:
+                                true,
+
+                            ticks: {
+
+                                callback:
+                                    function(
+                                        value
+                                    ) {
+
+                                        return money(
+                                            value
+                                        );
+
+                                    }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   RESUMO DO RELATÓRIO
+===================================================== */
+
+function createReportSummary() {
+
+    const reportsSection =
+        document.getElementById(
+            "reports"
+        );
+
+
+    if (!reportsSection) {
+        return;
+    }
+
+
+    let summary =
+        document.getElementById(
+            "controleSReportSummary"
+        );
+
+
+    if (!summary) {
+
+        summary =
+            document.createElement(
+                "div"
+            );
+
+        summary.id =
+            "controleSReportSummary";
+
+        summary.className =
+            "stats-grid";
+
+        reportsSection.insertBefore(
+            summary,
+            reportsSection.children[1]
+        );
+
+    }
+
+
+    const result =
+        calculate();
+
+
+    let economyPercent = 0;
+
+
+    if (result.income > 0) {
+
+        economyPercent =
+            (
+                (
+                    result.income -
+                    result.expense
+                )
+                /
+                result.income
+            ) * 100;
+
+    }
+
+
+    summary.innerHTML = `
+
+        <div class="stat-card income">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    ↗
+                </div>
+
+                <span class="stat-label">
+                    Total de receitas
+                </span>
+
+            </div>
+
+            <strong>
+                ${money(result.income)}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card expense">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    ↘
+                </div>
+
+                <span class="stat-label">
+                    Total de despesas
+                </span>
+
+            </div>
+
+            <strong>
+                ${money(result.expense)}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card balance">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    💰
+                </div>
+
+                <span class="stat-label">
+                    Saldo
+                </span>
+
+            </div>
+
+            <strong>
+                ${money(result.balance)}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card economy">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    🎯
+                </div>
+
+                <span class="stat-label">
+                    Economia
+                </span>
+
+            </div>
+
+            <strong>
+                ${economyPercent.toFixed(0)}%
+            </strong>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   NAVEGAÇÃO
+===================================================== */
+
+function navigateToSection(
+    target
+) {
+
     document
-    .querySelectorAll("[data-section]")
-    .forEach(function(btn) {
+        .querySelectorAll(
+            ".section"
+        )
+        .forEach(
+            function(section) {
 
-        btn.classList.remove("active");
+                section.classList.add(
+                    "hidden"
+                );
 
-    });
+            }
+        );
+
+
+    const section =
+        document.getElementById(
+            target
+        );
+
+
+    if (!section) {
+        return;
+    }
+
+
+    section.classList.remove(
+        "hidden"
+    );
+
+
+    document
+        .querySelectorAll(
+            ".nav-item"
+        )
+        .forEach(
+            function(button) {
+
+                button.classList.remove(
+                    "active"
+                );
+
+            }
+        );
 
 
     const activeButton =
-    document.querySelector(
-        `[data-section="${target}"]`
-    );
+        document.querySelector(
+            `[data-section="${target}"]`
+        );
+
 
     if (activeButton) {
 
-        activeButton.classList.add("active");
+        activeButton.classList.add(
+            "active"
+        );
 
     }
 
 
-    const pageTitle =
-    document.getElementById("pageTitle");
+    const titles = {
+
+        dashboard:
+            "Dashboard",
+
+        transactions:
+            "Lançamentos",
+
+        categories:
+            "Categorias",
+
+        reports:
+            "Relatórios",
+
+        premium:
+            "Premium"
+
+    };
+
 
     if (pageTitle) {
 
-        const titles = {
-
-            dashboard: "Dashboard",
-
-            transactions: "Lançamentos",
-
-            categories: "Categorias",
-
-            reports: "Relatórios",
-
-            premium: "Premium"
-
-        };
-
         pageTitle.textContent =
-        titles[target] || "ControleS";
+            titles[target] ||
+            "ControleS";
 
     }
 
 
-    /*
-       Quando entrar em Relatórios,
-       recria o gráfico depois que
-       a seção estiver visível.
-    */
+    if (target === "categories") {
+
+        setTimeout(
+            function() {
+
+                createCategoryChart();
+
+            },
+            100
+        );
+
+    }
+
 
     if (target === "reports") {
 
-        setTimeout(function() {
+        createReportSummary();
 
-            createReport();
+        setTimeout(
+            function() {
 
-        }, 50);
+                createReportChart();
+
+            },
+            100
+        );
+
+    }
+
+
+    if (sidebar) {
+
+        sidebar.classList.remove(
+            "mobile-open"
+        );
 
     }
 
@@ -769,617 +2193,242 @@ function navigateToSection(target) {
 }
 
 
-/* ================= BOTÕES DO MENU ================= */
+/* =====================================================
+   BOTÕES DE NAVEGAÇÃO
+===================================================== */
 
 document
-.querySelectorAll("[data-section]")
-.forEach(function(button) {
+    .querySelectorAll(
+        "[data-section]"
+    )
+    .forEach(
+        function(button) {
 
-    button.addEventListener(
-        "click",
-        function() {
+            button.addEventListener(
+                "click",
+                function() {
 
-            navigateToSection(
-                button.dataset.section
+                    navigateToSection(
+                        button.dataset.section
+                    );
+
+                }
             );
 
         }
     );
 
-});
-
 
 /* =====================================================
-   BOTÃO CONHECER PREMIUM
+   MOBILE MENU
 ===================================================== */
 
-document.addEventListener(
-    "click",
-    function(event) {
-
-        const button =
-        event.target.closest(
-            "#goPremiumBtn"
-        );
-
-        if (!button) {
-            return;
-        }
-
-        console.log(
-            "CONHECER PREMIUM CLICADO"
-        );
-
-        navigateToSection("premium");
-
-    }
-);
-
-
-/* =====================================================
-   BOTÃO ASSINAR PREMIUM
-===================================================== */
-
-document.addEventListener(
-    "click",
-    function(event) {
-
-        const button =
-        event.target.closest(
-            "#subscribePremiumBtn"
-        );
-
-        if (!button) {
-            return;
-        }
-
-        console.log(
-            "BOTÃO ASSINAR PREMIUM CLICADO"
-        );
-
-        /*
-           Sem alert.
-           A assinatura será implementada
-           em uma etapa futura.
-        */
-
-    }
-);
-
-
-/* ================= USUÁRIO ================= */
-
-function loadUser() {
-
-    const user =
-    localStorage.getItem(
-        "controleS_user"
+document
+    .getElementById(
+        "mobileMenuBtn"
     )
-    ||
-    "Felipe";
+    ?.addEventListener(
+        "click",
+        function() {
 
-    const name =
-    document.getElementById(
-        "userName"
+            sidebar?.classList.toggle(
+                "mobile-open"
+            );
+
+        }
     );
 
-    const avatar =
+
+/* =====================================================
+   TEMA
+===================================================== */
+
+const themeBtn =
     document.getElementById(
-        "userAvatar"
+        "themeBtn"
     );
 
-    const welcome =
-    document.getElementById(
-        "welcomeName"
-    );
 
-    if (name) {
+function loadTheme() {
 
-        name.textContent =
-        user;
+    const dark =
+        localStorage.getItem(
+            "controleS_theme"
+        ) === "true";
 
-    }
 
-    if (avatar) {
+    if (dark) {
 
-        avatar.textContent =
-        user
-        .charAt(0)
-        .toUpperCase();
-
-    }
-
-    if (welcome) {
-
-        welcome.textContent =
-        user;
+        document.body.classList.add(
+            "dark"
+        );
 
     }
 
 }
 
 
-/* ================= PLANO ================= */
+themeBtn?.addEventListener(
+    "click",
+    function() {
 
-function loadPlan() {
+        document.body.classList.toggle(
+            "dark"
+        );
 
-    const plan =
-    localStorage.getItem(
-        "controleS_plan"
-    )
-    ||
-    "free";
 
-    const element =
-    document.getElementById(
-        "userPlan"
-    );
-
-    if (!element) {
-        return;
-    }
-
-    if (plan === "premium") {
-
-        element.textContent =
-        "ControleS Premium ⭐";
-
-    } else {
-
-        element.textContent =
-        "ControleS Grátis";
+        localStorage.setItem(
+            "controleS_theme",
+            document.body.classList.contains(
+                "dark"
+            )
+        );
 
     }
-
-}
+);
 
 
 /* =====================================================
-   GRÁFICO DO DASHBOARD
+   PREMIUM
 ===================================================== */
 
-function createChart() {
+document
+    .getElementById(
+        "subscribePremiumBtn"
+    )
+    ?.addEventListener(
+        "click",
+        function() {
 
-    const canvas =
-    document.getElementById(
-        "financeChart"
+            localStorage.setItem(
+                "controleS_plan",
+                "premium"
+            );
+
+            loadPlan();
+
+            alert(
+                "Premium ativado neste protótipo! ⭐"
+            );
+
+        }
     );
 
-    if (!canvas) {
-        return;
-    }
 
-    if (typeof Chart === "undefined") {
+/* =====================================================
+   EXPORTAR DADOS
+===================================================== */
 
-        console.error(
-            "Chart.js não foi carregado."
-        );
+document
+    .getElementById(
+        "exportDataBtn"
+    )
+    ?.addEventListener(
+        "click",
+        function() {
 
-        return;
+            const data = {
 
-    }
+                app:
+                    "ControleS",
 
-    const result =
-    calculate();
+                exportedAt:
+                    new Date()
+                        .toISOString(),
 
-    if (chart) {
+                transactions:
+                    transactions
 
-        chart.destroy();
+            };
 
-    }
 
-    chart =
-    new Chart(
-        canvas,
-        {
-
-            type: "doughnut",
-
-            data: {
-
-                labels: [
-
-                    "Receitas",
-
-                    "Despesas"
-
-                ],
-
-                datasets: [{
-
-                    data: [
-
-                        result.income,
-
-                        result.expense
-
+            const blob =
+                new Blob(
+                    [
+                        JSON.stringify(
+                            data,
+                            null,
+                            2
+                        )
                     ],
+                    {
+                        type:
+                            "application/json"
+                    }
+                );
 
-                    backgroundColor: [
 
-                        "#2f6b50",
+            const url =
+                URL.createObjectURL(
+                    blob
+                );
 
-                        "#f28c28"
 
-                    ]
+            const link =
+                document.createElement(
+                    "a"
+                );
 
-                }]
 
-            },
+            link.href =
+                url;
 
-            options: {
+            link.download =
+                "controles-dados.json";
 
-                responsive: true,
 
-                maintainAspectRatio: false
+            link.click();
 
-            }
+
+            URL.revokeObjectURL(
+                url
+            );
 
         }
     );
-
-}
 
 
 /* =====================================================
-   RELATÓRIOS
+   LOGOUT
 ===================================================== */
 
-
-/* ================= RESUMO DO RELATÓRIO ================= */
-
-function createReportSummary() {
-
-    const reportsSection =
-    document.getElementById("reports");
-
-    if (!reportsSection) {
-        return;
-    }
-
-    /*
-       Evita criar o resumo várias vezes.
-    */
-
-    let summary =
-    document.getElementById(
-        "controleSReportSummary"
-    );
-
-    if (!summary) {
-
-        summary =
-        document.createElement("div");
-
-        summary.id =
-        "controleSReportSummary";
-
-        summary.style.display =
-        "grid";
-
-        summary.style.gridTemplateColumns =
-        "repeat(auto-fit, minmax(180px, 1fr))";
-
-        summary.style.gap =
-        "15px";
-
-        summary.style.marginBottom =
-        "25px";
-
-        /*
-           Coloca o resumo no começo
-           da tela de relatórios.
-        */
-
-        reportsSection.prepend(summary);
-
-    }
-
-
-    const result =
-    calculate();
-
-
-    let economyPercent = 0;
-
-    if (result.income > 0) {
-
-        economyPercent =
-        (
-            (result.income - result.expense)
-            /
-            result.income
-        ) * 100;
-
-    }
-
-
-    summary.innerHTML = `
-
-        <div style="
-            padding:18px;
-            border-radius:14px;
-            background:#f5f5f5;
-        ">
-
-            <small>Total de receitas</small>
-
-            <h3 style="margin:6px 0;">
-                ${money(result.income)}
-            </h3>
-
-        </div>
-
-
-        <div style="
-            padding:18px;
-            border-radius:14px;
-            background:#f5f5f5;
-        ">
-
-            <small>Total de despesas</small>
-
-            <h3 style="margin:6px 0;">
-                ${money(result.expense)}
-            </h3>
-
-        </div>
-
-
-        <div style="
-            padding:18px;
-            border-radius:14px;
-            background:#f5f5f5;
-        ">
-
-            <small>Saldo</small>
-
-            <h3 style="margin:6px 0;">
-                ${money(result.balance)}
-            </h3>
-
-        </div>
-
-
-        <div style="
-            padding:18px;
-            border-radius:14px;
-            background:#f5f5f5;
-        ">
-
-            <small>Economia</small>
-
-            <h3 style="margin:6px 0;">
-                ${economyPercent.toFixed(0)}%
-            </h3>
-
-        </div>
-
-    `;
-
-}
-
-
-/* ================= GRÁFICO DE CATEGORIAS ================= */
-
-function createCategoryChart() {
-
-    const canvas =
-    document.getElementById(
-        "categoryChart"
-    );
-
-    if (!canvas) {
-
-        console.log(
-            "Canvas categoryChart não encontrado."
-        );
-
-        return;
-
-    }
-
-    if (typeof Chart === "undefined") {
-
-        console.error(
-            "Chart.js não foi carregado."
-        );
-
-        return;
-
-    }
-
-
-    /*
-       Soma somente as DESPESAS
-       por categoria.
-    */
-
-    const categories = {};
-
-
-    transactions.forEach(function(item) {
-
-        if (
-            item.type !== "expense"
-        ) {
-
-            return;
-
-        }
-
-
-        const category =
-        item.category
-        ||
-        "Sem categoria";
-
-
-        if (!categories[category]) {
-
-            categories[category] = 0;
-
-        }
-
-
-        categories[category] +=
-        Number(item.amount || 0);
-
-    });
-
-
-    const labels =
-    Object.keys(categories);
-
-
-    const values =
-    Object.values(categories);
-
-
-    if (categoryChart) {
-
-        categoryChart.destroy();
-
-        categoryChart = null;
-
-    }
-
-
-    /*
-       Se não existem despesas,
-       mostra o canvas vazio sem erro.
-    */
-
-    if (labels.length === 0) {
-
-        return;
-
-    }
-
-
-    categoryChart =
-    new Chart(
-        canvas,
-        {
-
-            type: "doughnut",
-
-            data: {
-
-                labels: labels,
-
-                datasets: [{
-
-                    data: values,
-
-                    backgroundColor: [
-
-                        "#2f6b50",
-
-                        "#f28c28",
-
-                        "#12372a",
-
-                        "#d96f12",
-
-                        "#6b8f71",
-
-                        "#f5b971",
-
-                        "#3f7d5b",
-
-                        "#c65d0b"
-
-                    ]
-
-                }]
-
-            },
-
-            options: {
-
-                responsive: true,
-
-                maintainAspectRatio: false,
-
-                plugins: {
-
-                    legend: {
-
-                        position: "bottom"
-
-                    },
-
-                    tooltip: {
-
-                        callbacks: {
-
-                            label: function(context) {
-
-                                const value =
-                                Number(
-                                    context.raw || 0
-                                );
-
-                                const total =
-                                values.reduce(
-                                    function(a, b) {
-                                        return a + b;
-                                    },
-                                    0
-                                );
-
-                                const percent =
-                                total > 0
-                                ?
-                                (
-                                    value / total
-                                ) * 100
-                                :
-                                0;
-
-                                return (
-                                    context.label
-                                    +
-                                    ": "
-                                    +
-                                    money(value)
-                                    +
-                                    " ("
-                                    +
-                                    percent.toFixed(1)
-                                    +
-                                    "%)"
-                                );
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
+document
+    .getElementById(
+        "logoutBtn"
+    )
+    ?.addEventListener(
+        "click",
+        function() {
+
+            const confirmed =
+                confirm(
+                    "Deseja sair da sua conta?"
+                );
+
+
+            if (!confirmed) {
+                return;
             }
 
+
+            localStorage.removeItem(
+                "controleS_user"
+            );
+
+            localStorage.removeItem(
+                "controleS_email"
+            );
+
+
+            location.reload();
+
         }
     );
 
-}
 
-
-/* ================= RELATÓRIO COMPLETO ================= */
-
-function createReport() {
-
-    createReportSummary();
-
-    createCategoryChart();
-
-}
-
-
-/* ================= RENDERIZAÇÃO ================= */
+/* =====================================================
+   INICIALIZAÇÃO
+===================================================== */
 
 function renderAll() {
 
@@ -1391,14 +2440,18 @@ function renderAll() {
 
     filterTransactions();
 
+    renderCategoryList();
+
     createChart();
 
-    createReport();
+    createReportSummary();
+
+    loadUser();
+
+    loadPlan();
 
 }
 
-
-/* ================= INICIALIZAÇÃO ================= */
 
 function startApp() {
 
@@ -1408,40 +2461,26 @@ function startApp() {
 
     loadPlan();
 
+    loadTheme();
+
+    loadCurrentDate();
+
     renderAll();
 
 }
 
-
-/* ================= INICIAR ================= */
 
 window.addEventListener(
     "load",
     function() {
 
         console.log(
-            "ControleS app.js carregado"
+            "ControleS APP iniciado."
         );
+
+        checkLogin();
 
         startApp();
-
-    }
-);
-
-
-/* ================= LOGOUT ================= */
-
-document
-.getElementById("logoutBtn")
-?.addEventListener(
-    "click",
-    function() {
-
-        localStorage.removeItem(
-            "controleS_user"
-        );
-
-        location.reload();
 
     }
 );
