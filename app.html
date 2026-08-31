@@ -12,6 +12,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- CSS DO CONTROLES -->
 <link rel="stylesheet" href="./style.css">
 
 </head><body><!-- =====================================================
@@ -91,7 +92,9 @@
 
 </div><!-- =====================================================
      APLICATIVO
-===================================================== --><div id="app" class="app hidden"><!-- SIDEBAR -->
+===================================================== --><div id="app" class="app hidden"><!-- =====================================================
+     SIDEBAR
+===================================================== -->
 
 <aside class="sidebar" id="sidebar">
 
@@ -117,42 +120,43 @@
         <button
             class="nav-item active"
             data-section="dashboard"
+            type="button"
         >
             <span class="nav-icon">📊</span>
             <span>Dashboard</span>
         </button>
 
-
         <button
             class="nav-item"
             data-section="transactions"
+            type="button"
         >
             <span class="nav-icon">🧾</span>
             <span>Lançamentos</span>
         </button>
 
-
         <button
             class="nav-item"
             data-section="categories"
+            type="button"
         >
             <span class="nav-icon">📁</span>
             <span>Categorias</span>
         </button>
 
-
         <button
             class="nav-item"
             data-section="reports"
+            type="button"
         >
             <span class="nav-icon">📈</span>
             <span>Relatórios</span>
         </button>
 
-
         <button
             class="nav-item"
             data-section="premium"
+            type="button"
         >
             <span class="nav-icon">⭐</span>
             <span>Premium</span>
@@ -166,15 +170,16 @@
         <button
             id="themeBtn"
             class="sidebar-action"
+            type="button"
         >
             <span>🌙</span>
             <span>Tema escuro</span>
         </button>
 
-
         <button
             id="logoutBtn"
             class="sidebar-action logout"
+            type="button"
         >
             <span>↪</span>
             <span>Sair</span>
@@ -185,7 +190,9 @@
 </aside>
 
 
-<!-- CONTEÚDO PRINCIPAL -->
+<!-- =====================================================
+     CONTEÚDO PRINCIPAL
+===================================================== -->
 
 <main class="main-content">
 
@@ -198,6 +205,7 @@
             <button
                 id="mobileMenuBtn"
                 class="mobile-menu"
+                type="button"
             >
                 ☰
             </button>
@@ -222,6 +230,7 @@
             <button
                 id="openTransactionBtn"
                 class="btn-primary"
+                type="button"
             >
                 + Novo lançamento
             </button>
@@ -255,9 +264,9 @@
     </header>
 
 
-    <!-- =================================================
+    <!-- =====================================================
          DASHBOARD
-    ================================================= -->
+    ===================================================== -->
 
     <section
         id="dashboard"
@@ -286,7 +295,6 @@
 
             </div>
 
-
             <div
                 class="current-date"
                 id="currentDate"
@@ -294,8 +302,6 @@
 
         </div>
 
-
-        <!-- CARDS -->
 
         <div class="stats-grid">
 
@@ -401,8 +407,6 @@
         </div>
 
 
-        <!-- GRÁFICOS E MOVIMENTAÇÕES -->
-
         <div class="dashboard-grid">
 
             <div class="panel chart-panel">
@@ -451,6 +455,7 @@
                     <button
                         class="text-button"
                         data-section="transactions"
+                        type="button"
                     >
                         Ver todas
                     </button>
@@ -469,9 +474,9 @@
     </section>
 
 
-    <!-- =================================================
+    <!-- =====================================================
          LANÇAMENTOS
-    ================================================= -->
+    ===================================================== -->
 
     <section
         id="transactions"
@@ -496,10 +501,10 @@
 
             </div>
 
-
             <button
                 class="btn-primary"
                 id="newTransactionButton"
+                type="button"
             >
                 + Novo lançamento
             </button>
@@ -562,9 +567,9 @@
     </section>
 
 
-    <!-- =================================================
+    <!-- =====================================================
          CATEGORIAS
-    ================================================= -->
+    ===================================================== -->
 
     <section
         id="categories"
@@ -648,9 +653,9 @@
     </section>
 
 
-    <!-- =================================================
+    <!-- =====================================================
          RELATÓRIOS
-    ================================================= -->
+    ===================================================== -->
 
     <section
         id="reports"
@@ -683,6 +688,7 @@
             <button
                 class="btn-secondary"
                 id="exportDataBtn"
+                type="button"
             >
                 💾 Exportar dados
             </button>
@@ -708,7 +714,6 @@
 
             </div>
 
-
             <div class="category-chart-container large">
 
                 <canvas id="reportCategoryChart"></canvas>
@@ -720,9 +725,9 @@
     </section>
 
 
-    <!-- =================================================
+    <!-- =====================================================
          PREMIUM
-    ================================================= -->
+    ===================================================== -->
 
     <section
         id="premium"
@@ -751,6 +756,7 @@
                 <button
                     id="subscribePremiumBtn"
                     class="btn-premium"
+                    type="button"
                 >
                     Assinar Premium
                 </button>
@@ -874,7 +880,6 @@
     class="modal hidden"
 ><div class="modal-overlay"></div>
 
-
 <div class="modal-box">
 
     <div class="modal-header">
@@ -891,10 +896,10 @@
 
         </div>
 
-
         <button
             id="closeModal"
             class="modal-close"
+            type="button"
         >
             ×
         </button>
@@ -912,7 +917,6 @@
             <span>↗</span>
             Receita
         </button>
-
 
         <button
             type="button"
@@ -1045,5 +1049,7 @@
 
 </div>
 
-</div><!-- JAVASCRIPT --><script src="./app.js"></script></body>
+</div><!-- =====================================================
+     JAVASCRIPT DO CONTROLES
+===================================================== --><script src="./app.js"></script></body>
 </html>
