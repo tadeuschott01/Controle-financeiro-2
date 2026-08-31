@@ -3,19 +3,15 @@
    ControleS — Sistema Financeiro
 ===================================================== */
 
-
 /* =====================================================
    ESTADO
 ===================================================== */
 
 let transactions = [];
-
 let currentType = "income";
 
-let chart = null;
-
+let financeChart = null;
 let categoryChart = null;
-
 let reportCategoryChart = null;
 
 
@@ -23,32 +19,17 @@ let reportCategoryChart = null;
    ELEMENTOS
 ===================================================== */
 
-const loginScreen =
-    document.getElementById("loginScreen");
+const loginScreen = document.getElementById("loginScreen");
+const app = document.getElementById("app");
+const loginForm = document.getElementById("loginForm");
 
-const app =
-    document.getElementById("app");
+const modal = document.getElementById("transactionModal");
+const form = document.getElementById("transactionForm");
 
-const loginForm =
-    document.getElementById("loginForm");
-
-const modal =
-    document.getElementById("transactionModal");
-
-const form =
-    document.getElementById("transactionForm");
-
-const balanceValue =
-    document.getElementById("balanceValue");
-
-const incomeValue =
-    document.getElementById("incomeValue");
-
-const expenseValue =
-    document.getElementById("expenseValue");
-
-const economyValue =
-    document.getElementById("economyValue");
+const balanceValue = document.getElementById("balanceValue");
+const incomeValue = document.getElementById("incomeValue");
+const expenseValue = document.getElementById("expenseValue");
+const economyValue = document.getElementById("economyValue");
 
 const recentTransactions =
     document.getElementById("recentTransactions");
@@ -80,56 +61,44 @@ const sidebar =
 ===================================================== */
 
 function money(value) {
-
-    return Number(value || 0).toLocaleString(
-        "pt-BR",
-        {
-            style: "currency",
-            currency: "BRL"
-        }
-    );
-
+    return Number(value || 0).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
 }
 
 
 function today() {
+    const date = new Date();
 
-    const date =
-        new Date();
-
-    const year =
-        date.getFullYear();
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
-
 }
 
 
 function formatDate(date) {
+    if (!date) return "";
 
-    if (!date) {
-        return "";
-    }
-
-    const parts =
-        date.split("-");
+    const parts = String(date).split("-");
 
     if (parts.length !== 3) {
         return date;
     }
 
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
 
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
 
@@ -139,105 +108,73 @@ function formatDate(date) {
 
 function checkLogin() {
 
-    const user =
-        localStorage.getItem(
-            "controleS_user"
-        );
+    const user = localStorage.getItem("controleS_user");
 
     if (user) {
-
         showApp();
-
+        loadUser();
+        loadPlan();
     } else {
-
         showLogin();
-
     }
-
 }
 
 
 function showLogin() {
 
     if (loginScreen) {
-
-        loginScreen.classList.remove(
-            "hidden"
-        );
-
+        loginScreen.classList.remove("hidden");
     }
 
     if (app) {
-
-        app.classList.add(
-            "hidden"
-        );
-
+        app.classList.add("hidden");
     }
-
 }
 
 
 function showApp() {
 
     if (loginScreen) {
-
-        loginScreen.classList.add(
-            "hidden"
-        );
-
+        loginScreen.classList.add("hidden");
     }
 
     if (app) {
-
-        app.classList.remove(
-            "hidden"
-        );
-
+        app.classList.remove("hidden");
     }
-
 }
 
 
-loginForm?.addEventListener(
-    "submit",
-    function(event) {
+if (loginForm) {
+
+    loginForm.addEventListener("submit", function(event) {
 
         event.preventDefault();
 
         const nameInput =
-            document.getElementById(
-                "loginName"
-            );
+            document.getElementById("loginName");
 
         const emailInput =
-            document.getElementById(
-                "loginEmail"
-            );
+            document.getElementById("loginEmail");
 
         const passwordInput =
-            document.getElementById(
-                "loginPassword"
-            );
+            document.getElementById("loginPassword");
+
 
         const name =
-            nameInput?.value.trim();
+            nameInput ? nameInput.value.trim() : "";
 
         const email =
-            emailInput?.value.trim();
+            emailInput ? emailInput.value.trim() : "";
 
         const password =
-            passwordInput?.value.trim();
+            passwordInput ? passwordInput.value.trim() : "";
 
-        if (
-            !name ||
-            !email ||
-            !password
-        ) {
 
+        if (!name || !email || !password) {
+            alert("Preencha todos os campos.");
             return;
-
         }
+
 
         localStorage.setItem(
             "controleS_user",
@@ -249,14 +186,16 @@ loginForm?.addEventListener(
             email
         );
 
+
         showApp();
 
         loadUser();
-
+        loadPlan();
         renderAll();
 
-    }
-);
+    });
+
+}
 
 
 /* =====================================================
@@ -267,9 +206,7 @@ function saveData() {
 
     localStorage.setItem(
         "controleS_transactions",
-        JSON.stringify(
-            transactions
-        )
+        JSON.stringify(transactions)
     );
 
 }
@@ -282,18 +219,16 @@ function loadData() {
             "controleS_transactions"
         );
 
+
     if (!data) {
-
         transactions = [];
-
         return;
-
     }
+
 
     try {
 
-        const parsed =
-            JSON.parse(data);
+        const parsed = JSON.parse(data);
 
         transactions =
             Array.isArray(parsed)
@@ -301,6 +236,11 @@ function loadData() {
                 : [];
 
     } catch (error) {
+
+        console.error(
+            "Erro ao carregar lançamentos:",
+            error
+        );
 
         transactions = [];
 
@@ -320,6 +260,7 @@ function loadUser() {
             "controleS_user"
         ) || "Usuário";
 
+
     const name =
         document.getElementById(
             "userName"
@@ -335,27 +276,20 @@ function loadUser() {
             "welcomeName"
         );
 
+
     if (name) {
-
-        name.textContent =
-            user;
-
+        name.textContent = user;
     }
+
 
     if (avatar) {
-
         avatar.textContent =
-            user
-                .charAt(0)
-                .toUpperCase();
-
+            user.charAt(0).toUpperCase();
     }
 
+
     if (welcome) {
-
-        welcome.textContent =
-            user;
-
+        welcome.textContent = user;
     }
 
 }
@@ -368,14 +302,15 @@ function loadPlan() {
             "controleS_plan"
         ) || "free";
 
+
     const element =
         document.getElementById(
             "userPlan"
         );
 
-    if (!element) {
-        return;
-    }
+
+    if (!element) return;
+
 
     if (plan === "premium") {
 
@@ -403,12 +338,12 @@ function loadCurrentDate() {
             "currentDate"
         );
 
-    if (!element) {
-        return;
-    }
 
-    const date =
-        new Date();
+    if (!element) return;
+
+
+    const date = new Date();
+
 
     element.textContent =
         date.toLocaleDateString(
@@ -425,29 +360,188 @@ function loadCurrentDate() {
 
 
 /* =====================================================
+   NAVEGAÇÃO
+===================================================== */
+
+const navItems =
+    document.querySelectorAll(
+        ".nav-item"
+    );
+
+
+const sections =
+    document.querySelectorAll(
+        ".section"
+    );
+
+
+function showSection(sectionName) {
+
+    sections.forEach(function(section) {
+
+        section.classList.add("hidden");
+
+    });
+
+
+    const target =
+        document.getElementById(
+            sectionName
+        );
+
+
+    if (target) {
+        target.classList.remove("hidden");
+    }
+
+
+    navItems.forEach(function(item) {
+
+        item.classList.toggle(
+            "active",
+            item.dataset.section === sectionName
+        );
+
+    });
+
+
+    const titles = {
+
+        dashboard: "Dashboard",
+
+        transactions: "Lançamentos",
+
+        categories: "Categorias",
+
+        reports: "Relatórios",
+
+        premium: "Premium"
+
+    };
+
+
+    if (pageTitle) {
+
+        pageTitle.textContent =
+            titles[sectionName] ||
+            "ControleS";
+
+    }
+
+
+    if (sidebar) {
+        sidebar.classList.remove("mobile-open");
+    }
+
+
+    if (sectionName === "dashboard") {
+        updateDashboardChart();
+    }
+
+
+    if (sectionName === "categories") {
+        updateCategoryChart();
+        renderCategoryList();
+    }
+
+
+    if (sectionName === "reports") {
+        updateReportChart();
+    }
+
+
+    if (sectionName === "transactions") {
+        filterTransactions();
+    }
+
+}
+
+
+navItems.forEach(function(item) {
+
+    item.addEventListener("click", function() {
+
+        showSection(
+            item.dataset.section
+        );
+
+    });
+
+});
+
+
+document
+    .querySelectorAll("[data-section]")
+    .forEach(function(item) {
+
+        if (item.classList.contains("nav-item")) {
+            return;
+        }
+
+
+        item.addEventListener(
+            "click",
+            function() {
+
+                const section =
+                    item.dataset.section;
+
+                if (section) {
+                    showSection(section);
+                }
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   MENU MOBILE
+===================================================== */
+
+const mobileMenuBtn =
+    document.getElementById(
+        "mobileMenuBtn"
+    );
+
+
+if (mobileMenuBtn && sidebar) {
+
+    mobileMenuBtn.addEventListener(
+        "click",
+        function() {
+
+            sidebar.classList.toggle(
+                "mobile-open"
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
    MODAL
 ===================================================== */
 
 function openModal() {
 
-    if (!modal) {
-        return;
-    }
+    if (!modal) return;
 
-    modal.classList.remove(
-        "hidden"
-    );
+
+    modal.classList.remove("hidden");
+
 
     const dateInput =
         document.getElementById(
             "dateInput"
         );
 
+
     if (dateInput && !dateInput.value) {
-
-        dateInput.value =
-            today();
-
+        dateInput.value = today();
     }
 
 }
@@ -455,231 +549,270 @@ function openModal() {
 
 function closeModal() {
 
-    if (!modal) {
-        return;
-    }
+    if (!modal) return;
 
-    modal.classList.add(
-        "hidden"
+    modal.classList.add("hidden");
+
+}
+
+
+const openTransactionBtn =
+    document.getElementById(
+        "openTransactionBtn"
+    );
+
+
+if (openTransactionBtn) {
+
+    openTransactionBtn.addEventListener(
+        "click",
+        openModal
     );
 
 }
 
 
-document
-    .getElementById(
-        "openTransactionBtn"
-    )
-    ?.addEventListener(
-        "click",
-        openModal
-    );
-
-
-document
-    .getElementById(
+const newTransactionButton =
+    document.getElementById(
         "newTransactionButton"
-    )
-    ?.addEventListener(
+    );
+
+
+if (newTransactionButton) {
+
+    newTransactionButton.addEventListener(
         "click",
         openModal
     );
 
+}
 
-document
-    .getElementById(
+
+const closeModalBtn =
+    document.getElementById(
         "closeModal"
-    )
-    ?.addEventListener(
+    );
+
+
+if (closeModalBtn) {
+
+    closeModalBtn.addEventListener(
         "click",
         closeModal
     );
 
+}
 
-document
-    .querySelector(
+
+const modalOverlay =
+    document.querySelector(
         ".modal-overlay"
-    )
-    ?.addEventListener(
+    );
+
+
+if (modalOverlay) {
+
+    modalOverlay.addEventListener(
         "click",
         closeModal
     );
+
+}
 
 
 /* =====================================================
    TIPO DE LANÇAMENTO
 ===================================================== */
 
-document
-    .querySelectorAll(
+const typeOptions =
+    document.querySelectorAll(
         ".type-option"
-    )
-    .forEach(
-        function(button) {
+    );
 
-            button.addEventListener(
-                "click",
-                function() {
 
-                    currentType =
-                        button.dataset.type;
+typeOptions.forEach(function(button) {
 
-                    document
-                        .querySelectorAll(
-                            ".type-option"
-                        )
-                        .forEach(
-                            function(btn) {
+    button.addEventListener(
+        "click",
+        function() {
 
-                                btn.classList
-                                    .remove(
-                                        "active"
-                                    );
+            currentType =
+                button.dataset.type;
 
-                            }
-                        );
 
-                    button.classList.add(
+            typeOptions.forEach(
+                function(btn) {
+
+                    btn.classList.remove(
                         "active"
                     );
 
                 }
             );
 
+
+            button.classList.add(
+                "active"
+            );
+
         }
     );
+
+});
 
 
 /* =====================================================
    SALVAR LANÇAMENTO
 ===================================================== */
 
-form?.addEventListener(
-    "submit",
-    function(event) {
+if (form) {
 
-        event.preventDefault();
+    form.addEventListener(
+        "submit",
+        function(event) {
 
-        const description =
-            document
-                .getElementById(
+            event.preventDefault();
+
+
+            const descriptionInput =
+                document.getElementById(
                     "descriptionInput"
-                )
-                ?.value
-                .trim();
+                );
 
-        const amount =
-            Number(
-                document
-                    .getElementById(
-                        "amountInput"
-                    )
-                    ?.value
-            );
+            const amountInput =
+                document.getElementById(
+                    "amountInput"
+                );
 
-        const category =
-            document
-                .getElementById(
+            const categoryInput =
+                document.getElementById(
                     "transactionCategory"
-                )
-                ?.value;
+                );
 
-        const date =
-            document
-                .getElementById(
+            const dateInput =
+                document.getElementById(
                     "dateInput"
-                )
-                ?.value;
-
-        if (
-            !description ||
-            !amount ||
-            amount <= 0
-        ) {
-
-            return;
-
-        }
-
-        const transaction = {
-
-            id:
-                Date.now(),
-
-            type:
-                currentType,
-
-            description:
-                description,
-
-            amount:
-                amount,
-
-            category:
-                category || "Sem categoria",
-
-            date:
-                date || today()
-
-        };
+                );
 
 
-        transactions.unshift(
-            transaction
-        );
+            const description =
+                descriptionInput
+                    ? descriptionInput.value.trim()
+                    : "";
 
 
-        saveData();
+            const amount =
+                amountInput
+                    ? Number(amountInput.value)
+                    : 0;
 
 
-        form.reset();
+            const category =
+                categoryInput
+                    ? categoryInput.value
+                    : "Outros";
 
 
-        const dateInput =
-            document.getElementById(
-                "dateInput"
+            const date =
+                dateInput
+                    ? dateInput.value
+                    : today();
+
+
+            if (!description) {
+
+                alert(
+                    "Digite uma descrição."
+                );
+
+                return;
+
+            }
+
+
+            if (!amount || amount <= 0) {
+
+                alert(
+                    "Digite um valor válido."
+                );
+
+                return;
+
+            }
+
+
+            const transaction = {
+
+                id: Date.now(),
+
+                type: currentType,
+
+                description: description,
+
+                amount: amount,
+
+                category:
+                    category || "Outros",
+
+                date:
+                    date || today()
+
+            };
+
+
+            transactions.unshift(
+                transaction
             );
 
-        if (dateInput) {
 
-            dateInput.value =
-                today();
-
-        }
+            saveData();
 
 
-        currentType =
-            "income";
+            form.reset();
 
 
-        document
-            .querySelectorAll(
-                ".type-option"
-            )
-            .forEach(
-                btn =>
+            if (dateInput) {
+                dateInput.value = today();
+            }
+
+
+            currentType = "income";
+
+
+            typeOptions.forEach(
+                function(btn) {
+
                     btn.classList.remove(
                         "active"
-                    )
+                    );
+
+                }
             );
 
 
-        document
-            .querySelector(
-                '.type-option[data-type="income"]'
-            )
-            ?.classList.add(
-                "active"
-            );
+            const incomeButton =
+                document.querySelector(
+                    '.type-option[data-type="income"]'
+                );
 
 
-        closeModal();
+            if (incomeButton) {
+
+                incomeButton.classList.add(
+                    "active"
+                );
+
+            }
 
 
-        renderAll();
+            closeModal();
 
-    }
-);
+            renderAll();
+
+        }
+    );
+
+}
 
 
 /* =====================================================
@@ -689,7 +822,6 @@ form?.addEventListener(
 function calculate() {
 
     let income = 0;
-
     let expense = 0;
 
 
@@ -697,14 +829,10 @@ function calculate() {
         function(item) {
 
             const amount =
-                Number(
-                    item.amount || 0
-                );
+                Number(item.amount || 0);
 
 
-            if (
-                item.type === "income"
-            ) {
+            if (item.type === "income") {
 
                 income += amount;
 
@@ -720,11 +848,9 @@ function calculate() {
 
     return {
 
-        income:
-            income,
+        income: income,
 
-        expense:
-            expense,
+        expense: expense,
 
         balance:
             income - expense
@@ -747,9 +873,7 @@ function updateDashboard() {
     if (balanceValue) {
 
         balanceValue.textContent =
-            money(
-                result.balance
-            );
+            money(result.balance);
 
     }
 
@@ -757,9 +881,7 @@ function updateDashboard() {
     if (incomeValue) {
 
         incomeValue.textContent =
-            money(
-                result.income
-            );
+            money(result.income);
 
     }
 
@@ -767,9 +889,7 @@ function updateDashboard() {
     if (expenseValue) {
 
         expenseValue.textContent =
-            money(
-                result.expense
-            );
+            money(result.expense);
 
     }
 
@@ -795,7 +915,7 @@ function updateDashboard() {
 
 
         economyValue.textContent =
-            percent.toFixed(0) + "%";
+            `${percent.toFixed(0)}%`;
 
     }
 
@@ -803,21 +923,35 @@ function updateDashboard() {
 
 
 /* =====================================================
-   HTML DE TRANSAÇÃO
+   HTML TRANSAÇÃO
 ===================================================== */
 
 function transactionHTML(item) {
+
+    const type =
+        item.type === "income"
+            ? "income"
+            : "expense";
+
+
+    const icon =
+        type === "income"
+            ? "↗"
+            : "↘";
+
+
+    const sign =
+        type === "income"
+            ? "+"
+            : "-";
+
 
     return `
 
         <div class="transaction">
 
             <div class="transaction-icon">
-
-                ${item.type === "income"
-                    ? "↗"
-                    : "↘"}
-
+                ${icon}
             </div>
 
 
@@ -847,16 +981,9 @@ function transactionHTML(item) {
             </div>
 
 
-            <div
-                class="transaction-value
-                ${item.type}"
-            >
+            <div class="transaction-value ${type}">
 
-                ${item.type === "income"
-                    ? "+"
-                    : "-"}
-
-                ${money(
+                ${sign}${money(
                     item.amount
                 )}
 
@@ -865,7 +992,7 @@ function transactionHTML(item) {
 
             <button
                 class="transaction-delete"
-                onclick="deleteTransaction(${item.id})"
+                data-delete-id="${item.id}"
                 title="Excluir"
             >
                 ×
@@ -879,35 +1006,74 @@ function transactionHTML(item) {
 
 
 /* =====================================================
-   SEGURANÇA HTML
+   EXCLUIR TRANSAÇÃO
 ===================================================== */
 
-function escapeHTML(value) {
+function deleteTransaction(id) {
 
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    const confirmed =
+        confirm(
+            "Deseja excluir este lançamento?"
+        );
+
+
+    if (!confirmed) return;
+
+
+    transactions =
+        transactions.filter(
+            function(item) {
+
+                return String(item.id) !== String(id);
+
+            }
+        );
+
+
+    saveData();
+
+    renderAll();
 
 }
 
 
 /* =====================================================
-   ÚLTIMAS TRANSAÇÕES
+   BOTÕES EXCLUIR
+===================================================== */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const button =
+            event.target.closest(
+                "[data-delete-id]"
+            );
+
+
+        if (!button) return;
+
+
+        const id =
+            button.dataset.deleteId;
+
+
+        deleteTransaction(id);
+
+    }
+);
+
+
+/* =====================================================
+   TRANSAÇÕES RECENTES
 ===================================================== */
 
 function renderTransactions() {
 
-    if (!recentTransactions) {
-        return;
-    }
+    if (!recentTransactions) return;
 
 
-    if (
-        transactions.length === 0
-    ) {
+    if (transactions.length === 0) {
 
         recentTransactions.innerHTML = `
 
@@ -935,9 +1101,7 @@ function renderTransactions() {
     recentTransactions.innerHTML =
         transactions
             .slice(0, 6)
-            .map(
-                transactionHTML
-            )
+            .map(transactionHTML)
             .join("");
 
 }
@@ -947,13 +1111,9 @@ function renderTransactions() {
    TODAS TRANSAÇÕES
 ===================================================== */
 
-function renderAllTransactions(
-    list
-) {
+function renderAllTransactions(list) {
 
-    if (!allTransactions) {
-        return;
-    }
+    if (!allTransactions) return;
 
 
     if (list.length === 0) {
@@ -975,57 +1135,19 @@ function renderAllTransactions(
 
     allTransactions.innerHTML =
         list
-            .map(
-                transactionHTML
-            )
+            .map(transactionHTML)
             .join("");
 
 }
 
 
 /* =====================================================
-   EXCLUIR
-===================================================== */
-
-function deleteTransaction(id) {
-
-    const confirmed =
-        confirm(
-            "Deseja excluir este lançamento?"
-        );
-
-
-    if (!confirmed) {
-        return;
-    }
-
-
-    transactions =
-        transactions.filter(
-            function(item) {
-
-                return item.id !== id;
-
-            }
-        );
-
-
-    saveData();
-
-    renderAll();
-
-}
-
-
-/* =====================================================
-   CATEGORIAS
+   CATEGORIAS DO FILTRO
 ===================================================== */
 
 function updateCategories() {
 
-    if (!categoryFilter) {
-        return;
-    }
+    if (!categoryFilter) return;
 
 
     const currentValue =
@@ -1038,16 +1160,16 @@ function updateCategories() {
     transactions.forEach(
         function(item) {
 
+            const category =
+                item.category;
+
+
             if (
-                item.category &&
-                !categories.includes(
-                    item.category
-                )
+                category &&
+                !categories.includes(category)
             ) {
 
-                categories.push(
-                    item.category
-                );
+                categories.push(category);
 
             }
 
@@ -1056,11 +1178,14 @@ function updateCategories() {
 
 
     categories.sort(
-        (a, b) =>
-            a.localeCompare(
+        function(a, b) {
+
+            return a.localeCompare(
                 b,
                 "pt-BR"
-            )
+            );
+
+        }
     );
 
 
@@ -1081,11 +1206,11 @@ function updateCategories() {
                     "option"
                 );
 
-            option.value =
-                category;
 
-            option.textContent =
-                category;
+            option.value = category;
+
+            option.textContent = category;
+
 
             categoryFilter.appendChild(
                 option
@@ -1121,9 +1246,10 @@ function filterTransactions() {
 
     const search =
         searchInput
-            ?.value
-            ?.toLowerCase()
-            .trim();
+            ? searchInput.value
+                .toLowerCase()
+                .trim()
+            : "";
 
 
     if (search) {
@@ -1132,22 +1258,21 @@ function filterTransactions() {
             list.filter(
                 function(item) {
 
+                    const description =
+                        String(
+                            item.description || ""
+                        ).toLowerCase();
+
+
+                    const category =
+                        String(
+                            item.category || ""
+                        ).toLowerCase();
+
+
                     return (
-
-                        item.description
-                            ?.toLowerCase()
-                            .includes(
-                                search
-                            )
-
-                        ||
-
-                        item.category
-                            ?.toLowerCase()
-                            .includes(
-                                search
-                            )
-
+                        description.includes(search) ||
+                        category.includes(search)
                     );
 
                 }
@@ -1196,40 +1321,52 @@ function filterTransactions() {
     }
 
 
-    renderAllTransactions(
-        list
+    renderAllTransactions(list);
+
+}
+
+
+/* =====================================================
+   EVENTOS FILTROS
+===================================================== */
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        filterTransactions
     );
 
 }
 
 
-searchInput?.addEventListener(
-    "input",
-    filterTransactions
-);
+if (typeFilter) {
+
+    typeFilter.addEventListener(
+        "change",
+        filterTransactions
+    );
+
+}
 
 
-typeFilter?.addEventListener(
-    "change",
-    filterTransactions
-);
+if (categoryFilter) {
 
+    categoryFilter.addEventListener(
+        "change",
+        filterTransactions
+    );
 
-categoryFilter?.addEventListener(
-    "change",
-    filterTransactions
-);
+}
 
 
 /* =====================================================
-   CATEGORIA — LISTA
+   CATEGORIAS — RESUMO
 ===================================================== */
 
 function renderCategoryList() {
 
-    if (!categoryList) {
-        return;
-    }
+    if (!categoryList) return;
 
 
     const categories = {};
@@ -1238,9 +1375,7 @@ function renderCategoryList() {
     transactions.forEach(
         function(item) {
 
-            if (
-                item.type !== "expense"
-            ) {
+            if (item.type !== "expense") {
                 return;
             }
 
@@ -1252,8 +1387,7 @@ function renderCategoryList() {
 
             categories[category] =
                 (
-                    categories[category] ||
-                    0
+                    categories[category] || 0
                 )
                 +
                 Number(
@@ -1265,13 +1399,14 @@ function renderCategoryList() {
 
 
     const entries =
-        Object.entries(
-            categories
-        )
-        .sort(
-            (a, b) =>
-                b[1] - a[1]
-        );
+        Object.entries(categories)
+            .sort(
+                function(a, b) {
+
+                    return b[1] - a[1];
+
+                }
+            );
 
 
     if (!entries.length) {
@@ -1295,29 +1430,18 @@ function renderCategoryList() {
     categoryList.innerHTML =
         entries
             .map(
-                function([
-                    category,
-                    value
-                ]) {
+                function([category, value]) {
 
                     return `
 
-                        <div
-                            class="category-summary-item"
-                        >
+                        <div class="category-summary-item">
 
-                            <div
-                                class="category-summary-left"
-                            >
+                            <div class="category-summary-left">
 
-                                <span
-                                    class="category-dot"
-                                ></span>
+                                <span class="category-dot"></span>
 
                                 <strong>
-                                    ${escapeHTML(
-                                        category
-                                    )}
+                                    ${escapeHTML(category)}
                                 </strong>
 
                             </div>
@@ -1338,10 +1462,10 @@ function renderCategoryList() {
 
 
 /* =====================================================
-   GRÁFICO PRINCIPAL
+   CHART.JS — GRÁFICO FINANCEIRO
 ===================================================== */
 
-function createChart() {
+function updateDashboardChart() {
 
     const canvas =
         document.getElementById(
@@ -1349,15 +1473,16 @@ function createChart() {
         );
 
 
-    if (!canvas) {
-        return;
-    }
+    if (!canvas) return;
 
 
     if (
-        typeof Chart ===
-        "undefined"
+        typeof Chart === "undefined"
     ) {
+
+        console.warn(
+            "Chart.js não foi carregado."
+        );
 
         return;
 
@@ -1368,54 +1493,42 @@ function createChart() {
         calculate();
 
 
-    if (chart) {
+    if (financeChart) {
 
-        chart.destroy();
-
-        chart = null;
+        financeChart.destroy();
 
     }
 
 
-    chart =
+    financeChart =
         new Chart(
             canvas,
             {
-
-                type:
-                    "doughnut",
+                type: "bar",
 
                 data: {
 
                     labels: [
                         "Receitas",
-                        "Despesas"
+                        "Despesas",
+                        "Saldo"
                     ],
 
                     datasets: [
-
                         {
+                            label:
+                                "Valor",
 
                             data: [
-
                                 result.income,
-
-                                result.expense
-
+                                result.expense,
+                                result.balance
                             ],
 
-                            backgroundColor: [
+                            borderWidth: 0,
 
-                                "#2f6b50",
-
-                                "#f28c28"
-
-                            ],
-
-                            borderWidth: 0
-
+                            borderRadius: 10
                         }
-
                     ]
 
                 },
@@ -1424,48 +1537,28 @@ function createChart() {
 
                     responsive: true,
 
-                    maintainAspectRatio:
-                        false,
-
-                    cutout: "70%",
+                    maintainAspectRatio: false,
 
                     plugins: {
 
                         legend: {
+                            display: false
+                        }
 
-                            position:
-                                "bottom",
+                    },
 
-                            labels: {
+                    scales: {
 
-                                usePointStyle:
-                                    true,
+                        y: {
 
-                                padding:
-                                    20
+                            beginAtZero: true,
 
-                            }
+                            ticks: {
 
-                        },
+                                callback:
+                                    function(value) {
 
-                        tooltip: {
-
-                            callbacks: {
-
-                                label:
-                                    function(
-                                        context
-                                    ) {
-
-                                        return (
-                                            context.label
-                                            +
-                                            ": "
-                                            +
-                                            money(
-                                                context.raw
-                                            )
-                                        );
+                                        return money(value);
 
                                     }
 
@@ -1484,10 +1577,10 @@ function createChart() {
 
 
 /* =====================================================
-   GRÁFICO DE CATEGORIAS
+   DADOS POR CATEGORIA
 ===================================================== */
 
-function getExpenseCategories() {
+function getCategoryData() {
 
     const categories = {};
 
@@ -1509,8 +1602,7 @@ function getExpenseCategories() {
 
             categories[category] =
                 (
-                    categories[category] ||
-                    0
+                    categories[category] || 0
                 )
                 +
                 Number(
@@ -1521,12 +1613,25 @@ function getExpenseCategories() {
     );
 
 
-    return categories;
+    return Object.entries(
+        categories
+    )
+    .sort(
+        function(a, b) {
+
+            return b[1] - a[1];
+
+        }
+    );
 
 }
 
 
-function createCategoryChart() {
+/* =====================================================
+   GRÁFICO DE CATEGORIAS
+===================================================== */
+
+function updateCategoryChart() {
 
     const canvas =
         document.getElementById(
@@ -1534,46 +1639,31 @@ function createCategoryChart() {
         );
 
 
-    if (!canvas) {
-        return;
-    }
+    if (!canvas) return;
 
 
     if (
-        typeof Chart ===
-        "undefined"
+        typeof Chart === "undefined"
     ) {
         return;
     }
 
 
-    const categories =
-        getExpenseCategories();
-
-
-    const labels =
-        Object.keys(
-            categories
-        );
-
-
-    const values =
-        Object.values(
-            categories
-        );
+    const entries =
+        getCategoryData();
 
 
     if (categoryChart) {
 
         categoryChart.destroy();
 
-        categoryChart = null;
-
     }
 
 
-    if (!labels.length) {
+    if (!entries.length) {
+
         return;
+
     }
 
 
@@ -1582,38 +1672,29 @@ function createCategoryChart() {
             canvas,
             {
 
-                type:
-                    "doughnut",
+                type: "doughnut",
 
                 data: {
 
                     labels:
-                        labels,
+                        entries.map(
+                            function(item) {
+                                return item[0];
+                            }
+                        ),
 
                     datasets: [
 
                         {
 
                             data:
-                                values,
+                                entries.map(
+                                    function(item) {
+                                        return item[1];
+                                    }
+                                ),
 
-                            backgroundColor: [
-
-                                "#2f6b50",
-                                "#f28c28",
-                                "#12372a",
-                                "#d96f12",
-                                "#6b8f71",
-                                "#f5b971",
-                                "#3f7d5b",
-                                "#c65d0b",
-                                "#4d9b73",
-                                "#e9a24d"
-
-                            ],
-
-                            borderWidth:
-                                0
+                            borderWidth: 2
 
                         }
 
@@ -1623,31 +1704,15 @@ function createCategoryChart() {
 
                 options: {
 
-                    responsive:
-                        true,
+                    responsive: true,
 
-                    maintainAspectRatio:
-                        false,
-
-                    cutout:
-                        "64%",
+                    maintainAspectRatio: false,
 
                     plugins: {
 
                         legend: {
 
-                            position:
-                                "bottom",
-
-                            labels: {
-
-                                usePointStyle:
-                                    true,
-
-                                padding:
-                                    15
-
-                            }
+                            position: "bottom"
 
                         },
 
@@ -1656,58 +1721,13 @@ function createCategoryChart() {
                             callbacks: {
 
                                 label:
-                                    function(
-                                        context
-                                    ) {
-
-                                        const value =
-                                            Number(
-                                                context.raw
-                                                ||
-                                                0
-                                            );
-
-                                        const total =
-                                            values.reduce(
-                                                (
-                                                    a,
-                                                    b
-                                                ) =>
-                                                    a + b,
-                                                0
-                                            );
-
-                                        const percent =
-                                            total
-                                            >
-                                            0
-                                                ?
-                                                (
-                                                    value
-                                                    /
-                                                    total
-                                                )
-                                                *
-                                                100
-                                                :
-                                                0;
+                                    function(context) {
 
                                         return (
-                                            context.label
-                                            +
-                                            ": "
-                                            +
+                                            " " +
                                             money(
-                                                value
+                                                context.raw
                                             )
-                                            +
-                                            " ("
-                                            +
-                                            percent.toFixed(
-                                                1
-                                            )
-                                            +
-                                            "%)"
                                         );
 
                                     }
@@ -1727,10 +1747,10 @@ function createCategoryChart() {
 
 
 /* =====================================================
-   RELATÓRIO
+   GRÁFICO DE RELATÓRIOS
 ===================================================== */
 
-function createReportChart() {
+function updateReportChart() {
 
     const canvas =
         document.getElementById(
@@ -1738,45 +1758,28 @@ function createReportChart() {
         );
 
 
-    if (!canvas) {
-        return;
-    }
+    if (!canvas) return;
 
 
     if (
-        typeof Chart ===
-        "undefined"
+        typeof Chart === "undefined"
     ) {
         return;
     }
 
 
-    const categories =
-        getExpenseCategories();
-
-
-    const labels =
-        Object.keys(
-            categories
-        );
-
-
-    const values =
-        Object.values(
-            categories
-        );
+    const entries =
+        getCategoryData();
 
 
     if (reportCategoryChart) {
 
         reportCategoryChart.destroy();
 
-        reportCategoryChart = null;
-
     }
 
 
-    if (!labels.length) {
+    if (!entries.length) {
         return;
     }
 
@@ -1786,29 +1789,29 @@ function createReportChart() {
             canvas,
             {
 
-                type:
-                    "bar",
+                type: "doughnut",
 
                 data: {
 
                     labels:
-                        labels,
+                        entries.map(
+                            function(item) {
+                                return item[0];
+                            }
+                        ),
 
                     datasets: [
 
                         {
 
-                            label:
-                                "Despesas",
-
                             data:
-                                values,
+                                entries.map(
+                                    function(item) {
+                                        return item[1];
+                                    }
+                                ),
 
-                            backgroundColor:
-                                "#f28c28",
-
-                            borderRadius:
-                                8
+                            borderWidth: 2
 
                         }
 
@@ -1818,18 +1821,15 @@ function createReportChart() {
 
                 options: {
 
-                    responsive:
-                        true,
+                    responsive: true,
 
-                    maintainAspectRatio:
-                        false,
+                    maintainAspectRatio: false,
 
                     plugins: {
 
                         legend: {
 
-                            display:
-                                false
+                            position: "bottom"
 
                         },
 
@@ -1838,42 +1838,13 @@ function createReportChart() {
                             callbacks: {
 
                                 label:
-                                    function(
-                                        context
-                                    ) {
+                                    function(context) {
 
                                         return (
-                                            " "
-                                            +
+                                            " " +
                                             money(
                                                 context.raw
                                             )
-                                        );
-
-                                    }
-
-                            }
-
-                        }
-
-                    },
-
-                    scales: {
-
-                        y: {
-
-                            beginAtZero:
-                                true,
-
-                            ticks: {
-
-                                callback:
-                                    function(
-                                        value
-                                    ) {
-
-                                        return money(
-                                            value
                                         );
 
                                     }
@@ -1893,354 +1864,7 @@ function createReportChart() {
 
 
 /* =====================================================
-   RESUMO DO RELATÓRIO
-===================================================== */
-
-function createReportSummary() {
-
-    const reportsSection =
-        document.getElementById(
-            "reports"
-        );
-
-
-    if (!reportsSection) {
-        return;
-    }
-
-
-    let summary =
-        document.getElementById(
-            "controleSReportSummary"
-        );
-
-
-    if (!summary) {
-
-        summary =
-            document.createElement(
-                "div"
-            );
-
-        summary.id =
-            "controleSReportSummary";
-
-        summary.className =
-            "stats-grid";
-
-        reportsSection.insertBefore(
-            summary,
-            reportsSection.children[1]
-        );
-
-    }
-
-
-    const result =
-        calculate();
-
-
-    let economyPercent = 0;
-
-
-    if (result.income > 0) {
-
-        economyPercent =
-            (
-                (
-                    result.income -
-                    result.expense
-                )
-                /
-                result.income
-            ) * 100;
-
-    }
-
-
-    summary.innerHTML = `
-
-        <div class="stat-card income">
-
-            <div class="stat-top">
-
-                <div class="stat-icon">
-                    ↗
-                </div>
-
-                <span class="stat-label">
-                    Total de receitas
-                </span>
-
-            </div>
-
-            <strong>
-                ${money(result.income)}
-            </strong>
-
-        </div>
-
-
-        <div class="stat-card expense">
-
-            <div class="stat-top">
-
-                <div class="stat-icon">
-                    ↘
-                </div>
-
-                <span class="stat-label">
-                    Total de despesas
-                </span>
-
-            </div>
-
-            <strong>
-                ${money(result.expense)}
-            </strong>
-
-        </div>
-
-
-        <div class="stat-card balance">
-
-            <div class="stat-top">
-
-                <div class="stat-icon">
-                    💰
-                </div>
-
-                <span class="stat-label">
-                    Saldo
-                </span>
-
-            </div>
-
-            <strong>
-                ${money(result.balance)}
-            </strong>
-
-        </div>
-
-
-        <div class="stat-card economy">
-
-            <div class="stat-top">
-
-                <div class="stat-icon">
-                    🎯
-                </div>
-
-                <span class="stat-label">
-                    Economia
-                </span>
-
-            </div>
-
-            <strong>
-                ${economyPercent.toFixed(0)}%
-            </strong>
-
-        </div>
-
-    `;
-
-}
-
-
-/* =====================================================
-   NAVEGAÇÃO
-===================================================== */
-
-function navigateToSection(
-    target
-) {
-
-    document
-        .querySelectorAll(
-            ".section"
-        )
-        .forEach(
-            function(section) {
-
-                section.classList.add(
-                    "hidden"
-                );
-
-            }
-        );
-
-
-    const section =
-        document.getElementById(
-            target
-        );
-
-
-    if (!section) {
-        return;
-    }
-
-
-    section.classList.remove(
-        "hidden"
-    );
-
-
-    document
-        .querySelectorAll(
-            ".nav-item"
-        )
-        .forEach(
-            function(button) {
-
-                button.classList.remove(
-                    "active"
-                );
-
-            }
-        );
-
-
-    const activeButton =
-        document.querySelector(
-            `[data-section="${target}"]`
-        );
-
-
-    if (activeButton) {
-
-        activeButton.classList.add(
-            "active"
-        );
-
-    }
-
-
-    const titles = {
-
-        dashboard:
-            "Dashboard",
-
-        transactions:
-            "Lançamentos",
-
-        categories:
-            "Categorias",
-
-        reports:
-            "Relatórios",
-
-        premium:
-            "Premium"
-
-    };
-
-
-    if (pageTitle) {
-
-        pageTitle.textContent =
-            titles[target] ||
-            "ControleS";
-
-    }
-
-
-    if (target === "categories") {
-
-        setTimeout(
-            function() {
-
-                createCategoryChart();
-
-            },
-            100
-        );
-
-    }
-
-
-    if (target === "reports") {
-
-        createReportSummary();
-
-        setTimeout(
-            function() {
-
-                createReportChart();
-
-            },
-            100
-        );
-
-    }
-
-
-    if (sidebar) {
-
-        sidebar.classList.remove(
-            "mobile-open"
-        );
-
-    }
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
-
-/* =====================================================
-   BOTÕES DE NAVEGAÇÃO
-===================================================== */
-
-document
-    .querySelectorAll(
-        "[data-section]"
-    )
-    .forEach(
-        function(button) {
-
-            button.addEventListener(
-                "click",
-                function() {
-
-                    navigateToSection(
-                        button.dataset.section
-                    );
-
-                }
-            );
-
-        }
-    );
-
-
-/* =====================================================
-   MOBILE MENU
-===================================================== */
-
-document
-    .getElementById(
-        "mobileMenuBtn"
-    )
-    ?.addEventListener(
-        "click",
-        function() {
-
-            sidebar?.classList.toggle(
-                "mobile-open"
-            );
-
-        }
-    );
-
-
-/* =====================================================
-   TEMA
+   TEMA ESCURO
 ===================================================== */
 
 const themeBtn =
@@ -2251,93 +1875,164 @@ const themeBtn =
 
 function loadTheme() {
 
-    const dark =
+    const theme =
         localStorage.getItem(
             "controleS_theme"
-        ) === "true";
+        );
 
 
-    if (dark) {
+    if (theme === "dark") {
 
         document.body.classList.add(
             "dark"
         );
 
+    } else {
+
+        document.body.classList.remove(
+            "dark"
+        );
+
     }
+
+
+    updateThemeButton();
 
 }
 
 
-themeBtn?.addEventListener(
-    "click",
-    function() {
+function updateThemeButton() {
 
-        document.body.classList.toggle(
+    if (!themeBtn) return;
+
+
+    const dark =
+        document.body.classList.contains(
             "dark"
         );
 
 
-        localStorage.setItem(
-            "controleS_theme",
-            document.body.classList.contains(
-                "dark"
-            )
-        );
+    themeBtn.innerHTML = dark
+        ? `
+            <span>☀️</span>
+            <span>Tema claro</span>
+          `
+        : `
+            <span>🌙</span>
+            <span>Tema escuro</span>
+          `;
 
-    }
-);
+}
 
 
-/* =====================================================
-   PREMIUM
-===================================================== */
+if (themeBtn) {
 
-document
-    .getElementById(
-        "subscribePremiumBtn"
-    )
-    ?.addEventListener(
+    themeBtn.addEventListener(
         "click",
         function() {
 
+            document.body.classList.toggle(
+                "dark"
+            );
+
+
+            const isDark =
+                document.body.classList.contains(
+                    "dark"
+                );
+
+
             localStorage.setItem(
-                "controleS_plan",
-                "premium"
+                "controleS_theme",
+                isDark
+                    ? "dark"
+                    : "light"
             );
 
-            loadPlan();
 
-            alert(
-                "Premium ativado neste protótipo! ⭐"
-            );
+            updateThemeButton();
 
         }
     );
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+const logoutBtn =
+    document.getElementById(
+        "logoutBtn"
+    );
+
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener(
+        "click",
+        function() {
+
+            const confirmed =
+                confirm(
+                    "Deseja realmente sair do ControleS?"
+                );
+
+
+            if (!confirmed) return;
+
+
+            localStorage.removeItem(
+                "controleS_user"
+            );
+
+            localStorage.removeItem(
+                "controleS_email"
+            );
+
+
+            showLogin();
+
+        }
+    );
+
+}
 
 
 /* =====================================================
    EXPORTAR DADOS
 ===================================================== */
 
-document
-    .getElementById(
+const exportDataBtn =
+    document.getElementById(
         "exportDataBtn"
-    )
-    ?.addEventListener(
+    );
+
+
+if (exportDataBtn) {
+
+    exportDataBtn.addEventListener(
         "click",
         function() {
 
             const data = {
 
-                app:
-                    "ControleS",
+                usuario:
+                    localStorage.getItem(
+                        "controleS_user"
+                    ),
 
-                exportedAt:
-                    new Date()
-                        .toISOString(),
+                email:
+                    localStorage.getItem(
+                        "controleS_email"
+                    ),
 
-                transactions:
-                    transactions
+                lancamentos:
+                    transactions,
+
+                exportadoEm:
+                    new Date().toISOString()
 
             };
 
@@ -2370,14 +2065,20 @@ document
                 );
 
 
-            link.href =
-                url;
+            link.href = url;
 
             link.download =
                 "controles-dados.json";
 
 
+            document.body.appendChild(
+                link
+            );
+
+
             link.click();
+
+            link.remove();
 
 
             URL.revokeObjectURL(
@@ -2387,47 +2088,37 @@ document
         }
     );
 
+}
+
 
 /* =====================================================
-   LOGOUT
+   PREMIUM
 ===================================================== */
 
-document
-    .getElementById(
-        "logoutBtn"
-    )
-    ?.addEventListener(
+const subscribePremiumBtn =
+    document.getElementById(
+        "subscribePremiumBtn"
+    );
+
+
+if (subscribePremiumBtn) {
+
+    subscribePremiumBtn.addEventListener(
         "click",
         function() {
 
-            const confirmed =
-                confirm(
-                    "Deseja sair da sua conta?"
-                );
-
-
-            if (!confirmed) {
-                return;
-            }
-
-
-            localStorage.removeItem(
-                "controleS_user"
+            alert(
+                "O ControleS Premium estará disponível em breve! ⭐"
             );
-
-            localStorage.removeItem(
-                "controleS_email"
-            );
-
-
-            location.reload();
 
         }
     );
 
+}
+
 
 /* =====================================================
-   INICIALIZAÇÃO
+   RENDER GERAL
 ===================================================== */
 
 function renderAll() {
@@ -2442,45 +2133,39 @@ function renderAll() {
 
     renderCategoryList();
 
-    createChart();
-
-    createReportSummary();
-
     loadUser();
 
     loadPlan();
+
+    loadCurrentDate();
+
+    updateDashboardChart();
 
 }
 
 
-function startApp() {
+/* =====================================================
+   INICIALIZAÇÃO
+===================================================== */
+
+function init() {
 
     loadData();
 
-    loadUser();
-
-    loadPlan();
-
     loadTheme();
 
-    loadCurrentDate();
+    checkLogin();
 
     renderAll();
 
 }
 
 
-window.addEventListener(
-    "load",
-    function() {
+/* =====================================================
+   INICIAR APP
+===================================================== */
 
-        console.log(
-            "ControleS APP iniciado."
-        );
-
-        checkLogin();
-
-        startApp();
-
-    }
+document.addEventListener(
+    "DOMContentLoaded",
+    init
 );
