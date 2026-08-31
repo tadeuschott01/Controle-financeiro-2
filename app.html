@@ -1,1241 +1,247 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html>  <html lang="pt-BR">  <head>  <meta charset="UTF-8">  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>ControleS - Controle Financeiro</title>  <link rel="stylesheet" href="app.css">  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  </head>  <body>  <div class="app-container">  <!-- ================= SIDEBAR ================= -->  <aside class="sidebar">  <div class="brand">  <div class="brand-logo">  
+$  
+</div>  <div>  <h2>  
+ControleS  
+</h2>  <span>  
+Controle financeiro  
+</span>  </div>  </div>  <nav class="menu">  <button class="nav-item active" data-section="dashboard">  📊 Dashboard
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</button>  <button class="nav-item" data-section="transactions">  💰 Lançamentos
 
-<title>ControleS - Controle Financeiro Inteligente</title>
+</button>  <button class="nav-item" data-section="categories">  📂 Categorias
 
-<link rel="stylesheet" href="style.css">
+</button>  <button class="nav-item" data-section="reports">  📈 Relatórios
 
-<link
-href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-rel="stylesheet">
+</button>  <button class="nav-item" data-section="premium">  ⭐ Premium
 
-</head>
+</button>  </nav>  <div class="sidebar-bottom">  <button id="themeBtn">  🌙 Tema
 
-<body>
+</button>  <button id="logoutBtn">  Sair
 
-<!-- ================= HEADER ================= -->
+</button>  </div>  </aside>  <!-- ================= ÁREA PRINCIPAL ================= -->  <main class="content">  <header class="top-header">  <div>  <h1 id="pageTitle">  Dashboard
 
-<header class="header">
+</h1>  <p>  Olá, <span id="welcomeName">Usuário</span> 👋
 
-    <div class="logo">
+</p>  </div>  <div class="profile">  <div class="avatar" id="userAvatar">  U
 
-        <!-- NOVA LOGO CONTROLES -->
+</div>  <div>  <strong id="userName">  Usuário
 
-        <div class="logo-mark">
-            <svg viewBox="0 0 64 64" aria-hidden="true">
-                <path
-                    d="M32 5L54 13V29C54 43 45 54 32 59C19 54 10 43 10 29V13L32 5Z"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="4"
-                />
+</strong>  <span id="userPlan">  ControleS Grátis
 
-                <path
-                    d="M25 24C27 20 32 19 36 21C40 23 40 28 36 30L28 34C24 36 24 41 28 43C32 45 37 44 39 40"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                />
-            </svg>
-        </div>
+</span>  </div>  </div>  </header>  <!-- ================= DASHBOARD ================= -->  <section id="dashboard" class="section">  <div class="dashboard-top">  <div>  <h2>  Resumo financeiro
 
-        <span>ControleS</span>
+</h2>  <p>  Veja sua situação financeira atual.
 
-    </div>
+</p>  </div>  <button id="openTransactionBtn" class="primary-btn">  Novo lançamento
 
-    <nav>
 
-        <a href="#sistema">Sistema</a>
+</button>  </div>  <!-- CARDS -->  <div class="finance-cards">  <div class="finance-card balance-card">  <div class="card-icon">  💰
 
-        <a href="#recursos">Recursos</a>
+</div>  <div>  <span>  Saldo atual
 
-        <a href="#empresa">Empresa</a>
+</span>  <h2 id="balanceValue">  R$ 0,00
 
-        <a href="#planos">Planos</a>
+</h2>  </div>  </div>  <div class="finance-card income-card">  <div class="card-icon">  📈
 
-        <a href="#login" class="login-button">
-            Entrar
-        </a>
+</div>  <div>  <span>  Receitas
 
-    </nav>
+</span>  <h2 id="incomeValue">  R$ 0,00
 
-</header>
+</h2>  </div>  </div>  <div class="finance-card expense-card">  <div class="card-icon">  📉
 
+</div>  <div>  <span>  Despesas
 
-<!-- ================= HERO ================= -->
+</span>  <h2 id="expenseValue">  R$ 0,00
 
-<section class="hero">
+</h2>  </div>  </div>  <div class="finance-card economy-card">  <div class="card-icon">  🎯
 
-    <div class="hero-content">
+</div>  <div>  <span>  Economia
 
-        <span class="tag">
-            Gestão financeira inteligente
-        </span>
+</span>  <h2 id="economyValue">  0%
 
-        <h1>
-            Controle seu dinheiro.
-            <br>
-            Organize seu futuro.
-        </h1>
+</h2>  </div>  </div>  </div>  <!-- GRÁFICOS -->  <div class="charts-grid">  <div class="panel">  <div class="panel-title">  <h3>  Evolução financeira
 
-        <p>
-            O ControleS reúne suas finanças pessoais
-            e empresariais em um único aplicativo,
-            com gráficos, metas e relatórios.
-        </p>
+</h3>  </div>  <div class="chart-box">  <canvas id="financeChart"></canvas>
 
-        <div class="hero-buttons">
+</div>  </div>  <div class="panel">  <div class="panel-title">  <h3>  Plano
 
-            <button class="primary-button">
-                Começar grátis
-            </button>
+</h3>  </div>  <div class="plan-box">  <h3>  ControleS Grátis
 
-            <button class="secondary-button">
-                Ver demonstração
-            </button>
+</h3>  <p>  Organize sua vida financeira.
 
-        </div>
+</p>  <ul>  <li>✔ Controle de receitas</li>  <li>✔ Controle de despesas</li>  <li>✔ Dashboard financeiro</li>  <li>✔ Categorias</li>  </ul>  <button class="upgrade-btn" id="goPremiumBtn">  Conhecer Premium ⭐
 
-        <div class="hero-stats">
+</button>  </div>  </div>  </div>  <!-- ÚLTIMAS MOVIMENTAÇÕES -->  <div class="panel">  <div class="panel-title">  <h3>  Últimos lançamentos
 
-            <div>
-                <strong>100%</strong>
-                <span>Organização financeira</span>
-            </div>
+</h3>  </div>  <div id="recentTransactions">  <div class="empty-state">  Nenhuma movimentação ainda.
 
-            <div>
-                <strong>Pessoa + Empresa</strong>
-                <span>Um único aplicativo</span>
-            </div>
+</div>  </div>  </div>  </section>  <!-- ================= LANÇAMENTOS ================= -->  <section id="transactions" class="section hidden">  <div class="panel">  <div class="panel-title">  <h3>  Todos os lançamentos
 
-            <div>
-                <strong>R$24,99</strong>
-                <span>Plano Premium</span>
-            </div>
+</h3>  </div>  <div class="filters">  <input
+id="searchInput"
+type="text"
+placeholder="Pesquisar..."
 
-        </div>
+> 
 
-    </div>
+<select id="typeFilter">  <option value="all">  Todos
 
+</option>  <option value="income">  Receitas
 
-    <!-- ================= MOCKUP ================= -->
+</option>  <option value="expense">  Despesas
 
-    <div class="mockup-container">
+</option>  </select>  <select id="categoryFilter">  <option value="all">  Todas categorias
 
-        <div class="mockup-window">
+</option>  </select>  </div>  <div id="allTransactions">  </div>  </div>  </section>  <!-- ================= CATEGORIAS ================= -->  <section id="categories" class="section hidden">  <div class="panel">  <div class="panel-title">  <h3>  Categorias
 
-            <div class="window-top">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+</h3>  </div>  <div id="categoriesGrid" class="categories-grid">  </div>  </div>  </section>  <!-- ================= RELATÓRIOS ================= -->  <section id="reports" class="section hidden">  <div class="panel">  <div class="panel-title">  <h3>  Relatórios
 
-            <div class="app-screen">
+</h3>  </div>  <div class="report-chart">  <canvas id="categoryChart"></canvas>
 
-                <aside class="app-menu">
+</div>  </div>  </section>  <!-- ================= CONTROLES PREMIUM ================= -->  <section id="premium" class="section hidden">  <div class="premium-header">  <div>  <span class="premium-label">  ⭐ CONTROLES PREMIUM
 
-                    <div class="app-logo">
+</span>  <h2>  Tenha o controle completo das suas finanças
 
-                        <div class="mini-logo">
-                            <svg viewBox="0 0 64 64">
-                                <path
-                                    d="M32 5L54 13V29C54 43 45 54 32 59C19 54 10 43 10 29V13L32 5Z"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="5"
-                                />
+</h2>  <p>  Desbloqueie recursos avançados e leve sua organização financeira para outro nível.
 
-                                <path
-                                    d="M25 24C27 20 32 19 36 21C40 23 40 28 36 30L28 34C24 36 24 41 28 43C32 45 37 44 39 40"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="5"
-                                    stroke-linecap="round"
-                                />
-                            </svg>
-                        </div>
+</p>  </div>  </div>  <div class="premium-card">  <div class="premium-card-top">  <div>  <span class="premium-badge">  ⭐ PREMIUM
 
-                        ControleS
+</span>  <h2>  ControleS Premium
 
-                    </div>
+</h2>  <p>  Tudo o que você precisa para controlar suas finanças pessoais e empresariais.
 
-                    <ul>
+</p>  </div>  <div class="premium-price">  <span>  Por apenas
 
-                        <li class="active">
-                            📊 Dashboard
-                        </li>
+</span>  <strong>  R$ 24,99
 
-                        <li>
-                            💰 Receitas
-                        </li>
+</strong>  <small>  / mês
 
-                        <li>
-                            💸 Despesas
-                        </li>
+</small>  </div>  </div>  <div class="premium-features">  <div class="premium-feature">  <span>🎯</span>
 
-                        <li>
-                            🎯 Metas
-                        </li>
+<div>  <strong>  Metas de economia
 
-                        <li>
-                            📅 Calendário
-                        </li>
+</strong>  <p>  Crie e acompanhe suas metas financeiras.
 
-                        <li>
-                            📈 Relatórios
-                        </li>
+</p>  </div>  </div>  <div class="premium-feature">  <span>📅</span>
 
-                    </ul>
+<div>  <strong>  Calendário financeiro
 
-                </aside>
+</strong>  <p>  Visualize seus lançamentos e compromissos.
 
+</p>  </div>  </div>  <div class="premium-feature">  <span>🔔</span>
 
-                <main class="app-main">
+<div>  <strong>  Lembretes
 
-                    <div class="app-header">
+</strong>  <p>  Não esqueça suas contas e compromissos.
 
-                        <div>
+</p>  </div>  </div>  <div class="premium-feature">  <span>📊</span>
 
-                            <span>
-                                Bom dia, Felipe 👋
-                            </span>
+<div>  <strong>  Indicadores avançados
 
-                            <h3>
-                                Resumo financeiro
-                            </h3>
+</strong>  <p>  Tenha uma visão mais completa da sua vida financeira.
 
-                        </div>
+</p>  </div>  </div>  <div class="premium-feature">  <span>🧾</span>
 
-                        <div class="premium-badge">
-                            Premium
-                        </div>
+<div>  <strong>  Recibos
 
-                    </div>
+</strong>  <p>  Crie recibos financeiros de forma rápida.
 
+</p>  </div>  </div>  <div class="premium-feature">  <span>🏢</span>
 
-                    <div class="balance-card">
+<div>  <strong>  Pessoa e Empresa
 
-                        <p>
-                            Saldo disponível
-                        </p>
+</strong>  <p>  Organize suas finanças pessoais e empresariais.
 
-                        <h2>
-                            R$ 8.450,00
-                        </h2>
+</p>  </div>  </div>  <div class="premium-feature">  <span>💼</span>
 
-                        <span>
-                            ▲ 12% este mês
-                        </span>
+<div>  <strong>  Múltiplas contas
 
-                    </div>
+</strong>  <p>  Controle diferentes contas financeiras.
 
+</p>  </div>  </div>  <div class="premium-feature">  <span>📥</span>
 
-                    <div class="mini-cards">
+<div>  <strong>  Exportação de dados
 
-                        <div>
+</strong>  <p>  Exporte suas informações financeiras.
 
-                            <p>
-                                Receitas
-                            </p>
+</p>  </div>  </div>  </div>  <div class="premium-action">  <button
+class="premium-btn"
+id="subscribePremiumBtn"
 
-                            <strong>
-                                + R$ 12.500
-                            </strong>
+> 
 
-                        </div>
+Assinar Premium — R$ 24,99/mês
 
-                        <div>
+</button>  <p>  Cancele quando quiser.
 
-                            <p>
-                                Despesas
-                            </p>
+</p>  </div>  </div>  </section>  <!-- ================= MODAL NOVO LANÇAMENTO ================= -->  <div id="transactionModal" class="modal hidden">  <div class="modal-overlay"></div>  <div class="modal-content">  <div class="modal-header">  <h2>  Novo lançamento
 
-                            <strong class="expense-preview">
-                                - R$ 4.050
-                            </strong>
+</h2>  <button id="closeModal">  ×
 
-                        </div>
+</button>  </div>  <form id="transactionForm">  <div class="type-selector">  <button
+type="button"
+class="type-option active"
+data-type="income"
 
-                    </div>
+> 
 
+💰 Receita
 
-                    <div class="mini-chart">
+</button>  <button
+type="button"
+class="type-option"
+data-type="expense"
 
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+> 
 
-                    </div>
+💸 Despesa
 
-                </main>
+</button>  </div>  <input
+id="descriptionInput"
+type="text"
+placeholder="Descrição"
+required
 
-            </div>
+> 
 
-        </div>
+<input
+id="amountInput"
+type="number"
+placeholder="Valor"
+required
 
-    </div>
+> 
 
-</section>
+<select id="transactionCategory">  <option>  Alimentação
 
+</option>  <option>  Moradia
 
-<!-- ================= SISTEMA ================= -->
+</option>  <option>  Transporte
 
-<section class="system-section" id="sistema">
+</option>  <option>  Salário
 
-    <div class="section-title">
+</option>  <option>  Lazer
 
-        <span>
-            Conheça o ControleS
-        </span>
+</option>  <option>  Outros
 
-        <h2>
-            Um sistema completo para organizar sua vida financeira
-        </h2>
+</option>  </select>  <input
+id="dateInput"
+type="date"
+required
 
-        <p>
-            Tenha controle de tudo que entra, sai e dos seus objetivos.
-        </p>
+> 
 
-    </div>
+<textarea  
+id="noteInput"  
+placeholder="Observação"  
+></textarea>  <button
+type="submit"
+class="save-btn"
 
+> 
 
-    <div class="system-cards">
+Salvar lançamento
 
-        <div class="system-card">
+</button>  </form>  </div>  </div>    <!-- ================= MENU MOBILE ================= -->  <button id="mobileMenu" class="mobile-menu">  ☰
 
-            <div class="card-icon">
-                📊
-            </div>
-
-            <h3>
-                Dashboard inteligente
-            </h3>
-
-            <p>
-                Acompanhe saldo, gráficos, indicadores
-                e evolução financeira.
-            </p>
-
-        </div>
-
-
-        <div class="system-card">
-
-            <div class="card-icon">
-                💰
-            </div>
-
-            <h3>
-                Controle financeiro
-            </h3>
-
-            <p>
-                Registre receitas e despesas
-                de forma simples e organizada.
-            </p>
-
-        </div>
-
-
-        <div class="system-card">
-
-            <div class="card-icon">
-                🎯
-            </div>
-
-            <h3>
-                Metas financeiras
-            </h3>
-
-            <p>
-                Crie objetivos e acompanhe
-                sua evolução.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= DEMONSTRAÇÃO ================= -->
-
-<section class="demo-section">
-
-    <div class="demo-content">
-
-        <span>
-            Dentro do aplicativo
-        </span>
-
-        <h2>
-            Seu centro de controle financeiro
-        </h2>
-
-        <p>
-            Uma visão completa da sua vida financeira
-            em uma única tela.
-        </p>
-
-        <ul>
-
-            <li>✔ Entradas e saídas</li>
-            <li>✔ Gráficos financeiros</li>
-            <li>✔ Análise de resultados</li>
-            <li>✔ Organização mensal</li>
-
-        </ul>
-
-    </div>
-
-
-    <div class="dashboard-preview">
-
-        <div class="dashboard-top">
-
-            <h3>
-                Dashboard ControleS
-            </h3>
-
-            <button>
-                + Novo lançamento
-            </button>
-
-        </div>
-
-
-        <div class="dashboard-cards">
-
-            <div>
-                <span>Saldo atual</span>
-                <strong>R$ 8.450</strong>
-            </div>
-
-            <div>
-                <span>Receitas</span>
-                <strong class="positive">
-                    + R$ 12.500
-                </strong>
-            </div>
-
-            <div>
-                <span>Despesas</span>
-                <strong class="negative">
-                    - R$ 4.050
-                </strong>
-            </div>
-
-        </div>
-
-
-        <div class="dashboard-chart">
-
-            <h3>
-                Evolução mensal
-            </h3>
-
-            <div class="bars">
-
-                <div style="height:40%"></div>
-                <div style="height:70%"></div>
-                <div style="height:55%"></div>
-                <div style="height:90%"></div>
-                <div style="height:65%"></div>
-
-            </div>
-
-        </div>
-
-
-        <div class="transactions">
-
-            <h3>
-                Últimas movimentações
-            </h3>
-
-            <div class="transaction-item">
-
-                <span>
-                    🟢 Salário
-                </span>
-
-                <strong>
-                    + R$ 5.000
-                </strong>
-
-            </div>
-
-            <div class="transaction-item">
-
-                <span>
-                    🔴 Mercado
-                </span>
-
-                <strong>
-                    - R$ 450
-                </strong>
-
-            </div>
-
-            <div class="transaction-item">
-
-                <span>
-                    🔴 Combustível
-                </span>
-
-                <strong>
-                    - R$ 200
-                </strong>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= RECURSOS ================= -->
-
-<section class="resources" id="recursos">
-
-    <div class="section-title">
-
-        <span>
-            Recursos
-        </span>
-
-        <h2>
-            Tudo que você precisa dentro do ControleS
-        </h2>
-
-        <p>
-            Ferramentas criadas para facilitar sua organização financeira.
-        </p>
-
-    </div>
-
-
-    <div class="resource-grid">
-
-        <div class="resource-card">
-            <div>📅</div>
-            <h3>Calendário financeiro</h3>
-            <p>Visualize contas e compromissos futuros.</p>
-        </div>
-
-        <div class="resource-card">
-            <div>🔔</div>
-            <h3>Lembretes inteligentes</h3>
-            <p>Receba avisos de pagamentos importantes.</p>
-        </div>
-
-        <div class="resource-card">
-            <div>🧾</div>
-            <h3>Recibos digitais</h3>
-            <p>Crie comprovantes profissionais.</p>
-        </div>
-
-        <div class="resource-card">
-            <div>📈</div>
-            <h3>Relatórios completos</h3>
-            <p>Analise seus resultados financeiros.</p>
-        </div>
-
-        <div class="resource-card">
-            <div>🏢</div>
-            <h3>Modo Empresa</h3>
-            <p>Controle financeiro do seu negócio.</p>
-        </div>
-
-        <div class="resource-card">
-            <div>💾</div>
-            <h3>Exportação de dados</h3>
-            <p>Tenha seus dados organizados.</p>
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= PESSOA E EMPRESA ================= -->
-
-<section class="business-section" id="empresa">
-
-    <div class="section-title">
-
-        <span>
-            Para todos os perfis
-        </span>
-
-        <h2>
-            Um sistema para sua vida e seu negócio
-        </h2>
-
-        <p>
-            Escolha o modo que combina com sua necessidade.
-        </p>
-
-    </div>
-
-
-    <div class="business-cards">
-
-        <div class="business-card">
-
-            <div class="business-icon">
-                👤
-            </div>
-
-            <h3>
-                Controle Pessoal
-            </h3>
-
-            <p>
-                Organize sua vida financeira,
-                acompanhe gastos e alcance objetivos.
-            </p>
-
-            <ul>
-                <li>✔ Controle de receitas</li>
-                <li>✔ Controle de despesas</li>
-                <li>✔ Metas de economia</li>
-                <li>✔ Planejamento mensal</li>
-            </ul>
-
-            <button>
-                Começar pessoal
-            </button>
-
-        </div>
-
-
-        <div class="business-card featured">
-
-            <div class="business-icon">
-                🏢
-            </div>
-
-            <h3>
-                Controle Empresa
-            </h3>
-
-            <p>
-                Uma gestão financeira profissional
-                para pequenos negócios.
-            </p>
-
-            <ul>
-                <li>✔ Fluxo de caixa</li>
-                <li>✔ Entradas e saídas</li>
-                <li>✔ Relatórios empresariais</li>
-                <li>✔ Organização financeira</li>
-            </ul>
-
-            <button>
-                Usar modo empresa
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= MÓDULOS ================= -->
-
-<section class="modules-section">
-
-    <div class="section-title">
-
-        <span>
-            Módulos
-        </span>
-
-        <h2>
-            Tudo organizado dentro do ControleS
-        </h2>
-
-    </div>
-
-
-    <div class="modules-grid">
-
-        <div class="module-card">
-
-            <div class="module-icon">
-                💰
-            </div>
-
-            <h3>Receitas</h3>
-
-            <p>
-                Cadastre salários, vendas,
-                recebimentos e entradas.
-            </p>
-
-            <div class="module-box">
-
-                <button>
-                    + Adicionar receita
-                </button>
-
-                <div>
-                    Salário
-                    <strong>+ R$ 5.000</strong>
-                </div>
-
-                <div>
-                    Venda
-                    <strong>+ R$ 1.500</strong>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="module-card">
-
-            <div class="module-icon">
-                💸
-            </div>
-
-            <h3>Despesas</h3>
-
-            <p>
-                Saiba exatamente onde
-                seu dinheiro está sendo utilizado.
-            </p>
-
-            <div class="module-box">
-
-                <button>
-                    + Adicionar despesa
-                </button>
-
-                <div>
-                    Mercado
-                    <strong>- R$ 450</strong>
-                </div>
-
-                <div>
-                    Combustível
-                    <strong>- R$ 200</strong>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="module-card">
-
-            <div class="module-icon">
-                🎯
-            </div>
-
-            <h3>Metas financeiras</h3>
-
-            <p>
-                Crie objetivos e acompanhe
-                seu progresso.
-            </p>
-
-            <div class="goal-box">
-
-                <span>
-                    Comprar carro
-                </span>
-
-                <div class="progress-bar">
-                    <div></div>
-                </div>
-
-                <strong>
-                    75%
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="module-card">
-
-            <div class="module-icon">
-                📅
-            </div>
-
-            <h3>Calendário financeiro</h3>
-
-            <p>
-                Veja contas programadas
-                e compromissos.
-            </p>
-
-            <div class="calendar-box">
-
-                <span>01</span>
-                <span>05</span>
-                <span>10</span>
-                <span>15</span>
-                <span>20</span>
-
-            </div>
-
-        </div>
-
-
-        <div class="module-card">
-
-            <div class="module-icon">
-                🧾
-            </div>
-
-            <h3>Recibos digitais</h3>
-
-            <p>
-                Gere comprovantes
-                profissionais rapidamente.
-            </p>
-
-            <div class="receipt-box">
-
-                <h4>RECIBO</h4>
-
-                <p>Valor: __________</p>
-
-                <p>Assinatura: _______</p>
-
-            </div>
-
-        </div>
-
-
-        <div class="module-card">
-
-            <div class="module-icon">
-                📈
-            </div>
-
-            <h3>Relatórios</h3>
-
-            <p>
-                Analise sua evolução
-                financeira.
-            </p>
-
-            <div class="report-box">
-
-                📊 Gastos por categoria
-                <br>
-
-                📈 Evolução mensal
-                <br>
-
-                💰 Resultado final
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= PLANOS ================= -->
-
-<section class="plans-section" id="planos">
-
-    <div class="section-title">
-
-        <span>
-            Planos
-        </span>
-
-        <h2>
-            Escolha o ControleS ideal para você
-        </h2>
-
-        <p>
-            Comece grátis e evolua para recursos completos.
-        </p>
-
-    </div>
-
-
-    <div class="plans-container">
-
-        <div class="plan-card">
-
-            <h3>
-                ControleS Grátis
-            </h3>
-
-            <div class="price">
-                R$ 0
-            </div>
-
-            <ul>
-                <li>✔ Receitas e despesas</li>
-                <li>✔ Categorias financeiras</li>
-                <li>✔ Dashboard básico</li>
-                <li>✔ Controle pessoal</li>
-            </ul>
-
-            <button>
-                Criar conta grátis
-            </button>
-
-        </div>
-
-
-        <div class="plan-card premium">
-
-            <div class="popular">
-                Mais escolhido
-            </div>
-
-            <h3>
-                ControleS Premium
-            </h3>
-
-            <div class="price">
-                R$ 24,99
-                <span>/mês</span>
-            </div>
-
-            <ul>
-                <li>✔ Tudo do plano grátis</li>
-                <li>✔ Metas financeiras</li>
-                <li>✔ Relatórios avançados</li>
-                <li>✔ Recibos digitais</li>
-                <li>✔ Modo Empresa</li>
-                <li>✔ Calendário financeiro</li>
-                <li>✔ Exportação de dados</li>
-            </ul>
-
-            <button>
-                Assinar Premium
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= LOGIN ================= -->
-
-<section class="login-section" id="login">
-
-    <div class="login-container">
-
-        <div class="login-info">
-
-            <div class="login-logo">
-
-                <svg viewBox="0 0 64 64">
-
-                    <path
-                        d="M32 5L54 13V29C54 43 45 54 32 59C19 54 10 43 10 29V13L32 5Z"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="4"
-                    />
-
-                    <path
-                        d="M25 24C27 20 32 19 36 21C40 23 40 28 36 30L28 34C24 36 24 41 28 43C32 45 37 44 39 40"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="4"
-                        stroke-linecap="round"
-                    />
-
-                </svg>
-
-            </div>
-
-            <h2>
-                Entre no ControleS
-            </h2>
-
-            <p>
-                Acesse sua conta e continue
-                organizando suas finanças.
-            </p>
-
-            <div class="login-benefits">
-
-                <span>✔ Dashboard completo</span>
-                <span>✔ Controle pessoal e empresa</span>
-                <span>✔ Dados organizados</span>
-
-            </div>
-
-        </div>
-
-
-        <div class="login-box">
-
-            <h3>
-                Acessar conta
-            </h3>
-
-            <input
-                type="email"
-                placeholder="Email"
-            >
-
-            <input
-                type="password"
-                placeholder="Senha"
-            >
-
-            <button>
-                Entrar
-            </button>
-
-            <a href="#">
-                Criar uma conta gratuita
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= SEGURANÇA ================= -->
-
-<section class="security-section">
-
-    <div class="security-card">
-
-        <div class="security-icon">
-            🔒
-        </div>
-
-        <h2>
-            Seus dados protegidos
-        </h2>
-
-        <p>
-            O ControleS foi desenvolvido pensando
-            em segurança, organização e privacidade.
-        </p>
-
-        <div class="security-list">
-
-            <span>✔ Autenticação segura</span>
-            <span>✔ Dados protegidos</span>
-            <span>✔ Controle do usuário</span>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= FAQ ================= -->
-
-<section class="faq-section">
-
-    <div class="section-title">
-
-        <span>
-            Dúvidas
-        </span>
-
-        <h2>
-            Perguntas frequentes
-        </h2>
-
-    </div>
-
-
-    <div class="faq-list">
-
-        <div class="faq-item">
-
-            <h3>
-                Preciso conectar minha conta bancária?
-            </h3>
-
-            <p>
-                Não. O ControleS permite cadastrar
-                suas informações manualmente.
-            </p>
-
-        </div>
-
-
-        <div class="faq-item">
-
-            <h3>
-                Posso usar para empresa?
-            </h3>
-
-            <p>
-                Sim. O modo Empresa permite
-                organizar as finanças do negócio.
-            </p>
-
-        </div>
-
-
-        <div class="faq-item">
-
-            <h3>
-                Existe plano gratuito?
-            </h3>
-
-            <p>
-                Sim. Você pode começar gratuitamente
-                e depois evoluir para o Premium.
-            </p>
-
-        </div>
-
-
-        <div class="faq-item">
-
-            <h3>
-                Quanto custa o Premium?
-            </h3>
-
-            <p>
-                O ControleS Premium custa
-                R$ 24,99 por mês.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= CTA ================= -->
-
-<section class="final-section">
-
-    <h2>
-        Comece hoje a controlar suas finanças.
-    </h2>
-
-    <p>
-        Tenha clareza, organização e controle
-        em um único aplicativo.
-    </p>
-
-    <button>
-        Criar conta grátis
-    </button>
-
-</section>
-
-
-<!-- ================= FOOTER ================= -->
-
-<footer class="footer">
-
-    <div class="footer-brand">
-
-        <div class="footer-logo">
-
-            <svg viewBox="0 0 64 64">
-
-                <path
-                    d="M32 5L54 13V29C54 43 45 54 32 59C19 54 10 43 10 29V13L32 5Z"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="4"
-                />
-
-                <path
-                    d="M25 24C27 20 32 19 36 21C40 23 40 28 36 30L28 34C24 36 24 41 28 43C32 45 37 44 39 40"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                />
-
-            </svg>
-
-        </div>
-
-        <h3>
-            ControleS
-        </h3>
-
-        <p>
-            Controle financeiro inteligente.
-        </p>
-
-    </div>
-
-
-    <div class="footer-links">
-
-        <div>
-
-            <h4>Produto</h4>
-
-            <a href="#recursos">Recursos</a>
-            <a href="#sistema">Sistema</a>
-            <a href="#planos">Planos</a>
-
-        </div>
-
-
-        <div>
-
-            <h4>Empresa</h4>
-
-            <a href="#empresa">Sobre</a>
-            <a href="#login">Contato</a>
-            <a href="#login">Suporte</a>
-
-        </div>
-
-
-        <div>
-
-            <h4>Legal</h4>
-
-            <a href="#">Termos</a>
-            <a href="#">Privacidade</a>
-
-        </div>
-
-    </div>
-
-
-    <p class="copyright">
-        © 2026 ControleS. Todos os direitos reservados.
-    </p>
-
-</footer>
-
-
-<script src="script.js"></script>
-
-</body>
-</html>
+</button>  </main>  </div>  <!-- ================= SCRIPT ================= -->  <script src="app.js"></script>  </body>  </html>
