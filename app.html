@@ -2,6 +2,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ControleS — Controle Financeiro</title>
 
+<!-- FONTE -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -10,8 +11,10 @@
     rel="stylesheet"
 >
 
-<link rel="stylesheet" href="./style.css">
+<!-- CSS DO CONTROLES -->
+<link rel="stylesheet" href="style.css">
 
+<!-- CHART.JS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head><body><!-- =========================
@@ -25,7 +28,7 @@
         <div class="login-brand">
 
             <div class="login-logo">
-                <img src="./logo.png" alt="ControleS">
+                <img src="logo.png" alt="ControleS">
             </div>
 
             <h1>ControleS</h1>
@@ -109,15 +112,19 @@
         <div class="sidebar-brand">
 
             <div class="brand-logo">
-                <img src="./logo.png" alt="ControleS">
+                <img src="logo.png" alt="ControleS">
             </div>
 
             <div class="brand-text">
+
                 <strong>ControleS</strong>
+
                 <span>Financeiro</span>
+
             </div>
 
         </div>
+
 
         <nav class="sidebar-nav">
 
@@ -168,6 +175,7 @@
 
         </nav>
 
+
         <div class="sidebar-bottom">
 
             <button
@@ -193,7 +201,9 @@
     </aside>
 
 
-    <!-- CONTEÚDO -->
+    <!-- =========================
+         CONTEÚDO
+    ========================== -->
 
     <main class="main-content">
 
@@ -225,6 +235,7 @@
 
             </div>
 
+
             <div class="topbar-right">
 
                 <button
@@ -234,6 +245,7 @@
                 >
                     + Novo lançamento
                 </button>
+
 
                 <div class="user-area">
 
@@ -428,9 +440,7 @@
 
                     <div class="chart-container">
 
-                        <canvas
-                            id="financeChart"
-                        ></canvas>
+                        <canvas id="financeChart"></canvas>
 
                     </div>
 
@@ -620,9 +630,7 @@
 
                     <div class="category-chart-container">
 
-                        <canvas
-                            id="categoryChart"
-                        ></canvas>
+                        <canvas id="categoryChart"></canvas>
 
                     </div>
 
@@ -772,7 +780,7 @@
                 <div class="premium-logo">
 
                     <img
-                        src="./logo.png"
+                        src="logo.png"
                         alt="ControleS"
                     >
 
@@ -841,7 +849,7 @@
 
 
 <!-- =========================
-     MODAL
+     MODAL NOVO LANÇAMENTO
 ========================== -->
 
 <div
@@ -1023,8 +1031,8 @@
 </div>
 
 
-<!-- JAVASCRIPT -->
+<!-- JAVASCRIPT DO CONTROLES -->
+<script src="app.js"></script>
 
-<script src="./app.js"></script>
-
-</body></html>
+</body>
+</html>
