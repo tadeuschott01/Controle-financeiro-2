@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function loadSupabase() {
     return new Promise((resolve, reject) => {
+
         if (window.supabase) {
             supabaseClient = window.supabase.createClient(
                 SUPABASE_URL,
@@ -69,7 +70,11 @@ function loadSupabase() {
         };
 
         script.onerror = () => {
-            reject(new Error("Não foi possível carregar o Supabase."));
+            reject(
+                new Error(
+                    "Não foi possível carregar o Supabase."
+                )
+            );
         };
 
         document.head.appendChild(script);
@@ -104,7 +109,9 @@ function setupEvents() {
     });
 
     document.querySelectorAll("[data-section]").forEach(button => {
+
         if (!button.classList.contains("nav-item")) {
+
             button.addEventListener("click", () => {
                 showSection(button.dataset.section);
             });
@@ -121,18 +128,26 @@ function setupEvents() {
         ?.addEventListener("click", closeTransactionModal);
 
     document.querySelectorAll(".modal-overlay").forEach(overlay => {
+
         overlay.addEventListener("click", () => {
-            overlay.closest(".modal")?.classList.add("hidden");
+            overlay.closest(".modal")
+                ?.classList.add("hidden");
         });
     });
 
     document.querySelectorAll(".type-option").forEach(button => {
+
         button.addEventListener("click", () => {
+
             document.querySelectorAll(".type-option")
-                .forEach(item => item.classList.remove("active"));
+                .forEach(item =>
+                    item.classList.remove("active")
+                );
 
             button.classList.add("active");
-            selectedTransactionType = button.dataset.type || "income";
+
+            selectedTransactionType =
+                button.dataset.type || "income";
         });
     });
 
@@ -156,7 +171,9 @@ function setupEvents() {
 
     document.getElementById("closeGoalModal")
         ?.addEventListener("click", () => {
-            document.getElementById("goalModal")?.classList.add("hidden");
+
+            document.getElementById("goalModal")
+                ?.classList.add("hidden");
         });
 
     document.getElementById("goalForm")
@@ -167,7 +184,9 @@ function setupEvents() {
 
     document.getElementById("closeBudgetModal")
         ?.addEventListener("click", () => {
-            document.getElementById("budgetModal")?.classList.add("hidden");
+
+            document.getElementById("budgetModal")
+                ?.classList.add("hidden");
         });
 
     document.getElementById("budgetForm")
@@ -177,9 +196,13 @@ function setupEvents() {
         ?.addEventListener("click", simulateExpense);
 
     document.addEventListener("keydown", event => {
+
         if (event.key === "Escape") {
+
             document.querySelectorAll(".modal")
-                .forEach(modal => modal.classList.add("hidden"));
+                .forEach(modal =>
+                    modal.classList.add("hidden")
+                );
         }
     });
 }
@@ -189,6 +212,7 @@ function setupEvents() {
 ========================================================= */
 
 async function checkSession() {
+
     if (!supabaseClient) return;
 
     const { data, error } =
@@ -200,7 +224,8 @@ async function checkSession() {
         return;
     }
 
-    currentUser = data.session?.user || null;
+    currentUser =
+        data.session?.user || null;
 
     if (currentUser) {
         await enterApp();
@@ -208,9 +233,13 @@ async function checkSession() {
         showLogin();
     }
 
-    supabaseClient.auth.onAuthStateChange((_event, session) => {
-        currentUser = session?.user || null;
-    });
+    supabaseClient.auth.onAuthStateChange(
+        (_event, session) => {
+
+            currentUser =
+                session?.user || null;
+        }
+    );
 }
 
 /* =========================================================
@@ -218,64 +247,81 @@ async function checkSession() {
 ========================================================= */
 
 async function handleLogin(event) {
+
     event.preventDefault();
 
     if (!supabaseClient) {
-        alert("Supabase ainda não carregou. Tente novamente.");
+
+        alert(
+            "Supabase ainda não carregou. Tente novamente."
+        );
+
         return;
     }
 
-    const name = document.getElementById("loginName")
-        ?.value.trim();
+    const name =
+        document.getElementById("loginName")
+            ?.value.trim();
 
-    const email = document.getElementById("loginEmail")
-        ?.value.trim().toLowerCase();
+    const email =
+        document.getElementById("loginEmail")
+            ?.value.trim()
+            .toLowerCase();
 
-    const password = document.getElementById("loginPassword")
-        ?.value;
+    const password =
+        document.getElementById("loginPassword")
+            ?.value;
 
     if (!name || !email || !password) {
-        alert("Preencha nome, e-mail e senha.");
+
+        alert(
+            "Preencha nome, e-mail e senha."
+        );
+
         return;
     }
 
     if (password.length < 6) {
-        alert("A senha precisa ter pelo menos 6 caracteres.");
+
+        alert(
+            "A senha precisa ter pelo menos 6 caracteres."
+        );
+
         return;
     }
 
-    const button = document.querySelector("#loginForm button");
+    const button =
+        document.querySelector(
+            "#loginForm button"
+        );
 
     if (button) {
+
         button.disabled = true;
         button.textContent = "Entrando...";
     }
 
     try {
 
-        /* Primeiro tenta login */
         let loginResult =
             await supabaseClient.auth.signInWithPassword({
                 email,
                 password
             });
 
-        /* Se já existe, entra normalmente */
-        if (!loginResult.error && loginResult.data?.user) {
+        if (
+            !loginResult.error &&
+            loginResult.data?.user
+        ) {
 
-            currentUser = loginResult.data.user;
+            currentUser =
+                loginResult.data.user;
 
             await createProfileIfNeeded(name);
             await enterApp();
 
             return;
         }
-
-        /*
-           Se o login falhou, tenta cadastro.
-           Isso permite usar o mesmo botão para
-           primeira entrada.
-        */
 
         const signupResult =
             await supabaseClient.auth.signUp({
@@ -290,18 +336,21 @@ async function handleLogin(event) {
 
         if (signupResult.error) {
 
-            /*
-               Se o erro indicar que a conta já existe,
-               mostramos mensagem para conferir e-mail/senha.
-            */
-
             const message =
                 signupResult.error.message || "";
 
             if (
-                message.toLowerCase().includes("already registered") ||
-                message.toLowerCase().includes("user already registered")
+                message
+                    .toLowerCase()
+                    .includes("already registered") ||
+
+                message
+                    .toLowerCase()
+                    .includes(
+                        "user already registered"
+                    )
             ) {
+
                 throw new Error(
                     "Esse e-mail já está cadastrado. Confira sua senha."
                 );
@@ -310,12 +359,8 @@ async function handleLogin(event) {
             throw signupResult.error;
         }
 
-        currentUser = signupResult.data?.user || null;
-
-        /*
-           Se confirmação de e-mail estiver ativada
-           no Supabase, a sessão pode ficar nula.
-        */
+        currentUser =
+            signupResult.data?.user || null;
 
         if (!signupResult.data?.session) {
 
@@ -334,18 +379,26 @@ async function handleLogin(event) {
 
     } catch (error) {
 
-        console.error("Erro de autenticação:", error);
+        console.error(
+            "Erro de autenticação:",
+            error
+        );
 
         alert(
             "Não foi possível entrar:\n\n" +
-            (error.message || "Erro desconhecido.")
+            (
+                error.message ||
+                "Erro desconhecido."
+            )
         );
 
     } finally {
 
         if (button) {
+
             button.disabled = false;
-            button.textContent = "Entrar no ControleS";
+            button.textContent =
+                "Entrar no ControleS";
         }
     }
 }
@@ -366,7 +419,12 @@ async function createProfileIfNeeded(name) {
             .maybeSingle();
 
     if (error) {
-        console.warn("Erro consultando profile:", error);
+
+        console.warn(
+            "Erro consultando profile:",
+            error
+        );
+
         return;
     }
 
@@ -377,15 +435,21 @@ async function createProfileIfNeeded(name) {
                 .from("profiles")
                 .insert({
                     id: currentUser.id,
+
                     full_name:
                         name ||
-                        currentUser.user_metadata?.full_name ||
+                        currentUser
+                            .user_metadata
+                            ?.full_name ||
                         "Usuário",
+
                     account_type: "personal",
+
                     company_name: null
                 });
 
         if (insertError) {
+
             console.warn(
                 "Erro criando profile:",
                 insertError
@@ -440,7 +504,12 @@ async function logout() {
         await supabaseClient.auth.signOut();
 
     if (error) {
-        alert("Erro ao sair: " + error.message);
+
+        alert(
+            "Erro ao sair: " +
+            error.message
+        );
+
         return;
     }
 
@@ -462,7 +531,9 @@ async function loadUserData() {
     if (!currentUser) return;
 
     await createProfileIfNeeded(
-        currentUser.user_metadata?.full_name || "Usuário"
+        currentUser.user_metadata
+            ?.full_name ||
+        "Usuário"
     );
 
     await Promise.all([
@@ -496,21 +567,33 @@ async function loadTransactions() {
             .from("transactions")
             .select("*")
             .eq("user_id", currentUser.id)
-            .order("date", { ascending: false });
+            .order("date", {
+                ascending: false
+            });
 
     if (error) {
-        console.error("Erro carregando transações:", error);
+
+        console.error(
+            "Erro carregando transações:",
+            error
+        );
+
         transactions = [];
+
         return;
     }
 
-    transactions = (data || []).map(normalizeTransaction);
+    transactions =
+        (data || [])
+            .map(normalizeTransaction);
 }
 
 function normalizeTransaction(item) {
 
     return {
+
         id: item.id,
+
         user_id: item.user_id,
 
         type:
@@ -539,10 +622,17 @@ function normalizeTransaction(item) {
             item.date ||
             item.data ||
             item.data_iso ||
-            new Date().toISOString().slice(0, 10),
+            new Date()
+                .toISOString()
+                .slice(0, 10),
 
-        area: item.area || "",
-        note: item.note || ""
+        area:
+            item.area ||
+            "",
+
+        note:
+            item.note ||
+            ""
     };
 }
 
@@ -555,34 +645,45 @@ async function saveTransaction(event) {
     event.preventDefault();
 
     if (!currentUser) {
+
         alert("Faça login primeiro.");
+
         return;
     }
 
     const description =
-        document.getElementById("descriptionInput")
-            ?.value.trim();
+        document.getElementById(
+            "descriptionInput"
+        )?.value.trim();
 
     const amount =
         Number(
-            document.getElementById("amountInput")
-                ?.value
+            document.getElementById(
+                "amountInput"
+            )?.value
         );
 
     const date =
-        document.getElementById("dateInput")
-            ?.value;
+        document.getElementById(
+            "dateInput"
+        )?.value;
 
     const category =
-        document.getElementById("transactionCategory")
-            ?.value;
+        document.getElementById(
+            "transactionCategory"
+        )?.value;
 
     const frequency =
-        document.getElementById("frequencyInput")
-            ?.value;
+        document.getElementById(
+            "frequencyInput"
+        )?.value;
 
     if (!description || !amount || !date) {
-        alert("Preencha todos os campos obrigatórios.");
+
+        alert(
+            "Preencha todos os campos obrigatórios."
+        );
+
         return;
     }
 
@@ -592,6 +693,7 @@ async function saveTransaction(event) {
         );
 
     if (button) {
+
         button.disabled = true;
         button.textContent = "Salvando...";
     }
@@ -602,13 +704,23 @@ async function saveTransaction(event) {
             await supabaseClient
                 .from("transactions")
                 .insert({
-                    user_id: currentUser.id,
-                    type: selectedTransactionType,
+
+                    user_id:
+                        currentUser.id,
+
+                    type:
+                        selectedTransactionType,
+
                     description,
+
                     amount,
+
                     category,
+
                     date,
+
                     area: "",
+
                     note:
                         frequency !== "once"
                             ? `Frequência: ${frequency}`
@@ -617,21 +729,30 @@ async function saveTransaction(event) {
 
         if (error) throw error;
 
-        document.getElementById("transactionForm")
-            ?.reset();
+        document.getElementById(
+            "transactionForm"
+        )?.reset();
 
-        selectedTransactionType = "income";
+        selectedTransactionType =
+            "income";
 
-        document.querySelectorAll(".type-option")
-            .forEach((item, index) => {
-                item.classList.toggle("active", index === 0);
-            });
+        document.querySelectorAll(
+            ".type-option"
+        ).forEach((item, index) => {
+
+            item.classList.toggle(
+                "active",
+                index === 0
+            );
+        });
 
         closeTransactionModal();
 
         await loadUserData();
 
-        alert("Lançamento salvo com sucesso!");
+        alert(
+            "Lançamento salvo com sucesso!"
+        );
 
     } catch (error) {
 
@@ -645,8 +766,10 @@ async function saveTransaction(event) {
     } finally {
 
         if (button) {
+
             button.disabled = false;
-            button.textContent = "Salvar lançamento";
+            button.textContent =
+                "Salvar lançamento";
         }
     }
 }
@@ -659,7 +782,8 @@ async function deleteTransaction(id) {
 
     if (!currentUser) return;
 
-    if (!confirm("Excluir este lançamento?")) return;
+    if (!confirm("Excluir este lançamento?"))
+        return;
 
     const { error } =
         await supabaseClient
@@ -669,7 +793,12 @@ async function deleteTransaction(id) {
             .eq("user_id", currentUser.id);
 
     if (error) {
-        alert("Erro ao excluir: " + error.message);
+
+        alert(
+            "Erro ao excluir: " +
+            error.message
+        );
+
         return;
     }
 
@@ -684,15 +813,28 @@ function updateDashboard() {
 
     const income =
         transactions
-            .filter(t => t.type === "income")
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter(
+                t => t.type === "income"
+            )
+            .reduce(
+                (sum, t) =>
+                    sum + t.amount,
+                0
+            );
 
     const expense =
         transactions
-            .filter(t => t.type === "expense")
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter(
+                t => t.type === "expense"
+            )
+            .reduce(
+                (sum, t) =>
+                    sum + t.amount,
+                0
+            );
 
-    const balance = income - expense;
+    const balance =
+        income - expense;
 
     const economy =
         income > 0
@@ -716,15 +858,22 @@ function updateDashboard() {
 
     setText(
         "economyValue",
-        `${Math.max(0, economy).toFixed(1)}%`
+        `${Math.max(
+            0,
+            economy
+        ).toFixed(1)}%`
     );
 
     setText(
         "premiumEconomyValue",
-        `${Math.max(0, economy).toFixed(1)}%`
+        `${Math.max(
+            0,
+            economy
+        ).toFixed(1)}%`
     );
 
     renderRecentTransactions();
+
     updateFinanceChart();
 }
 
@@ -735,23 +884,30 @@ function updateDashboard() {
 function renderRecentTransactions() {
 
     const container =
-        document.getElementById("recentTransactions");
+        document.getElementById(
+            "recentTransactions"
+        );
 
     if (!container) return;
 
-    const list = transactions.slice(0, 5);
+    const list =
+        transactions.slice(0, 5);
 
     if (!list.length) {
+
         container.innerHTML = `
             <div class="empty-state">
                 Nenhum lançamento cadastrado.
             </div>
         `;
+
         return;
     }
 
     container.innerHTML =
-        list.map(transactionHTML).join("");
+        list
+            .map(transactionHTML)
+            .join("");
 }
 
 /* =========================================================
@@ -761,56 +917,81 @@ function renderRecentTransactions() {
 function renderTransactions() {
 
     const container =
-        document.getElementById("allTransactions");
+        document.getElementById(
+            "allTransactions"
+        );
 
     if (!container) return;
 
     const search =
-        document.getElementById("searchInput")
-            ?.value
+        document.getElementById(
+            "searchInput"
+        )?.value
             .toLowerCase()
             .trim() || "";
 
     const type =
-        document.getElementById("typeFilter")
-            ?.value || "all";
+        document.getElementById(
+            "typeFilter"
+        )?.value || "all";
 
     const category =
-        document.getElementById("categoryFilter")
-            ?.value || "all";
+        document.getElementById(
+            "categoryFilter"
+        )?.value || "all";
 
     const filtered =
         transactions.filter(item => {
 
             const description =
-                String(item.description || "")
-                    .toLowerCase();
+                String(
+                    item.description || ""
+                ).toLowerCase();
 
             const itemCategory =
-                String(item.category || "")
-                    .toLowerCase();
+                String(
+                    item.category || ""
+                ).toLowerCase();
 
             return (
-                (!search ||
-                    description.includes(search) ||
-                    itemCategory.includes(search)) &&
-                (type === "all" || item.type === type) &&
-                (category === "all" ||
-                    item.category === category)
+
+                (
+                    !search ||
+
+                    description
+                        .includes(search) ||
+
+                    itemCategory
+                        .includes(search)
+                ) &&
+
+                (
+                    type === "all" ||
+                    item.type === type
+                ) &&
+
+                (
+                    category === "all" ||
+                    item.category === category
+                )
             );
         });
 
     if (!filtered.length) {
+
         container.innerHTML = `
             <div class="empty-state">
                 Nenhum lançamento encontrado.
             </div>
         `;
+
         return;
     }
 
     container.innerHTML =
-        filtered.map(transactionHTML).join("");
+        filtered
+            .map(transactionHTML)
+            .join("");
 }
 
 /* =========================================================
@@ -819,7 +1000,8 @@ function renderTransactions() {
 
 function transactionHTML(item) {
 
-    const income = item.type === "income";
+    const income =
+        item.type === "income";
 
     return `
         <div class="transaction">
@@ -829,22 +1011,37 @@ function transactionHTML(item) {
             </div>
 
             <div class="transaction-info">
+
                 <strong>
-                    ${escapeHTML(item.description)}
+                    ${escapeHTML(
+                        item.description
+                    )}
                 </strong>
 
                 <small>
-                    ${escapeHTML(item.category)}
+                    ${escapeHTML(
+                        item.category
+                    )}
                     •
-                    ${formatDate(item.date)}
+                    ${formatDate(
+                        item.date
+                    )}
                 </small>
+
             </div>
 
             <div class="transaction-value ${
-                income ? "income" : "expense"
+                income
+                    ? "income"
+                    : "expense"
             }">
+
                 ${income ? "+" : "-"}
-                ${formatCurrency(item.amount)}
+
+                ${formatCurrency(
+                    item.amount
+                )}
+
             </div>
 
             <button
@@ -867,18 +1064,23 @@ function transactionHTML(item) {
 function updateCategoryFilter() {
 
     const select =
-        document.getElementById("categoryFilter");
+        document.getElementById(
+            "categoryFilter"
+        );
 
     if (!select) return;
 
-    const current = select.value;
+    const current =
+        select.value;
 
     const categories =
-        [...new Set(
-            transactions
-                .map(t => t.category)
-                .filter(Boolean)
-        )].sort();
+        [
+            ...new Set(
+                transactions
+                    .map(t => t.category)
+                    .filter(Boolean)
+            )
+        ].sort();
 
     select.innerHTML = `
         <option value="all">
@@ -889,7 +1091,9 @@ function updateCategoryFilter() {
     categories.forEach(category => {
 
         const option =
-            document.createElement("option");
+            document.createElement(
+                "option"
+            );
 
         option.value = category;
         option.textContent = category;
@@ -905,23 +1109,33 @@ function updateCategoryFilter() {
 function renderCategories() {
 
     const container =
-        document.getElementById("categoryList");
+        document.getElementById(
+            "categoryList"
+        );
 
     if (!container) return;
 
     const totals = {};
 
     transactions
-        .filter(t => t.type === "expense")
+        .filter(
+            t => t.type === "expense"
+        )
         .forEach(item => {
+
             totals[item.category] =
-                (totals[item.category] || 0) +
-                item.amount;
+                (
+                    totals[item.category] ||
+                    0
+                ) + item.amount;
         });
 
     const entries =
         Object.entries(totals)
-            .sort((a, b) => b[1] - a[1]);
+            .sort(
+                (a, b) =>
+                    b[1] - a[1]
+            );
 
     if (!entries.length) {
 
@@ -932,43 +1146,60 @@ function renderCategories() {
         `;
 
         updateCategoryChart({});
+
         return;
     }
 
     const total =
         entries.reduce(
-            (sum, [, value]) => sum + value,
+            (sum, [, value]) =>
+                sum + value,
             0
         );
 
     container.innerHTML =
-        entries.map(([category, value]) => {
+        entries
+            .map(
+                ([category, value]) => {
 
-            const percentage =
-                total > 0
-                    ? (value / total) * 100
-                    : 0;
+                    const percentage =
+                        total > 0
+                            ? (
+                                value /
+                                total
+                            ) * 100
+                            : 0;
 
-            return `
-                <div class="category-summary-item">
+                    return `
+                        <div class="category-summary-item">
 
-                    <div class="category-summary-left">
-                        <span class="category-dot"></span>
+                            <div class="category-summary-left">
 
-                        <strong>
-                            ${escapeHTML(category)}
-                        </strong>
-                    </div>
+                                <span class="category-dot"></span>
 
-                    <span>
-                        ${formatCurrency(value)}
-                        ·
-                        ${percentage.toFixed(1)}%
-                    </span>
+                                <strong>
+                                    ${escapeHTML(
+                                        category
+                                    )}
+                                </strong>
 
-                </div>
-            `;
-        }).join("");
+                            </div>
+
+                            <span>
+                                ${formatCurrency(
+                                    value
+                                )}
+                                ·
+                                ${percentage.toFixed(
+                                    1
+                                )}%
+                            </span>
+
+                        </div>
+                    `;
+                }
+            )
+            .join("");
 
     updateCategoryChart(totals);
 }
@@ -980,9 +1211,12 @@ function renderCategories() {
 function updateFinanceChart() {
 
     const canvas =
-        document.getElementById("financeChart");
+        document.getElementById(
+            "financeChart"
+        );
 
-    if (!canvas || !window.Chart) return;
+    if (!canvas || !window.Chart)
+        return;
 
     if (financeChart) {
         financeChart.destroy();
@@ -990,45 +1224,65 @@ function updateFinanceChart() {
 
     const income =
         transactions
-            .filter(t => t.type === "income")
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter(
+                t => t.type === "income"
+            )
+            .reduce(
+                (sum, t) =>
+                    sum + t.amount,
+                0
+            );
 
     const expense =
         transactions
-            .filter(t => t.type === "expense")
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter(
+                t => t.type === "expense"
+            )
+            .reduce(
+                (sum, t) =>
+                    sum + t.amount,
+                0
+            );
 
     financeChart =
-        new Chart(canvas, {
+        new Chart(
+            canvas,
+            {
+                type: "bar",
 
-            type: "bar",
+                data: {
 
-            data: {
-                labels: [
-                    "Receitas",
-                    "Despesas"
-                ],
+                    labels: [
+                        "Receitas",
+                        "Despesas"
+                    ],
 
-                datasets: [{
-                    label: "Valor",
-                    data: [
-                        income,
-                        expense
-                    ]
-                }]
-            },
+                    datasets: [{
+                        label: "Valor",
 
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                        data: [
+                            income,
+                            expense
+                        ]
+                    }]
+                },
 
-                plugins: {
-                    legend: {
-                        display: false
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio:
+                        false,
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
                     }
                 }
             }
-        });
+        );
 }
 
 /* =========================================================
@@ -1038,42 +1292,56 @@ function updateFinanceChart() {
 function updateCategoryChart(totals) {
 
     const canvas =
-        document.getElementById("categoryChart");
+        document.getElementById(
+            "categoryChart"
+        );
 
-    if (!canvas || !window.Chart) return;
+    if (!canvas || !window.Chart)
+        return;
 
     if (categoryChart) {
         categoryChart.destroy();
     }
 
-    const labels = Object.keys(totals);
-    const values = Object.values(totals);
+    const labels =
+        Object.keys(totals);
+
+    const values =
+        Object.values(totals);
 
     if (!labels.length) return;
 
     categoryChart =
-        new Chart(canvas, {
+        new Chart(
+            canvas,
+            {
+                type: "doughnut",
 
-            type: "doughnut",
+                data: {
 
-            data: {
-                labels,
-                datasets: [{
-                    data: values
-                }]
-            },
+                    labels,
 
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                    datasets: [{
+                        data: values
+                    }]
+                },
 
-                plugins: {
-                    legend: {
-                        position: "bottom"
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio:
+                        false,
+
+                    plugins: {
+
+                        legend: {
+                            position: "bottom"
+                        }
                     }
                 }
             }
-        });
+        );
 }
 
 /* =========================================================
@@ -1083,24 +1351,42 @@ function updateCategoryChart(totals) {
 function renderReports() {
 
     const analysis =
-        document.getElementById("reportAnalysis");
+        document.getElementById(
+            "reportAnalysis"
+        );
 
     const canvas =
-        document.getElementById("reportCategoryChart");
+        document.getElementById(
+            "reportCategoryChart"
+        );
 
-    if (!analysis && !canvas) return;
+    if (!analysis && !canvas)
+        return;
 
     const income =
         transactions
-            .filter(t => t.type === "income")
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter(
+                t => t.type === "income"
+            )
+            .reduce(
+                (sum, t) =>
+                    sum + t.amount,
+                0
+            );
 
     const expense =
         transactions
-            .filter(t => t.type === "expense")
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter(
+                t => t.type === "expense"
+            )
+            .reduce(
+                (sum, t) =>
+                    sum + t.amount,
+                0
+            );
 
-    const balance = income - expense;
+    const balance =
+        income - expense;
 
     const economy =
         income > 0
@@ -1110,24 +1396,62 @@ function renderReports() {
     if (analysis) {
 
         analysis.innerHTML = `
+
             <div class="category-summary-item">
-                <strong>Total de receitas</strong>
-                <span>${formatCurrency(income)}</span>
+
+                <strong>
+                    Total de receitas
+                </strong>
+
+                <span>
+                    ${formatCurrency(
+                        income
+                    )}
+                </span>
+
             </div>
 
             <div class="category-summary-item">
-                <strong>Total de despesas</strong>
-                <span>${formatCurrency(expense)}</span>
+
+                <strong>
+                    Total de despesas
+                </strong>
+
+                <span>
+                    ${formatCurrency(
+                        expense
+                    )}
+                </span>
+
             </div>
 
             <div class="category-summary-item">
-                <strong>Saldo</strong>
-                <span>${formatCurrency(balance)}</span>
+
+                <strong>
+                    Saldo
+                </strong>
+
+                <span>
+                    ${formatCurrency(
+                        balance
+                    )}
+                </span>
+
             </div>
 
             <div class="category-summary-item">
-                <strong>Economia</strong>
-                <span>${Math.max(0, economy).toFixed(1)}%</span>
+
+                <strong>
+                    Economia
+                </strong>
+
+                <span>
+                    ${Math.max(
+                        0,
+                        economy
+                    ).toFixed(1)}%
+                </span>
+
             </div>
         `;
     }
@@ -1141,41 +1465,59 @@ function renderReports() {
         const totals = {};
 
         transactions
-            .filter(t => t.type === "expense")
+            .filter(
+                t => t.type === "expense"
+            )
             .forEach(t => {
+
                 totals[t.category] =
-                    (totals[t.category] || 0) +
-                    t.amount;
+                    (
+                        totals[t.category] ||
+                        0
+                    ) + t.amount;
             });
 
-        const labels = Object.keys(totals);
-        const values = Object.values(totals);
+        const labels =
+            Object.keys(totals);
+
+        const values =
+            Object.values(totals);
 
         if (labels.length) {
 
             reportCategoryChart =
-                new Chart(canvas, {
+                new Chart(
+                    canvas,
+                    {
 
-                    type: "doughnut",
+                        type: "doughnut",
 
-                    data: {
-                        labels,
-                        datasets: [{
-                            data: values
-                        }]
-                    },
+                        data: {
 
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
+                            labels,
 
-                        plugins: {
-                            legend: {
-                                position: "bottom"
+                            datasets: [{
+                                data: values
+                            }]
+                        },
+
+                        options: {
+
+                            responsive: true,
+
+                            maintainAspectRatio:
+                                false,
+
+                            plugins: {
+
+                                legend: {
+                                    position:
+                                        "bottom"
+                                }
                             }
                         }
                     }
-                });
+                );
         }
     }
 }
@@ -1190,14 +1532,26 @@ async function loadGoals() {
         await supabaseClient
             .from("goals")
             .select("*")
-            .eq("user_id", currentUser.id)
-            .order("created_at", {
-                ascending: false
-            });
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
     if (error) {
-        console.error("Erro carregando metas:", error);
+
+        console.error(
+            "Erro carregando metas:",
+            error
+        );
+
         goals = [];
+
         return;
     }
 
@@ -1205,8 +1559,12 @@ async function loadGoals() {
 }
 
 function openGoalModal() {
-    document.getElementById("goalModal")
-        ?.classList.remove("hidden");
+
+    document.getElementById(
+        "goalModal"
+    )?.classList.remove(
+        "hidden"
+    );
 }
 
 async function saveGoal(event) {
@@ -1216,23 +1574,30 @@ async function saveGoal(event) {
     if (!currentUser) return;
 
     const name =
-        document.getElementById("goalName")
-            ?.value.trim();
+        document.getElementById(
+            "goalName"
+        )?.value.trim();
 
     const target =
         Number(
-            document.getElementById("goalTarget")
-                ?.value
+            document.getElementById(
+                "goalTarget"
+            )?.value
         );
 
     const saved =
         Number(
-            document.getElementById("goalSaved")
-                ?.value || 0
+            document.getElementById(
+                "goalSaved"
+            )?.value || 0
         );
 
     if (!name || !target) {
-        alert("Preencha os dados da meta.");
+
+        alert(
+            "Preencha os dados da meta."
+        );
+
         return;
     }
 
@@ -1240,21 +1605,36 @@ async function saveGoal(event) {
         await supabaseClient
             .from("goals")
             .insert({
-                user_id: currentUser.id,
+
+                user_id:
+                    currentUser.id,
+
                 name,
+
                 target,
+
                 saved
             });
 
     if (error) {
-        alert("Erro ao criar meta: " + error.message);
+
+        alert(
+            "Erro ao criar meta: " +
+            error.message
+        );
+
         return;
     }
 
-    document.getElementById("goalForm")?.reset();
+    document.getElementById(
+        "goalForm"
+    )?.reset();
 
-    document.getElementById("goalModal")
-        ?.classList.add("hidden");
+    document.getElementById(
+        "goalModal"
+    )?.classList.add(
+        "hidden"
+    );
 
     await loadUserData();
 }
@@ -1262,58 +1642,81 @@ async function saveGoal(event) {
 function renderGoals() {
 
     const container =
-        document.getElementById("goalsList");
+        document.getElementById(
+            "goalsList"
+        );
 
     if (!container) return;
 
     if (!goals.length) {
+
         container.innerHTML = `
             <div class="empty-state">
                 Você ainda não criou nenhuma meta.
             </div>
         `;
+
         return;
     }
 
     container.innerHTML =
-        goals.map(goal => {
+        goals
+            .map(goal => {
 
-            const target =
-                Number(goal.target || 0);
+                const target =
+                    Number(
+                        goal.target || 0
+                    );
 
-            const saved =
-                Number(goal.saved || 0);
+                const saved =
+                    Number(
+                        goal.saved || 0
+                    );
 
-            const percentage =
-                target > 0
-                    ? Math.min(
-                        100,
-                        (saved / target) * 100
-                    )
-                    : 0;
+                const percentage =
+                    target > 0
+                        ? Math.min(
+                            100,
+                            (
+                                saved /
+                                target
+                            ) * 100
+                        )
+                        : 0;
 
-            return `
-                <div class="category-summary-item">
+                return `
+                    <div class="category-summary-item">
 
-                    <div>
-                        <strong>
-                            ${escapeHTML(goal.name)}
-                        </strong>
+                        <div>
 
-                        <small>
-                            ${formatCurrency(saved)}
-                            de
-                            ${formatCurrency(target)}
-                        </small>
+                            <strong>
+                                ${escapeHTML(
+                                    goal.name
+                                )}
+                            </strong>
+
+                            <small>
+                                ${formatCurrency(
+                                    saved
+                                )}
+                                de
+                                ${formatCurrency(
+                                    target
+                                )}
+                            </small>
+
+                        </div>
+
+                        <span>
+                            ${percentage.toFixed(
+                                0
+                            )}%
+                        </span>
+
                     </div>
-
-                    <span>
-                        ${percentage.toFixed(0)}%
-                    </span>
-
-                </div>
-            `;
-        }).join("");
+                `;
+            })
+            .join("");
 }
 
 /* =========================================================
@@ -1326,18 +1729,26 @@ async function loadBudgets() {
         await supabaseClient
             .from("budgets")
             .select("*")
-            .eq("user_id", currentUser.id)
-            .order("created_at", {
-                ascending: false
-            });
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
     if (error) {
+
         console.error(
             "Erro carregando orçamentos:",
             error
         );
 
         budgets = [];
+
         return;
     }
 
@@ -1345,8 +1756,12 @@ async function loadBudgets() {
 }
 
 function openBudgetModal() {
-    document.getElementById("budgetModal")
-        ?.classList.remove("hidden");
+
+    document.getElementById(
+        "budgetModal"
+    )?.classList.remove(
+        "hidden"
+    );
 }
 
 async function saveBudget(event) {
@@ -1356,28 +1771,31 @@ async function saveBudget(event) {
     if (!currentUser) return;
 
     const category =
-        document.getElementById("budgetCategory")
-            ?.value;
+        document.getElementById(
+            "budgetCategory"
+        )?.value;
 
     const limit =
         Number(
-            document.getElementById("budgetLimit")
-                ?.value
+            document.getElementById(
+                "budgetLimit"
+            )?.value
         );
 
     if (!category || !limit) {
-        alert("Informe o limite mensal.");
+
+        alert(
+            "Informe o limite mensal."
+        );
+
         return;
     }
 
-    /*
-       Tenta atualizar um orçamento existente.
-       Se não existir, insere.
-    */
-
     const existing =
         budgets.find(
-            b => b.category === category
+            b =>
+                b.category ===
+                category
         );
 
     let result;
@@ -1390,8 +1808,14 @@ async function saveBudget(event) {
                 .update({
                     limit_amount: limit
                 })
-                .eq("id", existing.id)
-                .eq("user_id", currentUser.id);
+                .eq(
+                    "id",
+                    existing.id
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
 
     } else {
 
@@ -1399,24 +1823,36 @@ async function saveBudget(event) {
             await supabaseClient
                 .from("budgets")
                 .insert({
-                    user_id: currentUser.id,
+
+                    user_id:
+                        currentUser.id,
+
                     category,
-                    limit_amount: limit
+
+                    limit_amount:
+                        limit
                 });
     }
 
     if (result.error) {
+
         alert(
             "Erro ao salvar orçamento: " +
             result.error.message
         );
+
         return;
     }
 
-    document.getElementById("budgetForm")?.reset();
+    document.getElementById(
+        "budgetForm"
+    )?.reset();
 
-    document.getElementById("budgetModal")
-        ?.classList.add("hidden");
+    document.getElementById(
+        "budgetModal"
+    )?.classList.add(
+        "hidden"
+    );
 
     await loadUserData();
 }
@@ -1424,63 +1860,91 @@ async function saveBudget(event) {
 function renderBudgets() {
 
     const container =
-        document.getElementById("budgetsList");
+        document.getElementById(
+            "budgetsList"
+        );
 
     if (!container) return;
 
     if (!budgets.length) {
+
         container.innerHTML = `
             <div class="empty-state">
                 Nenhum orçamento definido.
             </div>
         `;
+
         return;
     }
 
     container.innerHTML =
-        budgets.map(budget => {
+        budgets
+            .map(budget => {
 
-            const spent =
-                transactions
-                    .filter(t =>
-                        t.type === "expense" &&
-                        t.category === budget.category
-                    )
-                    .reduce(
-                        (sum, t) => sum + t.amount,
+                const spent =
+                    transactions
+                        .filter(t =>
+
+                            t.type ===
+                                "expense" &&
+
+                            t.category ===
+                                budget.category
+                        )
+                        .reduce(
+                            (sum, t) =>
+                                sum +
+                                t.amount,
+                            0
+                        );
+
+                const limit =
+                    Number(
+                        budget.limit_amount ||
                         0
                     );
 
-            const limit =
-                Number(budget.limit_amount || 0);
+                const percentage =
+                    limit > 0
+                        ? (
+                            spent /
+                            limit
+                        ) * 100
+                        : 0;
 
-            const percentage =
-                limit > 0
-                    ? (spent / limit) * 100
-                    : 0;
+                return `
+                    <div class="category-summary-item">
 
-            return `
-                <div class="category-summary-item">
+                        <div>
 
-                    <div>
-                        <strong>
-                            ${escapeHTML(budget.category)}
-                        </strong>
+                            <strong>
+                                ${escapeHTML(
+                                    budget.category
+                                )}
+                            </strong>
 
-                        <small>
-                            ${formatCurrency(spent)}
-                            /
-                            ${formatCurrency(limit)}
-                        </small>
+                            <small>
+                                ${formatCurrency(
+                                    spent
+                                )}
+                                /
+                                ${formatCurrency(
+                                    limit
+                                )}
+                            </small>
+
+                        </div>
+
+                        <span>
+                            ${percentage.toFixed(
+                                0
+                            )}%
+                        </span>
+
                     </div>
-
-                    <span>
-                        ${percentage.toFixed(0)}%
-                    </span>
-
-                </div>
-            `;
-        }).join("");
+                `;
+            })
+            .join("");
 }
 
 /* =========================================================
@@ -1489,34 +1953,56 @@ function renderBudgets() {
 
 async function loadSubscription() {
 
+    if (!currentUser) {
+        subscription = null;
+        return;
+    }
+
     const { data, error } =
         await supabaseClient
             .from("subscriptions")
             .select("*")
-            .eq("user_id", currentUser.id)
-            .order("created_at", {
-                ascending: false
-            })
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
             .limit(1)
             .maybeSingle();
 
     if (error) {
+
         console.warn(
             "Erro carregando assinatura:",
             error
         );
 
         subscription = null;
+
         return;
     }
 
-    subscription = data || null;
+    subscription =
+        data || null;
 }
+
+/* =========================================================
+   ATIVAR PREMIUM — TESTE GRATUITO 7 DIAS
+========================================================= */
 
 async function activatePremium() {
 
     if (!currentUser) {
-        alert("Faça login primeiro.");
+
+        alert(
+            "Faça login primeiro."
+        );
+
         return;
     }
 
@@ -1526,58 +2012,118 @@ async function activatePremium() {
         );
 
     if (button) {
+
         button.disabled = true;
-        button.textContent = "Ativando Premium...";
+        button.textContent =
+            "Ativando Premium...";
     }
 
     try {
 
-        const now = new Date();
+        const now =
+            new Date();
 
         const end =
             new Date(
                 now.getTime() +
-                7 * 24 * 60 * 60 * 1000
+                (
+                    7 *
+                    24 *
+                    60 *
+                    60 *
+                    1000
+                )
             );
+
+        /*
+           O banco aceita:
+           trial
+           monthly
+           annual
+
+           Para o teste gratuito usamos trial.
+        */
 
         const { error } =
             await supabaseClient
                 .from("subscriptions")
                 .insert({
-                    user_id: currentUser.id,
-                    plan: "premium",
-                    status: "trial",
-                    trial_start_at: now.toISOString(),
-                    trial_end_at: end.toISOString(),
-                    trial_started_at: now.toISOString(),
-                    trial_ends_at: end.toISOString(),
-                    current_period_start: now.toISOString(),
-                    current_period_end: end.toISOString(),
-                    price: 0
+
+                    user_id:
+                        currentUser.id,
+
+                    plan:
+                        "trial",
+
+                    status:
+                        "trial",
+
+                    trial_start_at:
+                        now.toISOString(),
+
+                    trial_end_at:
+                        end.toISOString(),
+
+                    current_period_start:
+                        now.toISOString(),
+
+                    current_period_end:
+                        end.toISOString(),
+
+                    price:
+                        0
                 });
 
-        if (error) throw error;
+        if (error) {
+
+            console.error(
+                "Erro retornado pelo Supabase:",
+                error
+            );
+
+            throw error;
+        }
+
+        /*
+           Recarrega a assinatura
+           depois de salvar.
+        */
 
         await loadSubscription();
+
+        /*
+           Atualiza a interface
+           para Premium.
+        */
+
         updateUserInterface();
 
         alert(
-            "Premium ativado para o período de teste!"
+            "🎉 Premium ativado com sucesso!\n\n" +
+            "Seu período de teste gratuito é de 7 dias."
         );
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Erro ao ativar Premium:",
+            error
+        );
 
         alert(
-            "Erro ao ativar Premium:\n" +
-            error.message
+            "Erro ao ativar Premium:\n\n" +
+            (
+                error.message ||
+                "Erro desconhecido."
+            )
         );
 
     } finally {
 
         if (button) {
+
             button.disabled = false;
+
             button.textContent =
                 "Quero ser Premium ⭐";
         }
@@ -1591,580 +2137,34 @@ async function activatePremium() {
 function renderAlerts() {
 
     const container =
-        document.getElementById("smartAlerts");
+        document.getElementById(
+            "smartAlerts"
+        );
 
     if (!container) return;
 
     const income =
         transactions
-            .filter(t => t.type === "income")
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter(
+                t => t.type === "income"
+            )
+            .reduce(
+                (sum, t) =>
+                    sum + t.amount,
+                0
+            );
 
     const expense =
         transactions
-            .filter(t => t.type === "expense")
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter(
+                t => t.type === "expense"
+            )
+            .reduce(
+                (sum, t) =>
+                    sum + t.amount,
+                0
+            );
 
     const alerts = [];
 
-    if (!transactions.length) {
-
-        alerts.push(`
-            <div class="empty-state">
-                Cadastre lançamentos para receber alertas inteligentes.
-            </div>
-        `);
-
-    } else if (expense > income && income > 0) {
-
-        alerts.push(`
-            <div class="category-summary-item">
-                <strong>⚠️ Atenção</strong>
-                <span>Suas despesas estão acima das receitas.</span>
-            </div>
-        `);
-
-    } else if (income > 0 && expense >= income * 0.8) {
-
-        alerts.push(`
-            <div class="category-summary-item">
-                <strong>🔔 Cuidado</strong>
-                <span>Você já utilizou grande parte das suas receitas.</span>
-            </div>
-        `);
-
-    } else {
-
-        alerts.push(`
-            <div class="category-summary-item">
-                <strong>✅ Tudo certo</strong>
-                <span>Suas finanças estão dentro de um bom equilíbrio.</span>
-            </div>
-        `);
-    }
-
-    container.innerHTML = alerts.join("");
-}
-
-/* =========================================================
-   COMPARAÇÃO MENSAL
-========================================================= */
-
-function renderMonthlyComparison() {
-
-    const container =
-        document.getElementById("monthlyComparison");
-
-    if (!container) return;
-
-    const now = new Date();
-
-    const month =
-        now.getMonth();
-
-    const year =
-        now.getFullYear();
-
-    const current =
-        transactions.filter(t => {
-
-            const d = new Date(t.date + "T00:00:00");
-
-            return (
-                d.getMonth() === month &&
-                d.getFullYear() === year
-            );
-        });
-
-    const income =
-        current
-            .filter(t => t.type === "income")
-            .reduce((s, t) => s + t.amount, 0);
-
-    const expense =
-        current
-            .filter(t => t.type === "expense")
-            .reduce((s, t) => s + t.amount, 0);
-
-    const balance =
-        income - expense;
-
-    container.innerHTML = `
-        <div class="category-summary-item">
-            <strong>Receitas no mês</strong>
-            <span>${formatCurrency(income)}</span>
-        </div>
-
-        <div class="category-summary-item">
-            <strong>Despesas no mês</strong>
-            <span>${formatCurrency(expense)}</span>
-        </div>
-
-        <div class="category-summary-item">
-            <strong>Resultado</strong>
-            <span>${formatCurrency(balance)}</span>
-        </div>
-    `;
-}
-
-/* =========================================================
-   ANÁLISE PREMIUM
-========================================================= */
-
-function renderPremiumAnalysis() {
-
-    const container =
-        document.getElementById("premiumAnalysis");
-
-    if (!container) return;
-
-    const income =
-        transactions
-            .filter(t => t.type === "income")
-            .reduce((s, t) => s + t.amount, 0);
-
-    const expense =
-        transactions
-            .filter(t => t.type === "expense")
-            .reduce((s, t) => s + t.amount, 0);
-
-    if (!transactions.length) {
-
-        container.innerHTML = `
-            <div class="empty-state">
-                Adicione seus lançamentos para receber uma análise financeira.
-            </div>
-        `;
-
-        return;
-    }
-
-    const balance = income - expense;
-
-    let message;
-
-    if (balance < 0) {
-
-        message =
-            "Suas despesas estão acima das receitas. " +
-            "O ideal é revisar os maiores gastos e reduzir despesas não essenciais.";
-
-    } else if (income > 0 && expense > income * 0.8) {
-
-        message =
-            "Você está gastando uma parcela alta das suas receitas. " +
-            "Tente aumentar sua margem de economia.";
-
-    } else {
-
-        message =
-            "Suas finanças apresentam um bom equilíbrio. " +
-            "Continue acompanhando seus gastos e fortalecendo sua reserva.";
-
-    }
-
-    container.innerHTML = `
-        <div class="category-summary-item">
-            <strong>💡 Análise</strong>
-            <span>${escapeHTML(message)}</span>
-        </div>
-    `;
-}
-
-/* =========================================================
-   SAÚDE FINANCEIRA
-========================================================= */
-
-function updateHealthStatus() {
-
-    const container =
-        document.getElementById("healthResult");
-
-    if (!container) return;
-
-    const income =
-        transactions
-            .filter(t => t.type === "income")
-            .reduce((s, t) => s + t.amount, 0);
-
-    const expense =
-        transactions
-            .filter(t => t.type === "expense")
-            .reduce((s, t) => s + t.amount, 0);
-
-    if (!income && !expense) {
-
-        container.innerHTML =
-            "Cadastre lançamentos para calcular sua saúde financeira.";
-
-        return;
-    }
-
-    const ratio =
-        income > 0
-            ? expense / income
-            : 999;
-
-    if (ratio > 1) {
-
-        container.innerHTML =
-            "🔴 Situação crítica: os gastos estão acima das receitas.";
-
-    } else if (ratio > 0.8) {
-
-        container.innerHTML =
-            "🟡 Atenção: sua margem de economia está baixa.";
-
-    } else {
-
-        container.innerHTML =
-            "🟢 Saudável: você possui uma boa margem de economia.";
-    }
-}
-
-/* =========================================================
-   SIMULADOR
-========================================================= */
-
-function simulateExpense() {
-
-    const amount =
-        Number(
-            document.getElementById("simulationAmount")
-                ?.value
-        );
-
-    const result =
-        document.getElementById(
-            "simulationResult"
-        );
-
-    if (!result) return;
-
-    if (!amount || amount <= 0) {
-
-        result.textContent =
-            "Digite um valor para simular.";
-
-        return;
-    }
-
-    const income =
-        transactions
-            .filter(t => t.type === "income")
-            .reduce((s, t) => s + t.amount, 0);
-
-    const expense =
-        transactions
-            .filter(t => t.type === "expense")
-            .reduce((s, t) => s + t.amount, 0);
-
-    const balance =
-        income - expense;
-
-    const newBalance =
-        balance - amount;
-
-    result.innerHTML = `
-        <strong>
-            Saldo atual:
-        </strong>
-        ${formatCurrency(balance)}
-        <br><br>
-        <strong>
-            Após a nova despesa:
-        </strong>
-        ${formatCurrency(newBalance)}
-    `;
-}
-
-/* =========================================================
-   INTERFACE DO USUÁRIO
-========================================================= */
-
-async function updateUserInterface() {
-
-    if (!currentUser) return;
-
-    let name =
-        currentUser.user_metadata?.full_name ||
-        "Usuário";
-
-    const { data } =
-        await supabaseClient
-            .from("profiles")
-            .select("full_name")
-            .eq("id", currentUser.id)
-            .maybeSingle();
-
-    if (data?.full_name) {
-        name = data.full_name;
-    }
-
-    setText("userName", name);
-    setText("welcomeName", name);
-
-    const avatar =
-        document.getElementById("userAvatar");
-
-    if (avatar) {
-        avatar.textContent =
-            name.charAt(0).toUpperCase();
-    }
-
-    const isPremium =
-        subscription &&
-        (
-            subscription.status === "active" ||
-            subscription.status === "trial"
-        );
-
-    setText(
-        "userPlan",
-        isPremium
-            ? "ControleS Premium ⭐"
-            : "ControleS Grátis"
-    );
-
-    updateHealthStatus();
-}
-
-/* =========================================================
-   NAVEGAÇÃO
-========================================================= */
-
-function showSection(section) {
-
-    document.querySelectorAll(".section")
-        .forEach(item => item.classList.add("hidden"));
-
-    const target =
-        document.getElementById(section);
-
-    if (target) {
-        target.classList.remove("hidden");
-    }
-
-    document.querySelectorAll(".nav-item")
-        .forEach(item => {
-            item.classList.toggle(
-                "active",
-                item.dataset.section === section
-            );
-        });
-
-    const titles = {
-        dashboard: "Dashboard",
-        transactions: "Lançamentos",
-        categories: "Categorias",
-        reports: "Relatórios",
-        premium: "Premium"
-    };
-
-    setText(
-        "pageTitle",
-        titles[section] || "Dashboard"
-    );
-
-    document.getElementById("sidebar")
-        ?.classList.remove("open");
-
-    if (section === "premium") {
-        updateHealthStatus();
-    }
-}
-
-function toggleMobileMenu() {
-
-    document.getElementById("sidebar")
-        ?.classList.toggle("open");
-}
-
-/* =========================================================
-   TEMA
-========================================================= */
-
-function toggleTheme() {
-
-    document.body.classList.toggle("dark-mode");
-
-    const dark =
-        document.body.classList.contains("dark-mode");
-
-    localStorage.setItem(
-        "controles_theme",
-        dark ? "dark" : "light"
-    );
-}
-
-function loadTheme() {
-
-    const theme =
-        localStorage.getItem("controles_theme");
-
-    if (theme === "dark") {
-        document.body.classList.add("dark-mode");
-    }
-}
-
-/* =========================================================
-   MODAL TRANSAÇÃO
-========================================================= */
-
-function openTransactionModal() {
-
-    const modal =
-        document.getElementById("transactionModal");
-
-    if (!modal) return;
-
-    modal.classList.remove("hidden");
-
-    setDefaultDate();
-}
-
-function closeTransactionModal() {
-
-    document.getElementById("transactionModal")
-        ?.classList.add("hidden");
-}
-
-/* =========================================================
-   DATA
-========================================================= */
-
-function setDefaultDate() {
-
-    const input =
-        document.getElementById("dateInput");
-
-    if (!input || input.value) return;
-
-    const today =
-        new Date()
-            .toISOString()
-            .slice(0, 10);
-
-    input.value = today;
-}
-
-function setCurrentDate() {
-
-    const element =
-        document.getElementById("currentDate");
-
-    if (!element) return;
-
-    const date = new Date();
-
-    element.textContent =
-        date.toLocaleDateString(
-            "pt-BR",
-            {
-                weekday: "long",
-                day: "2-digit",
-                month: "long",
-                year: "numeric"
-            }
-        );
-}
-
-/* =========================================================
-   EXPORTAR DADOS
-========================================================= */
-
-function exportData() {
-
-    if (!transactions.length) {
-        alert("Não existem lançamentos para exportar.");
-        return;
-    }
-
-    const data = {
-        exported_at: new Date().toISOString(),
-        user_id: currentUser?.id || null,
-        transactions,
-        goals,
-        budgets,
-        subscription
-    };
-
-    const blob =
-        new Blob(
-            [JSON.stringify(data, null, 2)],
-            {
-                type: "application/json"
-            }
-        );
-
-    const url =
-        URL.createObjectURL(blob);
-
-    const link =
-        document.createElement("a");
-
-    link.href = url;
-    link.download = "controles-dados.json";
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    URL.revokeObjectURL(url);
-}
-
-/* =========================================================
-   UTILITÁRIOS
-========================================================= */
-
-function setText(id, value) {
-
-    const element =
-        document.getElementById(id);
-
-    if (element) {
-        element.textContent = value;
-    }
-}
-
-function formatCurrency(value) {
-
-    return Number(value || 0)
-        .toLocaleString(
-            "pt-BR",
-            {
-                style: "currency",
-                currency: "BRL"
-            }
-        );
-}
-
-function formatDate(date) {
-
-    if (!date) return "";
-
-    const parts =
-        String(date).split("-");
-
-    if (parts.length === 3) {
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-
-    return date;
-}
-
-function escapeHTML(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-/* =========================================================
-   INICIAR TEMA
-========================================================= */
-
-loadTheme();
+    if (!transactions
