@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#092b22">
+<meta name="theme-color" content="#071f19">
 
 <title>ControleS • Controle Financeiro</title>
 
@@ -14,28 +14,33 @@
 :root{
     --bg:#061f19;
     --bg2:#092b22;
-    --surface:#10382d;
-    --surface2:#164638;
-    --surface3:#1c5241;
+    --surface:#ffffff;
+    --surface-soft:#f7faf8;
+
+    --green:#18b878;
+    --green-dark:#0c8e5d;
 
     --orange:#f28c28;
-    --orange-light:#ffab45;
-    --orange-dark:#c96b12;
+    --orange-dark:#d66f0c;
+    --orange-soft:#fff1df;
 
-    --green:#20d58a;
-    --green-dark:#12a968;
+    --text:#17231f;
+    --muted:#72847d;
 
     --white:#ffffff;
-    --text:#f5fff9;
-    --muted:#9bb8ad;
 
-    --red:#ff6675;
-    --yellow:#ffc857;
+    --red:#e95461;
 
-    --border:rgba(255,255,255,.08);
+    --border:#e7ece9;
 
-    --shadow:0 18px 45px rgba(0,0,0,.28);
+    --shadow:
+        0 12px 35px rgba(0,0,0,.16);
 }
+
+
+/* =========================
+RESET
+========================= */
 
 *{
     margin:0;
@@ -48,27 +53,35 @@ html{
 }
 
 body{
-    font-family:Arial,Helvetica,sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
     background:
+
         radial-gradient(
-            circle at 10% 0%,
-            rgba(32,213,138,.13),
+            circle at 0% 0%,
+            rgba(24,184,120,.16),
             transparent 28%
         ),
+
         radial-gradient(
             circle at 100% 10%,
-            rgba(242,140,40,.10),
-            transparent 28%
+            rgba(242,140,40,.08),
+            transparent 25%
         ),
+
         linear-gradient(
             135deg,
             #061f19,
             #092b22 55%,
-            #061c17
+            #061b16
         );
 
     color:var(--text);
+
     min-height:100vh;
 }
 
@@ -88,7 +101,7 @@ button:active{
 
 
 /* =========================
-HEADER
+TOPO
 ========================= */
 
 .topbar{
@@ -96,36 +109,46 @@ HEADER
     height:76px;
 
     position:sticky;
+
     top:0;
 
     z-index:100;
 
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
 
-    padding:0 28px;
+    padding:
+        0 28px;
 
     background:
-        rgba(6,31,25,.92);
+        rgba(6,31,25,.94);
 
-    backdrop-filter:blur(18px);
+    backdrop-filter:
+        blur(18px);
 
     border-bottom:
-        1px solid var(--border);
+        1px solid
+        rgba(255,255,255,.07);
 }
+
 
 .brand{
 
     display:flex;
+
     align-items:center;
 
     gap:12px;
 }
 
+
 .brand img{
 
     width:48px;
+
     height:48px;
 
     object-fit:contain;
@@ -133,72 +156,88 @@ HEADER
     border-radius:13px;
 }
 
+
 .brand-text strong{
 
     display:block;
 
-    font-size:21px;
+    color:white;
 
-    letter-spacing:.2px;
+    font-size:21px;
 }
+
 
 .brand-text span{
 
     display:block;
 
-    font-size:11px;
+    color:#91aca2;
 
-    color:var(--muted);
+    font-size:11px;
 
     margin-top:2px;
 }
 
+
 .profile{
 
     display:flex;
+
     align-items:center;
 
     gap:10px;
 }
 
-.profile-avatar{
-
-    width:39px;
-    height:39px;
-
-    border-radius:50%;
-
-    display:grid;
-    place-items:center;
-
-    background:var(--surface2);
-
-    border:
-        1px solid var(--border);
-}
 
 .profile-info{
 
     text-align:right;
 }
 
+
 .profile-info strong{
 
     display:block;
 
+    color:white;
+
     font-size:13px;
 }
 
+
 .profile-info span{
 
-    color:var(--muted);
+    color:#91aca2;
 
     font-size:11px;
 }
 
 
+.profile-avatar{
+
+    width:39px;
+
+    height:39px;
+
+    display:grid;
+
+    place-items:center;
+
+    border-radius:50%;
+
+    background:
+        rgba(255,255,255,.08);
+
+    color:white;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+}
+
+
 /* =========================
-APP
+ESTRUTURA
 ========================= */
 
 .app{
@@ -209,6 +248,7 @@ APP
         calc(100vh - 76px);
 }
 
+
 .sidebar{
 
     width:245px;
@@ -218,15 +258,17 @@ APP
     padding:25px 15px;
 
     border-right:
-        1px solid var(--border);
+        1px solid
+        rgba(255,255,255,.07);
 
     background:
-        rgba(6,31,25,.65);
+        rgba(5,27,21,.68);
 }
+
 
 .nav-title{
 
-    color:#6e9386;
+    color:#66867a;
 
     font-size:10px;
 
@@ -240,6 +282,7 @@ APP
         0 13px 10px;
 }
 
+
 .nav{
 
     display:flex;
@@ -249,6 +292,7 @@ APP
     gap:6px;
 }
 
+
 .nav button{
 
     width:100%;
@@ -257,7 +301,7 @@ APP
 
     background:transparent;
 
-    color:var(--muted);
+    color:#9bb4aa;
 
     padding:13px 14px;
 
@@ -274,25 +318,25 @@ APP
     transition:.2s;
 }
 
+
 .nav button:hover{
 
     background:
-        rgba(255,255,255,.04);
+        rgba(255,255,255,.05);
 
     color:white;
 }
 
+
 .nav button.active{
 
     background:
-        linear-gradient(
-            90deg,
-            rgba(242,140,40,.20),
-            rgba(242,140,40,.05)
-        );
+        rgba(242,140,40,.14);
 
-    color:var(--orange-light);
+    color:
+        #ffad55;
 }
+
 
 .nav-icon{
 
@@ -302,6 +346,7 @@ APP
 
     font-size:17px;
 }
+
 
 .content{
 
@@ -314,7 +359,7 @@ APP
 
 
 /* =========================
-PAGES
+PÁGINAS
 ========================= */
 
 .page{
@@ -325,23 +370,32 @@ PAGES
         fade .25s ease;
 }
 
+
 .page.active{
 
     display:block;
 }
 
+
 @keyframes fade{
 
     from{
+
         opacity:0;
-        transform:translateY(5px);
+
+        transform:
+            translateY(5px);
     }
 
     to{
+
         opacity:1;
-        transform:translateY(0);
+
+        transform:
+            translateY(0);
     }
 }
+
 
 .page-header{
 
@@ -356,41 +410,48 @@ PAGES
     margin-bottom:25px;
 }
 
+
 .page-header h1{
+
+    color:white;
 
     font-size:30px;
 
     letter-spacing:-.5px;
 }
 
+
 .page-header p{
 
-    color:var(--muted);
+    color:#91aaa0;
 
     margin-top:7px;
 
     font-size:14px;
 }
 
+
 .date-badge{
 
     padding:10px 13px;
 
-    border:
-        1px solid var(--border);
+    background:
+        rgba(255,255,255,.07);
 
-    background:var(--surface);
+    border:
+        1px solid
+        rgba(255,255,255,.08);
 
     border-radius:10px;
 
-    color:var(--muted);
+    color:#b1c5be;
 
     font-size:12px;
 }
 
 
 /* =========================
-SALDO
+CARD SALDO
 ========================= */
 
 .balance{
@@ -403,21 +464,23 @@ SALDO
 
         linear-gradient(
             135deg,
-            rgba(242,140,40,.28),
-            rgba(16,56,45,.96) 62%
+            #ffffff,
+            #f4f8f6
         );
 
-    border:
-        1px solid rgba(242,140,40,.22);
-
-    border-radius:23px;
+    border-radius:22px;
 
     padding:27px;
 
     margin-bottom:18px;
 
     box-shadow:var(--shadow);
+
+    border:
+        1px solid
+        rgba(255,255,255,.7);
 }
+
 
 .balance:after{
 
@@ -425,26 +488,32 @@ SALDO
 
     position:absolute;
 
-    width:230px;
-    height:230px;
+    width:220px;
+
+    height:220px;
 
     border-radius:50%;
 
     background:
-        rgba(242,140,40,.12);
+        rgba(242,140,40,.08);
 
     right:-90px;
-    top:-105px;
+
+    top:-100px;
 }
+
 
 .balance-label{
 
-    color:#c4d5ce;
+    color:#74877f;
 
     font-size:13px;
 }
 
+
 .balance-value{
+
+    color:#17231f;
 
     font-size:37px;
 
@@ -455,6 +524,7 @@ SALDO
 
     letter-spacing:-1px;
 }
+
 
 .balance-footer{
 
@@ -467,6 +537,7 @@ SALDO
     z-index:2;
 }
 
+
 .balance-mini{
 
     display:flex;
@@ -476,26 +547,32 @@ SALDO
     gap:8px;
 }
 
+
 .dot{
 
     width:8px;
+
     height:8px;
 
     border-radius:50%;
 }
 
+
 .balance-mini small{
 
-    color:var(--muted);
+    color:#879991;
 
     display:block;
 
     font-size:11px;
 }
 
+
 .balance-mini strong{
 
     display:block;
+
+    color:#24342e;
 
     margin-top:2px;
 
@@ -504,7 +581,7 @@ SALDO
 
 
 /* =========================
-CARDS
+CARDS BRANCOS
 ========================= */
 
 .stats{
@@ -519,31 +596,28 @@ CARDS
     margin-bottom:18px;
 }
 
+
 .stat{
 
     position:relative;
 
     overflow:hidden;
 
-    background:
-
-        linear-gradient(
-            145deg,
-            #b85e0c,
-            #e98220 52%,
-            #f39a36
-        );
+    background:#ffffff;
 
     border:
-        1px solid rgba(255,181,83,.18);
+        1px solid
+        #e8eeeb;
 
     border-radius:18px;
 
     padding:21px;
 
     box-shadow:
-        0 14px 35px rgba(0,0,0,.22);
+        0 10px 28px
+        rgba(0,0,0,.13);
 }
+
 
 .stat:after{
 
@@ -551,17 +625,20 @@ CARDS
 
     position:absolute;
 
-    width:100px;
-    height:100px;
+    width:95px;
+
+    height:95px;
 
     border-radius:50%;
 
     background:
-        rgba(255,255,255,.08);
+        var(--orange-soft);
 
-    right:-40px;
-    top:-40px;
+    right:-38px;
+
+    top:-38px;
 }
+
 
 .stat-top{
 
@@ -574,30 +651,41 @@ CARDS
     margin-bottom:14px;
 }
 
+
 .stat small{
 
-    color:#ffe4c3;
+    color:#71837c;
 
     font-size:12px;
 }
 
+
 .stat-icon{
 
     width:38px;
+
     height:38px;
 
     display:grid;
+
     place-items:center;
 
     border-radius:11px;
 
     background:
-        rgba(0,0,0,.14);
+        var(--orange-soft);
 
     font-size:18px;
+
+    position:relative;
+
+    z-index:2;
 }
 
+
 .stat h3{
+
+    color:#17231f;
 
     font-size:23px;
 
@@ -608,76 +696,28 @@ CARDS
     z-index:2;
 }
 
+
+.stat h3.income{
+
+    color:
+        var(--green-dark);
+}
+
+
+.stat h3.expense{
+
+    color:
+        var(--orange-dark);
+}
+
+
 .stat-change{
 
-    color:#ffe0bd;
+    color:#8a9994;
 
     font-size:11px;
 
     margin-top:7px;
-}
-
-
-/* =========================
-DASH GRID
-========================= */
-
-.dashboard-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        1.35fr .9fr;
-
-    gap:18px;
-}
-
-.panel{
-
-    background:
-        linear-gradient(
-            145deg,
-            #10382d,
-            #123d31
-        );
-
-    border:
-        1px solid var(--border);
-
-    border-radius:19px;
-
-    padding:21px;
-
-    box-shadow:
-        0 12px 35px rgba(0,0,0,.17);
-}
-
-.panel-header{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:18px;
-}
-
-.panel-header h2{
-
-    font-size:17px;
-}
-
-.panel-header span{
-
-    color:var(--muted);
-
-    font-size:11px;
-}
-
-.chart-box{
-
-    height:275px;
 }
 
 
@@ -697,19 +737,16 @@ AÇÕES
     margin:18px 0;
 }
 
+
 .quick-btn{
 
-    background:
-        linear-gradient(
-            145deg,
-            #a95209,
-            #d97617
-        );
+    background:#ffffff;
 
     border:
-        1px solid rgba(255,175,77,.18);
+        1px solid
+        #e8eeeb;
 
-    color:white;
+    color:#1b2924;
 
     border-radius:15px;
 
@@ -718,20 +755,22 @@ AÇÕES
     text-align:left;
 
     transition:.2s;
+
+    box-shadow:
+        0 8px 22px
+        rgba(0,0,0,.10);
 }
+
 
 .quick-btn:hover{
 
     transform:
         translateY(-2px);
 
-    background:
-        linear-gradient(
-            145deg,
-            #b95c0b,
-            #ed8b28
-        );
+    border-color:
+        rgba(242,140,40,.35);
 }
+
 
 .quick-btn-icon{
 
@@ -740,6 +779,7 @@ AÇÕES
     margin-bottom:10px;
 }
 
+
 .quick-btn strong{
 
     display:block;
@@ -747,15 +787,83 @@ AÇÕES
     font-size:13px;
 }
 
+
 .quick-btn span{
 
     display:block;
 
-    color:#ffd9b3;
+    color:#84948e;
 
     font-size:10px;
 
     margin-top:4px;
+}
+
+
+/* =========================
+PAINÉIS
+========================= */
+
+.dashboard-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        1.35fr .9fr;
+
+    gap:18px;
+}
+
+
+.panel{
+
+    background:#ffffff;
+
+    border:
+        1px solid
+        #e6ece9;
+
+    border-radius:19px;
+
+    padding:21px;
+
+    box-shadow:
+        0 10px 28px
+        rgba(0,0,0,.12);
+}
+
+
+.panel-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:18px;
+}
+
+
+.panel-header h2{
+
+    color:#1c2b25;
+
+    font-size:17px;
+}
+
+
+.panel-header span{
+
+    color:#899a93;
+
+    font-size:11px;
+}
+
+
+.chart-box{
+
+    height:275px;
 }
 
 
@@ -770,6 +878,7 @@ TRANSAÇÕES
     flex-direction:column;
 }
 
+
 .transaction{
 
     display:flex;
@@ -783,13 +892,16 @@ TRANSAÇÕES
     padding:14px 0;
 
     border-bottom:
-        1px solid var(--border);
+        1px solid
+        #edf1ef;
 }
+
 
 .transaction:last-child{
 
     border-bottom:0;
 }
+
 
 .transaction-left{
 
@@ -802,9 +914,11 @@ TRANSAÇÕES
     min-width:0;
 }
 
+
 .transaction-icon{
 
     width:42px;
+
     height:42px;
 
     flex-shrink:0;
@@ -816,13 +930,13 @@ TRANSAÇÕES
     border-radius:12px;
 
     background:
-        rgba(242,140,40,.16);
-
-    border:
-        1px solid rgba(242,140,40,.10);
+        var(--orange-soft);
 }
 
+
 .transaction-name{
+
+    color:#25342e;
 
     font-size:13px;
 
@@ -835,14 +949,16 @@ TRANSAÇÕES
     text-overflow:ellipsis;
 }
 
+
 .transaction-date{
 
-    color:var(--muted);
+    color:#91a099;
 
     font-size:10px;
 
     margin-top:4px;
 }
+
 
 .transaction-value{
 
@@ -853,25 +969,30 @@ TRANSAÇÕES
     white-space:nowrap;
 }
 
+
 .income{
 
-    color:var(--green);
+    color:
+        var(--green-dark);
 }
+
 
 .expense{
 
-    color:var(--red);
+    color:
+        var(--orange-dark);
 }
 
 
 /* =========================
-FORM
+FORMULÁRIOS
 ========================= */
 
 .form-panel{
 
     max-width:650px;
 }
+
 
 .form{
 
@@ -880,69 +1001,79 @@ FORM
     gap:14px;
 }
 
+
 .field label{
 
     display:block;
 
-    color:var(--muted);
+    color:#71837c;
 
     font-size:12px;
 
     margin-bottom:7px;
 }
 
+
 .input{
 
     width:100%;
 
-    background:
-        #09271f;
+    background:#f8faf9;
 
     border:
-        1px solid var(--border);
+        1px solid
+        #dfe7e3;
 
     border-radius:11px;
 
     padding:14px;
 
-    color:white;
+    color:#1b2924;
 
     outline:none;
 }
 
+
 .input:focus{
 
     border-color:
-        rgba(242,140,40,.65);
+        var(--orange);
 
     box-shadow:
         0 0 0 3px
-        rgba(242,140,40,.08);
+        rgba(242,140,40,.10);
 }
+
 
 .btn-primary{
 
     border:0;
 
     background:
+
         linear-gradient(
             135deg,
             var(--green),
             var(--green-dark)
         );
 
-    color:#03150d;
+    color:white;
 
     padding:14px 18px;
 
     border-radius:11px;
 
     font-weight:800;
+
+    box-shadow:
+        0 7px 18px
+        rgba(24,184,120,.22);
 }
+
 
 .btn-primary:hover{
 
-    filter:brightness(1.08);
+    filter:brightness(1.06);
 }
 
 
@@ -958,6 +1089,7 @@ BUSCA
 
     margin-bottom:17px;
 }
+
 
 .search{
 
@@ -975,37 +1107,44 @@ PREMIUM
 
         radial-gradient(
             circle at 100% 0%,
-            rgba(242,140,40,.24),
+            rgba(242,140,40,.16),
             transparent 35%
         ),
 
         linear-gradient(
             135deg,
-            #174638,
-            #0d2d24
+            #ffffff,
+            #f3f8f5
         );
 
     border:
-        1px solid rgba(242,140,40,.25);
+        1px solid
+        #e4ebe7;
 
     border-radius:23px;
 
     padding:30px;
+
+    box-shadow:var(--shadow);
 }
+
 
 .premium-card h2{
 
-    color:var(--orange-light);
+    color:
+        var(--orange-dark);
 
     font-size:26px;
 }
 
+
 .premium-card p{
 
-    color:var(--muted);
+    color:#7c8d86;
 
     margin-top:8px;
 }
+
 
 .features{
 
@@ -1019,19 +1158,21 @@ PREMIUM
     margin:25px 0;
 }
 
+
 .feature{
 
     background:
-        rgba(242,140,40,.09);
+        var(--orange-soft);
 
     border:
-        1px solid rgba(242,140,40,.12);
+        1px solid
+        rgba(242,140,40,.12);
 
     border-radius:12px;
 
     padding:13px;
 
-    color:#f6dcc1;
+    color:#7d531f;
 
     font-size:13px;
 }
@@ -1047,8 +1188,9 @@ VAZIO
 
     padding:45px 15px;
 
-    color:var(--muted);
+    color:#899a93;
 }
+
 
 .empty-icon{
 
@@ -1066,6 +1208,7 @@ MOBILE
 
     display:none;
 }
+
 
 @media(max-width:950px){
 
@@ -1092,35 +1235,43 @@ MOBILE
 
 }
 
+
 @media(max-width:700px){
 
     .topbar{
 
         height:68px;
 
-        padding:0 15px;
+        padding:
+            0 15px;
     }
+
 
     .brand img{
 
         width:43px;
+
         height:43px;
     }
+
 
     .brand-text strong{
 
         font-size:18px;
     }
 
+
     .brand-text span{
 
         display:none;
     }
 
+
     .profile-info{
 
         display:none;
     }
+
 
     .app{
 
@@ -1128,16 +1279,19 @@ MOBILE
             calc(100vh - 68px);
     }
 
+
     .sidebar{
 
         display:none;
     }
+
 
     .content{
 
         padding:
             20px 14px 90px;
     }
+
 
     .page-header{
 
@@ -1146,15 +1300,18 @@ MOBILE
         margin-bottom:19px;
     }
 
+
     .page-header h1{
 
         font-size:25px;
     }
 
+
     .date-badge{
 
         display:none;
     }
+
 
     .balance{
 
@@ -1163,20 +1320,24 @@ MOBILE
         border-radius:19px;
     }
 
+
     .balance-value{
 
         font-size:31px;
     }
+
 
     .stats{
 
         grid-template-columns:1fr;
     }
 
+
     .stat{
 
         padding:17px;
     }
+
 
     .quick-actions{
 
@@ -1184,20 +1345,24 @@ MOBILE
             1fr 1fr;
     }
 
+
     .quick-btn{
 
         padding:14px;
     }
+
 
     .panel{
 
         padding:17px;
     }
 
+
     .chart-box{
 
         height:230px;
     }
+
 
     .mobile-nav{
 
@@ -1210,7 +1375,9 @@ MOBILE
         justify-content:space-around;
 
         bottom:0;
+
         left:0;
+
         right:0;
 
         height:70px;
@@ -1218,13 +1385,16 @@ MOBILE
         background:
             rgba(5,27,21,.97);
 
-        backdrop-filter:blur(18px);
+        backdrop-filter:
+            blur(18px);
 
         border-top:
-            1px solid var(--border);
+            1px solid
+            rgba(255,255,255,.08);
 
         z-index:200;
     }
+
 
     .mobile-nav button{
 
@@ -1232,17 +1402,19 @@ MOBILE
 
         background:none;
 
-        color:var(--muted);
+        color:#8ca59b;
 
         font-size:10px;
 
         min-width:55px;
     }
 
+
     .mobile-nav button.active{
 
-        color:var(--orange-light);
+        color:#ffab51;
     }
+
 
     .mobile-nav-icon{
 
@@ -1253,12 +1425,14 @@ MOBILE
         margin-bottom:4px;
     }
 
+
     .features{
 
         grid-template-columns:1fr;
     }
 
 }
+
 
 @media(max-width:430px){
 
@@ -1267,20 +1441,24 @@ MOBILE
         gap:9px;
     }
 
+
     .quick-btn{
 
         padding:12px;
     }
+
 
     .quick-btn-icon{
 
         font-size:19px;
     }
 
+
     .quick-btn strong{
 
         font-size:12px;
     }
+
 
     .balance-footer{
 
@@ -1300,13 +1478,19 @@ MOBILE
 
     <div class="brand">
 
-        <img src="logo.png" alt="ControleS">
+        <img
+            src="logo.png"
+            alt="ControleS">
 
         <div class="brand-text">
 
-            <strong>ControleS</strong>
+            <strong>
+                ControleS
+            </strong>
 
-            <span>Seu controle financeiro</span>
+            <span>
+                Seu controle financeiro
+            </span>
 
         </div>
 
@@ -1317,9 +1501,13 @@ MOBILE
 
         <div class="profile-info">
 
-            <strong>Minha conta</strong>
+            <strong>
+                Minha conta
+            </strong>
 
-            <span>Usuário</span>
+            <span>
+                Usuário
+            </span>
 
         </div>
 
@@ -1342,42 +1530,91 @@ MOBILE
         Menu
     </div>
 
+
     <nav class="nav">
 
-        <button class="active"
-                onclick="showPage('dashboard',this)">
-            <span class="nav-icon">📊</span>
+        <button
+            class="active"
+            onclick="showPage('dashboard',this)">
+
+            <span class="nav-icon">
+                📊
+            </span>
+
             Dashboard
+
         </button>
 
-        <button onclick="showPage('receitas',this)">
-            <span class="nav-icon">💰</span>
+
+        <button
+            onclick="showPage('receitas',this)">
+
+            <span class="nav-icon">
+                💰
+            </span>
+
             Receitas
+
         </button>
 
-        <button onclick="showPage('despesas',this)">
-            <span class="nav-icon">💸</span>
+
+        <button
+            onclick="showPage('despesas',this)">
+
+            <span class="nav-icon">
+                💸
+            </span>
+
             Despesas
+
         </button>
 
-        <button onclick="showPage('lancamentos',this)">
-            <span class="nav-icon">🧾</span>
+
+        <button
+            onclick="showPage('lancamentos',this)">
+
+            <span class="nav-icon">
+                🧾
+            </span>
+
             Lançamentos
+
         </button>
 
-        <button onclick="showPage('relatorios',this)">
-            <span class="nav-icon">📈</span>
+
+        <button
+            onclick="showPage('relatorios',this)">
+
+            <span class="nav-icon">
+                📈
+            </span>
+
             Relatórios
+
         </button>
 
-        <button onclick="showPage('categorias',this)">
-            <span class="nav-icon">🍩</span>
+
+        <button
+            onclick="showPage('categorias',this)">
+
+            <span class="nav-icon">
+                🍩
+            </span>
+
             Categorias
+
         </button>
 
-        <button onclick="showPage('premium',this)">
-            <span class="nav-icon">⭐</span>
+
+        <button
+            onclick="showPage('premium',this)">
+
+            <span class="nav-icon">
+                ⭐
+            </span>
+
             Premium
+
         </button>
 
     </nav>
@@ -1389,13 +1626,22 @@ MOBILE
 <main class="content">
 
 
-<section id="dashboard" class="page active">
+<!-- =========================
+DASHBOARD
+========================= -->
+
+<section
+    id="dashboard"
+    class="page active">
+
 
     <div class="page-header">
 
         <div>
 
-            <h1>Dashboard</h1>
+            <h1>
+                Dashboard
+            </h1>
 
             <p>
                 Aqui está o resumo das suas finanças.
@@ -1403,8 +1649,13 @@ MOBILE
 
         </div>
 
-        <div class="date-badge" id="today">
+
+        <div
+            class="date-badge"
+            id="today">
+
             Hoje
+
         </div>
 
     </div>
@@ -1416,24 +1667,37 @@ MOBILE
             Saldo disponível
         </div>
 
-        <div class="balance-value" id="saldo">
+
+        <div
+            class="balance-value"
+            id="saldo">
+
             R$ 0,00
+
         </div>
+
 
         <div class="balance-footer">
 
+
             <div class="balance-mini">
 
-                <div class="dot"
-                     style="background:var(--green)">
+                <div
+                    class="dot"
+                    style="background:var(--green)">
                 </div>
 
                 <div>
 
-                    <small>Receitas</small>
+                    <small>
+                        Receitas
+                    </small>
 
-                    <strong id="balanceReceitas">
+                    <strong
+                        id="balanceReceitas">
+
                         R$ 0,00
+
                     </strong>
 
                 </div>
@@ -1443,16 +1707,22 @@ MOBILE
 
             <div class="balance-mini">
 
-                <div class="dot"
-                     style="background:var(--orange)">
+                <div
+                    class="dot"
+                    style="background:var(--orange)">
                 </div>
 
                 <div>
 
-                    <small>Despesas</small>
+                    <small>
+                        Despesas
+                    </small>
 
-                    <strong id="balanceDespesas">
+                    <strong
+                        id="balanceDespesas">
+
                         R$ 0,00
+
                     </strong>
 
                 </div>
@@ -1464,13 +1734,17 @@ MOBILE
     </div>
 
 
+
     <div class="stats">
+
 
         <div class="stat">
 
             <div class="stat-top">
 
-                <small>Receitas</small>
+                <small>
+                    Receitas
+                </small>
 
                 <div class="stat-icon">
                     💰
@@ -1478,10 +1752,15 @@ MOBILE
 
             </div>
 
-            <h3 class="income"
+
+            <h3
+                class="income"
                 id="totalReceitas">
+
                 R$ 0,00
+
             </h3>
+
 
             <div class="stat-change">
                 Total recebido
@@ -1490,11 +1769,14 @@ MOBILE
         </div>
 
 
+
         <div class="stat">
 
             <div class="stat-top">
 
-                <small>Despesas</small>
+                <small>
+                    Despesas
+                </small>
 
                 <div class="stat-icon">
                     💸
@@ -1502,10 +1784,15 @@ MOBILE
 
             </div>
 
-            <h3 class="expense"
+
+            <h3
+                class="expense"
                 id="totalDespesas">
+
                 R$ 0,00
+
             </h3>
+
 
             <div class="stat-change">
                 Total gasto
@@ -1514,11 +1801,14 @@ MOBILE
         </div>
 
 
+
         <div class="stat">
 
             <div class="stat-top">
 
-                <small>Lançamentos</small>
+                <small>
+                    Lançamentos
+                </small>
 
                 <div class="stat-icon">
                     🧾
@@ -1526,9 +1816,11 @@ MOBILE
 
             </div>
 
+
             <h3 id="totalLancamentos">
                 0
             </h3>
+
 
             <div class="stat-change">
                 Movimentações registradas
@@ -1539,16 +1831,21 @@ MOBILE
     </div>
 
 
+
     <div class="quick-actions">
 
-        <button class="quick-btn"
-                onclick="showPage('receitas')">
+
+        <button
+            class="quick-btn"
+            onclick="showPage('receitas')">
 
             <div class="quick-btn-icon">
                 💰
             </div>
 
-            <strong>Nova receita</strong>
+            <strong>
+                Nova receita
+            </strong>
 
             <span>
                 Adicionar entrada
@@ -1557,14 +1854,18 @@ MOBILE
         </button>
 
 
-        <button class="quick-btn"
-                onclick="showPage('despesas')">
+
+        <button
+            class="quick-btn"
+            onclick="showPage('despesas')">
 
             <div class="quick-btn-icon">
                 💸
             </div>
 
-            <strong>Nova despesa</strong>
+            <strong>
+                Nova despesa
+            </strong>
 
             <span>
                 Registrar gasto
@@ -1573,14 +1874,18 @@ MOBILE
         </button>
 
 
-        <button class="quick-btn"
-                onclick="showPage('lancamentos')">
+
+        <button
+            class="quick-btn"
+            onclick="showPage('lancamentos')">
 
             <div class="quick-btn-icon">
                 🧾
             </div>
 
-            <strong>Lançamentos</strong>
+            <strong>
+                Lançamentos
+            </strong>
 
             <span>
                 Ver movimentações
@@ -1589,14 +1894,18 @@ MOBILE
         </button>
 
 
-        <button class="quick-btn"
-                onclick="showPage('relatorios')">
+
+        <button
+            class="quick-btn"
+            onclick="showPage('relatorios')">
 
             <div class="quick-btn-icon">
                 📈
             </div>
 
-            <strong>Relatórios</strong>
+            <strong>
+                Relatórios
+            </strong>
 
             <span>
                 Analisar finanças
@@ -1607,6 +1916,7 @@ MOBILE
     </div>
 
 
+
     <div class="dashboard-grid">
 
 
@@ -1614,7 +1924,9 @@ MOBILE
 
             <div class="panel-header">
 
-                <h2>Visão financeira</h2>
+                <h2>
+                    Visão financeira
+                </h2>
 
                 <span>
                     Receitas x despesas
@@ -1622,20 +1934,26 @@ MOBILE
 
             </div>
 
+
             <div class="chart-box">
 
-                <canvas id="financeChart"></canvas>
+                <canvas
+                    id="financeChart">
+                </canvas>
 
             </div>
 
         </div>
 
 
+
         <div class="panel">
 
             <div class="panel-header">
 
-                <h2>Últimos lançamentos</h2>
+                <h2>
+                    Últimos lançamentos
+                </h2>
 
                 <span>
                     Recentes
@@ -1643,8 +1961,10 @@ MOBILE
 
             </div>
 
-            <div id="latestList"
-                 class="transaction-list">
+
+            <div
+                id="latestList"
+                class="transaction-list">
 
             </div>
 
@@ -1657,13 +1977,22 @@ MOBILE
 
 
 
-<section id="receitas" class="page">
+<!-- =========================
+RECEITAS
+========================= -->
+
+<section
+    id="receitas"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
 
-            <h1>💰 Receitas</h1>
+            <h1>
+                💰 Receitas
+            </h1>
 
             <p>
                 Registre todo dinheiro que entra.
@@ -1676,8 +2005,11 @@ MOBILE
 
     <div class="panel form-panel">
 
-        <form class="form"
-              onsubmit="addTransaction(event,'receita')">
+
+        <form
+            class="form"
+            onsubmit="addTransaction(event,'receita')">
+
 
             <div class="field">
 
@@ -1713,8 +2045,9 @@ MOBILE
             </div>
 
 
-            <button class="btn-primary"
-                    type="submit">
+            <button
+                class="btn-primary"
+                type="submit">
 
                 + Adicionar receita
 
@@ -1728,13 +2061,22 @@ MOBILE
 
 
 
-<section id="despesas" class="page">
+<!-- =========================
+DESPESAS
+========================= -->
+
+<section
+    id="despesas"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
 
-            <h1>💸 Despesas</h1>
+            <h1>
+                💸 Despesas
+            </h1>
 
             <p>
                 Registre seus gastos e organize por categoria.
@@ -1747,8 +2089,11 @@ MOBILE
 
     <div class="panel form-panel">
 
-        <form class="form"
-              onsubmit="addTransaction(event,'despesa')">
+
+        <form
+            class="form"
+            onsubmit="addTransaction(event,'despesa')">
+
 
             <div class="field">
 
@@ -1794,23 +2139,50 @@ MOBILE
                     class="input"
                     id="despesaCategoria">
 
-                    <option>Alimentação</option>
-                    <option>Moradia</option>
-                    <option>Transporte</option>
-                    <option>Saúde</option>
-                    <option>Educação</option>
-                    <option>Lazer</option>
-                    <option>Compras</option>
-                    <option>Contas</option>
-                    <option>Outros</option>
+                    <option>
+                        Alimentação
+                    </option>
+
+                    <option>
+                        Moradia
+                    </option>
+
+                    <option>
+                        Transporte
+                    </option>
+
+                    <option>
+                        Saúde
+                    </option>
+
+                    <option>
+                        Educação
+                    </option>
+
+                    <option>
+                        Lazer
+                    </option>
+
+                    <option>
+                        Compras
+                    </option>
+
+                    <option>
+                        Contas
+                    </option>
+
+                    <option>
+                        Outros
+                    </option>
 
                 </select>
 
             </div>
 
 
-            <button class="btn-primary"
-                    type="submit">
+            <button
+                class="btn-primary"
+                type="submit">
 
                 + Adicionar despesa
 
@@ -1824,16 +2196,25 @@ MOBILE
 
 
 
-<section id="lancamentos" class="page">
+<!-- =========================
+LANÇAMENTOS
+========================= -->
+
+<section
+    id="lancamentos"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
 
-            <h1>🧾 Lançamentos</h1>
+            <h1>
+                🧾 Lançamentos
+            </h1>
 
             <p>
-                Consulte e pesquise todas as suas movimentações.
+                Consulte todas as suas movimentações.
             </p>
 
         </div>
@@ -1842,6 +2223,7 @@ MOBILE
 
 
     <div class="panel">
+
 
         <div class="toolbar">
 
@@ -1859,8 +2241,9 @@ MOBILE
         </div>
 
 
-        <div id="allTransactions"
-             class="transaction-list">
+        <div
+            id="allTransactions"
+            class="transaction-list">
 
         </div>
 
@@ -1870,13 +2253,22 @@ MOBILE
 
 
 
-<section id="relatorios" class="page">
+<!-- =========================
+RELATÓRIOS
+========================= -->
+
+<section
+    id="relatorios"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
 
-            <h1>📈 Relatórios</h1>
+            <h1>
+                📈 Relatórios
+            </h1>
 
             <p>
                 Acompanhe a evolução das suas finanças.
@@ -1889,13 +2281,19 @@ MOBILE
 
     <div class="stats">
 
+
         <div class="stat">
 
-            <small>Receitas</small>
+            <small>
+                Receitas
+            </small>
 
-            <h3 class="income"
+            <h3
+                class="income"
                 id="relReceitas">
+
                 R$ 0,00
+
             </h3>
 
         </div>
@@ -1903,11 +2301,16 @@ MOBILE
 
         <div class="stat">
 
-            <small>Despesas</small>
+            <small>
+                Despesas
+            </small>
 
-            <h3 class="expense"
+            <h3
+                class="expense"
                 id="relDespesas">
+
                 R$ 0,00
+
             </h3>
 
         </div>
@@ -1915,10 +2318,14 @@ MOBILE
 
         <div class="stat">
 
-            <small>Saldo</small>
+            <small>
+                Saldo
+            </small>
 
             <h3 id="relSaldo">
+
                 R$ 0,00
+
             </h3>
 
         </div>
@@ -1930,13 +2337,18 @@ MOBILE
 
         <div class="panel-header">
 
-            <h2>Resumo financeiro</h2>
+            <h2>
+                Resumo financeiro
+            </h2>
 
         </div>
 
+
         <div class="chart-box">
 
-            <canvas id="reportChart"></canvas>
+            <canvas
+                id="reportChart">
+            </canvas>
 
         </div>
 
@@ -1946,13 +2358,22 @@ MOBILE
 
 
 
-<section id="categorias" class="page">
+<!-- =========================
+CATEGORIAS
+========================= -->
+
+<section
+    id="categorias"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
 
-            <h1>🍩 Gastos por categoria</h1>
+            <h1>
+                🍩 Gastos por categoria
+            </h1>
 
             <p>
                 Descubra para onde seu dinheiro está indo.
@@ -1965,11 +2386,14 @@ MOBILE
 
     <div class="dashboard-grid">
 
+
         <div class="panel">
 
             <div class="chart-box">
 
-                <canvas id="categoryChart"></canvas>
+                <canvas
+                    id="categoryChart">
+                </canvas>
 
             </div>
 
@@ -1980,12 +2404,14 @@ MOBILE
 
             <div class="panel-header">
 
-                <h2>Categorias</h2>
+                <h2>
+                    Categorias
+                </h2>
 
             </div>
 
-            <div id="categoryList">
 
+            <div id="categoryList">
             </div>
 
         </div>
@@ -1996,13 +2422,22 @@ MOBILE
 
 
 
-<section id="premium" class="page">
+<!-- =========================
+PREMIUM
+========================= -->
+
+<section
+    id="premium"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
 
-            <h1>⭐ Premium</h1>
+            <h1>
+                ⭐ Premium
+            </h1>
 
             <p>
                 Aproveite todo o potencial do ControleS.
@@ -2015,7 +2450,9 @@ MOBILE
 
     <div class="premium-card">
 
-        <h2>ControleS Premium</h2>
+        <h2>
+            ControleS Premium
+        </h2>
 
         <p>
             Recursos avançados para quem quer ter ainda mais controle.
@@ -2043,8 +2480,9 @@ MOBILE
         </div>
 
 
-        <button class="btn-primary"
-                onclick="alert('O sistema Premium será ativado em uma próxima versão.')">
+        <button
+            class="btn-primary"
+            onclick="alert('O sistema Premium será ativado em uma próxima versão.')">
 
             Conhecer Premium
 
@@ -2061,47 +2499,73 @@ MOBILE
 
 
 
+<!-- =========================
+MENU MOBILE
+========================= -->
+
 <nav class="mobile-nav">
 
-    <button class="active"
-            onclick="showPage('dashboard',this)">
 
-        <span class="mobile-nav-icon">📊</span>
+    <button
+        class="active"
+        onclick="showPage('dashboard',this)">
+
+        <span class="mobile-nav-icon">
+            📊
+        </span>
+
         Início
 
     </button>
 
 
-    <button onclick="showPage('receitas',this)">
+    <button
+        onclick="showPage('receitas',this)">
 
-        <span class="mobile-nav-icon">💰</span>
+        <span class="mobile-nav-icon">
+            💰
+        </span>
+
         Receitas
 
     </button>
 
 
-    <button onclick="showPage('despesas',this)">
+    <button
+        onclick="showPage('despesas',this)">
 
-        <span class="mobile-nav-icon">💸</span>
+        <span class="mobile-nav-icon">
+            💸
+        </span>
+
         Despesas
 
     </button>
 
 
-    <button onclick="showPage('lancamentos',this)">
+    <button
+        onclick="showPage('lancamentos',this)">
 
-        <span class="mobile-nav-icon">🧾</span>
+        <span class="mobile-nav-icon">
+            🧾
+        </span>
+
         Lançamentos
 
     </button>
 
 
-    <button onclick="showPage('premium',this)">
+    <button
+        onclick="showPage('premium',this)">
 
-        <span class="mobile-nav-icon">⭐</span>
+        <span class="mobile-nav-icon">
+            ⭐
+        </span>
+
         Premium
 
     </button>
+
 
 </nav>
 
@@ -2116,67 +2580,81 @@ let transactions =
         ) || '[]'
     );
 
+
 let financeChart = null;
+
 let reportChart = null;
+
 let categoryChart = null;
+
 
 
 function money(value){
 
-    return Number(value).toLocaleString(
-        'pt-BR',
-        {
-            style:'currency',
-            currency:'BRL'
-        }
-    );
+    return Number(value)
+        .toLocaleString(
+            'pt-BR',
+            {
+                style:'currency',
+                currency:'BRL'
+            }
+        );
 
 }
+
 
 
 function showPage(pageId,button){
 
     document
         .querySelectorAll('.page')
-        .forEach(function(page){
-
-            page.classList.remove('active');
-
-        });
+        .forEach(
+            page =>
+                page.classList
+                    .remove('active')
+        );
 
 
     const page =
-        document.getElementById(pageId);
+        document.getElementById(
+            pageId
+        );
 
 
     if(page){
 
-        page.classList.add('active');
+        page.classList
+            .add('active');
 
     }
 
 
     document
-        .querySelectorAll('.nav button')
-        .forEach(function(btn){
-
-            btn.classList.remove('active');
-
-        });
+        .querySelectorAll(
+            '.nav button'
+        )
+        .forEach(
+            btn =>
+                btn.classList
+                    .remove('active')
+        );
 
 
     document
-        .querySelectorAll('.mobile-nav button')
-        .forEach(function(btn){
-
-            btn.classList.remove('active');
-
-        });
+        .querySelectorAll(
+            '.mobile-nav button'
+        )
+        .forEach(
+            btn =>
+                btn.classList
+                    .remove('active')
+        );
 
 
     if(button){
 
-        button.classList.add('active');
+        button.classList
+            .add('active');
 
     }else{
 
@@ -2187,6 +2665,7 @@ function showPage(pageId,button){
                 '"]'
             );
 
+
         const mobile =
             document.querySelector(
                 '.mobile-nav button[onclick*="' +
@@ -2195,13 +2674,14 @@ function showPage(pageId,button){
             );
 
 
-        if(desktop){
-            desktop.classList.add('active');
-        }
+        if(desktop)
+            desktop.classList
+                .add('active');
 
-        if(mobile){
-            mobile.classList.add('active');
-        }
+
+        if(mobile)
+            mobile.classList
+                .add('active');
 
     }
 
@@ -2217,14 +2697,18 @@ function showPage(pageId,button){
 }
 
 
+
 function addTransaction(event,type){
 
     event.preventDefault();
 
 
     let descricao = '';
+
     let valor = 0;
+
     let categoria = '';
+
 
 
     if(type === 'receita'){
@@ -2247,7 +2731,10 @@ function addTransaction(event,type){
                     .value
             );
 
-    }else{
+    }
+
+
+    else{
 
         descricao =
             document
@@ -2278,6 +2765,7 @@ function addTransaction(event,type){
     }
 
 
+
     if(
         !descricao ||
         !valor ||
@@ -2291,6 +2779,7 @@ function addTransaction(event,type){
         return;
 
     }
+
 
 
     transactions.unshift({
@@ -2314,6 +2803,7 @@ function addTransaction(event,type){
     });
 
 
+
     save();
 
 
@@ -2325,14 +2815,17 @@ function addTransaction(event,type){
 
     alert(
         type === 'receita'
-        ? 'Receita adicionada com sucesso!'
-        : 'Despesa adicionada com sucesso!'
+        ?
+        'Receita adicionada com sucesso!'
+        :
+        'Despesa adicionada com sucesso!'
     );
 
 
     showPage('dashboard');
 
 }
+
 
 
 function save(){
@@ -2347,14 +2840,16 @@ function save(){
 }
 
 
+
 function getTotals(){
 
     let receitas = 0;
+
     let despesas = 0;
 
 
     transactions.forEach(
-        function(item){
+        item => {
 
             if(
                 item.type ===
@@ -2364,7 +2859,9 @@ function getTotals(){
                 receitas +=
                     Number(item.valor);
 
-            }else{
+            }
+
+            else{
 
                 despesas +=
                     Number(item.valor);
@@ -2377,9 +2874,9 @@ function getTotals(){
 
     return {
 
-        receitas:receitas,
+        receitas,
 
-        despesas:despesas,
+        despesas,
 
         saldo:
             receitas -
@@ -2390,6 +2887,7 @@ function getTotals(){
 }
 
 
+
 function updateDashboard(){
 
     const totals =
@@ -2397,7 +2895,9 @@ function updateDashboard(){
 
 
     document
-        .getElementById('saldo')
+        .getElementById(
+            'saldo'
+        )
         .textContent =
             money(totals.saldo);
 
@@ -2468,6 +2968,7 @@ function updateDashboard(){
 }
 
 
+
 function transactionHTML(item){
 
     const isIncome =
@@ -2499,27 +3000,38 @@ function transactionHTML(item){
             <div class="transaction-left">
 
                 <div class="transaction-icon">
+
                     ${icon}
+
                 </div>
+
 
                 <div>
 
                     <div class="transaction-name">
+
                         ${escapeHTML(
                             item.descricao
                         )}
+
                     </div>
 
+
                     <div class="transaction-date">
+
                         ${item.data}
+
                         ${
                             item.categoria
-                            ? ' • ' +
-                              escapeHTML(
-                                  item.categoria
-                              )
-                            : ''
+                            ?
+                            ' • ' +
+                            escapeHTML(
+                                item.categoria
+                            )
+                            :
+                            ''
                         }
+
                     </div>
 
                 </div>
@@ -2549,7 +3061,7 @@ function transactionHTML(item){
                     style="
                         border:0;
                         background:none;
-                        color:var(--muted);
+                        color:#899a93;
                         font-size:10px;
                         margin-top:5px;
                     "
@@ -2564,6 +3076,7 @@ function transactionHTML(item){
     `;
 
 }
+
 
 
 function renderLatest(){
@@ -2604,6 +3117,7 @@ function renderLatest(){
 }
 
 
+
 function renderTransactions(){
 
     const box =
@@ -2627,26 +3141,21 @@ function renderTransactions(){
 
     const filtered =
         transactions.filter(
-            function(item){
+            item =>
 
-                return (
-
-                    item.descricao
-                        .toLowerCase()
-                        .includes(search)
-
-                    ||
-
-                    (
-                        item.categoria ||
-                        ''
-                    )
+                item.descricao
                     .toLowerCase()
                     .includes(search)
 
-                );
+                ||
 
-            }
+                (
+                    item.categoria ||
+                    ''
+                )
+                .toLowerCase()
+                .includes(search)
+
         );
 
 
@@ -2679,6 +3188,7 @@ function renderTransactions(){
 }
 
 
+
 function getCategories(){
 
     const categories = {};
@@ -2693,7 +3203,7 @@ function getCategories(){
         )
 
         .forEach(
-            function(item){
+            item => {
 
                 const category =
                     item.categoria ||
@@ -2715,6 +3225,7 @@ function getCategories(){
     return categories;
 
 }
+
 
 
 function renderCategories(){
@@ -2765,52 +3276,49 @@ function renderCategories(){
 
     box.innerHTML =
         keys.map(
-            function(category){
+            category => `
 
-                return `
+                <div class="transaction">
 
-                    <div class="transaction">
+                    <div class="transaction-left">
 
-                        <div class="transaction-left">
+                        <div class="transaction-icon">
+                            🍩
+                        </div>
 
-                            <div class="transaction-icon">
-                                🍩
+                        <div>
+
+                            <div class="transaction-name">
+                                ${escapeHTML(
+                                    category
+                                )}
                             </div>
 
-                            <div>
-
-                                <div class="transaction-name">
-                                    ${escapeHTML(
-                                        category
-                                    )}
-                                </div>
-
-                                <div class="transaction-date">
-                                    Gastos
-                                </div>
-
+                            <div class="transaction-date">
+                                Gastos
                             </div>
 
                         </div>
 
-                        <strong class="expense">
-
-                            ${money(
-                                categories[
-                                    category
-                                ]
-                            )}
-
-                        </strong>
-
                     </div>
 
-                `;
 
-            }
-        ).join('');
+                    <strong class="expense">
+
+                        ${money(
+                            categories[category]
+                        )}
+
+                    </strong>
+
+                </div>
+
+            `
+        )
+        .join('');
 
 }
+
 
 
 function updateFinanceChart(){
@@ -2819,12 +3327,18 @@ function updateFinanceChart(){
         getTotals();
 
 
+    const canvas =
+        document.getElementById(
+            'financeChart'
+        );
+
+
+    if(!canvas)
+        return;
+
+
     const ctx =
-        document
-            .getElementById(
-                'financeChart'
-            )
-            .getContext('2d');
+        canvas.getContext('2d');
 
 
     if(financeChart){
@@ -2860,7 +3374,7 @@ function updateFinanceChart(){
 
                         backgroundColor:[
 
-                            '#20d58a',
+                            '#18b878',
 
                             '#f28c28'
 
@@ -2891,7 +3405,7 @@ function updateFinanceChart(){
                         x:{
 
                             ticks:{
-                                color:'#9bb8ad'
+                                color:'#72847d'
                             },
 
                             grid:{
@@ -2905,12 +3419,12 @@ function updateFinanceChart(){
                             beginAtZero:true,
 
                             ticks:{
-                                color:'#9bb8ad'
+                                color:'#72847d'
                             },
 
                             grid:{
                                 color:
-                                    'rgba(255,255,255,.05)'
+                                    'rgba(0,0,0,.06)'
                             }
 
                         }
@@ -2925,18 +3439,25 @@ function updateFinanceChart(){
 }
 
 
+
 function updateReportChart(){
 
     const totals =
         getTotals();
 
 
+    const canvas =
+        document.getElementById(
+            'reportChart'
+        );
+
+
+    if(!canvas)
+        return;
+
+
     const ctx =
-        document
-            .getElementById(
-                'reportChart'
-            )
-            .getContext('2d');
+        canvas.getContext('2d');
 
 
     if(reportChart){
@@ -2977,7 +3498,7 @@ function updateReportChart(){
                             '#f28c28',
 
                         backgroundColor:
-                            'rgba(242,140,40,.12)',
+                            'rgba(242,140,40,.10)',
 
                         fill:true,
 
@@ -3006,7 +3527,7 @@ function updateReportChart(){
                         x:{
 
                             ticks:{
-                                color:'#9bb8ad'
+                                color:'#72847d'
                             },
 
                             grid:{
@@ -3018,12 +3539,12 @@ function updateReportChart(){
                         y:{
 
                             ticks:{
-                                color:'#9bb8ad'
+                                color:'#72847d'
                             },
 
                             grid:{
                                 color:
-                                    'rgba(255,255,255,.05)'
+                                    'rgba(0,0,0,.06)'
                             }
 
                         }
@@ -3038,6 +3559,7 @@ function updateReportChart(){
 }
 
 
+
 function updateCategoryChart(){
 
     const categories =
@@ -3048,12 +3570,18 @@ function updateCategoryChart(){
         Object.keys(categories);
 
 
+    const canvas =
+        document.getElementById(
+            'categoryChart'
+        );
+
+
+    if(!canvas)
+        return;
+
+
     const ctx =
-        document
-            .getElementById(
-                'categoryChart'
-            )
-            .getContext('2d');
+        canvas.getContext('2d');
 
 
     if(categoryChart){
@@ -3074,8 +3602,10 @@ function updateCategoryChart(){
 
                     labels:
                         keys.length
-                        ? keys
-                        : ['Sem despesas'],
+                        ?
+                        keys
+                        :
+                        ['Sem despesas'],
 
                     datasets:[{
 
@@ -3092,13 +3622,20 @@ function updateCategoryChart(){
                         backgroundColor:[
 
                             '#f28c28',
-                            '#20d58a',
-                            '#ffb04f',
-                            '#0e9f6e',
+
+                            '#18b878',
+
+                            '#ffb45f',
+
+                            '#0c8e5d',
+
                             '#e76f51',
-                            '#8fcf9f',
+
+                            '#82cda9',
+
                             '#ffc857',
-                            '#7c9b91'
+
+                            '#91aaa0'
 
                         ],
 
@@ -3124,7 +3661,7 @@ function updateCategoryChart(){
 
                             labels:{
 
-                                color:'#9bb8ad',
+                                color:'#72847d',
 
                                 padding:14,
 
@@ -3144,6 +3681,7 @@ function updateCategoryChart(){
         );
 
 }
+
 
 
 function removeTransaction(id){
@@ -3171,6 +3709,7 @@ function removeTransaction(id){
     updateAll();
 
 }
+
 
 
 function escapeHTML(text){
@@ -3205,6 +3744,7 @@ function escapeHTML(text){
 }
 
 
+
 function updateDate(){
 
     const today =
@@ -3219,14 +3759,21 @@ function updateDate(){
         );
 
 
-    document
-        .getElementById(
+    const element =
+        document.getElementById(
             'today'
-        )
-        .textContent =
+        );
+
+
+    if(element){
+
+        element.textContent =
             today;
 
+    }
+
 }
+
 
 
 function updateAll(){
@@ -3246,6 +3793,7 @@ function updateAll(){
     updateCategoryChart();
 
 }
+
 
 
 document.addEventListener(
