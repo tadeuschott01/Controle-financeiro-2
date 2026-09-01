@@ -1,1530 +1,1822 @@
-/* =====================================================
-   CONTROLES — APP.CSS
-   Versão sofisticada
-===================================================== */
-
-:root {
-    --orange: #f97316;
-    --orange-dark: #ea580c;
-    --orange-light: #fff1e7;
-
-    --green: #123c2d;
-    --green-2: #18533d;
-    --green-3: #236b4f;
-    --green-light: #e7f3ed;
-
-    --background: #f4f7f5;
-    --surface: #ffffff;
-    --surface-2: #f8faf9;
-
-    --text: #17352b;
-    --text-light: #708078;
-
-    --border: #e1e9e4;
-
-    --danger: #dc2626;
-    --success: #16805a;
-    --yellow: #f59e0b;
-
-    --shadow: 0 12px 35px rgba(18, 60, 45, .08);
-    --shadow-hover: 0 18px 45px rgba(18, 60, 45, .14);
-
-    --radius: 18px;
-}
-
-/* =====================================================
-   RESET
-===================================================== */
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-
-    background: var(--background);
-    color: var(--text);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-}
-
-button,
-input,
-select {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
-
-img {
-    max-width: 100%;
-    display: block;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* =====================================================
-   LOGIN
-===================================================== */
-
-.login-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-
-    background:
-        radial-gradient(
-            circle at 90% 10%,
-            rgba(249,115,22,.18),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 10% 90%,
-            rgba(18,60,45,.12),
-            transparent 35%
-        ),
-        linear-gradient(
-            135deg,
-            #f7faf8,
-            #edf4f0
-        );
-}
-
-.login-card {
-    width: 100%;
-    max-width: 430px;
-    background: rgba(255,255,255,.96);
-    border-radius: 28px;
-    padding: 38px;
-    box-shadow: 0 30px 80px rgba(18,60,45,.15);
-    border: 1px solid var(--border);
-}
-
-.login-brand {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.login-logo {
-    width: 82px;
-    height: 82px;
-    margin: 0 auto 15px;
-    border-radius: 22px;
-    overflow: hidden;
-    background: var(--green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.login-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.login-brand h1 {
-    font-size: 30px;
-    font-weight: 800;
-    color: var(--green);
-}
-
-.login-brand p {
-    color: var(--text-light);
-    margin-top: 5px;
-}
-
-/* =====================================================
-   INPUTS
-===================================================== */
-
-.input-group,
-.form-group {
-    margin-bottom: 18px;
-}
-
-.input-group label,
-.form-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: var(--text);
-}
-
-input,
-select {
-    width: 100%;
-    height: 50px;
-    border: 1px solid var(--border);
-    border-radius: 13px;
-    background: var(--surface);
-    color: var(--text);
-    padding: 0 15px;
-    outline: none;
-    transition: .2s;
-}
-
-input:focus,
-select:focus {
-    border-color: var(--orange);
-    box-shadow: 0 0 0 4px rgba(249,115,22,.10);
-}
-
-.login-submit {
-    width: 100%;
-    height: 52px;
-    margin-top: 5px;
-}
-
-.login-footer {
-    text-align: center;
-    color: var(--text-light);
-    font-size: 12px;
-    margin-top: 22px;
-}
-
-/* =====================================================
-   BOTÕES
-===================================================== */
-
-.btn-primary {
-    border: 0;
-    border-radius: 13px;
-    padding: 12px 18px;
-
-    background: linear-gradient(
-        135deg,
-        var(--orange),
-        var(--orange-dark)
-    );
-
-    color: white;
-    font-weight: 800;
-
-    transition: .2s;
-
-    box-shadow:
-        0 9px 22px rgba(249,115,22,.23);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 13px 28px rgba(249,115,22,.30);
-}
-
-.btn-primary:active {
-    transform: scale(.98);
-}
-
-.btn-premium {
-    border: 0;
-    border-radius: 14px;
-    padding: 14px 22px;
-
-    background: linear-gradient(
-        135deg,
-        #ff8a24,
-        #ea580c
-    );
-
-    color: white;
-    font-weight: 900;
-
-    margin-top: 20px;
-
-    box-shadow:
-        0 12px 28px rgba(249,115,22,.35);
-
-    transition: .25s;
-}
-
-.btn-premium:hover {
-    transform: translateY(-3px);
-    box-shadow:
-        0 18px 35px rgba(249,115,22,.45);
-}
-
-.text-button {
-    background: none;
-    border: 0;
-    color: var(--orange);
-    font-weight: 700;
-}
-
-/* =====================================================
-   APP
-===================================================== */
-
-.app {
-    min-height: 100vh;
-    display: flex;
-}
-
-/* =====================================================
-   SIDEBAR
-===================================================== */
-
-.sidebar {
-    width: 255px;
-    min-height: 100vh;
-
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-
-    background:
-        linear-gradient(
-            180deg,
-            #123c2d,
-            #0d2f23
-        );
-
-    color: white;
-    padding: 25px 16px;
-
-    display: flex;
-    flex-direction: column;
-
-    z-index: 1000;
-}
-
-.sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 5px 10px 28px;
-}
-
-.brand-logo {
-    width: 45px;
-    height: 45px;
-    border-radius: 13px;
-    overflow: hidden;
-    background: white;
-}
-
-.brand-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.brand-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.brand-text strong {
-    font-size: 18px;
-}
-
-.brand-text span {
-    font-size: 11px;
-    color: #b7cec3;
-    margin-top: 2px;
-}
-
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.nav-item,
-.sidebar-action {
-    width: 100%;
-    border: 0;
-    background: transparent;
-    color: #d6e4de;
-    border-radius: 13px;
-    min-height: 47px;
-    padding: 0 13px;
-
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    text-align: left;
-    font-weight: 650;
-    transition: .2s;
-}
-
-.nav-item:hover,
-.sidebar-action:hover {
-    background: rgba(255,255,255,.08);
-    color: white;
-}
-
-.nav-item.active {
-    background:
-        linear-gradient(
-            135deg,
-            var(--orange),
-            var(--orange-dark)
-        );
-
-    color: white;
-
-    box-shadow:
-        0 8px 20px rgba(249,115,22,.22);
-}
-
-.nav-icon {
-    width: 22px;
-    text-align: center;
-}
-
-.sidebar-bottom {
-    margin-top: auto;
-    border-top: 1px solid rgba(255,255,255,.10);
-    padding-top: 15px;
-}
-
-/* =====================================================
-   MAIN
-===================================================== */
-
-.main-content {
-    width: calc(100% - 255px);
-    margin-left: 255px;
-    min-height: 100vh;
-}
-
-/* =====================================================
-   TOPBAR
-===================================================== */
-
-.topbar {
-    height: 78px;
-
-    background: rgba(255,255,255,.94);
-
-    backdrop-filter: blur(15px);
-
-    border-bottom: 1px solid var(--border);
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 32px;
-
-    position: sticky;
-    top: 0;
-    z-index: 500;
-}
-
-.topbar-left {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.topbar-small,
-.welcome-label,
-.section-heading > div > span,
-.panel-header span,
-.premium-section-label,
-.premium-card-header span {
-    font-size: 10px;
-    letter-spacing: 1.2px;
-    font-weight: 800;
-    color: var(--orange);
-}
-
-.topbar h1 {
-    font-size: 20px;
-    margin-top: 2px;
-}
-
-.topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-.user-area {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--orange),
-            var(--orange-dark)
-        );
-
-    color: white;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-weight: 800;
-}
-
-.user-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.user-info strong {
-    font-size: 13px;
-}
-
-.user-info span {
-    color: var(--text-light);
-    font-size: 10px;
-    margin-top: 2px;
-}
-
-.mobile-menu {
-    display: none;
-    border: 0;
-    background: var(--green);
-    color: white;
-    border-radius: 10px;
-    width: 40px;
-    height: 40px;
-}
-
-/* =====================================================
-   SECTIONS
-===================================================== */
-
-.section {
-    padding: 30px 32px 60px;
-}
-
-.welcome {
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    margin-bottom: 25px;
-}
-
-.welcome h2 {
-    font-size: 28px;
-    margin-top: 6px;
-}
-
-.welcome p,
-.section-heading p {
-    color: var(--text-light);
-    margin-top: 5px;
-}
-
-.current-date {
-    color: var(--text-light);
-    font-size: 13px;
-    text-transform: capitalize;
-}
-
-/* =====================================================
-   STATS
-===================================================== */
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    margin-bottom: 18px;
-}
-
-.stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 19px;
-    box-shadow: var(--shadow);
-    transition: .25s;
-}
-
-.stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-hover);
-}
-
-.stat-top {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-
-.stat-icon {
-    width: 35px;
-    height: 35px;
-    border-radius: 10px;
-
-    background: var(--green-light);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.stat-label {
-    font-size: 12px;
-    color: var(--text-light);
-    font-weight: 700;
-}
-
-.stat-card > strong {
-    display: block;
-    font-size: 24px;
-    margin-top: 15px;
-}
-
-.stat-card small {
-    display: block;
-    color: var(--text-light);
-    font-size: 11px;
-    margin-top: 4px;
-}
-
-.stat-card.income .stat-icon {
-    color: var(--success);
-}
-
-.stat-card.expense .stat-icon {
-    color: var(--danger);
-}
-
-/* =====================================================
-   GRIDS
-===================================================== */
-
-.dashboard-grid,
-.category-layout {
-    display: grid;
-    grid-template-columns: 1.15fr .85fr;
-    gap: 18px;
-}
-
-.panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-}
-
-.panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.panel-header h3 {
-    margin-top: 4px;
-    font-size: 17px;
-}
-
-.chart-container {
-    height: 300px;
-}
-
-.category-chart-container {
-    height: 320px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.category-chart-container.large {
-    height: 370px;
-}
-
-/* =====================================================
-   SECTION HEAD
-===================================================== */
-
-.section-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 23px;
-}
-
-.section-heading h2 {
-    font-size: 27px;
-    margin-top: 5px;
-}
-
-/* =====================================================
-   FILTROS
-===================================================== */
-
-.filters-panel {
-    display: grid;
-    grid-template-columns: 1fr 180px 210px;
-    gap: 10px;
-
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-
-    padding: 14px;
-    margin-bottom: 16px;
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding-left: 13px;
-}
-
-.search-box input {
-    border: 0;
-    box-shadow: none;
-}
-
-/* =====================================================
-   TRANSAÇÕES
-===================================================== */
-
-.transaction {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 13px 0;
-    border-bottom: 1px solid var(--border);
-}
-
-.transaction:last-child {
-    border-bottom: 0;
-}
-
-.transaction-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 11px;
-    background: var(--green-light);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-weight: 800;
-}
-
-.transaction-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.transaction-info strong {
-    display: block;
-    font-size: 13px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.transaction-info small {
-    display: block;
-    color: var(--text-light);
-    font-size: 10px;
-    margin-top: 3px;
-}
-
-.transaction-value {
-    font-size: 13px;
-    font-weight: 800;
-}
-
-.transaction-value.income {
-    color: var(--success);
-}
-
-.transaction-value.expense {
-    color: var(--danger);
-}
-
-.transaction-delete {
-    border: 0;
-    background: transparent;
-    color: #a3afa9;
-    font-size: 20px;
-    width: 28px;
-}
-
-.transaction-delete:hover {
-    color: var(--danger);
-}
-
-.empty-state {
-    padding: 25px;
-    text-align: center;
-    color: var(--text-light);
-    font-size: 13px;
-}
-
-/* =====================================================
-   CATEGORIAS
-===================================================== */
-
-.category-summary-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 13px 0;
-    border-bottom: 1px solid var(--border);
-}
-
-.category-summary-left {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-
-.category-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--orange);
-}
-
-.category-summary-item strong {
-    font-size: 13px;
-}
-
-.category-summary-item span {
-    font-size: 12px;
-    color: var(--text-light);
-}
-
-/* =====================================================
-   PREMIUM — ÁREA PRINCIPAL
-===================================================== */
-
-.premium-section {
-    background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(249,115,22,.08),
-            transparent 28%
-        ),
-        linear-gradient(
-            180deg,
-            #f7faf8,
-            var(--background)
-        );
-}
-
-/* =====================================================
-   PREMIUM HERO
-===================================================== */
-
-.premium-hero {
-    position: relative;
-
-    background:
-        radial-gradient(
-            circle at 85% 20%,
-            rgba(249,115,22,.25),
-            transparent 28%
-        ),
-        linear-gradient(
-            135deg,
-            #0d3023,
-            #18533d 60%,
-            #123c2d
-        );
-
-    color: white;
-
-    border-radius: 26px;
-
-    padding: 42px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    overflow: hidden;
-
-    margin-bottom: 20px;
-
-    box-shadow:
-        0 22px 55px rgba(18,60,45,.22);
-}
-
-.premium-hero::after {
-    content: "";
-    position: absolute;
-
-    width: 220px;
-    height: 220px;
-
-    right: -70px;
-    bottom: -100px;
-
-    border-radius: 50%;
-
-    background: rgba(249,115,22,.16);
-}
-
-.premium-content {
-    max-width: 680px;
-    position: relative;
-    z-index: 2;
-}
-
-.premium-tag {
-    display: inline-flex;
-    align-items: center;
-
-    background: rgba(249,115,22,.18);
-
-    border: 1px solid rgba(249,115,22,.35);
-
-    color: #ffb477;
-
-    border-radius: 20px;
-
-    padding: 8px 13px;
-
-    font-size: 10px;
-    font-weight: 900;
-}
-
-.premium-content h2 {
-    font-size: 36px;
-    line-height: 1.15;
-    margin-top: 15px;
-}
-
-.premium-content p {
-    color: #d1e2da;
-    line-height: 1.65;
-    margin-top: 10px;
-    max-width: 600px;
-}
-
-.premium-logo {
-    width: 135px;
-    height: 135px;
-
-    background: white;
-
-    border-radius: 32px;
-
-    padding: 15px;
-
-    position: relative;
-    z-index: 2;
-
-    box-shadow:
-        0 18px 40px rgba(0,0,0,.18);
-}
-
-.premium-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-/* =====================================================
-   PREMIUM PERFORMANCE
-===================================================== */
-
-.premium-performance,
-.premium-card {
-    background: var(--surface);
-
-    border: 1px solid var(--border);
-
-    border-radius: var(--radius);
-
-    padding: 25px;
-
-    margin-bottom: 17px;
-
-    box-shadow: var(--shadow);
-
-    transition: .25s;
-}
-
-.premium-card:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
-}
-
-.premium-performance {
-    position: relative;
-    overflow: hidden;
-}
-
-.premium-performance::before {
-    content: "";
-
-    position: absolute;
-
-    left: 0;
-    top: 0;
-    bottom: 0;
-
-    width: 5px;
-
-    background:
-        linear-gradient(
-            180deg,
-            var(--orange),
-            var(--green)
-        );
-}
-
-.premium-performance h2 {
-    font-size: 21px;
-    margin-top: 7px;
-}
-
-.premium-performance p {
-    color: var(--text-light);
-    margin-top: 5px;
-}
-
-.premium-economy {
-    display: inline-flex;
-    gap: 9px;
-    align-items: center;
-
-    margin-top: 18px;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--green-light),
-            #dcefe6
-        );
-
-    color: var(--green);
-
-    border-radius: 12px;
-
-    padding: 11px 15px;
-
-    font-size: 12px;
-    font-weight: 700;
-
-    border: 1px solid #cfe5da;
-}
-
-.premium-economy strong {
-    font-size: 18px;
-}
-
-/* =====================================================
-   PREMIUM CARDS
-===================================================== */
-
-.premium-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-}
-
-.premium-card-header h3 {
-    font-size: 18px;
-    margin-top: 4px;
-}
-
-.premium-small-button {
-    border: 1px solid var(--orange);
-    color: var(--orange);
-    background: white;
-
-    border-radius: 10px;
-
-    padding: 9px 12px;
-
-    font-weight: 800;
-
-    transition: .2s;
-}
-
-.premium-small-button:hover {
-    background: var(--orange);
-    color: white;
-    transform: translateY(-1px);
-}
-
-.premium-description {
-    color: var(--text-light);
-    margin: 8px 0;
-    font-size: 13px;
-}
-
-/* =====================================================
-   STATUS / SAÚDE FINANCEIRA
-===================================================== */
-
-.health-status {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 18px;
-}
-
-.health-item {
-    border-radius: 14px;
-    padding: 16px;
-
-    background: var(--surface-2);
-
-    border: 1px solid var(--border);
-}
-
-.health-item strong {
-    display: block;
-    margin-top: 8px;
-    font-size: 14px;
-}
-
-.health-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: inline-block;
-}
-
-.health-yellow {
-    background: #f59e0b;
-    box-shadow: 0 0 0 5px rgba(245,158,11,.12);
-}
-
-.health-red {
-    background: #dc2626;
-    box-shadow: 0 0 0 5px rgba(220,38,38,.12);
-}
-
-.health-green {
-    background: #16a34a;
-    box-shadow: 0 0 0 5px rgba(22,163,74,.12);
-}
-
-/* =====================================================
-   SIMULADOR
-===================================================== */
-
-.simulator {
-    display: flex;
-    align-items: end;
-    gap: 10px;
-}
-
-.simulator-input {
-    flex: 1;
-}
-
-.simulation-result {
-    margin-top: 15px;
-    font-weight: 700;
-}
-
-.comparison-content,
-.premium-analysis {
-    color: var(--text);
-    line-height: 1.7;
-    font-size: 14px;
-    margin-top: 12px;
-}
-
-/* =====================================================
-   PREVISÃO — CASO AINDA EXISTA NO HTML
-===================================================== */
-
-.forecast-content {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
-
-.forecast-card {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 17px;
-}
-
-.forecast-card span {
-    display: block;
-    font-size: 9px;
-    font-weight: 800;
-    color: var(--text-light);
-}
-
-.forecast-card strong {
-    display: block;
-    font-size: 20px;
-    margin-top: 8px;
-}
-
-.forecast-positive {
-    color: var(--success);
-}
-
-.forecast-negative {
-    color: var(--danger);
-}
-
-/* =====================================================
-   MODAIS
-===================================================== */
-
-.modal {
-    position: fixed;
-    inset: 0;
-    z-index: 2000;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 20px;
-}
-
-.modal-overlay {
-    position: absolute;
-    inset: 0;
-
-    background: rgba(4,20,14,.68);
-
-    backdrop-filter: blur(6px);
-}
-
-.modal-box {
-    position: relative;
-    z-index: 1;
-
-    width: 100%;
-    max-width: 520px;
-    max-height: 90vh;
-
-    overflow-y: auto;
-
-    background: var(--surface);
-
-    border-radius: 22px;
-
-    padding: 25px;
-
-    box-shadow:
-        0 30px 80px rgba(0,0,0,.30);
-
-    animation: modalOpen .2s ease;
-}
-
-@keyframes modalOpen {
-    from {
-        opacity: 0;
-        transform: translateY(10px) scale(.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    margin-bottom: 22px;
-}
-
-.modal-header span {
-    color: var(--orange);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 1px;
-}
-
-.modal-header h2 {
-    font-size: 22px;
-    margin-top: 4px;
-}
-
-.modal-close {
-    width: 36px;
-    height: 36px;
-
-    border: 0;
-    border-radius: 10px;
-
-    background: #f1f4f2;
-
-    font-size: 23px;
-    color: var(--text);
-
-    transition: .2s;
-}
-
-.modal-close:hover {
-    background: var(--orange);
-    color: white;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.type-selector {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 18px;
-}
-
-.type-option {
-    border: 1px solid var(--border);
-    background: var(--surface-2);
-    color: var(--text);
-
-    border-radius: 12px;
-
-    padding: 12px;
-
-    font-weight: 800;
-
-    transition: .2s;
-}
-
-.type-option.active {
-    background: var(--green);
-    color: white;
-    border-color: var(--green);
-}
-
-.save-transaction {
-    width: 100%;
-    margin-top: 5px;
-}
-
-/* =====================================================
-   DARK MODE
-===================================================== */
-
-body.dark {
-    --background: #08150f;
-    --surface: #10241b;
-    --surface-2: #142b21;
-
-    --text: #eef7f2;
-    --text-light: #91aaa0;
-
-    --border: #234137;
-
-    --green-light: #173a2d;
-}
-
-body.dark .topbar {
-    background: rgba(16,36,27,.94);
-}
-
-body.dark input,
-body.dark select {
-    background: var(--surface-2);
-    color: var(--text);
-}
-
-body.dark .premium-small-button {
-    background: var(--surface);
-}
-
-body.dark .modal-close {
-    background: var(--surface-2);
-    color: white;
-}
-
-body.dark .premium-section {
-    background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(249,115,22,.10),
-            transparent 28%
-        ),
-        var(--background);
-}
-
-/* =====================================================
-   RESPONSIVO
-===================================================== */
-
-@media (max-width: 1050px) {
-
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .dashboard-grid,
-    .category-layout {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 800px) {
-
-    .sidebar {
-        transform: translateX(-100%);
-        transition: .25s;
-    }
-
-    .sidebar.mobile-open {
-        transform: translateX(0);
-    }
-
-    .main-content {
-        width: 100%;
-        margin-left: 0;
-    }
-
-    .mobile-menu {
-        display: block;
-    }
-
-    .topbar {
-        padding: 0 16px;
-    }
-
-    .topbar-right > .btn-primary {
-        display: none;
-    }
-
-    .user-info {
-        display: none;
-    }
-
-    .section {
-        padding: 22px 16px 50px;
-    }
-
-    .filters-panel {
-        grid-template-columns: 1fr;
-    }
-
-    .forecast-content {
-        grid-template-columns: 1fr;
-    }
-
-    .health-status {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 560px) {
-
-    .login-card {
-        padding: 27px 20px;
-        border-radius: 22px;
-    }
-
-    .stats-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-
-    .stat-card {
-        padding: 14px;
-    }
-
-    .stat-card > strong {
-        font-size: 19px;
-    }
-
-    .welcome {
-        display: block;
-    }
-
-    .current-date {
-        margin-top: 10px;
-    }
-
-    .section-heading {
-        display: block;
-    }
-
-    .section-heading .btn-primary {
-        width: 100%;
-        margin-top: 15px;
-    }
-
-    .premium-hero {
-        padding: 26px 22px;
-    }
-
-    .premium-content h2 {
-        font-size: 27px;
-    }
-
-    .premium-logo {
-        display: none;
-    }
-
-    .premium-card,
-    .premium-performance {
-        padding: 19px;
-    }
-
-    .premium-card-header {
-        align-items: flex-start;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .simulator {
-        display: block;
-    }
-
-    .simulator .btn-primary {
-        width: 100%;
-        margin-top: 10px;
-    }
-
-    .transaction-value {
-        font-size: 11px;
-    }
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ControleS — Controle Financeiro</title>
+
+    <link rel="stylesheet" href="app.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<div id="loginScreen" class="login-screen">
+
+    <div class="login-card">
+
+        <div class="login-brand">
+
+            <div class="login-logo">
+                <img src="logo.png" alt="ControleS">
+            </div>
+
+            <div class="premium-mini-badge">
+                CONTROLES
+            </div>
+
+            <h1>ControleS</h1>
+
+            <p>Seu dinheiro sob controle.</p>
+
+        </div>
+
+        <form id="loginForm">
+
+            <div class="input-group">
+
+                <label for="loginName">Nome</label>
+
+                <input
+                    type="text"
+                    id="loginName"
+                    placeholder="Digite seu nome"
+                    autocomplete="name"
+                    required
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="loginEmail">E-mail</label>
+
+                <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="seu@email.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="loginPassword">Senha</label>
+
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn-primary login-submit"
+            >
+                Entrar no ControleS
+            </button>
+
+        </form>
+
+        <div class="login-footer">
+            Controle financeiro simples, inteligente e seguro.
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     APP
+===================================================== -->
+
+<div id="app" class="app hidden">
+
+    <!-- =================================================
+         SIDEBAR
+    ================================================= -->
+
+    <aside id="sidebar" class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-logo">
+                <img src="logo.png" alt="ControleS">
+            </div>
+
+            <div class="brand-text">
+
+                <strong>ControleS</strong>
+
+                <span>Controle financeiro</span>
+
+            </div>
+
+        </div>
+
+
+        <div class="sidebar-status">
+
+            <span class="status-dot"></span>
+
+            <div>
+                <strong>Conta ativa</strong>
+                <small>Seus dados estão salvos</small>
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <button
+                class="nav-item active"
+                data-section="dashboard"
+                type="button"
+            >
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-section="transactions"
+                type="button"
+            >
+                <span class="nav-icon">🧾</span>
+                <span>Lançamentos</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-section="categories"
+                type="button"
+            >
+                <span class="nav-icon">📊</span>
+                <span>Categorias</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-section="reports"
+                type="button"
+            >
+                <span class="nav-icon">📈</span>
+                <span>Relatórios</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-section="premium"
+                type="button"
+            >
+                <span class="nav-icon">⭐</span>
+                <span>Premium</span>
+                <span class="nav-premium-badge">PRO</span>
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <button
+                id="themeBtn"
+                class="sidebar-action"
+                type="button"
+            >
+                <span>🌙</span>
+                <span>Tema escuro</span>
+            </button>
+
+            <button
+                id="exportDataBtn"
+                class="sidebar-action"
+                type="button"
+            >
+                <span>💾</span>
+                <span>Exportar dados</span>
+            </button>
+
+            <button
+                id="logoutBtn"
+                class="sidebar-action"
+                type="button"
+            >
+                <span>↪</span>
+                <span>Sair</span>
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =================================================
+         MAIN
+    ================================================= -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    id="mobileMenuBtn"
+                    class="mobile-menu"
+                    type="button"
+                >
+                    ☰
+                </button>
+
+                <div>
+
+                    <span class="topbar-small">
+                        CONTROLES
+                    </span>
+
+                    <h1 id="pageTitle">
+                        Dashboard
+                    </h1>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <button
+                    id="openTransactionBtn"
+                    class="btn-primary"
+                    type="button"
+                >
+                    + Novo lançamento
+                </button>
+
+
+                <div class="user-area">
+
+                    <div
+                        id="userAvatar"
+                        class="user-avatar"
+                    >
+                        U
+                    </div>
+
+                    <div class="user-info">
+
+                        <strong id="userName">
+                            Usuário
+                        </strong>
+
+                        <span id="userPlan">
+                            ControleS Grátis
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================= -->
+
+        <section
+            id="dashboard"
+            class="section"
+        >
+
+            <div class="welcome">
+
+                <div>
+
+                    <span class="welcome-label">
+                        VISÃO GERAL
+                    </span>
+
+                    <h2>
+                        Olá,
+                        <span id="welcomeName">Usuário</span>
+                        👋
+                    </h2>
+
+                    <p>
+                        Aqui está um resumo das suas finanças.
+                    </p>
+
+                </div>
+
+                <div
+                    id="currentDate"
+                    class="current-date"
+                ></div>
+
+            </div>
+
+
+            <!-- STATUS FINANCEIRO -->
+
+            <div class="financial-status-strip">
+
+                <div class="financial-status-main">
+
+                    <div class="health-icon">
+                        ❤️
+                    </div>
+
+                    <div>
+
+                        <span>
+                            SAÚDE FINANCEIRA
+                        </span>
+
+                        <strong>
+                            Acompanhe sua evolução
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="health-levels">
+
+                    <div class="health-level">
+
+                        <span class="health-dot green"></span>
+
+                        <span>Excelente</span>
+
+                    </div>
+
+                    <div class="health-level">
+
+                        <span class="health-dot yellow"></span>
+
+                        <span>Atenção</span>
+
+                    </div>
+
+                    <div class="health-level">
+
+                        <span class="health-dot red"></span>
+
+                        <span>Crítica</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATS -->
+
+            <div class="stats-grid">
+
+                <div class="stat-card featured">
+
+                    <div class="stat-top">
+
+                        <div class="stat-icon">
+                            💰
+                        </div>
+
+                        <span class="stat-label">
+                            Saldo atual
+                        </span>
+
+                    </div>
+
+                    <strong id="balanceValue">
+                        R$ 0,00
+                    </strong>
+
+                    <small>
+                        Receitas menos despesas
+                    </small>
+
+                </div>
+
+
+                <div class="stat-card income">
+
+                    <div class="stat-top">
+
+                        <div class="stat-icon">
+                            ↗
+                        </div>
+
+                        <span class="stat-label">
+                            Receitas
+                        </span>
+
+                    </div>
+
+                    <strong id="incomeValue">
+                        R$ 0,00
+                    </strong>
+
+                    <small>
+                        Total recebido
+                    </small>
+
+                </div>
+
+
+                <div class="stat-card expense">
+
+                    <div class="stat-top">
+
+                        <div class="stat-icon">
+                            ↘
+                        </div>
+
+                        <span class="stat-label">
+                            Despesas
+                        </span>
+
+                    </div>
+
+                    <strong id="expenseValue">
+                        R$ 0,00
+                    </strong>
+
+                    <small>
+                        Total gasto
+                    </small>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div class="stat-icon">
+                            💎
+                        </div>
+
+                        <span class="stat-label">
+                            Economia
+                        </span>
+
+                    </div>
+
+                    <strong id="economyValue">
+                        0%
+                    </strong>
+
+                    <small>
+                        Percentual economizado
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- GRÁFICOS -->
+
+            <div class="dashboard-grid">
+
+                <div class="panel panel-large">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>
+                                VISÃO FINANCEIRA
+                            </span>
+
+                            <h3>
+                                Receitas x Despesas
+                            </h3>
+
+                        </div>
+
+                        <div class="panel-chip">
+                            Este período
+                        </div>
+
+                    </div>
+
+                    <div class="chart-container">
+
+                        <canvas id="financeChart"></canvas>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>
+                                MOVIMENTAÇÕES
+                            </span>
+
+                            <h3>
+                                Últimos lançamentos
+                            </h3>
+
+                        </div>
+
+                        <button
+                            class="text-button"
+                            data-section="transactions"
+                            type="button"
+                        >
+                            Ver todos
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="recentTransactions"
+                        class="transaction-list"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESUMO -->
+
+            <div class="dashboard-bottom-grid">
+
+                <div class="quick-card">
+
+                    <div class="quick-card-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <span>
+                            ORGANIZAÇÃO
+                        </span>
+
+                        <strong>
+                            Gastos por categoria
+                        </strong>
+
+                        <p>
+                            Descubra para onde seu dinheiro está indo.
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="quick-card-button"
+                        data-section="categories"
+                        type="button"
+                    >
+                        →
+                    </button>
+
+                </div>
+
+
+                <div class="quick-card premium-quick">
+
+                    <div class="quick-card-icon">
+                        ⭐
+                    </div>
+
+                    <div>
+
+                        <span>
+                            PREMIUM
+                        </span>
+
+                        <strong>
+                            Inteligência financeira
+                        </strong>
+
+                        <p>
+                            Tenha recursos avançados para cuidar do seu dinheiro.
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="quick-card-button"
+                        data-section="premium"
+                        type="button"
+                    >
+                        →
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             LANÇAMENTOS
+        ================================================= -->
+
+        <section
+            id="transactions"
+            class="section hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span>MOVIMENTAÇÕES</span>
+
+                    <h2>Lançamentos</h2>
+
+                    <p>
+                        Consulte e organize suas movimentações.
+                    </p>
+
+                </div>
+
+                <button
+                    id="newTransactionButton"
+                    class="btn-primary"
+                    type="button"
+                >
+                    + Novo lançamento
+                </button>
+
+            </div>
+
+
+            <div class="filters-panel">
+
+                <div class="search-box">
+
+                    <span>🔎</span>
+
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Pesquisar lançamento..."
+                    >
+
+                </div>
+
+
+                <select id="typeFilter">
+
+                    <option value="all">
+                        Todos os tipos
+                    </option>
+
+                    <option value="income">
+                        Receitas
+                    </option>
+
+                    <option value="expense">
+                        Despesas
+                    </option>
+
+                </select>
+
+
+                <select id="categoryFilter">
+
+                    <option value="all">
+                        Todas categorias
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div
+                    id="allTransactions"
+                    class="all-transactions"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             CATEGORIAS
+        ================================================= -->
+
+        <section
+            id="categories"
+            class="section hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span>ORGANIZAÇÃO</span>
+
+                    <h2>Gastos por categoria</h2>
+
+                    <p>
+                        Descubra onde seu dinheiro está indo.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="category-layout">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>DISTRIBUIÇÃO</span>
+
+                            <h3>
+                                📊 Gráfico de distribuição
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div class="category-chart-container">
+
+                        <canvas id="categoryChart"></canvas>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>ANÁLISE</span>
+
+                            <h3>
+                                📄 Análise por categoria
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div id="categoryList"></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             RELATÓRIOS
+        ================================================= -->
+
+        <section
+            id="reports"
+            class="section hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span>INTELIGÊNCIA FINANCEIRA</span>
+
+                    <h2>Relatórios</h2>
+
+                    <p>
+                        Uma visão mais detalhada do seu dinheiro.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>DISTRIBUIÇÃO</span>
+
+                            <h3>
+                                Despesas por categoria
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div class="category-chart-container large">
+
+                        <canvas id="reportCategoryChart"></canvas>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>RESUMO</span>
+
+                            <h3>
+                                📄 Análise financeira
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="reportAnalysis"
+                        class="category-list"
+                    ></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PREMIUM
+        ================================================= -->
+
+        <section
+            id="premium"
+            class="section hidden premium-section"
+        >
+
+            <!-- HERO PREMIUM -->
+
+            <div class="premium-hero">
+
+                <div class="premium-glow"></div>
+
+                <div class="premium-content">
+
+                    <div class="premium-tag">
+                        ⭐ CONTROLES PREMIUM
+                    </div>
+
+                    <h2>
+                        Controle seu dinheiro.
+                        <span>Eleve seus resultados.</span>
+                    </h2>
+
+                    <p>
+                        Tenha uma visão muito mais completa das suas finanças
+                        com ferramentas inteligentes para planejar, analisar
+                        e melhorar suas decisões.
+                    </p>
+
+                    <div class="premium-hero-actions">
+
+                        <button
+                            id="subscribePremiumBtn"
+                            class="btn-premium"
+                            type="button"
+                        >
+                            Quero ser Premium ⭐
+                        </button>
+
+                        <span class="premium-secure">
+                            🔒 Experiência exclusiva
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="premium-visual">
+
+                    <div class="premium-orbit orbit-one"></div>
+                    <div class="premium-orbit orbit-two"></div>
+
+                    <div class="premium-logo">
+
+                        <img
+                            src="logo.png"
+                            alt="ControleS Premium"
+                        >
+
+                    </div>
+
+                    <div class="premium-floating-card">
+
+                        <span>SAÚDE FINANCEIRA</span>
+
+                        <strong>Excelente</strong>
+
+                        <div class="mini-health-bar">
+
+                            <span></span>
+                            <span></span>
+                            <span></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DESEMPENHO -->
+
+            <div class="premium-performance premium-highlight">
+
+                <div class="premium-performance-content">
+
+                    <span class="premium-section-label">
+                        DESEMPENHO DO MÊS
+                    </span>
+
+                    <h2>
+                        Seu dinheiro está trabalhando a seu favor.
+                    </h2>
+
+                    <p id="premiumPerformanceText">
+                        Cadastre seus lançamentos para acompanhar
+                        seu desempenho.
+                    </p>
+
+                </div>
+
+                <div class="premium-economy">
+
+                    <span>Economia</span>
+
+                    <strong id="premiumEconomyValue">
+                        0%
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- SAÚDE FINANCEIRA -->
+
+            <div class="premium-card health-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>DIAGNÓSTICO</span>
+
+                        <h3>
+                            ❤️ Saúde financeira
+                        </h3>
+
+                    </div>
+
+                    <div class="premium-live">
+                        ● AO VIVO
+                    </div>
+
+                </div>
+
+
+                <div class="health-dashboard">
+
+                    <div class="health-score">
+
+                        <div class="health-circle">
+
+                            <div>
+
+                                <strong id="healthScore">
+                                    0
+                                </strong>
+
+                                <small>
+                                    / 100
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <strong id="healthStatus">
+                            Aguardando dados
+                        </strong>
+
+                        <span id="healthDescription">
+                            Cadastre seus lançamentos para gerar sua análise.
+                        </span>
+
+                    </div>
+
+
+                    <div class="health-indicators">
+
+                        <div class="health-indicator">
+
+                            <div class="health-indicator-title">
+
+                                <span class="health-dot green"></span>
+
+                                <strong>Excelente</strong>
+
+                            </div>
+
+                            <span>
+                                Equilíbrio financeiro
+                            </span>
+
+                        </div>
+
+
+                        <div class="health-indicator">
+
+                            <div class="health-indicator-title">
+
+                                <span class="health-dot yellow"></span>
+
+                                <strong>Atenção</strong>
+
+                            </div>
+
+                            <span>
+                                Gastos precisam de controle
+                            </span>
+
+                        </div>
+
+
+                        <div class="health-indicator">
+
+                            <div class="health-indicator-title">
+
+                                <span class="health-dot red"></span>
+
+                                <strong>Crítica</strong>
+
+                            </div>
+
+                            <span>
+                                Despesas acima das receitas
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- METAS -->
+
+            <div class="premium-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>OBJETIVOS</span>
+
+                        <h3>
+                            🎯 Metas financeiras
+                        </h3>
+
+                    </div>
+
+                    <button
+                        id="newGoalBtn"
+                        class="premium-small-button"
+                        type="button"
+                    >
+                        + Nova meta
+                    </button>
+
+                </div>
+
+                <p class="premium-description">
+                    Crie objetivos e acompanhe seu progresso.
+                </p>
+
+                <div
+                    id="goalsList"
+                    class="premium-list"
+                >
+
+                    <div class="empty-state">
+                        Você ainda não criou nenhuma meta.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ORÇAMENTO -->
+
+            <div class="premium-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>PLANEJAMENTO</span>
+
+                        <h3>
+                            💰 Orçamento por categoria
+                        </h3>
+
+                    </div>
+
+                    <button
+                        id="newBudgetBtn"
+                        class="premium-small-button"
+                        type="button"
+                    >
+                        + Definir limite
+                    </button>
+
+                </div>
+
+                <p class="premium-description">
+                    Defina limites e acompanhe seus gastos.
+                </p>
+
+                <div
+                    id="budgetsList"
+                    class="premium-list"
+                >
+
+                    <div class="empty-state">
+                        Nenhum orçamento definido.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ALERTAS -->
+
+            <div class="premium-card premium-alert-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>ATENÇÃO</span>
+
+                        <h3>
+                            🚨 Alertas inteligentes
+                        </h3>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="smartAlerts"
+                    class="premium-list"
+                >
+
+                    <div class="empty-state">
+                        Nenhum alerta importante no momento. ✓
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- COMPARAÇÃO -->
+
+            <div class="premium-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>EVOLUÇÃO</span>
+
+                        <h3>
+                            📊 Comparação mensal
+                        </h3>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="monthlyComparison"
+                    class="comparison-content"
+                ></div>
+
+            </div>
+
+
+            <!-- SIMULADOR -->
+
+            <div class="premium-card simulator-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>SIMULAÇÃO</span>
+
+                        <h3>
+                            🔮 Simulador financeiro
+                        </h3>
+
+                    </div>
+
+                    <div class="premium-card-icon">
+                        ✨
+                    </div>
+
+                </div>
+
+                <p class="premium-description">
+                    Veja como uma nova despesa pode afetar seu saldo.
+                </p>
+
+                <div class="simulator">
+
+                    <div class="simulator-input">
+
+                        <label for="simulationAmount">
+                            Nova despesa
+                        </label>
+
+                        <input
+                            type="number"
+                            id="simulationAmount"
+                            min="0"
+                            step="0.01"
+                            placeholder="0,00"
+                        >
+
+                    </div>
+
+                    <button
+                        id="simulateBtn"
+                        class="btn-primary"
+                        type="button"
+                    >
+                        Simular
+                    </button>
+
+                </div>
+
+                <div
+                    id="simulationResult"
+                    class="simulation-result"
+                ></div>
+
+            </div>
+
+
+            <!-- ANÁLISE -->
+
+            <div class="premium-card premium-analysis-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>INTELIGÊNCIA</span>
+
+                        <h3>
+                            📄 Análise financeira
+                        </h3>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="premiumAnalysis"
+                    class="premium-analysis"
+                ></div>
+
+            </div>
+
+
+            <!-- COMPATIBILIDADE COM JS ANTIGO -->
+
+            <div
+                id="monthForecast"
+                class="hidden"
+            ></div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL LANÇAMENTO
+===================================================== -->
+
+<div
+    id="transactionModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span>NOVO LANÇAMENTO</span>
+
+                <h2>
+                    Adicionar movimentação
+                </h2>
+
+            </div>
+
+            <button
+                id="closeModal"
+                class="modal-close"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="transactionForm">
+
+            <div class="type-selector">
+
+                <button
+                    type="button"
+                    class="type-option active"
+                    data-type="income"
+                >
+                    <span>↗</span>
+                    Receita
+                </button>
+
+                <button
+                    type="button"
+                    class="type-option"
+                    data-type="expense"
+                >
+                    <span>↘</span>
+                    Despesa
+                </button>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="descriptionInput">
+                    Descrição
+                </label>
+
+                <input
+                    type="text"
+                    id="descriptionInput"
+                    placeholder="Ex.: Salário, aluguel, mercado..."
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="amountInput">
+                        Valor
+                    </label>
+
+                    <input
+                        type="number"
+                        id="amountInput"
+                        placeholder="0,00"
+                        min="0.01"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="dateInput">
+                        Data
+                    </label>
+
+                    <input
+                        type="date"
+                        id="dateInput"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="frequencyInput">
+                    Frequência
+                </label>
+
+                <select id="frequencyInput">
+
+                    <option value="once">
+                        Única
+                    </option>
+
+                    <option value="daily">
+                        Diária
+                    </option>
+
+                    <option value="weekly">
+                        Semanal
+                    </option>
+
+                    <option value="monthly">
+                        Mensal
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="transactionCategory">
+                    Categoria
+                </label>
+
+                <select id="transactionCategory">
+
+                    <option value="Alimentação">
+                        Alimentação
+                    </option>
+
+                    <option value="Moradia">
+                        Moradia
+                    </option>
+
+                    <option value="Transporte">
+                        Transporte
+                    </option>
+
+                    <option value="Lazer">
+                        Lazer
+                    </option>
+
+                    <option value="Saúde">
+                        Saúde
+                    </option>
+
+                    <option value="Educação">
+                        Educação
+                    </option>
+
+                    <option value="Compras">
+                        Compras
+                    </option>
+
+                    <option value="Contas">
+                        Contas
+                    </option>
+
+                    <option value="Salário">
+                        Salário
+                    </option>
+
+                    <option value="Investimentos">
+                        Investimentos
+                    </option>
+
+                    <option value="Outros">
+                        Outros
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-primary save-transaction"
+            >
+                Salvar lançamento
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL META
+===================================================== -->
+
+<div
+    id="goalModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span>OBJETIVO PREMIUM</span>
+
+                <h2>
+                    Nova meta financeira
+                </h2>
+
+            </div>
+
+            <button
+                id="closeGoalModal"
+                class="modal-close"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="goalForm">
+
+            <div class="form-group">
+
+                <label for="goalName">
+                    Nome da meta
+                </label>
+
+                <input
+                    type="text"
+                    id="goalName"
+                    placeholder="Ex.: Comprar uma moto"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="goalTarget">
+                    Valor da meta
+                </label>
+
+                <input
+                    type="number"
+                    id="goalTarget"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="0,00"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="goalSaved">
+                    Quanto já possui
+                </label>
+
+                <input
+                    type="number"
+                    id="goalSaved"
+                    min="0"
+                    step="0.01"
+                    placeholder="0,00"
+                    value="0"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-primary"
+            >
+                Criar meta
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL ORÇAMENTO
+===================================================== -->
+
+<div
+    id="budgetModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span>PLANEJAMENTO PREMIUM</span>
+
+                <h2>
+                    Definir orçamento
+                </h2>
+
+            </div>
+
+            <button
+                id="closeBudgetModal"
+                class="modal-close"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="budgetForm">
+
+            <div class="form-group">
+
+                <label for="budgetCategory">
+                    Categoria
+                </label>
+
+                <select
+                    id="budgetCategory"
+                    required
+                >
+
+                    <option value="Alimentação">
+                        Alimentação
+                    </option>
+
+                    <option value="Moradia">
+                        Moradia
+                    </option>
+
+                    <option value="Transporte">
+                        Transporte
+                    </option>
+
+                    <option value="Lazer">
+                        Lazer
+                    </option>
+
+                    <option value="Saúde">
+                        Saúde
+                    </option>
+
+                    <option value="Educação">
+                        Educação
+                    </option>
+
+                    <option value="Compras">
+                        Compras
+                    </option>
+
+                    <option value="Contas">
+                        Contas
+                    </option>
+
+                    <option value="Outros">
+                        Outros
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="budgetLimit">
+                    Limite mensal
+                </label>
+
+                <input
+                    type="number"
+                    id="budgetLimit"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="0,00"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-primary"
+            >
+                Salvar orçamento
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script src="app.js"></script>
+
+</body>
+</html>
