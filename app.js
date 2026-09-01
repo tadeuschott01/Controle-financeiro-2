@@ -5,9 +5,9 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* =========================
+    /* =====================================================
        ELEMENTOS
-    ========================= */
+    ===================================================== */
 
     const loginScreen = document.getElementById("loginScreen");
     const loginForm = document.getElementById("loginForm");
@@ -17,33 +17,71 @@ document.addEventListener("DOMContentLoaded", () => {
     const userAvatar = document.getElementById("userAvatar");
     const welcomeName = document.getElementById("welcomeName");
     const userPlan = document.getElementById("userPlan");
+
     const pageTitle = document.getElementById("pageTitle");
     const currentDate = document.getElementById("currentDate");
 
-    const transactionModal = document.getElementById("transactionModal");
-    const transactionForm = document.getElementById("transactionForm");
+    const transactionModal =
+        document.getElementById("transactionModal");
 
-    const descriptionInput = document.getElementById("descriptionInput");
-    const amountInput = document.getElementById("amountInput");
-    const dateInput = document.getElementById("dateInput");
-    const frequencyInput = document.getElementById("frequencyInput");
-    const transactionCategory = document.getElementById("transactionCategory");
+    const transactionForm =
+        document.getElementById("transactionForm");
 
-    const recentTransactions = document.getElementById("recentTransactions");
-    const allTransactions = document.getElementById("allTransactions");
+    const descriptionInput =
+        document.getElementById("descriptionInput");
 
-    const searchInput = document.getElementById("searchInput");
-    const typeFilter = document.getElementById("typeFilter");
-    const categoryFilter = document.getElementById("categoryFilter");
+    const amountInput =
+        document.getElementById("amountInput");
 
-    const balanceValue = document.getElementById("balanceValue");
-    const incomeValue = document.getElementById("incomeValue");
-    const expenseValue = document.getElementById("expenseValue");
-    const economyValue = document.getElementById("economyValue");
+    const dateInput =
+        document.getElementById("dateInput");
 
-    const categoryList = document.getElementById("categoryList");
-    const reportAnalysis = document.getElementById("reportAnalysis");
-    const monthForecast = document.getElementById("monthForecast");
+    const frequencyInput =
+        document.getElementById("frequencyInput");
+
+    const transactionCategory =
+        document.getElementById("transactionCategory");
+
+    const recentTransactions =
+        document.getElementById("recentTransactions");
+
+    const allTransactions =
+        document.getElementById("allTransactions");
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    const typeFilter =
+        document.getElementById("typeFilter");
+
+    const categoryFilter =
+        document.getElementById("categoryFilter");
+
+    const balanceValue =
+        document.getElementById("balanceValue");
+
+    const incomeValue =
+        document.getElementById("incomeValue");
+
+    const expenseValue =
+        document.getElementById("expenseValue");
+
+    const economyValue =
+        document.getElementById("economyValue");
+
+    const categoryList =
+        document.getElementById("categoryList");
+
+    const reportAnalysis =
+        document.getElementById("reportAnalysis");
+
+    const monthForecast =
+        document.getElementById("monthForecast");
+
+
+    /* =====================================================
+       DADOS
+    ===================================================== */
 
     let transactions = JSON.parse(
         localStorage.getItem("controles_transactions") || "[]"
@@ -58,6 +96,43 @@ document.addEventListener("DOMContentLoaded", () => {
     let financeChart = null;
     let categoryChart = null;
     let reportCategoryChart = null;
+
+
+    /* =====================================================
+       CORREÇÃO DOS LANÇAMENTOS ANTIGOS
+       Garante que TODOS tenham ID único
+    ===================================================== */
+
+    transactions = transactions.map((transaction, index) => {
+
+        return {
+            ...transaction,
+
+            id:
+                transaction.id !== undefined &&
+                transaction.id !== null
+                    ? String(transaction.id)
+                    : `legacy-${Date.now()}-${index}`,
+
+            frequency:
+                transaction.frequency || "once",
+
+            category:
+                transaction.category || "Outros"
+
+        };
+
+    });
+
+    localStorage.setItem(
+        "controles_transactions",
+        JSON.stringify(transactions)
+    );
+
+
+    /* =====================================================
+       CATEGORIAS
+    ===================================================== */
 
     const categories = [
         "Alimentação",
@@ -74,23 +149,30 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
 
-    /* =========================
+    /* =====================================================
        UTILITÁRIOS
-    ========================= */
+    ===================================================== */
 
     function saveTransactions() {
+
         localStorage.setItem(
             "controles_transactions",
             JSON.stringify(transactions)
         );
+
     }
 
 
     function formatMoney(value) {
-        return Number(value || 0).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-        });
+
+        return Number(value || 0).toLocaleString(
+            "pt-BR",
+            {
+                style: "currency",
+                currency: "BRL"
+            }
+        );
+
     }
 
 
@@ -98,9 +180,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!dateString) return "";
 
-        const date = new Date(dateString + "T00:00:00");
+        const date = new Date(
+            dateString + "T00:00:00"
+        );
 
         return date.toLocaleDateString("pt-BR");
+
     }
 
 
@@ -108,11 +193,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const date = new Date();
 
-        return [
-            date.getFullYear(),
-            String(date.getMonth() + 1).padStart(2, "0"),
-            String(date.getDate()).padStart(2, "0")
-        ].join("-");
+        const year =
+            date.getFullYear();
+
+        const month =
+            String(date.getMonth() + 1).padStart(2, "0");
+
+        const day =
+            String(date.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+
     }
 
 
@@ -126,23 +217,25 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         return labels[frequency] || "Única";
+
     }
 
 
     function escapeHTML(text) {
 
-        return String(text ?? "")
+        return String(text || "")
             .replaceAll("&", "&amp;")
             .replaceAll("<", "&lt;")
             .replaceAll(">", "&gt;")
             .replaceAll('"', "&quot;")
             .replaceAll("'", "&#039;");
+
     }
 
 
-    /* =========================
+    /* =====================================================
        LOGIN
-    ========================= */
+    ===================================================== */
 
     function loadUser() {
 
@@ -152,16 +245,22 @@ document.addEventListener("DOMContentLoaded", () => {
             app.classList.add("hidden");
 
             return;
+
         }
 
         loginScreen.classList.add("hidden");
         app.classList.remove("hidden");
 
-        userName.textContent = currentUser.name;
-        welcomeName.textContent = currentUser.name;
+        userName.textContent =
+            currentUser.name;
+
+        welcomeName.textContent =
+            currentUser.name;
 
         userAvatar.textContent =
-            currentUser.name.charAt(0).toUpperCase();
+            currentUser.name
+                .charAt(0)
+                .toUpperCase();
 
         userPlan.textContent =
             currentUser.plan === "premium"
@@ -169,6 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 : "ControleS Grátis";
 
         updateAll();
+
     }
 
 
@@ -177,15 +277,24 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         const name =
-            document.getElementById("loginName").value.trim();
+            document.getElementById("loginName")
+                .value.trim();
 
         const email =
-            document.getElementById("loginEmail").value.trim();
+            document.getElementById("loginEmail")
+                .value.trim();
 
         const password =
-            document.getElementById("loginPassword").value;
+            document.getElementById("loginPassword")
+                .value;
 
-        if (!name || !email || !password) return;
+        if (!name || !email || !password) {
+
+            alert("Preencha todos os campos.");
+
+            return;
+
+        }
 
         currentUser = {
             name,
@@ -199,14 +308,16 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         loadUser();
+
     });
 
 
-    /* =========================
+    /* =====================================================
        LOGOUT
-    ========================= */
+    ===================================================== */
 
-    document.getElementById("logoutBtn")
+    document
+        .getElementById("logoutBtn")
         .addEventListener("click", () => {
 
             localStorage.removeItem("controles_user");
@@ -215,12 +326,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             app.classList.add("hidden");
             loginScreen.classList.remove("hidden");
+
         });
 
 
-    /* =========================
+    /* =====================================================
        NAVEGAÇÃO
-    ========================= */
+    ===================================================== */
 
     const navItems =
         document.querySelectorAll(".nav-item");
@@ -231,15 +343,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function openSection(sectionName) {
 
-        sections.forEach(section =>
-            section.classList.add("hidden")
-        );
+        sections.forEach(section => {
+            section.classList.add("hidden");
+        });
 
         const selected =
             document.getElementById(sectionName);
 
-        if (selected)
+        if (selected) {
             selected.classList.remove("hidden");
+        }
 
         navItems.forEach(item => {
 
@@ -261,8 +374,10 @@ document.addEventListener("DOMContentLoaded", () => {
         pageTitle.textContent =
             titles[sectionName] || "Dashboard";
 
-        if (sectionName === "premium")
+        if (sectionName === "premium") {
             updateForecast();
+        }
+
     }
 
 
@@ -270,35 +385,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
         item.addEventListener("click", () => {
 
-            openSection(item.dataset.section);
+            openSection(
+                item.dataset.section
+            );
 
             document
                 .getElementById("sidebar")
                 .classList.remove("mobile-open");
+
         });
+
     });
 
 
-    document.querySelectorAll("[data-section]")
+    document
+        .querySelectorAll("[data-section]")
         .forEach(button => {
 
             if (!button.classList.contains("nav-item")) {
 
                 button.addEventListener("click", () => {
 
-                    openSection(button.dataset.section);
+                    openSection(
+                        button.dataset.section
+                    );
 
                 });
+
             }
+
         });
 
 
-    /* =========================
+    /* =====================================================
        MENU MOBILE
-    ========================= */
+    ===================================================== */
 
-    document.getElementById("mobileMenuBtn")
-        .addEventListener("click", () => {
+    const mobileMenuBtn =
+        document.getElementById("mobileMenuBtn");
+
+    if (mobileMenuBtn) {
+
+        mobileMenuBtn.addEventListener("click", () => {
 
             document
                 .getElementById("sidebar")
@@ -306,23 +434,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
         });
 
+    }
 
-    /* =========================
+
+    /* =====================================================
        MODAL
-    ========================= */
+    ===================================================== */
 
     function openModal() {
 
         transactionModal.classList.remove("hidden");
 
         dateInput.value =
-            dateInput.value || todayISO();
+            todayISO();
 
-        if (frequencyInput)
-            frequencyInput.value =
-                frequencyInput.value || "once";
+        if (frequencyInput) {
+            frequencyInput.value = "once";
+        }
 
         descriptionInput.focus();
+
     }
 
 
@@ -336,29 +467,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateTypeButtons();
 
-        dateInput.value = todayISO();
+        dateInput.value =
+            todayISO();
 
-        if (frequencyInput)
+        if (frequencyInput) {
             frequencyInput.value = "once";
+        }
+
     }
 
 
-    document.getElementById("openTransactionBtn")
+    document
+        .getElementById("openTransactionBtn")
         .addEventListener("click", openModal);
 
-    document.getElementById("newTransactionButton")
+
+    document
+        .getElementById("newTransactionButton")
         .addEventListener("click", openModal);
 
-    document.getElementById("closeModal")
+
+    document
+        .getElementById("closeModal")
         .addEventListener("click", closeModal);
 
-    document.querySelector(".modal-overlay")
-        .addEventListener("click", closeModal);
+
+    const modalOverlay =
+        document.querySelector(".modal-overlay");
+
+    if (modalOverlay) {
+
+        modalOverlay.addEventListener(
+            "click",
+            closeModal
+        );
+
+    }
 
 
-    /* =========================
+    /* =====================================================
        TIPO
-    ========================= */
+    ===================================================== */
 
     const typeButtons =
         document.querySelectorAll(".type-option");
@@ -374,6 +523,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
         });
+
     }
 
 
@@ -381,113 +531,113 @@ document.addEventListener("DOMContentLoaded", () => {
 
         button.addEventListener("click", () => {
 
-            selectedType = button.dataset.type;
+            selectedType =
+                button.dataset.type;
 
             updateTypeButtons();
+
         });
+
     });
 
 
-    /* =========================
+    /* =====================================================
        SALVAR LANÇAMENTO
-    ========================= */
+    ===================================================== */
 
-    transactionForm.addEventListener("submit", event => {
+    transactionForm.addEventListener(
+        "submit",
+        event => {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        const description =
-            descriptionInput.value.trim();
+            const description =
+                descriptionInput.value.trim();
 
-        const amount =
-            Number(amountInput.value);
+            const amount =
+                Number(amountInput.value);
 
-        const date =
-            dateInput.value;
+            const date =
+                dateInput.value;
 
-        const frequency =
-            frequencyInput
-                ? frequencyInput.value
-                : "once";
+            /*
+              Se o campo frequência existir,
+              usa o valor dele.
+              Se não existir, considera única.
+            */
 
-        const category =
-            transactionCategory.value;
+            const frequency =
+                frequencyInput
+                    ? frequencyInput.value
+                    : "once";
+
+            const category =
+                transactionCategory.value || "Outros";
 
 
-        if (
-            !description ||
-            !amount ||
-            amount <= 0 ||
-            !date
-        ) {
+            if (
+                !description ||
+                !amount ||
+                amount <= 0 ||
+                !date
+            ) {
+
+                alert(
+                    "Preencha todos os campos corretamente."
+                );
+
+                return;
+
+            }
+
+
+            const transaction = {
+
+                id:
+                    `${Date.now()}-${Math.random()
+                        .toString(36)
+                        .substring(2, 9)}`,
+
+                type:
+                    selectedType,
+
+                description:
+                    description,
+
+                amount:
+                    amount,
+
+                date:
+                    date,
+
+                frequency:
+                    frequency,
+
+                category:
+                    category
+
+            };
+
+
+            transactions.push(transaction);
+
+            saveTransactions();
+
+            closeModal();
+
+            updateAll();
 
             alert(
-                "Preencha todos os campos corretamente."
+                "Lançamento salvo com sucesso! ✅"
             );
 
-            return;
         }
+    );
 
 
-        const transaction = {
-
-            id: Date.now() + Math.random(),
-
-            type: selectedType,
-
-            description,
-
-            amount,
-
-            date,
-
-            frequency,
-
-            category
-        };
-
-
-        transactions.push(transaction);
-
-        saveTransactions();
-
-        closeModal();
-
-        updateAll();
-
-        alert(
-            "Lançamento salvo com sucesso! ✅"
-        );
-    });
-
-
-    /* =========================
-       RECORRÊNCIA CORRETA
-    ========================= */
-
-    function addOneMonthSafe(date) {
-
-        const originalDay = date.getDate();
-
-        const next = new Date(date);
-
-        next.setDate(1);
-        next.setMonth(next.getMonth() + 1);
-
-        const lastDay =
-            new Date(
-                next.getFullYear(),
-                next.getMonth() + 1,
-                0
-            ).getDate();
-
-        next.setDate(
-            Math.min(originalDay, lastDay)
-        );
-
-        return next;
-    }
-
+    /* =====================================================
+       RECORRÊNCIA
+    ===================================================== */
 
     function transactionOccurrences(
         transaction,
@@ -497,15 +647,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const occurrences = [];
 
+        if (!transaction.date) {
+            return occurrences;
+        }
+
         const original =
             new Date(
                 transaction.date + "T00:00:00"
             );
 
+        /*
+          LANÇAMENTO ÚNICO
+        */
 
-        /* LANÇAMENTO ÚNICO */
-
-        if (transaction.frequency === "once") {
+        if (
+            transaction.frequency === "once"
+        ) {
 
             if (
                 original >= startDate &&
@@ -515,61 +672,124 @@ document.addEventListener("DOMContentLoaded", () => {
                 occurrences.push(
                     new Date(original)
                 );
+
             }
 
             return occurrences;
+
         }
 
 
-        let current =
-            new Date(original);
-
-
         /*
-           IMPORTANTE:
-
-           A recorrência começa na data cadastrada.
-           Não cria lançamentos antes dela.
+          LANÇAMENTO DIÁRIO
         */
 
-        while (current <= endDate) {
+        if (
+            transaction.frequency === "daily"
+        ) {
 
-            if (current >= startDate) {
+            let current =
+                new Date(original);
 
-                occurrences.push(
-                    new Date(current)
-                );
-            }
+            while (current <= endDate) {
 
+                if (current >= startDate) {
 
-            if (transaction.frequency === "daily") {
+                    occurrences.push(
+                        new Date(current)
+                    );
+
+                }
 
                 current.setDate(
                     current.getDate() + 1
                 );
 
-            } else if (
-                transaction.frequency === "weekly"
-            ) {
+            }
+
+            return occurrences;
+
+        }
+
+
+        /*
+          LANÇAMENTO SEMANAL
+        */
+
+        if (
+            transaction.frequency === "weekly"
+        ) {
+
+            let current =
+                new Date(original);
+
+            while (current <= endDate) {
+
+                if (current >= startDate) {
+
+                    occurrences.push(
+                        new Date(current)
+                    );
+
+                }
 
                 current.setDate(
                     current.getDate() + 7
                 );
 
-            } else if (
-                transaction.frequency === "monthly"
-            ) {
-
-                current =
-                    addOneMonthSafe(current);
-
-            } else {
-
-                break;
             }
+
+            return occurrences;
+
         }
 
+
+        /*
+          LANÇAMENTO MENSAL
+
+          IMPORTANTE:
+          Ele acontece UMA VEZ por mês.
+
+          Exemplo:
+          salário dia 5
+
+          Agosto → 1 vez
+          Setembro → 1 vez
+          Outubro → 1 vez
+
+          Nunca cria várias ocorrências no mesmo mês.
+        */
+
+        if (
+            transaction.frequency === "monthly"
+        ) {
+
+            let current =
+                new Date(original);
+
+            while (current <= endDate) {
+
+                if (current >= startDate) {
+
+                    occurrences.push(
+                        new Date(current)
+                    );
+
+                }
+
+                current.setMonth(
+                    current.getMonth() + 1
+                );
+
+            }
+
+            return occurrences;
+
+        }
+
+
         return occurrences;
+
     }
 
 
@@ -595,52 +815,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     ...transaction,
 
-                    occurrenceDate: date
+                    occurrenceDate:
+                        date
+
                 });
 
             });
+
         });
 
         return result;
+
     }
 
 
-    /* =========================
+    /* =====================================================
        MÊS ATUAL
-    ========================= */
+    ===================================================== */
 
     function getCurrentMonthRange() {
 
-        const now = new Date();
+        const now =
+            new Date();
+
+        const start =
+            new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                1,
+                0,
+                0,
+                0
+            );
+
+        const end =
+            new Date(
+                now.getFullYear(),
+                now.getMonth() + 1,
+                0,
+                23,
+                59,
+                59
+            );
 
         return {
-
-            start:
-                new Date(
-                    now.getFullYear(),
-                    now.getMonth(),
-                    1,
-                    0,
-                    0,
-                    0
-                ),
-
-            end:
-                new Date(
-                    now.getFullYear(),
-                    now.getMonth() + 1,
-                    0,
-                    23,
-                    59,
-                    59
-                )
+            start,
+            end
         };
+
     }
 
 
     function calculateMonthTotals() {
 
-        const { start, end } =
+        const {
+            start,
+            end
+        } =
             getCurrentMonthRange();
 
         const items =
@@ -654,11 +885,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         items.forEach(item => {
 
-            if (item.type === "income")
-                income += Number(item.amount);
+            if (item.type === "income") {
 
-            if (item.type === "expense")
-                expense += Number(item.amount);
+                income +=
+                    Number(item.amount);
+
+            } else {
+
+                expense +=
+                    Number(item.amount);
+
+            }
+
         });
 
         return {
@@ -669,13 +907,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
             balance:
                 income - expense
+
         };
+
     }
 
 
-    /* =========================
+    /* =====================================================
        DASHBOARD
-    ========================= */
+    ===================================================== */
 
     function updateDashboard() {
 
@@ -683,14 +923,19 @@ document.addEventListener("DOMContentLoaded", () => {
             calculateMonthTotals();
 
         balanceValue.textContent =
-            formatMoney(totals.balance);
+            formatMoney(
+                totals.balance
+            );
 
         incomeValue.textContent =
-            formatMoney(totals.income);
+            formatMoney(
+                totals.income
+            );
 
         expenseValue.textContent =
-            formatMoney(totals.expense);
-
+            formatMoney(
+                totals.expense
+            );
 
         let economy = 0;
 
@@ -701,11 +946,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     totals.balance /
                     totals.income
                 ) * 100;
+
         }
 
         economyValue.textContent =
             `${economy.toFixed(1)}%`;
-
 
         currentDate.textContent =
             new Date().toLocaleDateString(
@@ -718,28 +963,34 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             );
 
-
         updateFinanceChart();
+
     }
 
 
-    /* =========================
-       TRANSAÇÃO HTML
-    ========================= */
+    /* =====================================================
+       HTML DOS LANÇAMENTOS
+    ===================================================== */
 
-    function createTransactionHTML(transaction) {
-
-        const isIncome =
-            transaction.type === "income";
+    function createTransactionHTML(
+        transaction
+    ) {
 
         const sign =
-            isIncome ? "+" : "-";
+            transaction.type === "income"
+                ? "+"
+                : "-";
 
         const valueClass =
-            isIncome ? "income" : "expense";
+            transaction.type === "income"
+                ? "income"
+                : "expense";
 
         const icon =
-            isIncome ? "↗" : "↘";
+            transaction.type === "income"
+                ? "↗"
+                : "↘";
+
 
         const occurrenceDate =
             transaction.occurrenceDate
@@ -770,7 +1021,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             transaction.category
                         )}
                         •
-                        ${formatDate(occurrenceDate)}
+                        ${formatDate(
+                            occurrenceDate
+                        )}
                         •
                         ${frequencyLabel(
                             transaction.frequency
@@ -780,33 +1033,42 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
 
                 <div class="transaction-value ${valueClass}">
+
                     ${sign}
                     ${formatMoney(
                         transaction.amount
                     )}
+
                 </div>
 
                 <button
                     type="button"
                     class="transaction-delete"
-                    data-delete-id="${transaction.id}"
-                    title="Excluir"
+                    data-delete-id="${String(
+                        transaction.id
+                    )}"
+                    title="Excluir lançamento"
                 >
                     ×
                 </button>
 
             </div>
+
         `;
+
     }
 
 
-    /* =========================
-       RECENTES
-    ========================= */
+    /* =====================================================
+       LANÇAMENTOS RECENTES
+    ===================================================== */
 
     function updateRecentTransactions() {
 
-        const { start, end } =
+        const {
+            start,
+            end
+        } =
             getCurrentMonthRange();
 
         let items =
@@ -815,17 +1077,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 end
             );
 
-
         items.sort(
             (a, b) =>
                 b.occurrenceDate -
                 a.occurrenceDate
         );
 
-
         items =
             items.slice(0, 5);
-
 
         if (!items.length) {
 
@@ -836,37 +1095,36 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
             return;
-        }
 
+        }
 
         recentTransactions.innerHTML =
             items
                 .map(createTransactionHTML)
                 .join("");
+
     }
 
 
-    /* =========================
-       TODOS OS LANÇAMENTOS
-    ========================= */
+    /* =====================================================
+       LISTA COMPLETA
+    ===================================================== */
 
     function updateAllTransactions() {
 
         /*
-           Agora não usamos mais
-           -12 meses / +12 meses.
-
-           A lista trabalha com um período
-           limitado para não criar uma previsão
-           de um ano inteiro.
+          Agora mostramos uma janela menor,
+          evitando criar previsões/listagens
+          de vários anos.
         */
 
-        const now = new Date();
+        const now =
+            new Date();
 
         const start =
             new Date(
                 now.getFullYear(),
-                now.getMonth(),
+                now.getMonth() - 1,
                 1
             );
 
@@ -879,7 +1137,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 59,
                 59
             );
-
 
         let items =
             getPeriodTransactions(
@@ -912,22 +1169,20 @@ document.addEventListener("DOMContentLoaded", () => {
                         .toLowerCase()
                         .includes(search);
 
-
                 const matchesType =
                     type === "all" ||
                     item.type === type;
 
-
                 const matchesCategory =
                     category === "all" ||
                     item.category === category;
-
 
                 return (
                     matchesSearch &&
                     matchesType &&
                     matchesCategory
                 );
+
             });
 
 
@@ -947,6 +1202,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
             return;
+
         }
 
 
@@ -954,76 +1210,114 @@ document.addEventListener("DOMContentLoaded", () => {
             items
                 .map(createTransactionHTML)
                 .join("");
+
     }
 
 
-    /* =========================
-       EXCLUSÃO
-    ========================= */
+    /* =====================================================
+       EXCLUSÃO — CORRIGIDA
+    ===================================================== */
 
-    document.addEventListener("click", event => {
+    document.addEventListener(
+        "click",
+        event => {
 
-        const button =
-            event.target.closest(
-                "[data-delete-id]"
+            const button =
+                event.target.closest(
+                    "[data-delete-id]"
+                );
+
+            if (!button) return;
+
+
+            const id =
+                String(
+                    button.dataset.deleteId
+                );
+
+
+            const transaction =
+                transactions.find(
+                    item =>
+                        String(item.id) === id
+                );
+
+
+            if (!transaction) {
+
+                alert(
+                    "Não foi possível encontrar este lançamento."
+                );
+
+                return;
+
+            }
+
+
+            const confirmed =
+                confirm(
+                    `Excluir "${transaction.description}"?`
+                );
+
+
+            if (!confirmed) return;
+
+
+            /*
+              Remove comparando tudo como STRING.
+              Assim funciona tanto para IDs antigos
+              quanto para IDs novos.
+            */
+
+            transactions =
+                transactions.filter(
+                    item =>
+                        String(item.id) !== id
+                );
+
+
+            saveTransactions();
+
+            updateAll();
+
+            alert(
+                "Lançamento excluído com sucesso! 🗑️"
             );
 
-        if (!button) return;
+        }
+    );
 
 
-        const id =
-            button.dataset.deleteId;
-
-
-        const confirmed =
-            confirm(
-                "Deseja excluir este lançamento?"
-            );
-
-
-        if (!confirmed) return;
-
-
-        /*
-           Correção importante:
-
-           O ID é comparado como STRING.
-           Assim funciona mesmo quando o ID
-           foi criado com Date.now()+Math.random().
-        */
-
-        transactions =
-            transactions.filter(
-                transaction =>
-                    String(transaction.id) !== String(id)
-            );
-
-
-        saveTransactions();
-
-        updateAll();
-
-    });
-
-
-    /* =========================
+    /* =====================================================
        FILTROS
-    ========================= */
+    ===================================================== */
 
-    searchInput.addEventListener(
-        "input",
-        updateAllTransactions
-    );
+    if (searchInput) {
 
-    typeFilter.addEventListener(
-        "change",
-        updateAllTransactions
-    );
+        searchInput.addEventListener(
+            "input",
+            updateAllTransactions
+        );
 
-    categoryFilter.addEventListener(
-        "change",
-        updateAllTransactions
-    );
+    }
+
+    if (typeFilter) {
+
+        typeFilter.addEventListener(
+            "change",
+            updateAllTransactions
+        );
+
+    }
+
+    if (categoryFilter) {
+
+        categoryFilter.addEventListener(
+            "change",
+            updateAllTransactions
+        );
+
+    }
 
 
     function updateCategoryFilter() {
@@ -1037,29 +1331,34 @@ document.addEventListener("DOMContentLoaded", () => {
             </option>
         `;
 
-
         categories.forEach(category => {
 
             const option =
                 document.createElement("option");
 
-            option.value = category;
-            option.textContent = category;
+            option.value =
+                category;
 
-            categoryFilter.appendChild(option);
+            option.textContent =
+                category;
+
+            categoryFilter.appendChild(
+                option
+            );
+
         });
-
 
         categoryFilter.value =
             categories.includes(current)
                 ? current
                 : "all";
+
     }
 
 
-    /* =========================
+    /* =====================================================
        GRÁFICO FINANCEIRO
-    ========================= */
+    ===================================================== */
 
     function updateFinanceChart() {
 
@@ -1068,81 +1367,100 @@ document.addEventListener("DOMContentLoaded", () => {
                 "financeChart"
             );
 
-        if (!canvas) return;
-
+        if (!canvas || typeof Chart === "undefined") {
+            return;
+        }
 
         const {
             income,
             expense
-        } = calculateMonthTotals();
+        } =
+            calculateMonthTotals();
 
-
-        if (financeChart)
+        if (financeChart) {
             financeChart.destroy();
-
+        }
 
         financeChart =
-            new Chart(canvas, {
+            new Chart(
+                canvas,
+                {
+                    type: "bar",
 
-                type: "bar",
+                    data: {
 
-                data: {
-
-                    labels: [
-                        "Receitas",
-                        "Despesas"
-                    ],
-
-                    datasets: [{
-                        label: "Valor",
-
-                        data: [
-                            income,
-                            expense
+                        labels: [
+                            "Receitas",
+                            "Despesas"
                         ],
 
-                        borderWidth: 0
-                    }]
-                },
+                        datasets: [
+                            {
+                                label: "Valor",
 
-                options: {
+                                data: [
+                                    income,
+                                    expense
+                                ],
 
-                    responsive: true,
+                                borderWidth: 0
+                            }
+                        ]
 
-                    maintainAspectRatio: false,
-
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
                     },
 
-                    scales: {
+                    options: {
 
-                        y: {
+                        responsive: true,
 
-                            beginAtZero: true,
+                        maintainAspectRatio: false,
 
-                            ticks: {
+                        plugins: {
 
-                                callback:
-                                    value =>
-                                        formatMoney(value)
+                            legend: {
+                                display: false
                             }
+
+                        },
+
+                        scales: {
+
+                            y: {
+
+                                beginAtZero: true,
+
+                                ticks: {
+
+                                    callback:
+                                        value =>
+                                            formatMoney(
+                                                value
+                                            )
+
+                                }
+
+                            }
+
                         }
+
                     }
+
                 }
-            });
+            );
+
     }
 
 
-    /* =========================
+    /* =====================================================
        CATEGORIAS
-    ========================= */
+    ===================================================== */
 
     function calculateCategories() {
 
-        const { start, end } =
+        const {
+            start,
+            end
+        } =
             getCurrentMonthRange();
 
         const items =
@@ -1153,21 +1471,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const totals = {};
 
-
         items.forEach(item => {
 
-            if (item.type !== "expense")
+            if (
+                item.type !== "expense"
+            ) {
                 return;
+            }
 
-            if (!totals[item.category])
+            if (
+                !totals[item.category]
+            ) {
                 totals[item.category] = 0;
+            }
 
             totals[item.category] +=
                 Number(item.amount);
+
         });
 
-
         return totals;
+
     }
 
 
@@ -1183,7 +1507,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         b[1] - a[1]
                 );
 
-
         if (!entries.length) {
 
             categoryList.innerHTML = `
@@ -1195,8 +1518,8 @@ document.addEventListener("DOMContentLoaded", () => {
             updateCategoryChart({});
 
             return;
-        }
 
+        }
 
         const total =
             entries.reduce(
@@ -1205,98 +1528,123 @@ document.addEventListener("DOMContentLoaded", () => {
                 0
             );
 
-
         categoryList.innerHTML =
             entries
-                .map(([category, value]) => {
+                .map(
+                    ([category, value]) => {
 
-                    const percentage =
-                        total > 0
-                            ? (
-                                value / total
-                            ) * 100
-                            : 0;
+                        const percentage =
+                            total > 0
+                                ? (
+                                    value /
+                                    total
+                                ) * 100
+                                : 0;
 
-                    return `
+                        return `
 
-                        <div class="category-summary-item">
+                            <div class="category-summary-item">
 
-                            <div class="category-summary-left">
+                                <div class="category-summary-left">
 
-                                <div class="category-dot"></div>
+                                    <div class="category-dot"></div>
 
-                                <strong>
-                                    ${escapeHTML(category)}
-                                </strong>
+                                    <strong>
+                                        ${escapeHTML(
+                                            category
+                                        )}
+                                    </strong>
+
+                                </div>
+
+                                <span>
+                                    ${formatMoney(value)}
+                                    (${percentage.toFixed(1)}%)
+                                </span>
 
                             </div>
 
-                            <span>
-                                ${formatMoney(value)}
-                                (${percentage.toFixed(1)}%)
-                            </span>
+                        `;
 
-                        </div>
-                    `;
-                })
+                    }
+                )
                 .join("");
 
+        updateCategoryChart(
+            totals
+        );
 
-        updateCategoryChart(totals);
     }
 
 
-    function updateCategoryChart(totals) {
+    function updateCategoryChart(
+        totals
+    ) {
 
         const canvas =
             document.getElementById(
                 "categoryChart"
             );
 
-        if (!canvas) return;
+        if (
+            !canvas ||
+            typeof Chart === "undefined"
+        ) {
+            return;
+        }
 
-        if (categoryChart)
+        if (categoryChart) {
             categoryChart.destroy();
-
+        }
 
         categoryChart =
-            new Chart(canvas, {
+            new Chart(
+                canvas,
+                {
 
-                type: "doughnut",
+                    type: "doughnut",
 
-                data: {
+                    data: {
 
-                    labels:
-                        Object.keys(totals),
+                        labels:
+                            Object.keys(totals),
 
-                    datasets: [{
-                        data:
-                            Object.values(totals),
+                        datasets: [
+                            {
+                                data:
+                                    Object.values(totals),
 
-                        borderWidth: 2
-                    }]
-                },
+                                borderWidth: 2
+                            }
+                        ]
 
-                options: {
+                    },
 
-                    responsive: true,
+                    options: {
 
-                    maintainAspectRatio: false,
+                        responsive: true,
 
-                    plugins: {
+                        maintainAspectRatio: false,
 
-                        legend: {
-                            position: "bottom"
+                        plugins: {
+
+                            legend: {
+                                position: "bottom"
+                            }
+
                         }
+
                     }
+
                 }
-            });
+            );
+
     }
 
 
-    /* =========================
+    /* =====================================================
        RELATÓRIOS
-    ========================= */
+    ===================================================== */
 
     function updateReports() {
 
@@ -1310,7 +1658,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         b[1] - a[1]
                 );
 
-
         if (!entries.length) {
 
             reportAnalysis.innerHTML = `
@@ -1322,8 +1669,8 @@ document.addEventListener("DOMContentLoaded", () => {
             updateReportChart({});
 
             return;
-        }
 
+        }
 
         const total =
             entries.reduce(
@@ -1332,10 +1679,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 0
             );
 
-
         const biggest =
             entries[0];
-
 
         reportAnalysis.innerHTML = `
 
@@ -1394,63 +1739,83 @@ document.addEventListener("DOMContentLoaded", () => {
                 </span>
 
             </div>
+
         `;
 
+        updateReportChart(
+            totals
+        );
 
-        updateReportChart(totals);
     }
 
 
-    function updateReportChart(totals) {
+    function updateReportChart(
+        totals
+    ) {
 
         const canvas =
             document.getElementById(
                 "reportCategoryChart"
             );
 
-        if (!canvas) return;
+        if (
+            !canvas ||
+            typeof Chart === "undefined"
+        ) {
+            return;
+        }
 
-        if (reportCategoryChart)
+        if (reportCategoryChart) {
             reportCategoryChart.destroy();
-
+        }
 
         reportCategoryChart =
-            new Chart(canvas, {
+            new Chart(
+                canvas,
+                {
 
-                type: "doughnut",
+                    type: "doughnut",
 
-                data: {
+                    data: {
 
-                    labels:
-                        Object.keys(totals),
+                        labels:
+                            Object.keys(totals),
 
-                    datasets: [{
-                        data:
-                            Object.values(totals),
+                        datasets: [
+                            {
+                                data:
+                                    Object.values(totals),
 
-                        borderWidth: 2
-                    }]
-                },
+                                borderWidth: 2
+                            }
+                        ]
 
-                options: {
+                    },
 
-                    responsive: true,
+                    options: {
 
-                    maintainAspectRatio: false,
+                        responsive: true,
 
-                    plugins: {
+                        maintainAspectRatio: false,
 
-                        legend: {
-                            position: "bottom"
+                        plugins: {
+
+                            legend: {
+                                position: "bottom"
+                            }
+
                         }
+
                     }
+
                 }
-            });
+            );
+
     }
 
 
     /* =====================================================
-       PREMIUM — PREVISÃO CORRETA DO FIM DO MÊS
+       PREMIUM — PREVISÃO DO FIM DO MÊS
     ===================================================== */
 
     function updateForecast() {
@@ -1458,13 +1823,31 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!monthForecast) return;
 
 
-        const now = new Date();
+        if (!transactions.length) {
+
+            monthForecast.innerHTML = `
+                <div class="empty-state">
+                    Adicione seus lançamentos para visualizar
+                    uma previsão financeira.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        const now =
+            new Date();
 
         const startOfMonth =
             new Date(
                 now.getFullYear(),
                 now.getMonth(),
-                1
+                1,
+                0,
+                0,
+                0
             );
 
         const endOfMonth =
@@ -1477,94 +1860,62 @@ document.addEventListener("DOMContentLoaded", () => {
                 59
             );
 
-
         const today =
             new Date(
                 now.getFullYear(),
                 now.getMonth(),
-                now.getDate(),
-                23,
-                59,
-                59
+                now.getDate()
             );
 
 
         /*
-           Pegamos somente o que aconteceu
-           desde o primeiro dia do mês até hoje.
+          SOMENTE O MÊS ATUAL.
+          Não calcula 12 meses.
         */
 
-        const currentItems =
-            getPeriodTransactions(
-                startOfMonth,
-                today
+        const elapsedDays =
+            Math.max(
+                1,
+                Math.floor(
+                    (
+                        today -
+                        startOfMonth
+                    ) / 86400000
+                ) + 1
             );
-
-
-        if (!currentItems.length) {
-
-            monthForecast.innerHTML = `
-                <div class="empty-state">
-                    Adicione seus lançamentos para visualizar
-                    uma previsão financeira.
-                </div>
-            `;
-
-            return;
-        }
-
-
-        let incomeUntilToday = 0;
-        let expenseUntilToday = 0;
-
-
-        currentItems.forEach(item => {
-
-            if (item.type === "income")
-                incomeUntilToday +=
-                    Number(item.amount);
-
-            if (item.type === "expense")
-                expenseUntilToday +=
-                    Number(item.amount);
-        });
-
-
-        const currentBalance =
-            incomeUntilToday -
-            expenseUntilToday;
-
-
-        const dayOfMonth =
-            now.getDate();
 
 
         const totalDays =
             endOfMonth.getDate();
 
 
+        const currentTotals =
+            calculateMonthTotals();
+
+
+        const balance =
+            currentTotals.balance;
+
+
         /*
-           Média baseada somente nos dias
-           que já passaram.
+          Gasto médio diário.
+
+          Só usamos as despesas já ocorridas
+          neste mês.
         */
 
         const averageDailyExpense =
-            dayOfMonth > 0
-                ? expenseUntilToday / dayOfMonth
-                : 0;
+            currentTotals.expense /
+            elapsedDays;
 
 
         const remainingDays =
             Math.max(
                 0,
-                totalDays - dayOfMonth
+                totalDays -
+                elapsedDays
             );
 
-
-        /*
-           ESTIMATIVA APENAS ATÉ O FIM
-           DO MÊS ATUAL.
-        */
 
         const estimatedRemainingExpense =
             averageDailyExpense *
@@ -1572,66 +1923,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /*
-           Também verificamos receitas futuras
-           recorrentes dentro deste mesmo mês.
-
-           Exemplo:
-           salário mensal dia 5.
-
-           Se já aconteceu este mês,
-           NÃO será contado novamente.
-
-           O próximo salário será somente
-           no próximo mês.
+          PREVISÃO FINAL DO MÊS
         */
 
-        let futureIncome = 0;
-
-
-        const futureItems =
-            getPeriodTransactions(
-                new Date(
-                    now.getFullYear(),
-                    now.getMonth(),
-                    dayOfMonth + 1
-                ),
-                endOfMonth
-            );
-
-
-        futureItems.forEach(item => {
-
-            if (item.type === "income") {
-
-                futureIncome +=
-                    Number(item.amount);
-            }
-        });
-
-
         const forecast =
-            currentBalance +
-            futureIncome -
+            balance -
             estimatedRemainingExpense;
 
 
-        let message;
+        let message = "";
 
 
-        if (forecast > currentBalance) {
-
-            message =
-                "A projeção indica um fechamento positivo.";
-
-        } else if (forecast >= 0) {
+        if (forecast >= 0) {
 
             message =
-                "A projeção indica saldo positivo no fim do mês.";
+                "A projeção indica um fechamento positivo. 💎";
 
         } else {
 
             message =
-                "⚠️ Atenção: a projeção indica possível saldo negativo.";
+                "Atenção: a projeção indica possível saldo negativo. ⚠️";
+
         }
 
 
@@ -1650,7 +1962,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
 
                 <span>
-                    ${formatMoney(currentBalance)}
+                    ${formatMoney(balance)}
                 </span>
 
             </div>
@@ -1703,25 +2015,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div class="category-dot"></div>
 
                     <strong>
-                        Receitas futuras
-                    </strong>
-
-                </div>
-
-                <span>
-                    ${formatMoney(futureIncome)}
-                </span>
-
-            </div>
-
-
-            <div class="category-summary-item">
-
-                <div class="category-summary-left">
-
-                    <div class="category-dot"></div>
-
-                    <strong>
                         ⏳ Previsão no fim do mês
                     </strong>
 
@@ -1737,125 +2030,171 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="empty-state">
                 ${message}
             </div>
+
         `;
+
     }
 
 
-    /* =========================
+    /* =====================================================
        TEMA
-    ========================= */
+    ===================================================== */
 
-    document.getElementById("themeBtn")
-        .addEventListener("click", () => {
+    const themeBtn =
+        document.getElementById("themeBtn");
 
-            document.body.classList.toggle("dark");
+    if (themeBtn) {
 
-            const dark =
-                document.body.classList.contains("dark");
+        themeBtn.addEventListener(
+            "click",
+            () => {
 
-            localStorage.setItem(
-                "controles_dark",
-                dark
-            );
-        });
+                document.body.classList.toggle(
+                    "dark"
+                );
+
+                const dark =
+                    document.body.classList.contains(
+                        "dark"
+                    );
+
+                localStorage.setItem(
+                    "controles_dark",
+                    dark
+                );
+
+            }
+        );
+
+    }
 
 
     if (
-        localStorage.getItem("controles_dark")
-        === "true"
+        localStorage.getItem(
+            "controles_dark"
+        ) === "true"
     ) {
 
-        document.body.classList.add("dark");
+        document.body.classList.add(
+            "dark"
+        );
+
     }
 
 
-    /* =========================
+    /* =====================================================
        EXPORTAR
-    ========================= */
+    ===================================================== */
 
-    document.getElementById("exportDataBtn")
-        .addEventListener("click", () => {
+    const exportDataBtn =
+        document.getElementById(
+            "exportDataBtn"
+        );
 
-            const data = {
+    if (exportDataBtn) {
 
-                user: currentUser,
+        exportDataBtn.addEventListener(
+            "click",
+            () => {
 
-                transactions,
+                const data = {
 
-                exportedAt:
-                    new Date().toISOString()
-            };
+                    user:
+                        currentUser,
+
+                    transactions:
+                        transactions,
+
+                    exportedAt:
+                        new Date().toISOString()
+
+                };
+
+                const blob =
+                    new Blob(
+                        [
+                            JSON.stringify(
+                                data,
+                                null,
+                                2
+                            )
+                        ],
+                        {
+                            type:
+                                "application/json"
+                        }
+                    );
+
+                const url =
+                    URL.createObjectURL(blob);
+
+                const link =
+                    document.createElement("a");
+
+                link.href = url;
+
+                link.download =
+                    "controles-dados.json";
+
+                document.body.appendChild(link);
+
+                link.click();
+
+                link.remove();
+
+                URL.revokeObjectURL(url);
+
+            }
+        );
+
+    }
 
 
-            const blob =
-                new Blob(
-                    [
-                        JSON.stringify(
-                            data,
-                            null,
-                            2
-                        )
-                    ],
-                    {
-                        type:
-                            "application/json"
-                    }
+    /* =====================================================
+       PREMIUM
+    ===================================================== */
+
+    const subscribePremiumBtn =
+        document.getElementById(
+            "subscribePremiumBtn"
+        );
+
+    if (subscribePremiumBtn) {
+
+        subscribePremiumBtn.addEventListener(
+            "click",
+            () => {
+
+                if (!currentUser) return;
+
+                currentUser.plan =
+                    "premium";
+
+                localStorage.setItem(
+                    "controles_user",
+                    JSON.stringify(
+                        currentUser
+                    )
                 );
 
+                userPlan.textContent =
+                    "ControleS Premium ⭐";
 
-            const url =
-                URL.createObjectURL(blob);
+                alert(
+                    "ControleS Premium ativado! ⭐"
+                );
 
+                updateForecast();
 
-            const link =
-                document.createElement("a");
+            }
+        );
 
-            link.href = url;
-
-            link.download =
-                "controles-dados.json";
-
-            document.body.appendChild(link);
-
-            link.click();
-
-            link.remove();
-
-            URL.revokeObjectURL(url);
-        });
+    }
 
 
-    /* =========================
-       PREMIUM
-    ========================= */
-
-    document
-        .getElementById("subscribePremiumBtn")
-        .addEventListener("click", () => {
-
-            if (!currentUser) return;
-
-            currentUser.plan = "premium";
-
-            localStorage.setItem(
-                "controles_user",
-                JSON.stringify(currentUser)
-            );
-
-            userPlan.textContent =
-                "ControleS Premium ⭐";
-
-            alert(
-                "ControleS Premium ativado! ⭐"
-            );
-
-            updateForecast();
-        });
-
-
-    /* =========================
+    /* =====================================================
        ATUALIZAÇÃO GERAL
-    ========================= */
+    ===================================================== */
 
     function updateAll() {
 
@@ -1872,17 +2211,20 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReports();
 
         updateForecast();
+
     }
 
 
-    /* =========================
+    /* =====================================================
        INICIALIZAÇÃO
-    ========================= */
+    ===================================================== */
 
-    dateInput.value = todayISO();
+    dateInput.value =
+        todayISO();
 
-    if (frequencyInput)
+    if (frequencyInput) {
         frequencyInput.value = "once";
+    }
 
     loadUser();
 
