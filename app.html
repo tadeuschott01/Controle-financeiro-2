@@ -3,25 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <meta name="theme-color" content="#06231b">
 
 <title>ControleS - Controle Financeiro</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
+
+/* ================================
+   CORES
+================================ */
 
 :root{
     --verde:#06231b;
     --verde2:#0b3025;
+
+    --verde-principal:#159447;
+    --verde-claro:#dff5e7;
+
     --laranja:#f28c28;
-    --laranja2:#d96f0b;
+    --laranja-escuro:#d96f0b;
+
     --branco:#ffffff;
-    --texto:#1d2b25;
+    --fundo:#f5f8f6;
+
+    --texto:#1e2d27;
     --cinza:#71827b;
-    --borda:#e5ebe8;
-    --vermelho:#e0525d;
+    --borda:#e2e9e5;
+
+    --vermelho:#dc555d;
 }
+
+
+/* ================================
+   RESET
+================================ */
 
 *{
     margin:0;
@@ -29,11 +45,21 @@
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    min-height:100vh;
+
     background:
         radial-gradient(
-            circle at top left,
+            circle at 10% 0%,
             rgba(242,140,40,.10),
             transparent 30%
         ),
@@ -42,7 +68,7 @@ body{
             var(--verde),
             var(--verde2)
         );
-    min-height:100vh;
+
     color:var(--texto);
 }
 
@@ -57,214 +83,308 @@ button{
 }
 
 
-/* =========================
+/* ================================
    TOPO
-========================= */
+================================ */
 
 .topbar{
-    height:74px;
+
+    height:72px;
+
     position:sticky;
+
     top:0;
+
     z-index:100;
+
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
-    padding:0 28px;
 
-    background:rgba(6,35,27,.96);
-    backdrop-filter:blur(15px);
+    padding:
+        0 28px;
 
-    border-bottom:1px solid rgba(255,255,255,.08);
+    background:
+        rgba(6,35,27,.97);
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,.08);
+
+    backdrop-filter:
+        blur(15px);
 }
 
 .brand{
+
     display:flex;
+
     align-items:center;
+
     gap:12px;
 }
 
 .brand img{
+
     width:48px;
+
     height:48px;
+
     object-fit:contain;
+
     border-radius:12px;
 }
 
 .brand strong{
+
     display:block;
+
     color:white;
+
     font-size:21px;
 }
 
 .brand span{
-    color:#8da69d;
+
+    color:#8fa79f;
+
     font-size:11px;
 }
 
 .profile{
+
     display:flex;
+
     align-items:center;
+
     gap:10px;
 }
 
 .profile-text{
+
     text-align:right;
 }
 
 .profile-text strong{
+
     color:white;
+
     display:block;
+
     font-size:13px;
 }
 
 .profile-text span{
-    color:#8da69d;
-    font-size:11px;
+
+    color:#8fa79f;
+
+    font-size:10px;
 }
 
 .avatar{
+
     width:40px;
+
     height:40px;
+
     border-radius:50%;
+
     display:grid;
+
     place-items:center;
 
-    background:rgba(255,255,255,.08);
+    background:
+        rgba(255,255,255,.08);
+
     color:white;
 }
 
 
-/* =========================
-   APP
-========================= */
+/* ================================
+   ESTRUTURA
+================================ */
 
 .app{
+
     display:flex;
-    min-height:calc(100vh - 74px);
+
+    min-height:
+        calc(100vh - 72px);
 }
 
 
-/* =========================
+/* ================================
    MENU
-========================= */
+================================ */
 
 .sidebar{
+
     width:245px;
+
     flex-shrink:0;
+
     padding:25px 15px;
 
-    background:rgba(3,25,19,.65);
+    background:
+        rgba(3,25,19,.68);
 
-    border-right:1px solid rgba(255,255,255,.07);
+    border-right:
+        1px solid
+        rgba(255,255,255,.07);
 }
 
 .menu-title{
-    color:#66877b;
+
+    color:#638278;
+
     font-size:10px;
-    text-transform:uppercase;
+
     letter-spacing:1.5px;
-    padding:0 13px 10px;
+
+    text-transform:uppercase;
+
+    padding:
+        0 13px 10px;
 }
 
 .menu{
+
     display:flex;
+
     flex-direction:column;
+
     gap:6px;
 }
 
 .menu button{
-    width:100%;
+
     border:0;
+
     background:transparent;
 
-    color:#9ab3aa;
+    color:#9ab1a8;
 
     padding:13px;
+
     border-radius:12px;
 
     text-align:left;
 
     display:flex;
+
     align-items:center;
+
     gap:12px;
 
     transition:.2s;
 }
 
 .menu button:hover{
-    background:rgba(255,255,255,.05);
+
+    background:
+        rgba(255,255,255,.06);
+
     color:white;
 }
 
 .menu button.active{
-    background:rgba(242,140,40,.15);
-    color:var(--laranja);
+
+    background:
+        rgba(242,140,40,.14);
+
+    color:
+        var(--laranja);
 }
 
 
-/* =========================
+/* ================================
    CONTEÚDO
-========================= */
+================================ */
 
 .content{
+
     width:100%;
+
     max-width:1500px;
+
     padding:32px;
 }
 
 .page{
+
     display:none;
-    animation:entrada .25s ease;
+
+    animation:
+        entrada .25s ease;
 }
 
 .page.active{
+
     display:block;
 }
 
 @keyframes entrada{
 
     from{
+
         opacity:0;
-        transform:translateY(5px);
+
+        transform:
+            translateY(5px);
+
     }
 
     to{
-        opacity:1;
-        transform:translateY(0);
-    }
 
+        opacity:1;
+
+        transform:
+            translateY(0);
+
+    }
 }
 
 
-/* =========================
+/* ================================
    CABEÇALHO
-========================= */
+================================ */
 
 .page-header{
+
     display:flex;
+
     justify-content:space-between;
+
     align-items:flex-end;
 
     margin-bottom:24px;
 }
 
 .page-header h1{
+
     color:white;
+
     font-size:30px;
 }
 
 .page-header p{
+
     color:#91aaa1;
+
     font-size:14px;
+
     margin-top:7px;
 }
 
 
-/* =========================
-   SALDO
-========================= */
+/* ================================
+   CARD SALDO
+================================ */
 
 .balance-card{
+
     background:white;
 
     border-radius:22px;
@@ -273,105 +393,148 @@ button{
 
     margin-bottom:17px;
 
-    box-shadow:0 12px 35px rgba(0,0,0,.18);
+    box-shadow:
+        0 12px 35px
+        rgba(0,0,0,.18);
 }
 
 .balance-label{
+
     color:var(--cinza);
+
     font-size:13px;
 }
 
 .balance-value{
-    color:var(--laranja2);
+
+    color:
+        var(--verde-principal);
 
     font-size:37px;
 
     font-weight:800;
 
-    margin:8px 0 20px;
+    margin:
+        8px 0 20px;
 }
 
 .balance-info{
+
     display:flex;
+
     gap:28px;
 }
 
 .balance-item{
+
     display:flex;
+
     align-items:center;
+
     gap:8px;
 }
 
 .balance-dot{
+
     width:9px;
+
     height:9px;
+
     border-radius:50%;
-    background:var(--laranja);
+
+    background:
+        var(--verde-principal);
 }
 
 .balance-item small{
+
     display:block;
+
     color:#899991;
+
     font-size:10px;
 }
 
 .balance-item strong{
+
     display:block;
+
     color:#25352e;
+
     font-size:13px;
+
     margin-top:2px;
 }
 
 
-/* =========================
+/* ================================
    CARDS
-========================= */
+================================ */
 
 .stats{
+
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+
+    grid-template-columns:
+        repeat(3,1fr);
+
     gap:15px;
 
     margin-bottom:18px;
 }
 
 .stat-card{
+
     background:white;
 
-    border:1px solid var(--borda);
+    border:
+        1px solid
+        var(--borda);
 
     border-radius:18px;
 
     padding:21px;
 
-    box-shadow:0 10px 28px rgba(0,0,0,.13);
+    box-shadow:
+        0 10px 28px
+        rgba(0,0,0,.13);
 }
 
 .stat-top{
+
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
 }
 
 .stat-top small{
+
     color:var(--cinza);
 }
 
 .stat-icon{
+
     width:38px;
+
     height:38px;
 
     display:grid;
+
     place-items:center;
 
     background:white;
 
-    border:1px solid #e8edeb;
+    border:
+        1px solid
+        #e8edeb;
 
     border-radius:11px;
 }
 
 .stat-card h3{
+
     color:var(--texto);
 
     font-size:23px;
@@ -379,27 +542,45 @@ button{
     margin-top:14px;
 }
 
+.green{
+
+    color:
+        var(--verde-principal)
+        !important;
+}
+
 .orange{
-    color:var(--laranja2)!important;
+
+    color:
+        var(--laranja-escuro)
+        !important;
 }
 
 
-/* =========================
+/* ================================
    AÇÕES
-========================= */
+================================ */
 
 .quick-actions{
+
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+
+    grid-template-columns:
+        repeat(4,1fr);
+
     gap:12px;
 
-    margin:18px 0;
+    margin:
+        18px 0;
 }
 
 .quick{
+
     background:white;
 
-    border:1px solid var(--borda);
+    border:
+        1px solid
+        var(--borda);
 
     border-radius:15px;
 
@@ -407,190 +588,455 @@ button{
 
     text-align:left;
 
-    box-shadow:0 8px 22px rgba(0,0,0,.10);
+    box-shadow:
+        0 8px 22px
+        rgba(0,0,0,.10);
 
     transition:.2s;
 }
 
 .quick:hover{
-    transform:translateY(-2px);
-    border-color:rgba(242,140,40,.5);
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(242,140,40,.5);
 }
 
 .quick-icon{
+
     font-size:22px;
+
     margin-bottom:9px;
 }
 
 .quick strong{
+
     display:block;
+
     font-size:13px;
 }
 
 .quick span{
+
     display:block;
+
     color:#84948e;
+
     font-size:10px;
+
     margin-top:4px;
 }
 
 
-/* =========================
-   GRID DASHBOARD
-========================= */
+/* ================================
+   GRID
+================================ */
 
 .dashboard-grid{
+
     display:grid;
 
-    grid-template-columns:1.35fr .9fr;
+    grid-template-columns:
+        1.35fr .9fr;
 
     gap:18px;
 }
 
 
-/* =========================
+/* ================================
    PAINEL
-========================= */
+================================ */
 
 .panel{
+
     background:white;
 
-    border:1px solid var(--borda);
+    border:
+        1px solid
+        var(--borda);
 
     border-radius:19px;
 
     padding:21px;
 
-    box-shadow:0 10px 28px rgba(0,0,0,.12);
+    box-shadow:
+        0 10px 28px
+        rgba(0,0,0,.12);
 }
 
 .panel-header{
+
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
 
     margin-bottom:18px;
 }
 
 .panel-header h2{
+
     color:#1c2b25;
+
     font-size:17px;
 }
 
 .panel-header span{
+
     color:#899a93;
+
     font-size:11px;
 }
 
 
-/* =========================
-   GRÁFICO
-========================= */
+/* ================================
+   GRÁFICO NATIVO
+================================ */
 
-.chart-container{
+.chart-area{
+
     position:relative;
 
     width:100%;
 
     height:300px;
 
-    min-height:300px;
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:center;
+
+    gap:70px;
+
+    padding:
+        20px 20px 40px;
+
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            to top,
+            #f5f8f6,
+            #ffffff
+        );
+
+    border-radius:14px;
 }
 
-.chart-container canvas{
-    display:block !important;
 
-    width:100% !important;
+/* linhas horizontais */
 
-    height:100% !important;
+.chart-lines{
+
+    position:absolute;
+
+    left:20px;
+
+    right:20px;
+
+    top:20px;
+
+    bottom:40px;
+
+    pointer-events:none;
+}
+
+.chart-line{
+
+    position:absolute;
+
+    left:0;
+
+    right:0;
+
+    height:1px;
+
+    background:#e7ece9;
+}
+
+.chart-line:nth-child(1){
+    top:0;
+}
+
+.chart-line:nth-child(2){
+    top:25%;
+}
+
+.chart-line:nth-child(3){
+    top:50%;
+}
+
+.chart-line:nth-child(4){
+    top:75%;
+}
+
+.chart-line:nth-child(5){
+    bottom:0;
 }
 
 
-/* =========================
+/* coluna */
+
+.chart-column{
+
+    width:70px;
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    position:relative;
+
+    z-index:2;
+}
+
+.bar-value{
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    color:#4e625a;
+
+    margin-bottom:7px;
+
+    white-space:nowrap;
+}
+
+.bar{
+
+    width:58px;
+
+    min-height:5px;
+
+    border-radius:
+        10px 10px 4px 4px;
+
+    transition:
+        height .5s ease;
+}
+
+.bar.receita{
+
+    background:
+        linear-gradient(
+            to top,
+            #0f7d3c,
+            #21ad59
+        );
+}
+
+.bar.despesa{
+
+    background:
+        linear-gradient(
+            to top,
+            #d96f0b,
+            #f7a24b
+        );
+}
+
+.bar-label{
+
+    position:absolute;
+
+    bottom:-28px;
+
+    color:#667970;
+
+    font-size:11px;
+
+    font-weight:bold;
+}
+
+
+/* ================================
+   LEGENDA
+================================ */
+
+.chart-legend{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:25px;
+
+    margin-top:17px;
+}
+
+.legend-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    color:#71827b;
+
+    font-size:11px;
+}
+
+.legend-dot{
+
+    width:9px;
+
+    height:9px;
+
+    border-radius:50%;
+}
+
+.legend-green{
+
+    background:
+        var(--verde-principal);
+}
+
+.legend-orange{
+
+    background:
+        var(--laranja);
+}
+
+
+/* ================================
    LANÇAMENTOS
-========================= */
+================================ */
 
 .transaction-list{
+
     display:flex;
+
     flex-direction:column;
 }
 
 .transaction{
+
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
 
     gap:15px;
 
     padding:14px 0;
 
-    border-bottom:1px solid #edf1ef;
+    border-bottom:
+        1px solid
+        #edf1ef;
 }
 
 .transaction:last-child{
+
     border-bottom:0;
 }
 
 .transaction-left{
+
     display:flex;
+
     align-items:center;
+
     gap:12px;
 
     min-width:0;
 }
 
 .transaction-icon{
+
     width:42px;
+
     height:42px;
 
     display:grid;
+
     place-items:center;
 
     background:white;
 
-    border:1px solid #e8eeeb;
+    border:
+        1px solid
+        #e8eeeb;
 
     border-radius:12px;
 }
 
 .transaction-name{
+
     color:#25342e;
+
     font-size:13px;
+
     font-weight:bold;
 
     overflow:hidden;
+
     text-overflow:ellipsis;
+
     white-space:nowrap;
 }
 
 .transaction-date{
+
     color:#91a099;
+
     font-size:10px;
+
     margin-top:4px;
 }
 
 .transaction-value{
-    color:var(--laranja2);
+
     font-size:13px;
+
     font-weight:bold;
+
     white-space:nowrap;
 }
 
+.value-income{
 
-/* =========================
-   FORMULÁRIO
-========================= */
+    color:
+        var(--verde-principal);
+}
+
+.value-expense{
+
+    color:
+        var(--laranja-escuro);
+}
+
+
+/* ================================
+   FORM
+================================ */
 
 .form-panel{
+
     max-width:650px;
 }
 
 .form{
+
     display:grid;
+
     gap:15px;
 }
 
 .field label{
+
     display:block;
 
     color:#71837c;
@@ -601,11 +1047,14 @@ button{
 }
 
 .input{
+
     width:100%;
 
     background:#f8faf9;
 
-    border:1px solid #dfe7e3;
+    border:
+        1px solid
+        #dfe7e3;
 
     border-radius:11px;
 
@@ -617,7 +1066,9 @@ button{
 }
 
 .input:focus{
-    border-color:var(--laranja);
+
+    border-color:
+        var(--laranja);
 
     box-shadow:
         0 0 0 3px
@@ -625,13 +1076,14 @@ button{
 }
 
 .btn-primary{
+
     border:0;
 
     background:
         linear-gradient(
             135deg,
-            var(--laranja),
-            var(--laranja2)
+            var(--verde-principal),
+            #0d7f39
         );
 
     color:white;
@@ -644,7 +1096,10 @@ button{
 }
 
 .btn-secondary{
-    border:1px solid #dfe7e3;
+
+    border:
+        1px solid
+        #dfe7e3;
 
     background:white;
 
@@ -658,23 +1113,26 @@ button{
 }
 
 
-/* =========================
-   BARRA PESQUISA
-========================= */
+/* ================================
+   TOOLBAR
+================================ */
 
 .toolbar{
+
     display:flex;
+
     gap:10px;
 
     margin-bottom:15px;
 }
 
 
-/* =========================
+/* ================================
    VAZIO
-========================= */
+================================ */
 
 .empty{
+
     text-align:center;
 
     padding:40px 15px;
@@ -683,17 +1141,19 @@ button{
 }
 
 .empty-icon{
+
     font-size:34px;
 
     margin-bottom:9px;
 }
 
 
-/* =========================
+/* ================================
    PREMIUM
-========================= */
+================================ */
 
 .premium-card{
+
     background:
         radial-gradient(
             circle at 100% 0,
@@ -706,26 +1166,36 @@ button{
             #f4f8f6
         );
 
-    border:1px solid #e1eae6;
+    border:
+        1px solid
+        #e1eae6;
 
     border-radius:24px;
 
     padding:30px;
 
-    box-shadow:0 15px 35px rgba(0,0,0,.15);
+    box-shadow:
+        0 15px 35px
+        rgba(0,0,0,.15);
 }
 
 .premium-heading{
+
     display:flex;
+
     align-items:center;
+
     gap:13px;
 }
 
 .premium-star{
+
     width:53px;
+
     height:53px;
 
     display:grid;
+
     place-items:center;
 
     background:#fff0dc;
@@ -736,12 +1206,15 @@ button{
 }
 
 .premium-heading h2{
-    color:var(--laranja2);
+
+    color:
+        var(--laranja-escuro);
 
     font-size:27px;
 }
 
 .premium-heading p{
+
     color:#75857f;
 
     margin-top:6px;
@@ -750,9 +1223,11 @@ button{
 }
 
 .premium-grid{
+
     display:grid;
 
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:
+        repeat(2,1fr);
 
     gap:13px;
 
@@ -760,6 +1235,7 @@ button{
 }
 
 .premium-feature{
+
     display:flex;
 
     align-items:center;
@@ -768,7 +1244,9 @@ button{
 
     background:white;
 
-    border:1px solid #e6ece9;
+    border:
+        1px solid
+        #e6ece9;
 
     border-radius:15px;
 
@@ -776,17 +1254,22 @@ button{
 }
 
 .feature-icon{
+
     width:42px;
+
     height:42px;
 
     flex-shrink:0;
 
     display:grid;
+
     place-items:center;
 
     background:white;
 
-    border:1px solid #e5ebe8;
+    border:
+        1px solid
+        #e5ebe8;
 
     border-radius:12px;
 
@@ -794,6 +1277,7 @@ button{
 }
 
 .premium-feature strong{
+
     display:block;
 
     color:#23332d;
@@ -802,6 +1286,7 @@ button{
 }
 
 .premium-feature span{
+
     display:block;
 
     color:#84938d;
@@ -812,10 +1297,12 @@ button{
 }
 
 .lock{
+
     margin-left:auto;
 }
 
 .premium-bottom{
+
     display:flex;
 
     justify-content:space-between;
@@ -826,16 +1313,20 @@ button{
 
     padding-top:20px;
 
-    border-top:1px solid #e7ece9;
+    border-top:
+        1px solid
+        #e7ece9;
 }
 
 .price strong{
+
     color:#17251f;
 
-    font-size:24px;
+    font-size:20px;
 }
 
 .price span{
+
     display:block;
 
     color:#899991;
@@ -846,113 +1337,139 @@ button{
 }
 
 
-/* =========================
-   MENU MOBILE
-========================= */
+/* ================================
+   MOBILE
+================================ */
 
 .mobile-nav{
+
     display:none;
 }
 
 
-/* =========================
-   TABLET
-========================= */
-
 @media(max-width:950px){
 
     .sidebar{
+
         width:210px;
     }
 
     .content{
-        padding:25px 20px;
+
+        padding:
+            25px 20px;
     }
 
     .dashboard-grid{
+
         grid-template-columns:1fr;
     }
 
     .quick-actions{
-        grid-template-columns:repeat(2,1fr);
+
+        grid-template-columns:
+            repeat(2,1fr);
     }
 
 }
 
 
-/* =========================
-   CELULAR
-========================= */
-
 @media(max-width:700px){
 
     .topbar{
+
         height:68px;
 
-        padding:0 15px;
+        padding:
+            0 15px;
     }
 
     .brand img{
+
         width:43px;
+
         height:43px;
     }
 
     .brand strong{
+
         font-size:18px;
     }
 
     .brand span,
     .profile-text{
+
         display:none;
     }
 
     .sidebar{
+
         display:none;
     }
 
     .content{
-        padding:20px 14px 90px;
+
+        padding:
+            20px 14px 90px;
     }
 
     .page-header h1{
+
         font-size:25px;
     }
 
     .stats{
+
         grid-template-columns:1fr;
     }
 
     .quick-actions{
-        grid-template-columns:1fr 1fr;
+
+        grid-template-columns:
+            1fr 1fr;
+
         gap:9px;
     }
 
     .panel{
+
         padding:17px;
     }
 
+    .chart-area{
 
-    /*
-       CORREÇÃO DO GRÁFICO NO CELULAR
-    */
-
-    .chart-container{
         height:260px;
-        min-height:260px;
+
+        gap:35px;
+
+        padding:
+            20px 10px 40px;
     }
 
+    .bar{
+
+        width:48px;
+    }
+
+    .chart-column{
+
+        width:60px;
+    }
 
     .premium-grid{
+
         grid-template-columns:1fr;
     }
 
     .premium-bottom{
+
         flex-direction:column;
 
         align-items:stretch;
     }
 
     .mobile-nav{
+
         position:fixed;
 
         display:flex;
@@ -962,12 +1479,15 @@ button{
         justify-content:space-around;
 
         bottom:0;
+
         left:0;
+
         right:0;
 
         height:70px;
 
-        background:rgba(4,28,21,.98);
+        background:
+            rgba(4,28,21,.98);
 
         border-top:
             1px solid
@@ -977,6 +1497,7 @@ button{
     }
 
     .mobile-nav button{
+
         border:0;
 
         background:none;
@@ -989,10 +1510,13 @@ button{
     }
 
     .mobile-nav button.active{
-        color:var(--laranja);
+
+        color:
+            var(--laranja);
     }
 
     .mobile-icon{
+
         display:block;
 
         font-size:19px;
@@ -1003,18 +1527,21 @@ button{
 }
 
 
-/* =========================
-   CELULAR PEQUENO
-========================= */
-
 @media(max-width:380px){
 
     .quick-actions{
+
         grid-template-columns:1fr;
     }
 
     .balance-value{
+
         font-size:31px;
+    }
+
+    .chart-area{
+
+        gap:20px;
     }
 
 }
@@ -1026,19 +1553,23 @@ button{
 <body>
 
 
-<!-- =========================
+<!-- ================================
      TOPO
-========================= -->
+================================ -->
 
 <header class="topbar">
 
     <div class="brand">
 
-        <img src="logo.png" alt="ControleS">
+        <img
+            src="logo.png"
+            alt="ControleS">
 
         <div>
 
-            <strong>ControleS</strong>
+            <strong>
+                ControleS
+            </strong>
 
             <span>
                 Seu controle financeiro
@@ -1053,9 +1584,13 @@ button{
 
         <div class="profile-text">
 
-            <strong>Minha conta</strong>
+            <strong>
+                Minha conta
+            </strong>
 
-            <span>Usuário</span>
+            <span>
+                Usuário
+            </span>
 
         </div>
 
@@ -1071,9 +1606,9 @@ button{
 <div class="app">
 
 
-<!-- =========================
-     MENU DESKTOP
-========================= -->
+<!-- ================================
+     SIDEBAR
+================================ -->
 
 <aside class="sidebar">
 
@@ -1124,16 +1659,16 @@ button{
 </aside>
 
 
-<!-- =========================
+<!-- ================================
      CONTEÚDO
-========================= -->
+================================ -->
 
 <main class="content">
 
 
-<!-- =========================
+<!-- ================================
      DASHBOARD
-========================= -->
+================================ -->
 
 <section
     id="dashboard"
@@ -1144,7 +1679,9 @@ button{
 
         <div>
 
-            <h1>Dashboard</h1>
+            <h1>
+                Dashboard
+            </h1>
 
             <p>
                 Resumo das suas finanças.
@@ -1164,8 +1701,8 @@ button{
         </div>
 
         <div
-            class="balance-value"
-            id="saldo">
+            id="saldo"
+            class="balance-value">
             R$ 0,00
         </div>
 
@@ -1178,9 +1715,12 @@ button{
 
                 <div>
 
-                    <small>Receitas</small>
+                    <small>
+                        Receitas
+                    </small>
 
-                    <strong id="balanceReceitas">
+                    <strong
+                        id="balanceReceitas">
                         R$ 0,00
                     </strong>
 
@@ -1195,9 +1735,12 @@ button{
 
                 <div>
 
-                    <small>Despesas</small>
+                    <small>
+                        Despesas
+                    </small>
 
-                    <strong id="balanceDespesas">
+                    <strong
+                        id="balanceDespesas">
                         R$ 0,00
                     </strong>
 
@@ -1219,7 +1762,9 @@ button{
 
             <div class="stat-top">
 
-                <small>Receitas</small>
+                <small>
+                    Receitas
+                </small>
 
                 <div class="stat-icon">
                     💰
@@ -1228,7 +1773,7 @@ button{
             </div>
 
             <h3
-                class="orange"
+                class="green"
                 id="totalReceitas">
                 R$ 0,00
             </h3>
@@ -1240,7 +1785,9 @@ button{
 
             <div class="stat-top">
 
-                <small>Despesas</small>
+                <small>
+                    Despesas
+                </small>
 
                 <div class="stat-icon">
                     💸
@@ -1261,7 +1808,9 @@ button{
 
             <div class="stat-top">
 
-                <small>Lançamentos</small>
+                <small>
+                    Lançamentos
+                </small>
 
                 <div class="stat-icon">
                     🧾
@@ -1269,7 +1818,8 @@ button{
 
             </div>
 
-            <h3 id="totalLancamentos">
+            <h3
+                id="totalLancamentos">
                 0
             </h3>
 
@@ -1362,10 +1912,12 @@ button{
     </div>
 
 
-    <!-- GRÁFICO -->
+    <!-- DASHBOARD GRID -->
 
     <div class="dashboard-grid">
 
+
+        <!-- GRÁFICO -->
 
         <div class="panel">
 
@@ -1382,16 +1934,91 @@ button{
             </div>
 
 
-            <div class="chart-container">
+            <div class="chart-area">
 
-                <canvas id="financeChart"></canvas>
+                <div class="chart-lines">
+
+                    <div class="chart-line"></div>
+
+                    <div class="chart-line"></div>
+
+                    <div class="chart-line"></div>
+
+                    <div class="chart-line"></div>
+
+                    <div class="chart-line"></div>
+
+                </div>
+
+
+                <div class="chart-column">
+
+                    <div
+                        id="receitaBarValue"
+                        class="bar-value">
+                        R$ 0
+                    </div>
+
+                    <div
+                        id="receitaBar"
+                        class="bar receita"
+                        style="height:5px">
+                    </div>
+
+                    <div class="bar-label">
+                        Receitas
+                    </div>
+
+                </div>
+
+
+                <div class="chart-column">
+
+                    <div
+                        id="despesaBarValue"
+                        class="bar-value">
+                        R$ 0
+                    </div>
+
+                    <div
+                        id="despesaBar"
+                        class="bar despesa"
+                        style="height:5px">
+                    </div>
+
+                    <div class="bar-label">
+                        Despesas
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="chart-legend">
+
+                <div class="legend-item">
+
+                    <div class="legend-dot legend-green"></div>
+
+                    Receitas
+
+                </div>
+
+                <div class="legend-item">
+
+                    <div class="legend-dot legend-orange"></div>
+
+                    Despesas
+
+                </div>
 
             </div>
 
         </div>
 
 
-        <!-- ÚLTIMOS LANÇAMENTOS -->
+        <!-- ÚLTIMOS -->
 
         <div class="panel">
 
@@ -1407,7 +2034,6 @@ button{
 
             </div>
 
-
             <div
                 id="latestList"
                 class="transaction-list">
@@ -1422,9 +2048,9 @@ button{
 </section>
 
 
-<!-- =========================
+<!-- ================================
      RECEITAS
-========================= -->
+================================ -->
 
 <section
     id="receitas"
@@ -1489,7 +2115,8 @@ button{
             </div>
 
 
-            <button class="btn-primary">
+            <button
+                class="btn-primary">
                 + Adicionar receita
             </button>
 
@@ -1502,9 +2129,9 @@ button{
 </section>
 
 
-<!-- =========================
+<!-- ================================
      DESPESAS
-========================= -->
+================================ -->
 
 <section
     id="despesas"
@@ -1620,7 +2247,8 @@ button{
             </div>
 
 
-            <button class="btn-primary">
+            <button
+                class="btn-primary">
                 + Adicionar despesa
             </button>
 
@@ -1633,9 +2261,9 @@ button{
 </section>
 
 
-<!-- =========================
+<!-- ================================
      LANÇAMENTOS
-========================= -->
+================================ -->
 
 <section
     id="lancamentos"
@@ -1685,9 +2313,9 @@ button{
 </section>
 
 
-<!-- =========================
+<!-- ================================
      RELATÓRIOS
-========================= -->
+================================ -->
 
 <section
     id="relatorios"
@@ -1721,7 +2349,7 @@ button{
             </small>
 
             <h3
-                class="orange"
+                class="green"
                 id="relReceitas">
                 R$ 0,00
             </h3>
@@ -1751,7 +2379,7 @@ button{
             </small>
 
             <h3
-                class="orange"
+                class="green"
                 id="relSaldo">
                 R$ 0,00
             </h3>
@@ -1773,9 +2401,63 @@ button{
         </div>
 
 
-        <div class="chart-container">
+        <div class="chart-area">
 
-            <canvas id="reportChart"></canvas>
+            <div class="chart-lines">
+
+                <div class="chart-line"></div>
+
+                <div class="chart-line"></div>
+
+                <div class="chart-line"></div>
+
+                <div class="chart-line"></div>
+
+                <div class="chart-line"></div>
+
+            </div>
+
+
+            <div class="chart-column">
+
+                <div
+                    id="relReceitaBarValue"
+                    class="bar-value">
+                    R$ 0
+                </div>
+
+                <div
+                    id="relReceitaBar"
+                    class="bar receita"
+                    style="height:5px">
+                </div>
+
+                <div class="bar-label">
+                    Receitas
+                </div>
+
+            </div>
+
+
+            <div class="chart-column">
+
+                <div
+                    id="relDespesaBarValue"
+                    class="bar-value">
+                    R$ 0
+                </div>
+
+                <div
+                    id="relDespesaBar"
+                    class="bar despesa"
+                    style="height:5px">
+                </div>
+
+                <div class="bar-label">
+                    Despesas
+                </div>
+
+            </div>
 
         </div>
 
@@ -1785,9 +2467,9 @@ button{
 </section>
 
 
-<!-- =========================
+<!-- ================================
      CATEGORIAS
-========================= -->
+================================ -->
 
 <section
     id="categorias"
@@ -1816,9 +2498,37 @@ button{
 
         <div class="panel">
 
-            <div class="chart-container">
+            <div class="chart-area">
 
-                <canvas id="categoryChart"></canvas>
+                <div
+                    style="
+                        text-align:center;
+                        width:100%;
+                        padding-top:90px;
+                    ">
+
+                    <div
+                        style="
+                            font-size:45px;
+                        ">
+                        🍩
+                    </div>
+
+                    <strong>
+                        Gastos por categoria
+                    </strong>
+
+                    <p
+                        id="categoryTotalText"
+                        style="
+                            color:#899a93;
+                            font-size:12px;
+                            margin-top:5px;
+                        ">
+                        R$ 0,00
+                    </p>
+
+                </div>
 
             </div>
 
@@ -1836,7 +2546,9 @@ button{
             </div>
 
 
-            <div id="categoryList"></div>
+            <div
+                id="categoryList">
+            </div>
 
         </div>
 
@@ -1847,9 +2559,9 @@ button{
 </section>
 
 
-<!-- =========================
+<!-- ================================
      PREMIUM
-========================= -->
+================================ -->
 
 <section
     id="premium"
@@ -2106,7 +2818,6 @@ button{
 
         <div class="premium-bottom">
 
-
             <div class="price">
 
                 <strong>
@@ -2128,7 +2839,6 @@ button{
 
             </button>
 
-
         </div>
 
 
@@ -2143,9 +2853,9 @@ button{
 </div>
 
 
-<!-- =========================
+<!-- ================================
      MENU MOBILE
-========================= -->
+================================ -->
 
 <nav class="mobile-nav">
 
@@ -2216,10 +2926,9 @@ button{
 
 <script>
 
-
-/* =========================
-   DADOS
-========================= */
+/* =====================================
+   CONTROLES
+===================================== */
 
 let transactions =
     JSON.parse(
@@ -2229,16 +2938,9 @@ let transactions =
     );
 
 
-let financeChart = null;
-
-let reportChart = null;
-
-let categoryChart = null;
-
-
-/* =========================
-   DINHEIRO
-========================= */
+/* =====================================
+   FORMATAÇÃO
+===================================== */
 
 function money(value){
 
@@ -2253,26 +2955,34 @@ function money(value){
 }
 
 
-/* =========================
+/* =====================================
    NAVEGAÇÃO
-========================= */
+===================================== */
 
-function showPage(pageId, button){
+function showPage(pageId,button){
 
     document
         .querySelectorAll('.page')
         .forEach(page=>{
-            page.classList.remove('active');
+
+            page.classList.remove(
+                'active'
+            );
+
         });
 
 
     const page =
-        document.getElementById(pageId);
+        document.getElementById(
+            pageId
+        );
 
 
     if(page){
 
-        page.classList.add('active');
+        page.classList.add(
+            'active'
+        );
 
     }
 
@@ -2282,38 +2992,41 @@ function showPage(pageId, button){
             '.menu button,.mobile-nav button'
         )
         .forEach(btn=>{
-            btn.classList.remove('active');
+
+            btn.classList.remove(
+                'active'
+            );
+
         });
 
 
     if(button){
 
-        button.classList.add('active');
+        button.classList.add(
+            'active'
+        );
 
     }
 
 
-    /*
-       Pequeno atraso para o Chart.js
-       calcular corretamente a largura
-       depois que a página fica visível.
-    */
+    if(pageId === 'dashboard'){
 
-    setTimeout(()=>{
+        setTimeout(
+            updateCharts,
+            50
+        );
 
-        if(pageId === 'dashboard'){
-            updateFinanceChart();
-        }
+    }
 
-        if(pageId === 'relatorios'){
-            updateReportChart();
-        }
 
-        if(pageId === 'categorias'){
-            updateCategoryChart();
-        }
+    if(pageId === 'relatorios'){
 
-    },150);
+        setTimeout(
+            updateReportChart,
+            50
+        );
+
+    }
 
 
     window.scrollTo({
@@ -2324,9 +3037,9 @@ function showPage(pageId, button){
 }
 
 
-/* =========================
-   ADICIONAR
-========================= */
+/* =====================================
+   ADICIONAR TRANSAÇÃO
+===================================== */
 
 function addTransaction(event,type){
 
@@ -2361,8 +3074,6 @@ function addTransaction(event,type){
             );
 
     }
-
-
     else{
 
         descricao =
@@ -2394,7 +3105,10 @@ function addTransaction(event,type){
     }
 
 
-    if(!descricao || valor <= 0){
+    if(
+        !descricao ||
+        valor <= 0
+    ){
 
         alert(
             'Preencha os dados corretamente.'
@@ -2428,7 +3142,9 @@ function addTransaction(event,type){
 
     save();
 
+
     event.target.reset();
+
 
     updateAll();
 
@@ -2442,28 +3158,32 @@ function addTransaction(event,type){
     );
 
 
-    showPage('dashboard');
-
-}
-
-
-/* =========================
-   SALVAR
-========================= */
-
-function save(){
-
-    localStorage.setItem(
-        'controles_transactions',
-        JSON.stringify(transactions)
+    showPage(
+        'dashboard'
     );
 
 }
 
 
-/* =========================
+/* =====================================
+   SALVAR
+===================================== */
+
+function save(){
+
+    localStorage.setItem(
+        'controles_transactions',
+        JSON.stringify(
+            transactions
+        )
+    );
+
+}
+
+
+/* =====================================
    TOTAIS
-========================= */
+===================================== */
 
 function getTotals(){
 
@@ -2474,15 +3194,18 @@ function getTotals(){
 
     transactions.forEach(item=>{
 
-        if(item.type === 'receita'){
+        if(
+            item.type === 'receita'
+        ){
 
-            receitas += Number(item.valor);
+            receitas +=
+                Number(item.valor);
 
         }
-
         else{
 
-            despesas += Number(item.valor);
+            despesas +=
+                Number(item.valor);
 
         }
 
@@ -2491,106 +3214,277 @@ function getTotals(){
 
     return{
 
-        receitas:receitas,
+        receitas,
 
-        despesas:despesas,
+        despesas,
 
-        saldo:receitas-despesas
+        saldo:
+            receitas - despesas
 
     };
 
 }
 
 
-/* =========================
+/* =====================================
    DASHBOARD
-========================= */
+===================================== */
 
 function updateDashboard(){
 
-    const t = getTotals();
+    const t =
+        getTotals();
 
 
     document
-        .getElementById('saldo')
+        .getElementById(
+            'saldo'
+        )
         .textContent =
         money(t.saldo);
 
 
     document
-        .getElementById('balanceReceitas')
+        .getElementById(
+            'balanceReceitas'
+        )
         .textContent =
         money(t.receitas);
 
 
     document
-        .getElementById('balanceDespesas')
+        .getElementById(
+            'balanceDespesas'
+        )
         .textContent =
         money(t.despesas);
 
 
     document
-        .getElementById('totalReceitas')
+        .getElementById(
+            'totalReceitas'
+        )
         .textContent =
         money(t.receitas);
 
 
     document
-        .getElementById('totalDespesas')
+        .getElementById(
+            'totalDespesas'
+        )
         .textContent =
         money(t.despesas);
 
 
     document
-        .getElementById('totalLancamentos')
+        .getElementById(
+            'totalLancamentos'
+        )
         .textContent =
         transactions.length;
 
 
     document
-        .getElementById('relReceitas')
+        .getElementById(
+            'relReceitas'
+        )
         .textContent =
         money(t.receitas);
 
 
     document
-        .getElementById('relDespesas')
+        .getElementById(
+            'relDespesas'
+        )
         .textContent =
         money(t.despesas);
 
 
     document
-        .getElementById('relSaldo')
+        .getElementById(
+            'relSaldo'
+        )
         .textContent =
         money(t.saldo);
 
 }
 
 
-/* =========================
-   HTML SEGURO
-========================= */
+/* =====================================
+   GRÁFICO NATIVO
+===================================== */
+
+function updateCharts(){
+
+    const t =
+        getTotals();
+
+
+    const max =
+        Math.max(
+            t.receitas,
+            t.despesas,
+            1
+        );
+
+
+    const receitaHeight =
+        Math.max(
+            5,
+            (t.receitas / max) * 210
+        );
+
+
+    const despesaHeight =
+        Math.max(
+            5,
+            (t.despesas / max) * 210
+        );
+
+
+    const receitaBar =
+        document.getElementById(
+            'receitaBar'
+        );
+
+
+    const despesaBar =
+        document.getElementById(
+            'despesaBar'
+        );
+
+
+    if(receitaBar){
+
+        receitaBar.style.height =
+            receitaHeight + 'px';
+
+    }
+
+
+    if(despesaBar){
+
+        despesaBar.style.height =
+            despesaHeight + 'px';
+
+    }
+
+
+    document
+        .getElementById(
+            'receitaBarValue'
+        )
+        .textContent =
+        money(t.receitas);
+
+
+    document
+        .getElementById(
+            'despesaBarValue'
+        )
+        .textContent =
+        money(t.despesas);
+
+}
+
+
+/* =====================================
+   GRÁFICO RELATÓRIO
+===================================== */
+
+function updateReportChart(){
+
+    const t =
+        getTotals();
+
+
+    const max =
+        Math.max(
+            t.receitas,
+            t.despesas,
+            1
+        );
+
+
+    document
+        .getElementById(
+            'relReceitaBar'
+        )
+        .style.height =
+        Math.max(
+            5,
+            (t.receitas / max) * 210
+        ) + 'px';
+
+
+    document
+        .getElementById(
+            'relDespesaBar'
+        )
+        .style.height =
+        Math.max(
+            5,
+            (t.despesas / max) * 210
+        ) + 'px';
+
+
+    document
+        .getElementById(
+            'relReceitaBarValue'
+        )
+        .textContent =
+        money(t.receitas);
+
+
+    document
+        .getElementById(
+            'relDespesaBarValue'
+        )
+        .textContent =
+        money(t.despesas);
+
+}
+
+
+/* =====================================
+   ESCAPAR HTML
+===================================== */
 
 function escapeHTML(text){
 
     return String(text)
 
-        .replace(/&/g,'&amp;')
+        .replace(
+            /&/g,
+            '&amp;'
+        )
 
-        .replace(/</g,'&lt;')
+        .replace(
+            /</g,
+            '&lt;'
+        )
 
-        .replace(/>/g,'&gt;')
+        .replace(
+            />/g,
+            '&gt;'
+        )
 
-        .replace(/"/g,'&quot;')
+        .replace(
+            /"/g,
+            '&quot;'
+        )
 
-        .replace(/'/g,'&#039;');
+        .replace(
+            /'/g,
+            '&#039;'
+        );
 
 }
 
 
-/* =========================
-   ITEM
-========================= */
+/* =====================================
+   HTML TRANSAÇÃO
+===================================== */
 
 function transactionHTML(item){
 
@@ -2642,7 +3536,17 @@ function transactionHTML(item){
 
             <div style="text-align:right">
 
-                <div class="transaction-value">
+                <div
+                    class="
+                        transaction-value
+                        ${
+                            income
+                            ?
+                            'value-income'
+                            :
+                            'value-expense'
+                        }
+                    ">
 
                     ${income ? '+' : '-'}
 
@@ -2674,9 +3578,9 @@ function transactionHTML(item){
 }
 
 
-/* =========================
+/* =====================================
    ÚLTIMOS
-========================= */
+===================================== */
 
 function renderLatest(){
 
@@ -2686,7 +3590,9 @@ function renderLatest(){
         );
 
 
-    if(!transactions.length){
+    if(
+        !transactions.length
+    ){
 
         box.innerHTML = `
 
@@ -2716,9 +3622,9 @@ function renderLatest(){
 }
 
 
-/* =========================
+/* =====================================
    TODOS
-========================= */
+===================================== */
 
 function renderTransactions(){
 
@@ -2745,26 +3651,27 @@ function renderTransactions(){
 
 
     const filtered =
-        transactions.filter(item=>{
+        transactions.filter(
+            item =>
 
-            return (
+            item.descricao
+                .toLowerCase()
+                .includes(search)
 
-                item.descricao
-                    .toLowerCase()
-                    .includes(search)
+            ||
 
-                ||
+            (
+                item.categoria || ''
+            )
+                .toLowerCase()
+                .includes(search)
 
-                (item.categoria || '')
-                    .toLowerCase()
-                    .includes(search)
-
-            );
-
-        });
+        );
 
 
-    if(!filtered.length){
+    if(
+        !filtered.length
+    ){
 
         box.innerHTML = `
 
@@ -2793,11 +3700,17 @@ function renderTransactions(){
 }
 
 
-/* =========================
+/* =====================================
    CATEGORIAS
-========================= */
+===================================== */
 
-function getCategories(){
+function renderCategories(){
+
+    const box =
+        document.getElementById(
+            'categoryList'
+        );
+
 
     const categories = {};
 
@@ -2818,8 +3731,8 @@ function getCategories(){
 
             categories[category] =
                 (
-                    categories[category] ||
-                    0
+                    categories[category]
+                    || 0
                 )
                 +
                 Number(item.valor);
@@ -2827,32 +3740,33 @@ function getCategories(){
         });
 
 
-    return categories;
-
-}
-
-
-/* =========================
-   LISTA CATEGORIAS
-========================= */
-
-function renderCategories(){
-
-    const box =
-        document.getElementById(
-            'categoryList'
+    const total =
+        Object.values(
+            categories
+        )
+        .reduce(
+            (a,b)=>a+b,
+            0
         );
 
 
-    const categories =
-        getCategories();
+    document
+        .getElementById(
+            'categoryTotalText'
+        )
+        .textContent =
+        money(total);
 
 
     const keys =
-        Object.keys(categories);
+        Object.keys(
+            categories
+        );
 
 
-    if(!keys.length){
+    if(
+        !keys.length
+    ){
 
         box.innerHTML = `
 
@@ -2875,7 +3789,9 @@ function renderCategories(){
 
     keys.sort(
         (a,b)=>
-        categories[b]-categories[a]
+        categories[b]
+        -
+        categories[a]
     );
 
 
@@ -2909,7 +3825,8 @@ function renderCategories(){
                 </div>
 
 
-                <strong class="orange">
+                <strong
+                    class="orange">
 
                     ${money(
                         categories[category]
@@ -2925,469 +3842,9 @@ function renderCategories(){
 }
 
 
-/* =========================
-   GRÁFICO PRINCIPAL
-========================= */
-
-function updateFinanceChart(){
-
-    const canvas =
-        document.getElementById(
-            'financeChart'
-        );
-
-
-    if(
-        !canvas ||
-        typeof Chart === 'undefined'
-    ){
-
-        console.log(
-            'Chart.js não carregou.'
-        );
-
-        return;
-
-    }
-
-
-    const t =
-        getTotals();
-
-
-    if(financeChart){
-
-        financeChart.destroy();
-
-        financeChart = null;
-
-    }
-
-
-    financeChart =
-        new Chart(
-            canvas.getContext('2d'),
-            {
-
-                type:'bar',
-
-
-                data:{
-
-                    labels:[
-                        'Receitas',
-                        'Despesas'
-                    ],
-
-
-                    datasets:[{
-
-                        label:'Valor',
-
-                        data:[
-                            t.receitas,
-                            t.despesas
-                        ],
-
-
-                        backgroundColor:[
-
-                            '#f28c28',
-
-                            '#ffffff'
-
-                        ],
-
-
-                        borderColor:[
-
-                            '#d96f0b',
-
-                            '#dfe7e3'
-
-                        ],
-
-
-                        borderWidth:2,
-
-                        borderRadius:10,
-
-                        barThickness:55
-
-                    }]
-
-                },
-
-
-                options:{
-
-                    responsive:true,
-
-                    maintainAspectRatio:false,
-
-
-                    animation:{
-                        duration:700
-                    },
-
-
-                    plugins:{
-
-                        legend:{
-                            display:false
-                        },
-
-
-                        tooltip:{
-
-                            callbacks:{
-
-                                label:function(context){
-
-                                    return ' ' +
-                                        money(
-                                            context.raw
-                                        );
-
-                                }
-
-                            }
-
-                        }
-
-                    },
-
-
-                    scales:{
-
-                        y:{
-
-                            beginAtZero:true,
-
-
-                            ticks:{
-
-                                color:'#71827b',
-
-
-                                callback:function(value){
-
-                                    return money(
-                                        value
-                                    );
-
-                                }
-
-                            },
-
-
-                            grid:{
-
-                                color:
-                                'rgba(0,0,0,.07)'
-
-                            }
-
-                        },
-
-
-                        x:{
-
-                            ticks:{
-
-                                color:'#26352f',
-
-                                font:{
-                                    weight:'bold'
-                                }
-
-                            },
-
-
-                            grid:{
-                                display:false
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-        );
-
-}
-
-
-/* =========================
-   RELATÓRIO
-========================= */
-
-function updateReportChart(){
-
-    const canvas =
-        document.getElementById(
-            'reportChart'
-        );
-
-
-    if(
-        !canvas ||
-        typeof Chart === 'undefined'
-    ){
-
-        return;
-
-    }
-
-
-    const t =
-        getTotals();
-
-
-    if(reportChart){
-
-        reportChart.destroy();
-
-    }
-
-
-    reportChart =
-        new Chart(
-            canvas.getContext('2d'),
-            {
-
-                type:'line',
-
-
-                data:{
-
-                    labels:[
-                        'Receitas',
-                        'Despesas',
-                        'Saldo'
-                    ],
-
-
-                    datasets:[{
-
-                        label:'Valor',
-
-                        data:[
-                            t.receitas,
-                            t.despesas,
-                            t.saldo
-                        ],
-
-
-                        borderColor:
-                            '#f28c28',
-
-
-                        backgroundColor:
-                            'rgba(242,140,40,.12)',
-
-
-                        fill:true,
-
-                        tension:.35,
-
-                        pointRadius:5
-
-                    }]
-
-                },
-
-
-                options:{
-
-                    responsive:true,
-
-                    maintainAspectRatio:false,
-
-
-                    plugins:{
-
-                        legend:{
-                            display:false
-                        }
-
-                    },
-
-
-                    scales:{
-
-                        y:{
-
-                            beginAtZero:true,
-
-                            ticks:{
-
-                                callback:function(value){
-
-                                    return money(value);
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        );
-
-}
-
-
-/* =========================
-   GRÁFICO CATEGORIAS
-========================= */
-
-function updateCategoryChart(){
-
-    const canvas =
-        document.getElementById(
-            'categoryChart'
-        );
-
-
-    if(
-        !canvas ||
-        typeof Chart === 'undefined'
-    ){
-
-        return;
-
-    }
-
-
-    const categories =
-        getCategories();
-
-
-    const keys =
-        Object.keys(categories);
-
-
-    if(categoryChart){
-
-        categoryChart.destroy();
-
-    }
-
-
-    categoryChart =
-        new Chart(
-            canvas.getContext('2d'),
-            {
-
-                type:'doughnut',
-
-
-                data:{
-
-                    labels:
-                        keys.length
-                        ?
-                        keys
-                        :
-                        ['Sem despesas'],
-
-
-                    datasets:[{
-
-                        data:
-                            keys.length
-                            ?
-                            keys.map(
-                                key =>
-                                categories[key]
-                            )
-                            :
-                            [1],
-
-
-                        backgroundColor:[
-
-                            '#f28c28',
-
-                            '#ffffff',
-
-                            '#ffb45f',
-
-                            '#d96f0b',
-
-                            '#f5d4ad',
-
-                            '#e9eeeb',
-
-                            '#ffc857',
-
-                            '#91aaa0'
-
-                        ],
-
-
-                        borderColor:
-                            '#ffffff',
-
-                        borderWidth:2
-
-                    }]
-
-                },
-
-
-                options:{
-
-                    responsive:true,
-
-                    maintainAspectRatio:false,
-
-
-                    cutout:'65%',
-
-
-                    plugins:{
-
-                        legend:{
-
-                            position:'bottom',
-
-                            labels:{
-
-                                color:'#71827b',
-
-                                padding:13,
-
-                                font:{
-                                    size:11
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        );
-
-}
-
-
-/* =========================
+/* =====================================
    EXCLUIR
-========================= */
+===================================== */
 
 function removeTransaction(id){
 
@@ -3416,26 +3873,30 @@ function removeTransaction(id){
 }
 
 
-/* =========================
+/* =====================================
    PREMIUM
-========================= */
+===================================== */
 
 function premiumMessage(){
 
     alert(
+
         '⭐ ControleS Premium\\n\\n' +
 
         'Em breve você poderá assinar ' +
+
         'o Premium e desbloquear todos ' +
+
         'os recursos exclusivos.'
+
     );
 
 }
 
 
-/* =========================
+/* =====================================
    ATUALIZAR TUDO
-========================= */
+===================================== */
 
 function updateAll(){
 
@@ -3447,37 +3908,14 @@ function updateAll(){
 
     renderCategories();
 
-    /*
-       Só desenha o gráfico quando
-       o Dashboard está visível.
-    */
-
-    const dashboard =
-        document.getElementById(
-            'dashboard'
-        );
-
-
-    if(
-        dashboard &&
-        dashboard.classList.contains(
-            'active'
-        )
-    ){
-
-        setTimeout(
-            updateFinanceChart,
-            100
-        );
-
-    }
+    updateCharts();
 
 }
 
 
-/* =========================
-   INICIAR
-========================= */
+/* =====================================
+   INICIAR APP
+===================================== */
 
 document.addEventListener(
     'DOMContentLoaded',
