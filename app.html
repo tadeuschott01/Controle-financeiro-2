@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<meta name="theme-color" content="#06231b">
+<meta name="theme-color" content="#3FAF78">
 
 <title>ControleS - Controle Financeiro</title>
 
 <style>
 
-/* ================================
-   CORES
-================================ */
+/* =====================================================
+   PALETA
+===================================================== */
+
 :root{
     --laranja-fundo:#FFF1E6;
     --laranja-fundo-claro:#FFF8F3;
@@ -22,6 +22,9 @@
 
     --laranja:#F2A66A;
     --laranja-escuro:#D98245;
+
+    --verde-botao:#3FAF78;
+    --verde-botao-hover:#329966;
 
     --branco:#FFFFFF;
     --fundo:#FFF5ED;
@@ -33,9 +36,10 @@
     --vermelho:#DC555D;
 }
 
-/* ================================
+
+/* =====================================================
    RESET
-================================ */
+===================================================== */
 
 *{
     margin:0;
@@ -56,15 +60,11 @@ body{
     min-height:100vh;
 
     background:
-        radial-gradient(
-            circle at 10% 0%,
-            rgba(242,140,40,.10),
-            transparent 30%
-        ),
         linear-gradient(
             135deg,
-            var(--verde),
-            var(--verde2)
+            #FFF8F3 0%,
+            #FFF1E6 50%,
+            #FFFAF7 100%
         );
 
     color:var(--texto);
@@ -81,53 +81,41 @@ button{
 }
 
 
-/* ================================
+/* =====================================================
    TOPO
-================================ */
+===================================================== */
 
 .topbar{
-
     height:72px;
 
     position:sticky;
-
     top:0;
-
     z-index:100;
 
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
 
-    padding:
-        0 28px;
+    padding:0 28px;
 
     background:
-        rgba(6,35,27,.97);
+        rgba(255,255,255,.94);
 
     border-bottom:
         1px solid
-        rgba(255,255,255,.08);
+        var(--borda);
 
-    backdrop-filter:
-        blur(15px);
+    backdrop-filter:blur(15px);
 }
 
 .brand{
-
     display:flex;
-
     align-items:center;
-
     gap:12px;
 }
 
 .brand img{
-
     width:48px;
-
     height:48px;
 
     object-fit:contain;
@@ -136,38 +124,31 @@ button{
 }
 
 .brand strong{
-
     display:block;
 
-    color:white;
+    color:var(--texto);
 
     font-size:21px;
 }
 
 .brand span{
-
-    color:#8fa79f;
+    color:var(--cinza);
 
     font-size:11px;
 }
 
 .profile{
-
     display:flex;
-
     align-items:center;
-
     gap:10px;
 }
 
 .profile-text{
-
     text-align:right;
 }
 
 .profile-text strong{
-
-    color:white;
+    color:var(--texto);
 
     display:block;
 
@@ -175,37 +156,34 @@ button{
 }
 
 .profile-text span{
-
-    color:#8fa79f;
+    color:var(--cinza);
 
     font-size:10px;
 }
 
 .avatar{
-
     width:40px;
-
     height:40px;
 
     border-radius:50%;
 
     display:grid;
-
     place-items:center;
 
     background:
-        rgba(255,255,255,.08);
+        var(--laranja-claro);
 
-    color:white;
+    border:
+        1px solid
+        var(--borda);
 }
 
 
-/* ================================
+/* =====================================================
    ESTRUTURA
-================================ */
+===================================================== */
 
 .app{
-
     display:flex;
 
     min-height:
@@ -213,12 +191,11 @@ button{
 }
 
 
-/* ================================
-   MENU
-================================ */
+/* =====================================================
+   SIDEBAR
+===================================================== */
 
 .sidebar{
-
     width:245px;
 
     flex-shrink:0;
@@ -226,16 +203,15 @@ button{
     padding:25px 15px;
 
     background:
-        rgba(3,25,19,.68);
+        rgba(255,255,255,.55);
 
     border-right:
         1px solid
-        rgba(255,255,255,.07);
+        var(--borda);
 }
 
 .menu-title{
-
-    color:#638278;
+    color:var(--cinza);
 
     font-size:10px;
 
@@ -248,21 +224,18 @@ button{
 }
 
 .menu{
-
     display:flex;
-
     flex-direction:column;
 
     gap:6px;
 }
 
 .menu button{
-
     border:0;
 
     background:transparent;
 
-    color:#9ab1a8;
+    color:#77685D;
 
     padding:13px;
 
@@ -271,7 +244,6 @@ button{
     text-align:left;
 
     display:flex;
-
     align-items:center;
 
     gap:12px;
@@ -280,29 +252,29 @@ button{
 }
 
 .menu button:hover{
-
     background:
-        rgba(255,255,255,.06);
+        rgba(242,166,106,.12);
 
-    color:white;
+    color:
+        var(--laranja-escuro);
 }
 
 .menu button.active{
-
     background:
-        rgba(242,140,40,.14);
+        #FFF0E5;
 
     color:
-        var(--laranja);
+        var(--laranja-escuro);
+
+    font-weight:700;
 }
 
 
-/* ================================
+/* =====================================================
    CONTEÚDO
-================================ */
+===================================================== */
 
 .content{
-
     width:100%;
 
     max-width:1500px;
@@ -311,7 +283,6 @@ button{
 }
 
 .page{
-
     display:none;
 
     animation:
@@ -319,57 +290,43 @@ button{
 }
 
 .page.active{
-
     display:block;
 }
 
 @keyframes entrada{
-
     from{
-
         opacity:0;
-
-        transform:
-            translateY(5px);
-
+        transform:translateY(5px);
     }
 
     to{
-
         opacity:1;
-
-        transform:
-            translateY(0);
-
+        transform:translateY(0);
     }
 }
 
 
-/* ================================
+/* =====================================================
    CABEÇALHO
-================================ */
+===================================================== */
 
 .page-header{
-
     display:flex;
 
     justify-content:space-between;
-
     align-items:flex-end;
 
     margin-bottom:24px;
 }
 
 .page-header h1{
-
-    color:white;
+    color:var(--texto);
 
     font-size:30px;
 }
 
 .page-header p{
-
-    color:#91aaa1;
+    color:var(--cinza);
 
     font-size:14px;
 
@@ -377,12 +334,11 @@ button{
 }
 
 
-/* ================================
-   CARD SALDO
-================================ */
+/* =====================================================
+   SALDO
+===================================================== */
 
 .balance-card{
-
     background:white;
 
     border-radius:22px;
@@ -391,22 +347,24 @@ button{
 
     margin-bottom:17px;
 
+    border:
+        1px solid
+        var(--borda);
+
     box-shadow:
         0 12px 35px
-        rgba(0,0,0,.18);
+        rgba(94,61,38,.10);
 }
 
 .balance-label{
-
     color:var(--cinza);
 
     font-size:13px;
 }
 
 .balance-value{
-
     color:
-        var(--verde-principal);
+        var(--verde-botao);
 
     font-size:37px;
 
@@ -417,14 +375,12 @@ button{
 }
 
 .balance-info{
-
     display:flex;
 
     gap:28px;
 }
 
 .balance-item{
-
     display:flex;
 
     align-items:center;
@@ -433,31 +389,27 @@ button{
 }
 
 .balance-dot{
-
     width:9px;
-
     height:9px;
 
     border-radius:50%;
 
     background:
-        var(--verde-principal);
+        var(--verde-botao);
 }
 
 .balance-item small{
-
     display:block;
 
-    color:#899991;
+    color:var(--cinza);
 
     font-size:10px;
 }
 
 .balance-item strong{
-
     display:block;
 
-    color:#25352e;
+    color:var(--texto);
 
     font-size:13px;
 
@@ -465,12 +417,11 @@ button{
 }
 
 
-/* ================================
+/* =====================================================
    CARDS
-================================ */
+===================================================== */
 
 .stats{
-
     display:grid;
 
     grid-template-columns:
@@ -482,7 +433,6 @@ button{
 }
 
 .stat-card{
-
     background:white;
 
     border:
@@ -495,44 +445,38 @@ button{
 
     box-shadow:
         0 10px 28px
-        rgba(0,0,0,.13);
+        rgba(94,61,38,.08);
 }
 
 .stat-top{
-
     display:flex;
 
     justify-content:space-between;
-
     align-items:center;
 }
 
 .stat-top small{
-
     color:var(--cinza);
 }
 
 .stat-icon{
-
     width:38px;
-
     height:38px;
 
     display:grid;
-
     place-items:center;
 
-    background:white;
+    background:
+        var(--laranja-claro);
 
     border:
         1px solid
-        #e8edeb;
+        var(--borda);
 
     border-radius:11px;
 }
 
 .stat-card h3{
-
     color:var(--texto);
 
     font-size:23px;
@@ -541,26 +485,23 @@ button{
 }
 
 .green{
-
     color:
-        var(--verde-principal)
+        var(--verde-botao)
         !important;
 }
 
 .orange{
-
     color:
         var(--laranja-escuro)
         !important;
 }
 
 
-/* ================================
+/* =====================================================
    AÇÕES
-================================ */
+===================================================== */
 
 .quick-actions{
-
     display:grid;
 
     grid-template-columns:
@@ -573,7 +514,6 @@ button{
 }
 
 .quick{
-
     background:white;
 
     border:
@@ -588,39 +528,34 @@ button{
 
     box-shadow:
         0 8px 22px
-        rgba(0,0,0,.10);
+        rgba(94,61,38,.08);
 
     transition:.2s;
 }
 
 .quick:hover{
-
-    transform:
-        translateY(-2px);
+    transform:translateY(-2px);
 
     border-color:
-        rgba(242,140,40,.5);
+        #E9A06A;
 }
 
 .quick-icon{
-
     font-size:22px;
 
     margin-bottom:9px;
 }
 
 .quick strong{
-
     display:block;
 
     font-size:13px;
 }
 
 .quick span{
-
     display:block;
 
-    color:#84948e;
+    color:var(--cinza);
 
     font-size:10px;
 
@@ -628,12 +563,11 @@ button{
 }
 
 
-/* ================================
+/* =====================================================
    GRID
-================================ */
+===================================================== */
 
 .dashboard-grid{
-
     display:grid;
 
     grid-template-columns:
@@ -643,12 +577,11 @@ button{
 }
 
 
-/* ================================
+/* =====================================================
    PAINEL
-================================ */
+===================================================== */
 
 .panel{
-
     background:white;
 
     border:
@@ -661,41 +594,36 @@ button{
 
     box-shadow:
         0 10px 28px
-        rgba(0,0,0,.12);
+        rgba(94,61,38,.08);
 }
 
 .panel-header{
-
     display:flex;
 
     justify-content:space-between;
-
     align-items:center;
 
     margin-bottom:18px;
 }
 
 .panel-header h2{
-
-    color:#1c2b25;
+    color:var(--texto);
 
     font-size:17px;
 }
 
 .panel-header span{
-
-    color:#899a93;
+    color:var(--cinza);
 
     font-size:11px;
 }
 
 
-/* ================================
-   GRÁFICO NATIVO
-================================ */
+/* =====================================================
+   GRÁFICO
+===================================================== */
 
 .chart-area{
-
     position:relative;
 
     width:100%;
@@ -718,42 +646,35 @@ button{
     background:
         linear-gradient(
             to top,
-            #f5f8f6,
-            #ffffff
+            #FFF9F5,
+            #FFFFFF
         );
 
     border-radius:14px;
 }
 
-
-/* linhas horizontais */
-
 .chart-lines{
-
     position:absolute;
 
     left:20px;
-
     right:20px;
 
     top:20px;
-
     bottom:40px;
 
     pointer-events:none;
 }
 
 .chart-line{
-
     position:absolute;
 
     left:0;
-
     right:0;
 
     height:1px;
 
-    background:#e7ece9;
+    background:
+        #F0E7E0;
 }
 
 .chart-line:nth-child(1){
@@ -776,13 +697,8 @@ button{
     bottom:0;
 }
 
-
-/* coluna */
-
 .chart-column{
-
     width:70px;
-
     height:100%;
 
     display:flex;
@@ -799,12 +715,11 @@ button{
 }
 
 .bar-value{
-
     font-size:11px;
 
     font-weight:bold;
 
-    color:#4e625a;
+    color:#6B594C;
 
     margin-bottom:7px;
 
@@ -812,7 +727,6 @@ button{
 }
 
 .bar{
-
     width:58px;
 
     min-height:5px;
@@ -825,45 +739,36 @@ button{
 }
 
 .bar.receita{
-
     background:
         linear-gradient(
             to top,
-            #0f7d3c,
-            #21ad59
+            #3FAF78,
+            #68C997
         );
 }
 
 .bar.despesa{
-
     background:
         linear-gradient(
             to top,
-            #d96f0b,
-            #f7a24b
+            #D98245,
+            #F2B07A
         );
 }
 
 .bar-label{
-
     position:absolute;
 
     bottom:-28px;
 
-    color:#667970;
+    color:#77685D;
 
     font-size:11px;
 
     font-weight:bold;
 }
 
-
-/* ================================
-   LEGENDA
-================================ */
-
 .chart-legend{
-
     display:flex;
 
     justify-content:center;
@@ -874,53 +779,46 @@ button{
 }
 
 .legend-item{
-
     display:flex;
 
     align-items:center;
 
     gap:6px;
 
-    color:#71827b;
+    color:var(--cinza);
 
     font-size:11px;
 }
 
 .legend-dot{
-
     width:9px;
-
     height:9px;
 
     border-radius:50%;
 }
 
 .legend-green{
-
     background:
-        var(--verde-principal);
+        var(--verde-botao);
 }
 
 .legend-orange{
-
     background:
         var(--laranja);
 }
 
 
-/* ================================
+/* =====================================================
    LANÇAMENTOS
-================================ */
+===================================================== */
 
 .transaction-list{
-
     display:flex;
 
     flex-direction:column;
 }
 
 .transaction{
-
     display:flex;
 
     justify-content:space-between;
@@ -933,16 +831,14 @@ button{
 
     border-bottom:
         1px solid
-        #edf1ef;
+        #F1E9E3;
 }
 
 .transaction:last-child{
-
     border-bottom:0;
 }
 
 .transaction-left{
-
     display:flex;
 
     align-items:center;
@@ -953,27 +849,25 @@ button{
 }
 
 .transaction-icon{
-
     width:42px;
-
     height:42px;
 
     display:grid;
 
     place-items:center;
 
-    background:white;
+    background:
+        var(--laranja-claro);
 
     border:
         1px solid
-        #e8eeeb;
+        var(--borda);
 
     border-radius:12px;
 }
 
 .transaction-name{
-
-    color:#25342e;
+    color:var(--texto);
 
     font-size:13px;
 
@@ -987,8 +881,7 @@ button{
 }
 
 .transaction-date{
-
-    color:#91a099;
+    color:var(--cinza);
 
     font-size:10px;
 
@@ -996,7 +889,6 @@ button{
 }
 
 .transaction-value{
-
     font-size:13px;
 
     font-weight:bold;
@@ -1005,39 +897,34 @@ button{
 }
 
 .value-income{
-
     color:
-        var(--verde-principal);
+        var(--verde-botao);
 }
 
 .value-expense{
-
     color:
         var(--laranja-escuro);
 }
 
 
-/* ================================
-   FORM
-================================ */
+/* =====================================================
+   FORMULÁRIO
+===================================================== */
 
 .form-panel{
-
     max-width:650px;
 }
 
 .form{
-
     display:grid;
 
     gap:15px;
 }
 
 .field label{
-
     display:block;
 
-    color:#71837c;
+    color:var(--cinza);
 
     font-size:12px;
 
@@ -1045,63 +932,83 @@ button{
 }
 
 .input{
-
     width:100%;
 
-    background:#f8faf9;
+    background:#FFFBF8;
 
     border:
         1px solid
-        #dfe7e3;
+        var(--borda);
 
     border-radius:11px;
 
     padding:14px;
 
-    color:#1b2924;
+    color:var(--texto);
 
     outline:none;
 }
 
 .input:focus{
-
     border-color:
         var(--laranja);
 
     box-shadow:
         0 0 0 3px
-        rgba(242,140,40,.1);
+        rgba(242,166,106,.13);
 }
 
-.btn-primary{
 
+/* =====================================================
+   BOTÃO PRINCIPAL — VERDE
+===================================================== */
+
+.btn-primary{
     border:0;
 
     background:
-        linear-gradient(
-            135deg,
-            var(--verde-principal),
-            #0d7f39
-        );
+        #3FAF78;
 
-    color:white;
+    color:#FFFFFF;
 
     padding:14px 18px;
 
     border-radius:11px;
 
     font-weight:800;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 6px 15px
+        rgba(63,175,120,.20);
+
+    transition:.2s;
+}
+
+.btn-primary:hover{
+    background:
+        #329966;
+
+    transform:
+        translateY(-1px);
+}
+
+.btn-primary:active{
+    transform:
+        translateY(0);
 }
 
 .btn-secondary{
-
     border:
         1px solid
-        #dfe7e3;
+        var(--borda);
 
     background:white;
 
-    color:#26352f;
+    color:var(--texto);
 
     padding:13px 17px;
 
@@ -1111,12 +1018,11 @@ button{
 }
 
 
-/* ================================
+/* =====================================================
    TOOLBAR
-================================ */
+===================================================== */
 
 .toolbar{
-
     display:flex;
 
     gap:10px;
@@ -1125,48 +1031,45 @@ button{
 }
 
 
-/* ================================
+/* =====================================================
    VAZIO
-================================ */
+===================================================== */
 
 .empty{
-
     text-align:center;
 
     padding:40px 15px;
 
-    color:#899a93;
+    color:var(--cinza);
 }
 
 .empty-icon{
-
     font-size:34px;
 
     margin-bottom:9px;
 }
 
 
-/* ================================
+/* =====================================================
    PREMIUM
-================================ */
+===================================================== */
 
 .premium-card{
-
     background:
         radial-gradient(
             circle at 100% 0,
-            rgba(242,140,40,.18),
+            rgba(242,166,106,.18),
             transparent 35%
         ),
         linear-gradient(
             135deg,
             white,
-            #f4f8f6
+            #FFF8F3
         );
 
     border:
         1px solid
-        #e1eae6;
+        var(--borda);
 
     border-radius:24px;
 
@@ -1174,11 +1077,10 @@ button{
 
     box-shadow:
         0 15px 35px
-        rgba(0,0,0,.15);
+        rgba(94,61,38,.10);
 }
 
 .premium-heading{
-
     display:flex;
 
     align-items:center;
@@ -1187,16 +1089,14 @@ button{
 }
 
 .premium-star{
-
     width:53px;
-
     height:53px;
 
     display:grid;
 
     place-items:center;
 
-    background:#fff0dc;
+    background:#FFF0E3;
 
     border-radius:15px;
 
@@ -1204,7 +1104,6 @@ button{
 }
 
 .premium-heading h2{
-
     color:
         var(--laranja-escuro);
 
@@ -1212,8 +1111,7 @@ button{
 }
 
 .premium-heading p{
-
-    color:#75857f;
+    color:var(--cinza);
 
     margin-top:6px;
 
@@ -1221,7 +1119,6 @@ button{
 }
 
 .premium-grid{
-
     display:grid;
 
     grid-template-columns:
@@ -1233,7 +1130,6 @@ button{
 }
 
 .premium-feature{
-
     display:flex;
 
     align-items:center;
@@ -1244,7 +1140,7 @@ button{
 
     border:
         1px solid
-        #e6ece9;
+        var(--borda);
 
     border-radius:15px;
 
@@ -1252,9 +1148,7 @@ button{
 }
 
 .feature-icon{
-
     width:42px;
-
     height:42px;
 
     flex-shrink:0;
@@ -1263,11 +1157,12 @@ button{
 
     place-items:center;
 
-    background:white;
+    background:
+        var(--laranja-claro);
 
     border:
         1px solid
-        #e5ebe8;
+        var(--borda);
 
     border-radius:12px;
 
@@ -1275,19 +1170,17 @@ button{
 }
 
 .premium-feature strong{
-
     display:block;
 
-    color:#23332d;
+    color:var(--texto);
 
     font-size:13px;
 }
 
 .premium-feature span{
-
     display:block;
 
-    color:#84938d;
+    color:var(--cinza);
 
     font-size:10px;
 
@@ -1295,12 +1188,10 @@ button{
 }
 
 .lock{
-
     margin-left:auto;
 }
 
 .premium-bottom{
-
     display:flex;
 
     justify-content:space-between;
@@ -1313,21 +1204,19 @@ button{
 
     border-top:
         1px solid
-        #e7ece9;
+        var(--borda);
 }
 
 .price strong{
-
-    color:#17251f;
+    color:var(--texto);
 
     font-size:20px;
 }
 
 .price span{
-
     display:block;
 
-    color:#899991;
+    color:var(--cinza);
 
     font-size:11px;
 
@@ -1335,12 +1224,11 @@ button{
 }
 
 
-/* ================================
+/* =====================================================
    MOBILE
-================================ */
+===================================================== */
 
 .mobile-nav{
-
     display:none;
 }
 
@@ -1348,23 +1236,19 @@ button{
 @media(max-width:950px){
 
     .sidebar{
-
         width:210px;
     }
 
     .content{
-
         padding:
             25px 20px;
     }
 
     .dashboard-grid{
-
         grid-template-columns:1fr;
     }
 
     .quick-actions{
-
         grid-template-columns:
             repeat(2,1fr);
     }
@@ -1375,7 +1259,6 @@ button{
 @media(max-width:700px){
 
     .topbar{
-
         height:68px;
 
         padding:
@@ -1383,46 +1266,37 @@ button{
     }
 
     .brand img{
-
         width:43px;
-
         height:43px;
     }
 
     .brand strong{
-
         font-size:18px;
     }
 
     .brand span,
     .profile-text{
-
         display:none;
     }
 
     .sidebar{
-
         display:none;
     }
 
     .content{
-
         padding:
             20px 14px 90px;
     }
 
     .page-header h1{
-
         font-size:25px;
     }
 
     .stats{
-
         grid-template-columns:1fr;
     }
 
     .quick-actions{
-
         grid-template-columns:
             1fr 1fr;
 
@@ -1430,12 +1304,10 @@ button{
     }
 
     .panel{
-
         padding:17px;
     }
 
     .chart-area{
-
         height:260px;
 
         gap:35px;
@@ -1445,29 +1317,24 @@ button{
     }
 
     .bar{
-
         width:48px;
     }
 
     .chart-column{
-
         width:60px;
     }
 
     .premium-grid{
-
         grid-template-columns:1fr;
     }
 
     .premium-bottom{
-
         flex-direction:column;
 
         align-items:stretch;
     }
 
     .mobile-nav{
-
         position:fixed;
 
         display:flex;
@@ -1477,30 +1344,27 @@ button{
         justify-content:space-around;
 
         bottom:0;
-
         left:0;
-
         right:0;
 
         height:70px;
 
         background:
-            rgba(4,28,21,.98);
+            rgba(255,255,255,.98);
 
         border-top:
             1px solid
-            rgba(255,255,255,.08);
+            var(--borda);
 
         z-index:200;
     }
 
     .mobile-nav button{
-
         border:0;
 
         background:none;
 
-        color:#8ca59b;
+        color:var(--cinza);
 
         font-size:10px;
 
@@ -1508,13 +1372,11 @@ button{
     }
 
     .mobile-nav button.active{
-
         color:
-            var(--laranja);
+            var(--verde-botao);
     }
 
     .mobile-icon{
-
         display:block;
 
         font-size:19px;
@@ -1528,17 +1390,14 @@ button{
 @media(max-width:380px){
 
     .quick-actions{
-
         grid-template-columns:1fr;
     }
 
     .balance-value{
-
         font-size:31px;
     }
 
     .chart-area{
-
         gap:20px;
     }
 
@@ -1551,9 +1410,9 @@ button{
 <body>
 
 
-<!-- ================================
+<!-- =====================================================
      TOPO
-================================ -->
+===================================================== -->
 
 <header class="topbar">
 
@@ -1604,9 +1463,9 @@ button{
 <div class="app">
 
 
-<!-- ================================
-     SIDEBAR
-================================ -->
+<!-- =====================================================
+     MENU
+===================================================== -->
 
 <aside class="sidebar">
 
@@ -1657,16 +1516,16 @@ button{
 </aside>
 
 
-<!-- ================================
+<!-- =====================================================
      CONTEÚDO
-================================ -->
+===================================================== -->
 
 <main class="content">
 
 
-<!-- ================================
+<!-- =====================================================
      DASHBOARD
-================================ -->
+===================================================== -->
 
 <section
     id="dashboard"
@@ -1689,8 +1548,6 @@ button{
 
     </div>
 
-
-    <!-- SALDO -->
 
     <div class="balance-card">
 
@@ -1750,8 +1607,6 @@ button{
 
     </div>
 
-
-    <!-- CARDS -->
 
     <div class="stats">
 
@@ -1825,8 +1680,6 @@ button{
 
     </div>
 
-
-    <!-- AÇÕES -->
 
     <div class="quick-actions">
 
@@ -1910,8 +1763,6 @@ button{
     </div>
 
 
-    <!-- DASHBOARD GRID -->
-
     <div class="dashboard-grid">
 
 
@@ -1937,13 +1788,9 @@ button{
                 <div class="chart-lines">
 
                     <div class="chart-line"></div>
-
                     <div class="chart-line"></div>
-
                     <div class="chart-line"></div>
-
                     <div class="chart-line"></div>
-
                     <div class="chart-line"></div>
 
                 </div>
@@ -2016,7 +1863,7 @@ button{
         </div>
 
 
-        <!-- ÚLTIMOS -->
+        <!-- ÚLTIMOS LANÇAMENTOS -->
 
         <div class="panel">
 
@@ -2046,9 +1893,9 @@ button{
 </section>
 
 
-<!-- ================================
+<!-- =====================================================
      RECEITAS
-================================ -->
+===================================================== -->
 
 <section
     id="receitas"
@@ -2114,8 +1961,11 @@ button{
 
 
             <button
+                type="submit"
                 class="btn-primary">
+
                 + Adicionar receita
+
             </button>
 
 
@@ -2127,9 +1977,9 @@ button{
 </section>
 
 
-<!-- ================================
+<!-- =====================================================
      DESPESAS
-================================ -->
+===================================================== -->
 
 <section
     id="despesas"
@@ -2246,8 +2096,11 @@ button{
 
 
             <button
+                type="submit"
                 class="btn-primary">
+
                 + Adicionar despesa
+
             </button>
 
 
@@ -2259,9 +2112,9 @@ button{
 </section>
 
 
-<!-- ================================
+<!-- =====================================================
      LANÇAMENTOS
-================================ -->
+===================================================== -->
 
 <section
     id="lancamentos"
@@ -2311,9 +2164,9 @@ button{
 </section>
 
 
-<!-- ================================
+<!-- =====================================================
      RELATÓRIOS
-================================ -->
+===================================================== -->
 
 <section
     id="relatorios"
@@ -2404,13 +2257,9 @@ button{
             <div class="chart-lines">
 
                 <div class="chart-line"></div>
-
                 <div class="chart-line"></div>
-
                 <div class="chart-line"></div>
-
                 <div class="chart-line"></div>
-
                 <div class="chart-line"></div>
 
             </div>
@@ -2465,9 +2314,9 @@ button{
 </section>
 
 
-<!-- ================================
+<!-- =====================================================
      CATEGORIAS
-================================ -->
+===================================================== -->
 
 <section
     id="categorias"
@@ -2519,7 +2368,7 @@ button{
                     <p
                         id="categoryTotalText"
                         style="
-                            color:#899a93;
+                            color:#89766A;
                             font-size:12px;
                             margin-top:5px;
                         ">
@@ -2557,9 +2406,9 @@ button{
 </section>
 
 
-<!-- ================================
+<!-- =====================================================
      PREMIUM
-================================ -->
+===================================================== -->
 
 <section
     id="premium"
@@ -2851,9 +2700,9 @@ button{
 </div>
 
 
-<!-- ================================
+<!-- =====================================================
      MENU MOBILE
-================================ -->
+===================================================== -->
 
 <nav class="mobile-nav">
 
@@ -2922,11 +2771,11 @@ button{
 </nav>
 
 
-<script>
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
 
-/* =====================================
-   CONTROLES
-===================================== */
+<script>
 
 let transactions =
     JSON.parse(
@@ -2936,9 +2785,9 @@ let transactions =
     );
 
 
-/* =====================================
+/* =====================================================
    FORMATAÇÃO
-===================================== */
+===================================================== */
 
 function money(value){
 
@@ -2953,35 +2802,25 @@ function money(value){
 }
 
 
-/* =====================================
+/* =====================================================
    NAVEGAÇÃO
-===================================== */
+===================================================== */
 
 function showPage(pageId,button){
 
     document
         .querySelectorAll('.page')
         .forEach(page=>{
-
-            page.classList.remove(
-                'active'
-            );
-
+            page.classList.remove('active');
         });
 
 
     const page =
-        document.getElementById(
-            pageId
-        );
+        document.getElementById(pageId);
 
 
     if(page){
-
-        page.classList.add(
-            'active'
-        );
-
+        page.classList.add('active');
     }
 
 
@@ -2990,40 +2829,28 @@ function showPage(pageId,button){
             '.menu button,.mobile-nav button'
         )
         .forEach(btn=>{
-
-            btn.classList.remove(
-                'active'
-            );
-
+            btn.classList.remove('active');
         });
 
 
     if(button){
-
-        button.classList.add(
-            'active'
-        );
-
+        button.classList.add('active');
     }
 
 
     if(pageId === 'dashboard'){
-
         setTimeout(
             updateCharts,
             50
         );
-
     }
 
 
     if(pageId === 'relatorios'){
-
         setTimeout(
             updateReportChart,
             50
         );
-
     }
 
 
@@ -3035,9 +2862,9 @@ function showPage(pageId,button){
 }
 
 
-/* =====================================
-   ADICIONAR TRANSAÇÃO
-===================================== */
+/* =====================================================
+   ADICIONAR
+===================================================== */
 
 function addTransaction(event,type){
 
@@ -3045,9 +2872,7 @@ function addTransaction(event,type){
 
 
     let descricao = '';
-
     let valor = 0;
-
     let categoria = '';
 
 
@@ -3163,9 +2988,9 @@ function addTransaction(event,type){
 }
 
 
-/* =====================================
+/* =====================================================
    SALVAR
-===================================== */
+===================================================== */
 
 function save(){
 
@@ -3179,14 +3004,13 @@ function save(){
 }
 
 
-/* =====================================
+/* =====================================================
    TOTAIS
-===================================== */
+===================================================== */
 
 function getTotals(){
 
     let receitas = 0;
-
     let despesas = 0;
 
 
@@ -3213,7 +3037,6 @@ function getTotals(){
     return{
 
         receitas,
-
         despesas,
 
         saldo:
@@ -3224,9 +3047,9 @@ function getTotals(){
 }
 
 
-/* =====================================
+/* =====================================================
    DASHBOARD
-===================================== */
+===================================================== */
 
 function updateDashboard(){
 
@@ -3308,9 +3131,9 @@ function updateDashboard(){
 }
 
 
-/* =====================================
-   GRÁFICO NATIVO
-===================================== */
+/* =====================================================
+   GRÁFICO
+===================================================== */
 
 function updateCharts(){
 
@@ -3386,9 +3209,9 @@ function updateCharts(){
 }
 
 
-/* =====================================
+/* =====================================================
    GRÁFICO RELATÓRIO
-===================================== */
+===================================================== */
 
 function updateReportChart(){
 
@@ -3444,9 +3267,9 @@ function updateReportChart(){
 }
 
 
-/* =====================================
-   ESCAPAR HTML
-===================================== */
+/* =====================================================
+   SEGURANÇA HTML
+===================================================== */
 
 function escapeHTML(text){
 
@@ -3480,9 +3303,9 @@ function escapeHTML(text){
 }
 
 
-/* =====================================
-   HTML TRANSAÇÃO
-===================================== */
+/* =====================================================
+   TRANSAÇÃO
+===================================================== */
 
 function transactionHTML(item){
 
@@ -3558,7 +3381,7 @@ function transactionHTML(item){
                     style="
                         border:0;
                         background:none;
-                        color:#899a93;
+                        color:#89766A;
                         font-size:10px;
                         margin-top:5px;
                     ">
@@ -3576,9 +3399,9 @@ function transactionHTML(item){
 }
 
 
-/* =====================================
+/* =====================================================
    ÚLTIMOS
-===================================== */
+===================================================== */
 
 function renderLatest(){
 
@@ -3620,9 +3443,9 @@ function renderLatest(){
 }
 
 
-/* =====================================
+/* =====================================================
    TODOS
-===================================== */
+===================================================== */
 
 function renderTransactions(){
 
@@ -3698,9 +3521,9 @@ function renderTransactions(){
 }
 
 
-/* =====================================
+/* =====================================================
    CATEGORIAS
-===================================== */
+===================================================== */
 
 function renderCategories(){
 
@@ -3840,9 +3663,9 @@ function renderCategories(){
 }
 
 
-/* =====================================
+/* =====================================================
    EXCLUIR
-===================================== */
+===================================================== */
 
 function removeTransaction(id){
 
@@ -3851,9 +3674,7 @@ function removeTransaction(id){
             'Deseja excluir este lançamento?'
         )
     ){
-
         return;
-
     }
 
 
@@ -3871,9 +3692,9 @@ function removeTransaction(id){
 }
 
 
-/* =====================================
+/* =====================================================
    PREMIUM
-===================================== */
+===================================================== */
 
 function premiumMessage(){
 
@@ -3892,9 +3713,9 @@ function premiumMessage(){
 }
 
 
-/* =====================================
+/* =====================================================
    ATUALIZAR TUDO
-===================================== */
+===================================================== */
 
 function updateAll(){
 
@@ -3908,12 +3729,14 @@ function updateAll(){
 
     updateCharts();
 
+    updateReportChart();
+
 }
 
 
-/* =====================================
-   INICIAR APP
-===================================== */
+/* =====================================================
+   INICIAR
+===================================================== */
 
 document.addEventListener(
     'DOMContentLoaded',
