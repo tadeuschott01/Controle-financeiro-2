@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,9 +13,9 @@
 
 <body>
 
-<!-- =====================================================
+<!-- =========================
      LOGIN
-===================================================== -->
+========================= -->
 
 <div id="loginScreen" class="login-screen">
 
@@ -39,51 +38,36 @@
         <form id="loginForm">
 
             <div class="input-group">
-
-                <label for="loginName">
-                    Nome
-                </label>
+                <label for="loginName">Nome</label>
 
                 <input
                     type="text"
                     id="loginName"
                     placeholder="Digite seu nome"
-                    autocomplete="name"
                     required
                 >
-
             </div>
 
             <div class="input-group">
-
-                <label for="loginEmail">
-                    E-mail
-                </label>
+                <label for="loginEmail">E-mail</label>
 
                 <input
                     type="email"
                     id="loginEmail"
                     placeholder="seu@email.com"
-                    autocomplete="email"
                     required
                 >
-
             </div>
 
             <div class="input-group">
-
-                <label for="loginPassword">
-                    Senha
-                </label>
+                <label for="loginPassword">Senha</label>
 
                 <input
                     type="password"
                     id="loginPassword"
                     placeholder="Digite sua senha"
-                    autocomplete="current-password"
                     required
                 >
-
             </div>
 
             <button
@@ -104,35 +88,25 @@
 </div>
 
 
-<!-- =====================================================
+<!-- =========================
      APP
-===================================================== -->
+========================= -->
 
 <div id="app" class="app hidden">
 
-
-    <!-- =================================================
-         SIDEBAR
-    ================================================== -->
+    <!-- SIDEBAR -->
 
     <aside id="sidebar" class="sidebar">
 
         <div class="sidebar-brand">
 
             <div class="brand-logo">
-
-                <img
-                    src="logo.png"
-                    alt="ControleS"
-                >
-
+                <img src="logo.png" alt="ControleS">
             </div>
 
             <div class="brand-text">
 
-                <strong>
-                    ControleS
-                </strong>
+                <strong>ControleS</strong>
 
                 <span>
                     Controle financeiro
@@ -149,71 +123,40 @@
                 class="nav-item active"
                 data-section="dashboard"
             >
-
                 <span class="nav-icon">⌂</span>
-
-                <span>
-                    Dashboard
-                </span>
-
+                <span>Dashboard</span>
             </button>
-
 
             <button
                 class="nav-item"
                 data-section="transactions"
             >
-
                 <span class="nav-icon">🧾</span>
-
-                <span>
-                    Lançamentos
-                </span>
-
+                <span>Lançamentos</span>
             </button>
-
 
             <button
                 class="nav-item"
                 data-section="categories"
             >
-
-                <!-- CORRIGIDO: 🍩 → 📄 -->
-
                 <span class="nav-icon">📄</span>
-
-                <span>
-                    Categorias
-                </span>
-
+                <span>Categorias</span>
             </button>
-
 
             <button
                 class="nav-item"
                 data-section="reports"
             >
-
                 <span class="nav-icon">📈</span>
-
-                <span>
-                    Relatórios
-                </span>
-
+                <span>Relatórios</span>
             </button>
-
 
             <button
                 class="nav-item"
                 data-section="premium"
             >
-
                 <span class="nav-icon">⭐</span>
-
-                <span>
-                    Premium
-                </span>
-
+                <span>Premium</span>
             </button>
 
         </nav>
@@ -225,41 +168,24 @@
                 id="themeBtn"
                 class="sidebar-action"
             >
-
                 <span>🌙</span>
-
-                <span>
-                    Tema escuro
-                </span>
-
+                <span>Tema escuro</span>
             </button>
-
 
             <button
                 id="exportDataBtn"
                 class="sidebar-action"
             >
-
                 <span>💾</span>
-
-                <span>
-                    Exportar dados
-                </span>
-
+                <span>Exportar dados</span>
             </button>
-
 
             <button
                 id="logoutBtn"
                 class="sidebar-action"
             >
-
                 <span>↪</span>
-
-                <span>
-                    Sair
-                </span>
-
+                <span>Sair</span>
             </button>
 
         </div>
@@ -267,12 +193,9 @@
     </aside>
 
 
-    <!-- =================================================
-         CONTEÚDO PRINCIPAL
-    ================================================== -->
+    <!-- CONTEÚDO -->
 
     <main class="main-content">
-
 
         <!-- TOPBAR -->
 
@@ -283,7 +206,6 @@
                 <button
                     id="mobileMenuBtn"
                     class="mobile-menu"
-                    aria-label="Abrir menu"
                 >
                     ☰
                 </button>
@@ -322,7 +244,6 @@
                         U
                     </div>
 
-
                     <div class="user-info">
 
                         <strong id="userName">
@@ -342,9 +263,9 @@
         </header>
 
 
-        <!-- =================================================
+        <!-- =========================
              DASHBOARD
-        ================================================== -->
+        ========================= -->
 
         <section
             id="dashboard"
@@ -373,20 +294,15 @@
 
                 </div>
 
-
                 <div
                     id="currentDate"
                     class="current-date"
-                >
-                </div>
+                ></div>
 
             </div>
 
 
-            <!-- CARDS -->
-
             <div class="stats-grid">
-
 
                 <div class="stat-card">
 
@@ -490,10 +406,7 @@
             </div>
 
 
-            <!-- GRÁFICOS -->
-
             <div class="dashboard-grid">
-
 
                 <div class="panel">
 
@@ -513,12 +426,9 @@
 
                     </div>
 
-
                     <div class="chart-container">
 
-                        <canvas
-                            id="financeChart"
-                        ></canvas>
+                        <canvas id="financeChart"></canvas>
 
                     </div>
 
@@ -541,7 +451,6 @@
 
                         </div>
 
-
                         <button
                             class="text-button"
                             data-section="transactions"
@@ -551,12 +460,10 @@
 
                     </div>
 
-
                     <div
                         id="recentTransactions"
                         class="transaction-list"
-                    >
-                    </div>
+                    ></div>
 
                 </div>
 
@@ -565,9 +472,9 @@
         </section>
 
 
-        <!-- =================================================
+        <!-- =========================
              LANÇAMENTOS
-        ================================================== -->
+        ========================= -->
 
         <section
             id="transactions"
@@ -591,7 +498,6 @@
                     </p>
 
                 </div>
-
 
                 <button
                     id="newTransactionButton"
@@ -653,17 +559,16 @@
                 <div
                     id="allTransactions"
                     class="all-transactions"
-                >
-                </div>
+                ></div>
 
             </div>
 
         </section>
 
 
-        <!-- =================================================
+        <!-- =========================
              CATEGORIAS
-        ================================================== -->
+        ========================= -->
 
         <section
             id="categories"
@@ -693,9 +598,6 @@
 
             <div class="category-layout">
 
-
-                <!-- GRÁFICO DE DISTRIBUIÇÃO -->
-
                 <div class="panel">
 
                     <div class="panel-header">
@@ -714,19 +616,14 @@
 
                     </div>
 
-
                     <div class="category-chart-container">
 
-                        <canvas
-                            id="categoryChart"
-                        ></canvas>
+                        <canvas id="categoryChart"></canvas>
 
                     </div>
 
                 </div>
 
-
-                <!-- ANÁLISE POR CATEGORIA -->
 
                 <div class="panel">
 
@@ -746,9 +643,7 @@
 
                     </div>
 
-
-                    <div id="categoryList">
-                    </div>
+                    <div id="categoryList"></div>
 
                 </div>
 
@@ -757,9 +652,9 @@
         </section>
 
 
-        <!-- =================================================
+        <!-- =========================
              RELATÓRIOS
-        ================================================== -->
+        ========================= -->
 
         <section
             id="reports"
@@ -789,7 +684,6 @@
 
             <div class="dashboard-grid">
 
-
                 <div class="panel">
 
                     <div class="panel-header">
@@ -808,12 +702,9 @@
 
                     </div>
 
-
                     <div class="category-chart-container large">
 
-                        <canvas
-                            id="reportCategoryChart"
-                        ></canvas>
+                        <canvas id="reportCategoryChart"></canvas>
 
                     </div>
 
@@ -838,17 +729,13 @@
 
                     </div>
 
-
                     <div
                         id="reportAnalysis"
                         class="category-list"
                     >
 
                         <div class="empty-state">
-
-                            Cadastre lançamentos para gerar
-                            sua análise.
-
+                            Cadastre lançamentos para gerar sua análise.
                         </div>
 
                     </div>
@@ -860,9 +747,9 @@
         </section>
 
 
-        <!-- =================================================
+        <!-- =========================
              PREMIUM
-        ================================================== -->
+        ========================= -->
 
         <section
             id="premium"
@@ -890,8 +777,6 @@
             </div>
 
 
-            <!-- HERO PREMIUM -->
-
             <div class="premium-hero">
 
                 <div class="premium-content">
@@ -901,18 +786,14 @@
                     </span>
 
                     <h2>
-                        Transforme seus números
-                        em decisões.
+                        Transforme seus números em decisões.
                     </h2>
 
                     <p>
-                        Tenha uma visão mais inteligente
-                        das suas finanças, acompanhe seus
-                        gastos por categoria e descubra
-                        como seu dinheiro pode terminar
-                        o mês.
+                        Tenha uma visão mais inteligente das suas
+                        finanças, acompanhe seus gastos por categoria
+                        e descubra como seu dinheiro pode terminar o mês.
                     </p>
-
 
                     <button
                         id="subscribePremiumBtn"
@@ -936,9 +817,7 @@
             </div>
 
 
-            <!-- =================================================
-                 PREVISÃO DO FIM DO MÊS
-            ================================================== -->
+            <!-- PREVISÃO -->
 
             <div class="panel premium-forecast">
 
@@ -958,7 +837,6 @@
 
                 </div>
 
-
                 <div
                     id="monthForecast"
                     class="forecast-content"
@@ -966,9 +844,8 @@
 
                     <div class="empty-state">
 
-                        Adicione seus lançamentos
-                        para visualizar uma previsão
-                        financeira.
+                        Adicione seus lançamentos para visualizar
+                        uma previsão financeira.
 
                     </div>
 
@@ -977,27 +854,21 @@
             </div>
 
 
-            <!-- =================================================
-                 RECURSOS PREMIUM
-            ================================================== -->
+            <!-- RECURSOS -->
 
             <div class="premium-features">
 
-
                 <div class="premium-feature">
 
-                    <span>
-                        ⏳
-                    </span>
+                    <span>⏳</span>
 
                     <h3>
                         Previsão do fim do mês
                     </h3>
 
                     <p>
-                        Estime quanto dinheiro você
-                        poderá ter disponível até o
-                        final do mês.
+                        Estime quanto dinheiro você poderá ter
+                        disponível até o final do mês.
                     </p>
 
                 </div>
@@ -1005,18 +876,15 @@
 
                 <div class="premium-feature">
 
-                    <span>
-                        📊
-                    </span>
+                    <span>📊</span>
 
                     <h3>
                         Gráfico de distribuição
                     </h3>
 
                     <p>
-                        Veja visualmente quais categorias
-                        estão consumindo mais do seu
-                        orçamento.
+                        Veja visualmente quais categorias estão
+                        consumindo mais do seu orçamento.
                     </p>
 
                 </div>
@@ -1024,17 +892,15 @@
 
                 <div class="premium-feature">
 
-                    <span>
-                        📄
-                    </span>
+                    <span>📄</span>
 
                     <h3>
                         Análise por categoria
                     </h3>
 
                     <p>
-                        Identifique seus maiores gastos
-                        e descubra onde pode economizar.
+                        Identifique seus maiores gastos e descubra
+                        onde pode economizar.
                     </p>
 
                 </div>
@@ -1042,17 +908,15 @@
 
                 <div class="premium-feature">
 
-                    <span>
-                        🔎
-                    </span>
+                    <span>🔎</span>
 
                     <h3>
                         Filtros inteligentes
                     </h3>
 
                     <p>
-                        Encontre rapidamente lançamentos
-                        e categorias específicas.
+                        Encontre rapidamente lançamentos e
+                        categorias específicas.
                     </p>
 
                 </div>
@@ -1060,17 +924,15 @@
 
                 <div class="premium-feature">
 
-                    <span>
-                        📈
-                    </span>
+                    <span>📈</span>
 
                     <h3>
                         Relatórios avançados
                     </h3>
 
                     <p>
-                        Tenha uma visão mais completa
-                        da evolução das suas finanças.
+                        Tenha uma visão mais completa da evolução
+                        das suas finanças.
                     </p>
 
                 </div>
@@ -1078,18 +940,15 @@
 
                 <div class="premium-feature">
 
-                    <span>
-                        💎
-                    </span>
+                    <span>💎</span>
 
                     <h3>
                         Experiência Premium
                     </h3>
 
                     <p>
-                        Recursos exclusivos desenvolvidos
-                        para quem quer ter mais controle
-                        financeiro.
+                        Recursos exclusivos desenvolvidos para
+                        quem quer ter mais controle financeiro.
                     </p>
 
                 </div>
@@ -1103,9 +962,9 @@
 </div>
 
 
-<!-- =====================================================
-     MODAL NOVO LANÇAMENTO
-===================================================== -->
+<!-- =========================
+     MODAL
+========================= -->
 
 <div
     id="transactionModal"
@@ -1136,7 +995,6 @@
                 id="closeModal"
                 class="modal-close"
                 type="button"
-                aria-label="Fechar"
             >
                 ×
             </button>
@@ -1145,7 +1003,6 @@
 
 
         <form id="transactionForm">
-
 
             <!-- TIPO -->
 
@@ -1156,13 +1013,8 @@
                     class="type-option active"
                     data-type="income"
                 >
-
-                    <span>
-                        ↗
-                    </span>
-
+                    <span>↗</span>
                     Receita
-
                 </button>
 
 
@@ -1171,13 +1023,8 @@
                     class="type-option"
                     data-type="expense"
                 >
-
-                    <span>
-                        ↘
-                    </span>
-
+                    <span>↘</span>
                     Despesa
-
                 </button>
 
             </div>
@@ -1201,10 +1048,9 @@
             </div>
 
 
-            <!-- VALOR E DATA -->
+            <!-- VALOR + DATA -->
 
             <div class="form-row">
-
 
                 <div class="form-group">
 
@@ -1241,6 +1087,37 @@
             </div>
 
 
+            <!-- NOVA FREQUÊNCIA -->
+
+            <div class="form-group">
+
+                <label for="frequencyInput">
+                    Frequência
+                </label>
+
+                <select id="frequencyInput">
+
+                    <option value="once">
+                        Única
+                    </option>
+
+                    <option value="daily">
+                        Diária
+                    </option>
+
+                    <option value="weekly">
+                        Semanal
+                    </option>
+
+                    <option value="monthly">
+                        Mensal
+                    </option>
+
+                </select>
+
+            </div>
+
+
             <!-- CATEGORIA -->
 
             <div class="form-group">
@@ -1249,9 +1126,7 @@
                     Categoria
                 </label>
 
-                <select
-                    id="transactionCategory"
-                >
+                <select id="transactionCategory">
 
                     <option value="Alimentação">
                         Alimentação
@@ -1302,8 +1177,6 @@
             </div>
 
 
-            <!-- SALVAR -->
-
             <button
                 type="submit"
                 class="btn-primary save-transaction"
@@ -1317,8 +1190,6 @@
 
 </div>
 
-
-<!-- JAVASCRIPT -->
 
 <script src="app.js"></script>
 
