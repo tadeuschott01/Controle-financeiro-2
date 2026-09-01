@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,47 +12,66 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
         }
 
         body {
-            background: #f4f6f8;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
             color: #1f2937;
-            min-height: 100vh;
         }
 
         header {
             background: #111827;
             color: white;
-            padding: 18px 20px;
+            padding: 15px 20px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        header h1 {
-            font-size: 24px;
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        header span {
+        .logo {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .logo-area h1 {
+            font-size: 22px;
+        }
+
+        .user {
             font-size: 14px;
-            opacity: .8;
+            opacity: .9;
         }
 
-        .container {
-            width: 100%;
+        main {
             max-width: 1100px;
             margin: auto;
-            padding: 20px;
+            padding: 25px 18px 80px;
         }
 
         .welcome {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .welcome h2 {
-            font-size: 25px;
-            margin-bottom: 5px;
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        .welcome p {
+            color: #6b7280;
         }
 
         .cards {
@@ -63,100 +83,183 @@
 
         .card {
             background: white;
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .07);
         }
 
-        .card p {
+        .card-title {
             color: #6b7280;
-            margin-bottom: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
         }
 
-        .card h3 {
+        .value {
             font-size: 25px;
+            font-weight: bold;
         }
 
-        .positive {
+        .green {
             color: #16a34a;
         }
 
-        .negative {
+        .red {
             color: #dc2626;
+        }
+
+        .blue {
+            color: #2563eb;
         }
 
         .menu {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
+            margin-bottom: 25px;
         }
 
         .menu button {
             border: none;
             background: white;
-            padding: 25px 15px;
-            border-radius: 14px;
-            cursor: pointer;
+            padding: 22px 10px;
+            border-radius: 16px;
             font-size: 16px;
             font-weight: bold;
-            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .07);
             transition: .2s;
+            color: #1f2937;
         }
 
         .menu button:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+        }
+
+        .icon {
+            display: block;
+            font-size: 30px;
+            margin-bottom: 8px;
         }
 
         .section {
-            margin-top: 25px;
             background: white;
-            border-radius: 14px;
-            padding: 20px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .07);
+            margin-bottom: 20px;
         }
 
         .section h2 {
+            font-size: 20px;
             margin-bottom: 15px;
         }
 
         .transaction {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            padding: 14px 0;
-            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            border-bottom: 1px solid #eeeeee;
         }
 
         .transaction:last-child {
             border-bottom: none;
         }
 
-        .income {
-            color: #16a34a;
+        .transaction small {
+            display: block;
+            color: #6b7280;
+            margin-top: 4px;
         }
 
-        .expense {
-            color: #dc2626;
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #6b7280;
+        }
+
+        .premium {
+            background: linear-gradient(135deg, #111827, #374151);
+            color: white;
+        }
+
+        .premium p {
+            color: #d1d5db;
+            margin-top: 8px;
         }
 
         footer {
             text-align: center;
-            padding: 30px;
-            color: #6b7280;
+            color: #9ca3af;
+            padding: 25px;
+            font-size: 13px;
+        }
+
+        /* TELAS */
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .back {
+            border: none;
+            background: #111827;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .form input,
+        .form select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        .form button {
+            padding: 13px;
+            border: none;
+            border-radius: 9px;
+            background: #111827;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
         }
 
         @media (max-width: 700px) {
-            .cards {
+
+            .cards,
+            .menu {
                 grid-template-columns: 1fr;
             }
 
-            .menu {
-                grid-template-columns: 1fr 1fr;
+            header {
+                padding: 12px 15px;
+            }
+
+            main {
+                padding: 20px 14px 70px;
             }
         }
 
-        @media (max-width: 450px) {
+        @media (min-width: 701px) and (max-width: 900px) {
+
+            .cards,
             .menu {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -165,94 +268,405 @@
 <body>
 
 <header>
-    <h1>ControleS</h1>
-    <span>APP Financeiro</span>
+
+    <div class="logo-area">
+
+        <img src="logo.png" class="logo" alt="ControleS">
+
+        <h1>ControleS</h1>
+
+    </div>
+
+    <div class="user">
+        👤 Usuário
+    </div>
+
 </header>
 
-<main class="container">
 
-    <div class="welcome">
-        <h2>Olá! 👋</h2>
-        <p>Bem-vindo ao seu controle financeiro.</p>
-    </div>
+<main>
 
-    <div class="cards">
+    <!-- DASHBOARD -->
 
-        <div class="card">
-            <p>Saldo atual</p>
-            <h3>R$ 0,00</h3>
+    <section id="dashboard" class="page active">
+
+        <div class="welcome">
+
+            <h2>Olá! 👋</h2>
+
+            <p>
+                Bem-vindo ao seu ControleS.
+            </p>
+
         </div>
 
-        <div class="card">
-            <p>Receitas</p>
-            <h3 class="positive">R$ 0,00</h3>
+
+        <div class="cards">
+
+            <div class="card">
+
+                <div class="card-title">
+                    Saldo atual
+                </div>
+
+                <div class="value blue">
+                    R$ 0,00
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Receitas
+                </div>
+
+                <div class="value green">
+                    R$ 0,00
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Despesas
+                </div>
+
+                <div class="value red">
+                    R$ 0,00
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="card">
-            <p>Despesas</p>
-            <h3 class="negative">R$ 0,00</h3>
+
+        <div class="menu">
+
+            <button onclick="abrirPagina('receitas')">
+
+                <span class="icon">💰</span>
+
+                Receitas
+
+            </button>
+
+
+            <button onclick="abrirPagina('despesas')">
+
+                <span class="icon">💸</span>
+
+                Despesas
+
+            </button>
+
+
+            <button onclick="abrirPagina('lancamentos')">
+
+                <span class="icon">🧾</span>
+
+                Lançamentos
+
+            </button>
+
+
+            <button onclick="abrirPagina('relatorios')">
+
+                <span class="icon">📈</span>
+
+                Relatórios
+
+            </button>
+
+
+            <button onclick="abrirPagina('categorias')">
+
+                <span class="icon">🍩</span>
+
+                Categorias
+
+            </button>
+
+
+            <button onclick="abrirPagina('premium')">
+
+                <span class="icon">⭐</span>
+
+                Premium
+
+            </button>
+
         </div>
 
-    </div>
 
-    <div class="menu">
+        <div class="section">
 
-        <button onclick="mostrar('Receitas')">
-            💰<br>
-            Receitas
-        </button>
+            <h2>
+                Últimos lançamentos
+            </h2>
 
-        <button onclick="mostrar('Despesas')">
-            💸<br>
-            Despesas
-        </button>
+            <div class="empty">
 
-        <button onclick="mostrar('Lançamentos')">
-            🧾<br>
-            Lançamentos
-        </button>
+                Nenhum lançamento cadastrado.
 
-        <button onclick="mostrar('Relatórios')">
-            📈<br>
-            Relatórios
-        </button>
+            </div>
 
-        <button onclick="mostrar('Categorias')">
-            🍩<br>
-            Categorias
-        </button>
-
-        <button onclick="mostrar('Premium')">
-            ⭐<br>
-            Premium
-        </button>
-
-    </div>
-
-    <div class="section">
-
-        <h2>Últimos lançamentos</h2>
-
-        <div class="transaction">
-            <span>Nenhum lançamento ainda</span>
-            <span>R$ 0,00</span>
         </div>
 
-    </div>
+    </section>
+
+
+
+    <!-- RECEITAS -->
+
+    <section id="receitas" class="page">
+
+        <button class="back" onclick="voltar()">
+            ← Voltar
+        </button>
+
+        <div class="section">
+
+            <h2>💰 Receitas</h2>
+
+            <div class="form">
+
+                <input
+                    type="text"
+                    placeholder="Descrição da receita"
+                >
+
+                <input
+                    type="number"
+                    placeholder="Valor"
+                >
+
+                <button onclick="alert('Receita adicionada!')">
+                    Adicionar receita
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- DESPESAS -->
+
+    <section id="despesas" class="page">
+
+        <button class="back" onclick="voltar()">
+            ← Voltar
+        </button>
+
+        <div class="section">
+
+            <h2>💸 Despesas</h2>
+
+            <div class="form">
+
+                <input
+                    type="text"
+                    placeholder="Descrição da despesa"
+                >
+
+                <input
+                    type="number"
+                    placeholder="Valor"
+                >
+
+                <select>
+
+                    <option>
+                        Alimentação
+                    </option>
+
+                    <option>
+                        Transporte
+                    </option>
+
+                    <option>
+                        Casa
+                    </option>
+
+                    <option>
+                        Lazer
+                    </option>
+
+                    <option>
+                        Outros
+                    </option>
+
+                </select>
+
+                <button onclick="alert('Despesa adicionada!')">
+                    Adicionar despesa
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- LANÇAMENTOS -->
+
+    <section id="lancamentos" class="page">
+
+        <button class="back" onclick="voltar()">
+            ← Voltar
+        </button>
+
+        <div class="section">
+
+            <h2>🧾 Lançamentos</h2>
+
+            <div class="empty">
+
+                Seus lançamentos aparecerão aqui.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- RELATÓRIOS -->
+
+    <section id="relatorios" class="page">
+
+        <button class="back" onclick="voltar()">
+            ← Voltar
+        </button>
+
+        <div class="section">
+
+            <h2>📈 Relatórios</h2>
+
+            <div class="empty">
+
+                Ainda não existem dados suficientes para gerar relatórios.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- CATEGORIAS -->
+
+    <section id="categorias" class="page">
+
+        <button class="back" onclick="voltar()">
+            ← Voltar
+        </button>
+
+        <div class="section">
+
+            <h2>🍩 Gastos por categoria</h2>
+
+            <div class="empty">
+
+                Nenhum gasto cadastrado.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- PREMIUM -->
+
+    <section id="premium" class="page">
+
+        <button class="back" onclick="voltar()">
+            ← Voltar
+        </button>
+
+        <div class="section premium">
+
+            <h2>⭐ ControleS Premium</h2>
+
+            <p>
+                Tenha acesso a recursos avançados
+                para controlar melhor suas finanças.
+            </p>
+
+            <br>
+
+            <p>
+                ✔ Relatórios completos
+            </p>
+
+            <p>
+                ✔ Mais categorias
+            </p>
+
+            <p>
+                ✔ Recursos exclusivos
+            </p>
+
+        </div>
+
+    </section>
 
 </main>
 
+
 <footer>
+
     ControleS © 2026
+
 </footer>
+
 
 <script>
 
-    function mostrar(nome) {
-        alert("Você selecionou: " + nome);
+    function abrirPagina(pagina) {
+
+        document
+            .querySelectorAll('.page')
+            .forEach(function(page) {
+
+                page.classList.remove('active');
+
+            });
+
+
+        const destino = document.getElementById(pagina);
+
+        if (destino) {
+
+            destino.classList.add('active');
+
+            window.scrollTo(0, 0);
+
+        }
+
+    }
+
+
+    function voltar() {
+
+        abrirPagina('dashboard');
+
     }
 
 </script>
 
 </body>
+
 </html>
