@@ -1,672 +1,1323 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>ControleS — APP</title>
+<title>ControleS - APP</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f7fb;
-            color: #1f2937;
-        }
+:root{
+    --bg:#08111f;
+    --card:#101d30;
+    --card2:#14243a;
+    --primary:#19c37d;
+    --text:#ffffff;
+    --muted:#8fa0b7;
+    --danger:#ff5c6c;
+    --border:rgba(255,255,255,.08);
+}
 
-        header {
-            background: #111827;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
+body{
+    background:
+        radial-gradient(circle at top right,#123c45 0%,transparent 35%),
+        radial-gradient(circle at bottom left,#102b4d 0%,transparent 35%),
+        var(--bg);
+    color:var(--text);
+    min-height:100vh;
+}
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+button,input,select{
+    font:inherit;
+}
 
-        .logo {
-            width: 45px;
-            height: 45px;
-            object-fit: contain;
-            border-radius: 10px;
-            background: white;
-        }
+button{
+    cursor:pointer;
+}
 
-        .logo-area h1 {
-            font-size: 22px;
-        }
+/* HEADER */
 
-        .user {
-            font-size: 14px;
-            opacity: .9;
-        }
+header{
+    height:72px;
+    padding:0 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid var(--border);
+    background:rgba(8,17,31,.92);
+    backdrop-filter:blur(12px);
+    position:sticky;
+    top:0;
+    z-index:20;
+}
 
-        main {
-            max-width: 1100px;
-            margin: auto;
-            padding: 25px 18px 80px;
-        }
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
 
-        .welcome {
-            margin-bottom: 25px;
-        }
+.brand img{
+    width:48px;
+    height:48px;
+    object-fit:contain;
+    border-radius:12px;
+}
 
-        .welcome h2 {
-            font-size: 26px;
-            margin-bottom: 6px;
-        }
+.brand strong{
+    font-size:22px;
+}
 
-        .welcome p {
-            color: #6b7280;
-        }
+.user{
+    color:var(--muted);
+    font-size:14px;
+}
 
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+/* LAYOUT */
 
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, .07);
-        }
+.app{
+    display:flex;
+    min-height:calc(100vh - 72px);
+}
 
-        .card-title {
-            color: #6b7280;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
+.sidebar{
+    width:235px;
+    padding:22px 14px;
+    border-right:1px solid var(--border);
+    background:rgba(8,17,31,.72);
+}
 
-        .value {
-            font-size: 25px;
-            font-weight: bold;
-        }
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
 
-        .green {
-            color: #16a34a;
-        }
+.nav button{
+    width:100%;
+    padding:13px 14px;
+    border:0;
+    border-radius:12px;
+    color:var(--muted);
+    background:transparent;
+    text-align:left;
+}
 
-        .red {
-            color: #dc2626;
-        }
+.nav button:hover,
+.nav button.active{
+    color:#fff;
+    background:var(--card2);
+}
 
-        .blue {
-            color: #2563eb;
-        }
+.content{
+    flex:1;
+    padding:28px;
+    max-width:1400px;
+}
 
-        .menu {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+/* PAGES */
 
-        .menu button {
-            border: none;
-            background: white;
-            padding: 22px 10px;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, .07);
-            transition: .2s;
-            color: #1f2937;
-        }
+.page{
+    display:none;
+}
 
-        .menu button:hover {
-            transform: translateY(-3px);
-        }
+.page.active{
+    display:block;
+}
 
-        .icon {
-            display: block;
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
+.title{
+    margin-bottom:22px;
+}
 
-        .section {
-            background: white;
-            border-radius: 16px;
-            padding: 22px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, .07);
-            margin-bottom: 20px;
-        }
+.title h1{
+    font-size:28px;
+    margin-bottom:6px;
+}
 
-        .section h2 {
-            font-size: 20px;
-            margin-bottom: 15px;
-        }
+.title p{
+    color:var(--muted);
+}
 
-        .transaction {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid #eeeeee;
-        }
+/* CARDS */
 
-        .transaction:last-child {
-            border-bottom: none;
-        }
+.cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+    margin-bottom:22px;
+}
 
-        .transaction small {
-            display: block;
-            color: #6b7280;
-            margin-top: 4px;
-        }
+.card{
+    background:linear-gradient(145deg,var(--card),var(--card2));
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 12px 30px rgba(0,0,0,.18);
+}
 
-        .empty {
-            text-align: center;
-            padding: 25px;
-            color: #6b7280;
-        }
+.card small{
+    color:var(--muted);
+}
 
-        .premium {
-            background: linear-gradient(135deg, #111827, #374151);
-            color: white;
-        }
+.card h2{
+    margin-top:10px;
+    font-size:27px;
+}
 
-        .premium p {
-            color: #d1d5db;
-            margin-top: 8px;
-        }
+.green{
+    color:var(--primary);
+}
 
-        footer {
-            text-align: center;
-            color: #9ca3af;
-            padding: 25px;
-            font-size: 13px;
-        }
+.red{
+    color:var(--danger);
+}
 
-        /* TELAS */
+/* MENU */
 
-        .page {
-            display: none;
-        }
+.quick{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin-bottom:22px;
+}
 
-        .page.active {
-            display: block;
-        }
+.quick button{
+    background:var(--card);
+    color:#fff;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+    text-align:left;
+    transition:.2s;
+}
 
-        .back {
-            border: none;
-            background: #111827;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
+.quick button:hover{
+    transform:translateY(-2px);
+    border-color:rgba(25,195,125,.45);
+}
 
-        .form {
-            display: grid;
-            gap: 12px;
-        }
+.quick .icon{
+    font-size:27px;
+    display:block;
+    margin-bottom:10px;
+}
 
-        .form input,
-        .form select {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #ddd;
-            border-radius: 9px;
-            font-size: 15px;
-        }
+.quick span:last-child{
+    color:var(--muted);
+    font-size:13px;
+}
 
-        .form button {
-            padding: 13px;
-            border: none;
-            border-radius: 9px;
-            background: #111827;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-        }
+/* BOX */
 
-        @media (max-width: 700px) {
+.box{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:20px;
+}
 
-            .cards,
-            .menu {
-                grid-template-columns: 1fr;
-            }
+.box h2{
+    font-size:19px;
+    margin-bottom:18px;
+}
 
-            header {
-                padding: 12px 15px;
-            }
+/* FORM */
 
-            main {
-                padding: 20px 14px 70px;
-            }
-        }
+.form{
+    display:grid;
+    gap:12px;
+}
 
-        @media (min-width: 701px) and (max-width: 900px) {
+.input{
+    width:100%;
+    padding:14px;
+    color:white;
+    background:#0a1627;
+    border:1px solid var(--border);
+    border-radius:10px;
+    outline:none;
+}
 
-            .cards,
-            .menu {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
+.input:focus{
+    border-color:var(--primary);
+}
+
+.btn{
+    border:0;
+    border-radius:10px;
+    padding:14px;
+    background:var(--primary);
+    color:#04120c;
+    font-weight:bold;
+}
+
+.btn-danger{
+    background:var(--danger);
+    color:white;
+}
+
+/* TRANSACTIONS */
+
+.transaction{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:15px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.transaction:last-child{
+    border-bottom:0;
+}
+
+.transaction small{
+    display:block;
+    color:var(--muted);
+    margin-top:4px;
+}
+
+/* SEARCH */
+
+.search{
+    display:flex;
+    gap:10px;
+    margin-bottom:18px;
+}
+
+/* PREMIUM */
+
+.premium{
+    background:
+        linear-gradient(135deg,rgba(25,195,125,.15),rgba(20,36,58,.9)),
+        var(--card);
+    border:1px solid rgba(25,195,125,.25);
+}
+
+.premium h2{
+    color:var(--primary);
+}
+
+.premium ul{
+    margin:18px 0 20px 20px;
+    color:var(--muted);
+    line-height:2;
+}
+
+/* MOBILE */
+
+.mobile-menu{
+    display:none;
+}
+
+@media(max-width:800px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .mobile-menu{
+        display:flex;
+        position:fixed;
+        bottom:0;
+        left:0;
+        right:0;
+        height:65px;
+        background:#0b1728;
+        border-top:1px solid var(--border);
+        z-index:50;
+        justify-content:space-around;
+        align-items:center;
+    }
+
+    .mobile-menu button{
+        background:none;
+        border:0;
+        color:var(--muted);
+        font-size:12px;
+    }
+
+    .content{
+        padding:20px 15px 85px;
+    }
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .quick{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .quick button{
+        padding:16px;
+    }
+
+}
+
+@media(max-width:480px){
+
+    header{
+        padding:0 14px;
+    }
+
+    .brand strong{
+        font-size:19px;
+    }
+
+    .brand img{
+        width:42px;
+        height:42px;
+    }
+
+    .quick{
+        grid-template-columns:1fr;
+    }
+
+    .title h1{
+        font-size:24px;
+    }
+}
+</style>
 </head>
 
 <body>
 
 <header>
 
-    <div class="logo-area">
+    <div class="brand">
 
-        <img src="logo.png" class="logo" alt="ControleS">
+        <img src="logo.png" alt="ControleS">
 
-        <h1>ControleS</h1>
+        <strong>ControleS</strong>
 
     </div>
 
     <div class="user">
-        👤 Usuário
+        👤 Minha conta
     </div>
 
 </header>
 
+<div class="app">
 
-<main>
+    <!-- MENU DESKTOP -->
 
-    <!-- DASHBOARD -->
+    <aside class="sidebar">
 
-    <section id="dashboard" class="page active">
+        <nav class="nav">
 
-        <div class="welcome">
+            <button class="active" onclick="showPage('dashboard',this)">
+                📊 Dashboard
+            </button>
 
-            <h2>Olá! 👋</h2>
+            <button onclick="showPage('receitas',this)">
+                💰 Receitas
+            </button>
 
-            <p>
-                Bem-vindo ao seu ControleS.
-            </p>
+            <button onclick="showPage('despesas',this)">
+                💸 Despesas
+            </button>
 
-        </div>
+            <button onclick="showPage('lancamentos',this)">
+                🧾 Lançamentos
+            </button>
+
+            <button onclick="showPage('relatorios',this)">
+                📈 Relatórios
+            </button>
+
+            <button onclick="showPage('categorias',this)">
+                🍩 Categorias
+            </button>
+
+            <button onclick="showPage('premium',this)">
+                ⭐ Premium
+            </button>
+
+        </nav>
+
+    </aside>
 
 
-        <div class="cards">
+    <main class="content">
 
-            <div class="card">
+        <!-- DASHBOARD -->
 
-                <div class="card-title">
-                    Saldo atual
+        <section id="dashboard" class="page active">
+
+            <div class="title">
+
+                <h1>Dashboard</h1>
+
+                <p>
+                    Controle suas finanças de forma simples.
+                </p>
+
+            </div>
+
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <small>Saldo atual</small>
+
+                    <h2 id="saldo">
+                        R$ 0,00
+                    </h2>
+
                 </div>
 
-                <div class="value blue">
-                    R$ 0,00
+
+                <div class="card">
+
+                    <small>Receitas</small>
+
+                    <h2 class="green" id="totalReceitas">
+                        R$ 0,00
+                    </h2>
+
+                </div>
+
+
+                <div class="card">
+
+                    <small>Despesas</small>
+
+                    <h2 class="red" id="totalDespesas">
+                        R$ 0,00
+                    </h2>
+
                 </div>
 
             </div>
 
 
-            <div class="card">
+            <div class="quick">
 
-                <div class="card-title">
-                    Receitas
-                </div>
-
-                <div class="value green">
-                    R$ 0,00
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    Despesas
-                </div>
-
-                <div class="value red">
-                    R$ 0,00
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="menu">
-
-            <button onclick="abrirPagina('receitas')">
-
-                <span class="icon">💰</span>
-
-                Receitas
-
-            </button>
-
-
-            <button onclick="abrirPagina('despesas')">
-
-                <span class="icon">💸</span>
-
-                Despesas
-
-            </button>
-
-
-            <button onclick="abrirPagina('lancamentos')">
-
-                <span class="icon">🧾</span>
-
-                Lançamentos
-
-            </button>
-
-
-            <button onclick="abrirPagina('relatorios')">
-
-                <span class="icon">📈</span>
-
-                Relatórios
-
-            </button>
-
-
-            <button onclick="abrirPagina('categorias')">
-
-                <span class="icon">🍩</span>
-
-                Categorias
-
-            </button>
-
-
-            <button onclick="abrirPagina('premium')">
-
-                <span class="icon">⭐</span>
-
-                Premium
-
-            </button>
-
-        </div>
-
-
-        <div class="section">
-
-            <h2>
-                Últimos lançamentos
-            </h2>
-
-            <div class="empty">
-
-                Nenhum lançamento cadastrado.
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- RECEITAS -->
-
-    <section id="receitas" class="page">
-
-        <button class="back" onclick="voltar()">
-            ← Voltar
-        </button>
-
-        <div class="section">
-
-            <h2>💰 Receitas</h2>
-
-            <div class="form">
-
-                <input
-                    type="text"
-                    placeholder="Descrição da receita"
-                >
-
-                <input
-                    type="number"
-                    placeholder="Valor"
-                >
-
-                <button onclick="alert('Receita adicionada!')">
+                <button onclick="showPage('receitas')">
+                    <span class="icon">💰</span>
                     Adicionar receita
+                    <br>
+                    <span>Registrar dinheiro recebido</span>
                 </button>
 
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- DESPESAS -->
-
-    <section id="despesas" class="page">
-
-        <button class="back" onclick="voltar()">
-            ← Voltar
-        </button>
-
-        <div class="section">
-
-            <h2>💸 Despesas</h2>
-
-            <div class="form">
-
-                <input
-                    type="text"
-                    placeholder="Descrição da despesa"
-                >
-
-                <input
-                    type="number"
-                    placeholder="Valor"
-                >
-
-                <select>
-
-                    <option>
-                        Alimentação
-                    </option>
-
-                    <option>
-                        Transporte
-                    </option>
-
-                    <option>
-                        Casa
-                    </option>
-
-                    <option>
-                        Lazer
-                    </option>
-
-                    <option>
-                        Outros
-                    </option>
-
-                </select>
-
-                <button onclick="alert('Despesa adicionada!')">
+                <button onclick="showPage('despesas')">
+                    <span class="icon">💸</span>
                     Adicionar despesa
+                    <br>
+                    <span>Registrar um gasto</span>
+                </button>
+
+                <button onclick="showPage('lancamentos')">
+                    <span class="icon">🧾</span>
+                    Lançamentos
+                    <br>
+                    <span>Ver movimentações</span>
+                </button>
+
+                <button onclick="showPage('relatorios')">
+                    <span class="icon">📈</span>
+                    Relatórios
+                    <br>
+                    <span>Acompanhar resultados</span>
+                </button>
+
+                <button onclick="showPage('categorias')">
+                    <span class="icon">🍩</span>
+                    Categorias
+                    <br>
+                    <span>Ver onde gasta</span>
+                </button>
+
+                <button onclick="showPage('premium')">
+                    <span class="icon">⭐</span>
+                    Premium
+                    <br>
+                    <span>Recursos exclusivos</span>
                 </button>
 
             </div>
 
-        </div>
 
-    </section>
+            <div class="box">
 
+                <h2>Últimos lançamentos</h2>
 
+                <div id="ultimos">
 
-    <!-- LANÇAMENTOS -->
+                    <p style="color:var(--muted)">
+                        Nenhum lançamento cadastrado.
+                    </p>
 
-    <section id="lancamentos" class="page">
-
-        <button class="back" onclick="voltar()">
-            ← Voltar
-        </button>
-
-        <div class="section">
-
-            <h2>🧾 Lançamentos</h2>
-
-            <div class="empty">
-
-                Seus lançamentos aparecerão aqui.
+                </div>
 
             </div>
 
-        </div>
-
-    </section>
+        </section>
 
 
+        <!-- RECEITAS -->
 
-    <!-- RELATÓRIOS -->
+        <section id="receitas" class="page">
 
-    <section id="relatorios" class="page">
+            <div class="title">
 
-        <button class="back" onclick="voltar()">
-            ← Voltar
-        </button>
+                <h1>💰 Receitas</h1>
 
-        <div class="section">
-
-            <h2>📈 Relatórios</h2>
-
-            <div class="empty">
-
-                Ainda não existem dados suficientes para gerar relatórios.
+                <p>
+                    Cadastre seus recebimentos.
+                </p>
 
             </div>
 
-        </div>
+            <div class="box">
 
-    </section>
+                <form class="form" onsubmit="addTransaction(event,'receita')">
 
+                    <input
+                        class="input"
+                        id="receitaDescricao"
+                        type="text"
+                        placeholder="Descrição"
+                        required
+                    >
 
+                    <input
+                        class="input"
+                        id="receitaValor"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="Valor"
+                        required
+                    >
 
-    <!-- CATEGORIAS -->
+                    <button class="btn" type="submit">
+                        Adicionar receita
+                    </button>
 
-    <section id="categorias" class="page">
-
-        <button class="back" onclick="voltar()">
-            ← Voltar
-        </button>
-
-        <div class="section">
-
-            <h2>🍩 Gastos por categoria</h2>
-
-            <div class="empty">
-
-                Nenhum gasto cadastrado.
+                </form>
 
             </div>
 
-        </div>
-
-    </section>
+        </section>
 
 
+        <!-- DESPESAS -->
 
-    <!-- PREMIUM -->
+        <section id="despesas" class="page">
 
-    <section id="premium" class="page">
+            <div class="title">
 
-        <button class="back" onclick="voltar()">
-            ← Voltar
-        </button>
+                <h1>💸 Despesas</h1>
 
-        <div class="section premium">
+                <p>
+                    Registre seus gastos.
+                </p>
 
-            <h2>⭐ ControleS Premium</h2>
+            </div>
 
-            <p>
-                Tenha acesso a recursos avançados
-                para controlar melhor suas finanças.
-            </p>
+            <div class="box">
 
-            <br>
+                <form class="form" onsubmit="addTransaction(event,'despesa')">
 
-            <p>
-                ✔ Relatórios completos
-            </p>
+                    <input
+                        class="input"
+                        id="despesaDescricao"
+                        type="text"
+                        placeholder="Descrição"
+                        required
+                    >
 
-            <p>
-                ✔ Mais categorias
-            </p>
+                    <input
+                        class="input"
+                        id="despesaValor"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="Valor"
+                        required
+                    >
 
-            <p>
-                ✔ Recursos exclusivos
-            </p>
+                    <select
+                        class="input"
+                        id="despesaCategoria"
+                    >
 
-        </div>
+                        <option>Alimentação</option>
+                        <option>Moradia</option>
+                        <option>Transporte</option>
+                        <option>Lazer</option>
+                        <option>Saúde</option>
+                        <option>Educação</option>
+                        <option>Outros</option>
 
-    </section>
+                    </select>
 
-</main>
+                    <button class="btn" type="submit">
+                        Adicionar despesa
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
 
 
-<footer>
+        <!-- LANÇAMENTOS -->
 
-    ControleS © 2026
+        <section id="lancamentos" class="page">
 
-</footer>
+            <div class="title">
+
+                <h1>🧾 Lançamentos</h1>
+
+                <p>
+                    Todas as suas movimentações.
+                </p>
+
+            </div>
+
+            <div class="box">
+
+                <div class="search">
+
+                    <input
+                        class="input"
+                        id="pesquisa"
+                        type="text"
+                        placeholder="🔎 Pesquisar lançamento..."
+                        oninput="renderTransactions()"
+                    >
+
+                </div>
+
+                <div id="listaLancamentos"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RELATÓRIOS -->
+
+        <section id="relatorios" class="page">
+
+            <div class="title">
+
+                <h1>📈 Relatórios</h1>
+
+                <p>
+                    Resumo financeiro.
+                </p>
+
+            </div>
+
+            <div class="cards">
+
+                <div class="card">
+                    <small>Total recebido</small>
+                    <h2 class="green" id="relReceitas">R$ 0,00</h2>
+                </div>
+
+                <div class="card">
+                    <small>Total gasto</small>
+                    <h2 class="red" id="relDespesas">R$ 0,00</h2>
+                </div>
+
+                <div class="card">
+                    <small>Resultado</small>
+                    <h2 id="relSaldo">R$ 0,00</h2>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CATEGORIAS -->
+
+        <section id="categorias" class="page">
+
+            <div class="title">
+
+                <h1>🍩 Gastos por categoria</h1>
+
+                <p>
+                    Veja suas principais categorias de despesas.
+                </p>
+
+            </div>
+
+            <div class="box">
+
+                <div id="listaCategorias">
+
+                    <p style="color:var(--muted)">
+                        Nenhuma despesa cadastrada.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PREMIUM -->
+
+        <section id="premium" class="page">
+
+            <div class="title">
+
+                <h1>⭐ Premium</h1>
+
+                <p>
+                    Recursos exclusivos do ControleS.
+                </p>
+
+            </div>
+
+            <div class="box premium">
+
+                <h2>ControleS Premium</h2>
+
+                <ul>
+
+                    <li>Relatórios avançados</li>
+                    <li>Controle por categorias</li>
+                    <li>Mais recursos financeiros</li>
+                    <li>Experiência sem limitações</li>
+
+                </ul>
+
+                <button class="btn"
+                    onclick="alert('Área Premium em desenvolvimento.')">
+                    Conhecer Premium
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- MENU MOBILE -->
+
+<nav class="mobile-menu">
+
+    <button onclick="showPage('dashboard')">
+        📊<br>Início
+    </button>
+
+    <button onclick="showPage('receitas')">
+        💰<br>Receitas
+    </button>
+
+    <button onclick="showPage('despesas')">
+        💸<br>Despesas
+    </button>
+
+    <button onclick="showPage('lancamentos')">
+        🧾<br>Lançamentos
+    </button>
+
+    <button onclick="showPage('premium')">
+        ⭐<br>Premium
+    </button>
+
+</nav>
 
 
 <script>
 
-    function abrirPagina(pagina) {
+/* =========================
+   CONTROLE DE PÁGINAS
+========================= */
 
-        document
-            .querySelectorAll('.page')
-            .forEach(function(page) {
+function showPage(pageId, button){
 
-                page.classList.remove('active');
+    document
+        .querySelectorAll('.page')
+        .forEach(function(page){
+            page.classList.remove('active');
+        });
 
-            });
+    const page = document.getElementById(pageId);
+
+    if(page){
+        page.classList.add('active');
+    }
+
+    document
+        .querySelectorAll('.nav button')
+        .forEach(function(btn){
+            btn.classList.remove('active');
+        });
+
+    if(button){
+        button.classList.add('active');
+    }
+
+    window.scrollTo({
+        top:0,
+        behavior:'smooth'
+    });
+
+    updateAll();
+
+}
 
 
-        const destino = document.getElementById(pagina);
+/* =========================
+   DADOS
+========================= */
 
-        if (destino) {
+let transactions =
+    JSON.parse(localStorage.getItem('controles_transactions') || '[]');
 
-            destino.classList.add('active');
 
-            window.scrollTo(0, 0);
+/* =========================
+   MOEDA
+========================= */
 
+function money(value){
+
+    return Number(value).toLocaleString('pt-BR',{
+        style:'currency',
+        currency:'BRL'
+    });
+
+}
+
+
+/* =========================
+   ADICIONAR
+========================= */
+
+function addTransaction(event,type){
+
+    event.preventDefault();
+
+    let descricao;
+    let valor;
+    let categoria = '';
+
+    if(type === 'receita'){
+
+        descricao =
+            document.getElementById('receitaDescricao').value.trim();
+
+        valor =
+            Number(document.getElementById('receitaValor').value);
+
+    }else{
+
+        descricao =
+            document.getElementById('despesaDescricao').value.trim();
+
+        valor =
+            Number(document.getElementById('despesaValor').value);
+
+        categoria =
+            document.getElementById('despesaCategoria').value;
+
+    }
+
+    if(!descricao || !valor || valor <= 0){
+
+        alert('Preencha os campos corretamente.');
+
+        return;
+
+    }
+
+    transactions.unshift({
+
+        id:Date.now(),
+
+        type:type,
+
+        descricao:descricao,
+
+        valor:valor,
+
+        categoria:categoria,
+
+        data:new Date().toLocaleDateString('pt-BR')
+
+    });
+
+    localStorage.setItem(
+        'controles_transactions',
+        JSON.stringify(transactions)
+    );
+
+
+    event.target.reset();
+
+    alert(
+        type === 'receita'
+        ? 'Receita adicionada com sucesso!'
+        : 'Despesa adicionada com sucesso!'
+    );
+
+
+    updateAll();
+
+    showPage('dashboard');
+
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function renderTransactions(){
+
+    const lista =
+        document.getElementById('listaLancamentos');
+
+    const pesquisa =
+        (document.getElementById('pesquisa')?.value || '')
+        .toLowerCase();
+
+    const filtrados =
+        transactions.filter(function(item){
+
+            return item.descricao
+                .toLowerCase()
+                .includes(pesquisa);
+
+        });
+
+
+    if(!filtrados.length){
+
+        lista.innerHTML =
+            '<p style="color:var(--muted)">Nenhum lançamento encontrado.</p>';
+
+        return;
+
+    }
+
+
+    lista.innerHTML =
+        filtrados.map(function(item){
+
+            const cor =
+                item.type === 'receita'
+                ? 'green'
+                : 'red';
+
+            const sinal =
+                item.type === 'receita'
+                ? '+'
+                : '-';
+
+            return `
+
+                <div class="transaction">
+
+                    <div>
+
+                        <strong>
+                            ${escapeHTML(item.descricao)}
+                        </strong>
+
+                        <small>
+                            ${item.data}
+                            ${item.categoria ? ' • '+escapeHTML(item.categoria) : ''}
+                        </small>
+
+                    </div>
+
+                    <div>
+
+                        <strong class="${cor}">
+                            ${sinal} ${money(item.valor)}
+                        </strong>
+
+                        <br>
+
+                        <button
+                            onclick="removeTransaction(${item.id})"
+                            style="
+                                border:0;
+                                background:none;
+                                color:var(--muted);
+                                font-size:12px;
+                            "
+                        >
+                            Excluir
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join('');
+
+}
+
+
+/* =========================
+   ÚLTIMOS
+========================= */
+
+function renderLatest(){
+
+    const box =
+        document.getElementById('ultimos');
+
+    if(!transactions.length){
+
+        box.innerHTML =
+            '<p style="color:var(--muted)">Nenhum lançamento cadastrado.</p>';
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+        transactions.slice(0,5).map(function(item){
+
+            const cor =
+                item.type === 'receita'
+                ? 'green'
+                : 'red';
+
+            const sinal =
+                item.type === 'receita'
+                ? '+'
+                : '-';
+
+            return `
+
+                <div class="transaction">
+
+                    <div>
+
+                        <strong>
+                            ${escapeHTML(item.descricao)}
+                        </strong>
+
+                        <small>
+                            ${item.data}
+                        </small>
+
+                    </div>
+
+                    <strong class="${cor}">
+                        ${sinal} ${money(item.valor)}
+                    </strong>
+
+                </div>
+
+            `;
+
+        }).join('');
+
+}
+
+
+/* =========================
+   CATEGORIAS
+========================= */
+
+function renderCategories(){
+
+    const box =
+        document.getElementById('listaCategorias');
+
+    const categorias = {};
+
+    transactions
+        .filter(item => item.type === 'despesa')
+        .forEach(function(item){
+
+            const cat =
+                item.categoria || 'Outros';
+
+            categorias[cat] =
+                (categorias[cat] || 0) + item.valor;
+
+        });
+
+
+    const keys =
+        Object.keys(categorias);
+
+
+    if(!keys.length){
+
+        box.innerHTML =
+            '<p style="color:var(--muted)">Nenhuma despesa cadastrada.</p>';
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+        keys.map(function(cat){
+
+            return `
+
+                <div class="transaction">
+
+                    <strong>
+                        ${escapeHTML(cat)}
+                    </strong>
+
+                    <strong class="red">
+                        ${money(categorias[cat])}
+                    </strong>
+
+                </div>
+
+            `;
+
+        }).join('');
+
+}
+
+
+/* =========================
+   TOTAIS
+========================= */
+
+function updateTotals(){
+
+    let receitas = 0;
+    let despesas = 0;
+
+
+    transactions.forEach(function(item){
+
+        if(item.type === 'receita'){
+            receitas += item.valor;
+        }else{
+            despesas += item.valor;
         }
 
+    });
+
+
+    const saldo =
+        receitas - despesas;
+
+
+    document.getElementById('saldo').textContent =
+        money(saldo);
+
+    document.getElementById('totalReceitas').textContent =
+        money(receitas);
+
+    document.getElementById('totalDespesas').textContent =
+        money(despesas);
+
+
+    document.getElementById('relReceitas').textContent =
+        money(receitas);
+
+    document.getElementById('relDespesas').textContent =
+        money(despesas);
+
+    document.getElementById('relSaldo').textContent =
+        money(saldo);
+
+}
+
+
+/* =========================
+   EXCLUIR
+========================= */
+
+function removeTransaction(id){
+
+    if(!confirm('Deseja excluir este lançamento?')){
+        return;
     }
 
+    transactions =
+        transactions.filter(function(item){
+            return item.id !== id;
+        });
 
-    function voltar() {
 
-        abrirPagina('dashboard');
+    localStorage.setItem(
+        'controles_transactions',
+        JSON.stringify(transactions)
+    );
 
-    }
+
+    updateAll();
+
+}
+
+
+/* =========================
+   SEGURANÇA DE TEXTO
+========================= */
+
+function escapeHTML(text){
+
+    return String(text)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+
+}
+
+
+/* =========================
+   ATUALIZA TUDO
+========================= */
+
+function updateAll(){
+
+    updateTotals();
+
+    renderLatest();
+
+    renderTransactions();
+
+    renderCategories();
+
+}
+
+
+/* =========================
+   INICIALIZAÇÃO
+========================= */
+
+document.addEventListener('DOMContentLoaded',function(){
+
+    updateAll();
+
+});
 
 </script>
 
 </body>
-
 </html>
