@@ -100,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let transactions = [];
 
     try {
+
         transactions = JSON.parse(
             localStorage.getItem("controles_transactions") || "[]"
         );
@@ -109,22 +110,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     } catch {
+
         transactions = [];
+
     }
 
     let currentUser = null;
 
     try {
+
         currentUser = JSON.parse(
             localStorage.getItem("controles_user") || "null"
         );
+
     } catch {
+
         currentUser = null;
+
     }
 
     let goals = [];
 
     try {
+
         goals = JSON.parse(
             localStorage.getItem("controles_goals") || "[]"
         );
@@ -134,12 +142,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     } catch {
+
         goals = [];
+
     }
 
     let budgets = [];
 
     try {
+
         budgets = JSON.parse(
             localStorage.getItem("controles_budgets") || "[]"
         );
@@ -149,7 +160,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     } catch {
+
         budgets = [];
+
     }
 
     let selectedType = "income";
@@ -301,19 +314,24 @@ document.addEventListener("DOMContentLoaded", () => {
             app.classList.add("hidden");
 
             return;
+
         }
 
         loginScreen.classList.add("hidden");
         app.classList.remove("hidden");
 
         if (userName) {
+
             userName.textContent =
                 currentUser.name || "Usuário";
+
         }
 
         if (welcomeName) {
+
             welcomeName.textContent =
                 currentUser.name || "Usuário";
+
         }
 
         if (userAvatar) {
@@ -586,12 +604,16 @@ document.addEventListener("DOMContentLoaded", () => {
         transactionModal.classList.remove("hidden");
 
         if (dateInput) {
+
             dateInput.value =
                 dateInput.value || todayISO();
+
         }
 
         if (descriptionInput) {
+
             descriptionInput.focus();
+
         }
 
     }
@@ -603,7 +625,9 @@ document.addEventListener("DOMContentLoaded", () => {
         transactionModal.classList.add("hidden");
 
         if (transactionForm) {
+
             transactionForm.reset();
+
         }
 
         selectedType = "income";
@@ -611,11 +635,17 @@ document.addEventListener("DOMContentLoaded", () => {
         updateTypeButtons();
 
         if (dateInput) {
-            dateInput.value = todayISO();
+
+            dateInput.value =
+                todayISO();
+
         }
 
         if (frequencyInput) {
-            frequencyInput.value = "once";
+
+            frequencyInput.value =
+                "once";
+
         }
 
     }
@@ -685,7 +715,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (goalModal) {
+
             goalModal.classList.remove("hidden");
+
         }
 
     }
@@ -693,14 +725,18 @@ document.addEventListener("DOMContentLoaded", () => {
     function closeGoalModal() {
 
         if (goalModal) {
+
             goalModal.classList.add("hidden");
+
         }
 
         const form =
             document.getElementById("goalForm");
 
         if (form) {
+
             form.reset();
+
         }
 
     }
@@ -718,7 +754,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (budgetModal) {
+
             budgetModal.classList.remove("hidden");
+
         }
 
     }
@@ -726,14 +764,18 @@ document.addEventListener("DOMContentLoaded", () => {
     function closeBudgetModal() {
 
         if (budgetModal) {
+
             budgetModal.classList.add("hidden");
+
         }
 
         const form =
             document.getElementById("budgetForm");
 
         if (form) {
+
             form.reset();
+
         }
 
     }
@@ -742,10 +784,12 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("newGoalBtn");
 
     if (newGoalBtn) {
+
         newGoalBtn.addEventListener(
             "click",
             openGoalModal
         );
+
     }
 
     const closeGoalModalBtn =
@@ -754,20 +798,24 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
     if (closeGoalModalBtn) {
+
         closeGoalModalBtn.addEventListener(
             "click",
             closeGoalModal
         );
+
     }
 
     const newBudgetBtn =
         document.getElementById("newBudgetBtn");
 
     if (newBudgetBtn) {
+
         newBudgetBtn.addEventListener(
             "click",
             openBudgetModal
         );
+
     }
 
     const closeBudgetModalBtn =
@@ -776,10 +824,12 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
     if (closeBudgetModalBtn) {
+
         closeBudgetModalBtn.addEventListener(
             "click",
             closeBudgetModal
         );
+
     }
 
     /* =====================================================
@@ -910,12 +960,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* =====================================================
        OCORRÊNCIAS
-       
-       CORREÇÃO:
-       As recorrências continuam sendo exibidas
-       corretamente, mas a previsão Premium NÃO
-       multiplica uma despesa mensal pelo número
-       de dias restantes.
     ===================================================== */
 
     function transactionOccurrences(
@@ -932,7 +976,9 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
         if (Number.isNaN(original.getTime())) {
+
             return occurrences;
+
         }
 
         if (
@@ -1131,11 +1177,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const amount =
                 Number(item.amount) || 0;
 
-            if (item.type === "income") {
+            if (
+                item.type === "income" ||
+                item.type === "receita"
+            ) {
 
                 income += amount;
 
-            } else {
+            } else if (
+                item.type === "expense" ||
+                item.type === "despesa"
+            ) {
 
                 expense += amount;
 
@@ -1239,17 +1291,20 @@ document.addEventListener("DOMContentLoaded", () => {
     ) {
 
         const sign =
-            transaction.type === "income"
+            transaction.type === "income" ||
+            transaction.type === "receita"
                 ? "+"
                 : "-";
 
         const valueClass =
-            transaction.type === "income"
+            transaction.type === "income" ||
+            transaction.type === "receita"
                 ? "income"
                 : "expense";
 
         const icon =
-            transaction.type === "income"
+            transaction.type === "income" ||
+            transaction.type === "receita"
                 ? "↗"
                 : "↘";
 
@@ -1515,7 +1570,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     "Deseja excluir este lançamento?"
                 )
             ) {
+
                 return;
+
             }
 
             transactions =
@@ -1621,7 +1678,9 @@ document.addEventListener("DOMContentLoaded", () => {
         } = calculateMonthTotals();
 
         if (financeChart) {
+
             financeChart.destroy();
+
         }
 
         financeChart =
@@ -1639,6 +1698,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         ],
 
                         datasets: [
+
                             {
 
                                 label: "Valor",
@@ -1651,6 +1711,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 borderWidth: 0
 
                             }
+
                         ]
 
                     },
@@ -1717,15 +1778,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         items.forEach(item => {
 
-            if (item.type !== "expense") {
+            if (
+                item.type !== "expense" &&
+                item.type !== "despesa"
+            ) {
+
                 return;
+
             }
 
             const category =
                 item.category || "Outros";
 
             if (!totals[category]) {
+
                 totals[category] = 0;
+
             }
 
             totals[category] +=
@@ -1832,7 +1900,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typeof Chart === "undefined") return;
 
         if (categoryChart) {
+
             categoryChart.destroy();
+
         }
 
         const labels =
@@ -1842,7 +1912,9 @@ document.addEventListener("DOMContentLoaded", () => {
             Object.values(totals);
 
         if (!labels.length) {
+
             return;
+
         }
 
         categoryChart =
@@ -2013,7 +2085,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typeof Chart === "undefined") return;
 
         if (reportCategoryChart) {
+
             reportCategoryChart.destroy();
+
         }
 
         const labels =
@@ -2023,7 +2097,9 @@ document.addEventListener("DOMContentLoaded", () => {
             Object.values(totals);
 
         if (!labels.length) {
+
             return;
+
         }
 
         reportCategoryChart =
@@ -2075,88 +2151,65 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* =====================================================
-       PREMIUM — PREVISÃO DEFINITIVA
-       
-       IMPORTANTE:
-       A previsão NÃO usa as ocorrências futuras
-       de despesas recorrentes.
-
-       Ela usa:
-       
-       1. saldo atual do mês
-       2. despesas reais já ocorridas
-       3. dias já passados
-       4. média diária real
-       5. dias restantes
-
-       Portanto uma despesa mensal de R$ 800
-       não vira R$ 800 todos os dias.
+       PREMIUM — PREVISÃO
     ===================================================== */
 
     function calculateForecast() {
 
-        const now = new Date();
+        const now =
+            new Date();
 
-        const currentYear =
+        const year =
             now.getFullYear();
 
-        const currentMonth =
+        const month =
             now.getMonth();
 
-        const today =
-            getDateOnly(now);
-
-        const startOfMonth =
-            new Date(
-                currentYear,
-                currentMonth,
-                1
-            );
-
-        const endOfMonth =
-            new Date(
-                currentYear,
-                currentMonth + 1,
-                0
-            );
+        const day =
+            now.getDate();
 
         const totalDays =
-            endOfMonth.getDate();
-
-        const elapsedDays =
-            Math.max(
-                1,
-                today.getDate()
-            );
+            new Date(
+                year,
+                month + 1,
+                0
+            ).getDate();
 
         const remainingDays =
             Math.max(
                 0,
-                totalDays -
-                elapsedDays
+                totalDays - day
             );
 
         /*
-         IMPORTANTE:
-         Pegamos somente os lançamentos que
-         realmente aconteceram até HOJE.
+         =====================================================
+         LANÇAMENTOS DO MÊS ATÉ HOJE
+         =====================================================
         */
 
-        const periodStart =
+        let income = 0;
+        let expense = 0;
+
+        /*
+         Para evitar problemas com recorrências,
+         usamos as ocorrências reais até hoje.
+        */
+
+        const startOfMonth =
             new Date(
-                currentYear,
-                currentMonth,
+                year,
+                month,
                 1,
                 0,
                 0,
                 0
             );
 
-        const periodEnd =
+        const endOfToday =
             new Date(
-                currentYear,
-                currentMonth,
-                today.getDate(),
+                year,
+                month,
+                day,
                 23,
                 59,
                 59
@@ -2164,23 +2217,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const occurredItems =
             getPeriodTransactions(
-                periodStart,
-                periodEnd
+                startOfMonth,
+                endOfToday
             );
-
-        let income = 0;
-        let expense = 0;
 
         occurredItems.forEach(item => {
 
             const amount =
                 Number(item.amount) || 0;
 
-            if (item.type === "income") {
+            if (amount <= 0) {
+                return;
+            }
+
+            if (
+                item.type === "income" ||
+                item.type === "receita"
+            ) {
 
                 income += amount;
 
-            } else {
+            } else if (
+                item.type === "expense" ||
+                item.type === "despesa"
+            ) {
 
                 expense += amount;
 
@@ -2189,32 +2249,27 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         /*
-         Média diária baseada somente
-         nos gastos que já aconteceram.
-        */
-
-        const averageDailyExpense =
-            expense / elapsedDays;
-
-        /*
-         Quanto provavelmente será gasto
-         nos dias restantes.
-        */
-
-        const estimatedRemainingExpense =
-            averageDailyExpense *
-            remainingDays;
-
-        /*
-         Saldo real até hoje.
+         =====================================================
+         CÁLCULO
+         =====================================================
         */
 
         const currentBalance =
             income - expense;
 
-        /*
-         Previsão de fechamento.
-        */
+        const elapsedDays =
+            Math.max(
+                1,
+                day
+            );
+
+        const averageDailyExpense =
+            expense /
+            elapsedDays;
+
+        const estimatedRemainingExpense =
+            averageDailyExpense *
+            remainingDays;
 
         const forecast =
             currentBalance -
@@ -2225,17 +2280,23 @@ document.addEventListener("DOMContentLoaded", () => {
             balance:
                 currentBalance,
 
-            income,
+            income:
+                income,
 
-            expense,
+            expense:
+                expense,
 
-            averageDailyExpense,
+            averageDailyExpense:
+                averageDailyExpense,
 
-            estimatedRemainingExpense,
+            estimatedRemainingExpense:
+                estimatedRemainingExpense,
 
-            remainingDays,
+            remainingDays:
+                remainingDays,
 
-            forecast
+            forecast:
+                forecast
 
         };
 
@@ -2248,32 +2309,35 @@ document.addEventListener("DOMContentLoaded", () => {
         const data =
             calculateForecast();
 
-        if (!transactions.length) {
-
-            monthForecast.innerHTML = `
-
-                <div class="empty-state">
-
-                    Adicione seus lançamentos para visualizar
-                    sua previsão financeira.
-
-                </div>
-
-            `;
-
-            return;
-
-        }
+        /*
+         Mesmo sem lançamentos, mostramos
+         a estrutura da previsão.
+        */
 
         const positive =
             data.forecast >= 0;
 
-        const message =
-            positive
+        let message;
 
-                ? "Mantendo o ritmo atual de gastos, a projeção indica fechamento positivo."
+        if (
+            data.income === 0 &&
+            data.expense === 0
+        ) {
 
-                : "Atenção: mantendo o ritmo atual de gastos, a projeção indica saldo negativo.";
+            message =
+                "Adicione receitas e despesas para gerar uma previsão personalizada.";
+
+        } else if (positive) {
+
+            message =
+                "Mantendo o ritmo atual de gastos, a projeção indica fechamento positivo.";
+
+        } else {
+
+            message =
+                "Atenção: mantendo o ritmo atual de gastos, a projeção indica saldo negativo.";
+
+        }
 
         monthForecast.innerHTML = `
 
@@ -2301,6 +2365,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     ${formatMoney(
                         data.averageDailyExpense
                     )}
+                </strong>
+
+            </div>
+
+            <div class="forecast-card">
+
+                <span>
+                    📅 DIAS RESTANTES
+                </span>
+
+                <strong>
+                    ${data.remainingDays}
                 </strong>
 
             </div>
@@ -2351,9 +2427,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 "premiumEconomyValue"
             );
 
-        if (!performanceText &&
-            !premiumEconomyValue) {
+        if (
+            !performanceText &&
+            !premiumEconomyValue
+        ) {
+
             return;
+
         }
 
         const totals =
@@ -2380,7 +2460,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (performanceText) {
 
-            if (!transactions.length) {
+            if (
+                totals.income === 0 &&
+                totals.expense === 0
+            ) {
 
                 performanceText.textContent =
                     "Cadastre seus lançamentos para acompanhar seu desempenho.";
@@ -2520,19 +2603,33 @@ document.addEventListener("DOMContentLoaded", () => {
             const amount =
                 Number(item.amount) || 0;
 
-            if (item.type === "income") {
+            if (
+                item.type === "income" ||
+                item.type === "receita"
+            ) {
+
                 income += amount;
-            } else {
+
+            } else if (
+                item.type === "expense" ||
+                item.type === "despesa"
+            ) {
+
                 expense += amount;
+
             }
 
         });
 
         return {
+
             income,
+
             expense,
+
             balance:
                 income - expense
+
         };
 
     }
@@ -2541,7 +2638,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!monthlyComparison) return;
 
-        const now = new Date();
+        const now =
+            new Date();
 
         const current =
             getMonthTotals(
@@ -2730,876 +2828,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
         goalForm.addEventListener(
             "submit",
-            event => {
-
-                event.preventDefault();
-
-                if (
-                    currentUser?.plan !==
-                    "premium"
-                ) {
-
-                    alert(
-                        "Essa função faz parte do ControleS Premium."
-                    );
-
-                    return;
-
-                }
-
-                const name =
-                    document.getElementById(
-                        "goalName"
-                    )?.value.trim();
-
-                const target =
-                    Number(
-                        document.getElementById(
-                            "goalTarget"
-                        )?.value
-                    );
-
-                const saved =
-                    Number(
-                        document.getElementById(
-                            "goalSaved"
-                        )?.value
-                    ) || 0;
-
-                if (
-                    !name ||
-                    !target ||
-                    target <= 0
-                ) {
-
-                    alert(
-                        "Preencha os dados da meta."
-                    );
-
-                    return;
-
-                }
-
-                goals.push({
-
-                    id:
-                        Date.now(),
-
-                    name,
-
-                    target,
-
-                    saved
-
-                });
-
-                saveGoals();
-
-                closeGoalModal();
-
-                updateGoals();
-
-            }
-        );
-
-    }
-
-    document.addEventListener(
-        "click",
-        event => {
-
-            const button =
-                event.target.closest(
-                    "[data-delete-goal]"
-                );
-
-            if (!button) return;
-
-            const id =
-                Number(
-                    button.dataset.deleteGoal
-                );
-
-            goals =
-                goals.filter(
-                    goal =>
-                        Number(goal.id) !== id
-                );
-
-            saveGoals();
-
-            updateGoals();
-
-        }
-    );
-
-    /* =====================================================
-       PREMIUM — ORÇAMENTO
-    ===================================================== */
-
-    function updateBudgets() {
-
-        if (!budgetsList) return;
-
-        if (!budgets.length) {
-
-            budgetsList.innerHTML = `
-
-                <div class="empty-state">
-                    Nenhum orçamento definido.
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-        const categoryTotals =
-            calculateCategories();
-
-        budgetsList.innerHTML =
-            budgets
-                .map(budget => {
-
-                    const limit =
-                        Number(budget.limit) || 0;
-
-                    const spent =
-                        Number(
-                            categoryTotals[
-                                budget.category
-                            ] || 0
-                        );
-
-                    const percentage =
-                        limit > 0
-                            ? (
-                                spent /
-                                limit
-                            ) * 100
-                            : 0;
-
-                    const exceeded =
-                        percentage >= 100;
-
-                    return `
-
-                        <div class="premium-list-item">
-
-                            <div>
-
-                                <strong>
-                                    ${escapeHTML(
-                                        budget.category
-                                    )}
-                                </strong>
-
-                                <br>
-
-                                <small>
-                                    ${formatMoney(spent)}
-                                    de
-                                    ${formatMoney(limit)}
-                                </small>
-
-                            </div>
-
-                            <strong>
-                                ${percentage.toFixed(0)}%
-                            </strong>
-
-                            <button
-                                type="button"
-                                class="premium-small-button"
-                                data-delete-budget="${budget.id}"
-                            >
-                                Excluir
-                            </button>
-
-                            <div>
-
-                                ${
-                                    exceeded
-                                        ? "⚠️ Limite ultrapassado"
-                                        : "✓ Dentro do orçamento"
-                                }
-
-                            </div>
-
-                        </div>
-
-                    `;
-
-                })
-                .join("");
-
-    }
-
-    const budgetForm =
-        document.getElementById("budgetForm");
-
-    if (budgetForm) {
-
-        budgetForm.addEventListener(
-            "submit",
-            event => {
-
-                event.preventDefault();
-
-                if (
-                    currentUser?.plan !==
-                    "premium"
-                ) {
-
-                    alert(
-                        "Essa função faz parte do ControleS Premium."
-                    );
-
-                    return;
-
-                }
-
-                const category =
-                    document.getElementById(
-                        "budgetCategory"
-                    )?.value;
-
-                const limit =
-                    Number(
-                        document.getElementById(
-                            "budgetLimit"
-                        )?.value
-                    );
-
-                if (
-                    !category ||
-                    !limit ||
-                    limit <= 0
-                ) {
-
-                    alert(
-                        "Informe um limite válido."
-                    );
-
-                    return;
-
-                }
-
-                budgets =
-                    budgets.filter(
-                        budget =>
-                            budget.category !==
-                            category
-                    );
-
-                budgets.push({
-
-                    id:
-                        Date.now(),
-
-                    category,
-
-                    limit
-
-                });
-
-                saveBudgets();
-
-                closeBudgetModal();
-
-                updateBudgets();
-
-            }
-        );
-
-    }
-
-    document.addEventListener(
-        "click",
-        event => {
-
-            const button =
-                event.target.closest(
-                    "[data-delete-budget]"
-                );
-
-            if (!button) return;
-
-            const id =
-                Number(
-                    button.dataset.deleteBudget
-                );
-
-            budgets =
-                budgets.filter(
-                    budget =>
-                        Number(budget.id) !== id
-                );
-
-            saveBudgets();
-
-            updateBudgets();
-
-        }
-    );
-
-    /* =====================================================
-       PREMIUM — SIMULADOR
-    ===================================================== */
-
-    const simulateBtn =
-        document.getElementById(
-            "simulateBtn"
-        );
-
-    if (simulateBtn) {
-
-        simulateBtn.addEventListener(
-            "click",
-            () => {
-
-                if (
-                    currentUser?.plan !==
-                    "premium"
-                ) {
-
-                    alert(
-                        "O simulador faz parte do ControleS Premium."
-                    );
-
-                    return;
-
-                }
-
-                const input =
-                    document.getElementById(
-                        "simulationAmount"
-                    );
-
-                const result =
-                    document.getElementById(
-                        "simulationResult"
-                    );
-
-                if (!input || !result) return;
-
-                const amount =
-                    Number(input.value);
-
-                if (!amount || amount <= 0) {
-
-                    result.innerHTML = `
-                        <div class="empty-state">
-                            Informe um valor para simular.
-                        </div>
-                    `;
-
-                    return;
-
-                }
-
-                const totals =
-                    calculateMonthTotals();
-
-                const simulatedBalance =
-                    totals.balance -
-                    amount;
-
-                result.innerHTML = `
-
-                    <div class="simulation-card">
-
-                        <span>
-                            SALDO ATUAL
-                        </span>
-
-                        <strong>
-                            ${formatMoney(
-                                totals.balance
-                            )}
-                        </strong>
-
-                    </div>
-
-                    <div class="simulation-card">
-
-                        <span>
-                            NOVA DESPESA
-                        </span>
-
-                        <strong>
-                            - ${formatMoney(amount)}
-                        </strong>
-
-                    </div>
-
-                    <div class="simulation-card">
-
-                        <span>
-                            SALDO APÓS A SIMULAÇÃO
-                        </span>
-
-                        <strong>
-                            ${formatMoney(
-                                simulatedBalance
-                            )}
-                        </strong>
-
-                    </div>
-
-                `;
-
-            }
-        );
-
-    }
-
-    /* =====================================================
-       PREMIUM — ANÁLISE
-    ===================================================== */
-
-    function updatePremiumAnalysis() {
-
-        if (!premiumAnalysis) return;
-
-        const totals =
-            calculateMonthTotals();
-
-        const categoriesTotals =
-            calculateCategories();
-
-        const entries =
-            Object.entries(
-                categoriesTotals
-            )
-            .sort(
-                (a, b) =>
-                    b[1] - a[1]
-            );
-
-        if (!transactions.length) {
-
-            premiumAnalysis.innerHTML = `
-
-                <div class="empty-state">
-                    Cadastre lançamentos para receber sua análise financeira.
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-        const biggest =
-            entries.length
-                ? entries[0]
-                : null;
-
-        let text = "";
-
-        if (
-            totals.balance >= 0
-        ) {
-
-            text =
-                "Seu mês está positivo até o momento. Continue acompanhando seus gastos para manter o equilíbrio.";
-
-        } else {
-
-            text =
-                "Seu mês está negativo. Analise suas principais categorias e procure reduzir despesas não essenciais.";
-
-        }
-
-        premiumAnalysis.innerHTML = `
-
-            <div class="premium-list-item">
-
-                <strong>
-                    Situação atual
-                </strong>
-
-                <br>
-
-                ${text}
-
-            </div>
-
-            ${
-                biggest
-                    ? `
-                        <div class="premium-list-item">
-
-                            <strong>
-                                Maior categoria de gasto
-                            </strong>
-
-                            <br>
-
-                            ${escapeHTML(biggest[0])}
-
-                            —
-                            ${formatMoney(biggest[1])}
-
-                        </div>
-                    `
-                    : ""
-            }
-
-            <div class="premium-list-item">
-
-                <strong>
-                    Saldo projetado
-                </strong>
-
-                <br>
-
-                ${formatMoney(
-                    calculateForecast().forecast
-                )}
-
-            </div>
-
-        `;
-
-    }
-
-    /* =====================================================
-       PREMIUM
-    ===================================================== */
-
-    function updatePremium() {
-
-        updatePremiumPerformance();
-
-        updateForecast();
-
-        updateGoals();
-
-        updateBudgets();
-
-        updateSmartAlerts();
-
-        updateMonthlyComparison();
-
-        updatePremiumAnalysis();
-
-    }
-
-    const subscribePremiumBtn =
-        document.getElementById(
-            "subscribePremiumBtn"
-        );
-
-    if (subscribePremiumBtn) {
-
-        subscribePremiumBtn.addEventListener(
-            "click",
-            () => {
-
-                if (!currentUser) {
-
-                    alert(
-                        "Entre no ControleS para continuar."
-                    );
-
-                    return;
-
-                }
-
-                if (
-                    currentUser.plan ===
-                    "premium"
-                ) {
-
-                    alert(
-                        "Você já é Premium! ⭐"
-                    );
-
-                    return;
-
-                }
-
-                /*
-                 Nesta versão local, o botão ativa
-                 o Premium imediatamente.
-                 
-                 Quando o Supabase/pagamento for
-                 integrado, este ponto será substituído
-                 pelo sistema real de assinatura.
-                */
-
-                currentUser.plan =
-                    "premium";
-
-                localStorage.setItem(
-                    "controles_user",
-                    JSON.stringify(
-                        currentUser
-                    )
-                );
-
-                if (userPlan) {
-
-                    userPlan.textContent =
-                        "ControleS Premium ⭐";
-
-                }
-
-                alert(
-                    "ControleS Premium ativado! ⭐"
-                );
-
-                updatePremium();
-
-            }
-        );
-
-    }
-
-    /* =====================================================
-       TEMA ESCURO
-    ===================================================== */
-
-    const themeBtn =
-        document.getElementById(
-            "themeBtn"
-        );
-
-    if (themeBtn) {
-
-        themeBtn.addEventListener(
-            "click",
-            () => {
-
-                document.body.classList.toggle(
-                    "dark"
-                );
-
-                const dark =
-                    document.body.classList.contains(
-                        "dark"
-                    );
-
-                localStorage.setItem(
-                    "controles_dark",
-                    dark ? "true" : "false"
-                );
-
-            }
-        );
-
-    }
-
-    if (
-        localStorage.getItem(
-            "controles_dark"
-        ) === "true"
-    ) {
-
-        document.body.classList.add(
-            "dark"
-        );
-
-    }
-
-    /* =====================================================
-       EXPORTAÇÃO DE DADOS
-       
-       Exporta um arquivo completo para backup.
-       Inclui:
-       - usuário
-       - lançamentos
-       - metas
-       - orçamentos
-       - data da exportação
-    ===================================================== */
-
-    const exportDataBtn =
-        document.getElementById(
-            "exportDataBtn"
-        );
-
-    if (exportDataBtn) {
-
-        exportDataBtn.addEventListener(
-            "click",
-            () => {
-
-                if (!currentUser) {
-
-                    alert(
-                        "Entre no ControleS para exportar seus dados."
-                    );
-
-                    return;
-
-                }
-
-                const data = {
-
-                    aplicativo:
-                        "ControleS",
-
-                    usuario:
-                        currentUser,
-
-                    lancamentos:
-                        transactions,
-
-                    metas:
-                        goals,
-
-                    orcamentos:
-                        budgets,
-
-                    exportadoEm:
-                        new Date().toISOString(),
-
-                    observacao:
-                        "Arquivo de backup dos dados financeiros cadastrados no ControleS."
-
-                };
-
-                const blob =
-                    new Blob(
-                        [
-                            JSON.stringify(
-                                data,
-                                null,
-                                2
-                            )
-                        ],
-                        {
-                            type:
-                                "application/json;charset=utf-8"
-                        }
-                    );
-
-                const url =
-                    URL.createObjectURL(
-                        blob
-                    );
-
-                const link =
-                    document.createElement(
-                        "a"
-                    );
-
-                link.href = url;
-
-                link.download =
-                    `controles-backup-${todayISO()}.json`;
-
-                document.body.appendChild(
-                    link
-                );
-
-                link.click();
-
-                link.remove();
-
-                setTimeout(
-                    () => {
-                        URL.revokeObjectURL(url);
-                    },
-                    1000
-                );
-
-                alert(
-                    "Seus dados foram exportados com sucesso."
-                );
-
-            }
-        );
-
-    }
-
-    /* =====================================================
-       ATUALIZAÇÃO GERAL
-    ===================================================== */
-
-    function updateAll() {
-
-        updateCategoryFilter();
-
-        updateDashboard();
-
-        updateRecentTransactions();
-
-        updateAllTransactions();
-
-        updateCategories();
-
-        updateReports();
-
-        updateForecast();
-
-        updatePremiumPerformance();
-
-        updateGoals();
-
-        updateBudgets();
-
-        updateSmartAlerts();
-
-        updateMonthlyComparison();
-
-        updatePremiumAnalysis();
-
-    }
-
-    /* =====================================================
-       FECHAR MODAIS CLICANDO FORA
-    ===================================================== */
-
-    document.addEventListener(
-        "click",
-        event => {
-
-            if (
-                event.target.classList.contains(
-                    "modal-overlay"
-                )
-            ) {
-
-                const modal =
-                    event.target.closest(
-                        ".modal"
-                    );
-
-                if (modal) {
-
-                    modal.classList.add(
-                        "hidden"
-                    );
-
-                }
-
-            }
-
-        }
-    );
-
-    /* =====================================================
-       INICIALIZAÇÃO
-    ===================================================== */
-
-    if (dateInput) {
-
-        dateInput.value =
-            todayISO();
-
-    }
-
-    updateTypeButtons();
-
-    loadUser();
-
-    console.log(
-        "ControleS: app.js carregado com sucesso."
-    );
-
-});
+           
