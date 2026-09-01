@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#071f19">
+<meta name="theme-color" content="#061f19">
 
 <title>ControleS • Controle Financeiro</title>
 
@@ -14,20 +14,21 @@
 :root{
     --bg:#061f19;
     --bg2:#092b22;
+
     --surface:#ffffff;
     --surface-soft:#f7faf8;
 
+    /* COR PRINCIPAL */
+    --orange:#f28c28;
+    --orange-dark:#d96f0b;
+    --orange-light:#fff1df;
+
+    /* VERDE FICA NO FUNDO */
     --green:#18b878;
     --green-dark:#0c8e5d;
 
-    --orange:#f28c28;
-    --orange-dark:#d66f0c;
-    --orange-soft:#fff1df;
-
     --text:#17231f;
     --muted:#72847d;
-
-    --white:#ffffff;
 
     --red:#e95461;
 
@@ -38,9 +39,7 @@
 }
 
 
-/* =========================
-RESET
-========================= */
+/* RESET */
 
 *{
     margin:0;
@@ -63,13 +62,13 @@ body{
 
         radial-gradient(
             circle at 0% 0%,
-            rgba(24,184,120,.16),
+            rgba(242,140,40,.10),
             transparent 28%
         ),
 
         radial-gradient(
             circle at 100% 10%,
-            rgba(242,140,40,.08),
+            rgba(255,255,255,.05),
             transparent 25%
         ),
 
@@ -84,6 +83,7 @@ body{
 
     min-height:100vh;
 }
+
 
 button,
 input,
@@ -120,11 +120,10 @@ TOPO
 
     justify-content:space-between;
 
-    padding:
-        0 28px;
+    padding:0 28px;
 
     background:
-        rgba(6,31,25,.94);
+        rgba(6,31,25,.95);
 
     backdrop-filter:
         blur(18px);
@@ -232,7 +231,7 @@ TOPO
 
     border:
         1px solid
-        rgba(255,255,255,.08);
+        rgba(255,255,255,.10);
 }
 
 
@@ -328,13 +327,15 @@ ESTRUTURA
 }
 
 
+/* LARANJA NO ITEM ATIVO */
+
 .nav button.active{
 
     background:
-        rgba(242,140,40,.14);
+        rgba(242,140,40,.15);
 
     color:
-        #ffad55;
+        var(--orange);
 }
 
 
@@ -451,7 +452,7 @@ PÁGINAS
 
 
 /* =========================
-CARD SALDO
+SALDO
 ========================= */
 
 .balance{
@@ -495,7 +496,7 @@ CARD SALDO
     border-radius:50%;
 
     background:
-        rgba(242,140,40,.08);
+        rgba(242,140,40,.09);
 
     right:-90px;
 
@@ -513,7 +514,8 @@ CARD SALDO
 
 .balance-value{
 
-    color:#17231f;
+    color:
+        var(--orange-dark);
 
     font-size:37px;
 
@@ -632,7 +634,7 @@ CARDS BRANCOS
     border-radius:50%;
 
     background:
-        var(--orange-soft);
+        var(--orange-light);
 
     right:-38px;
 
@@ -660,6 +662,8 @@ CARDS BRANCOS
 }
 
 
+/* ÍCONES BRANCOS COM DETALHE LARANJA */
+
 .stat-icon{
 
     width:38px;
@@ -673,7 +677,15 @@ CARDS BRANCOS
     border-radius:11px;
 
     background:
-        var(--orange-soft);
+        #ffffff;
+
+    border:
+        1px solid
+        #edf0ee;
+
+    box-shadow:
+        0 4px 12px
+        rgba(0,0,0,.06);
 
     font-size:18px;
 
@@ -697,12 +709,16 @@ CARDS BRANCOS
 }
 
 
+/* RECEITAS = LARANJA */
+
 .stat h3.income{
 
     color:
-        var(--green-dark);
+        var(--orange-dark);
 }
 
+
+/* DESPESAS = LARANJA */
 
 .stat h3.expense{
 
@@ -768,7 +784,7 @@ AÇÕES
         translateY(-2px);
 
     border-color:
-        rgba(242,140,40,.35);
+        rgba(242,140,40,.45);
 }
 
 
@@ -930,7 +946,15 @@ TRANSAÇÕES
     border-radius:12px;
 
     background:
-        var(--orange-soft);
+        #ffffff;
+
+    border:
+        1px solid
+        #e9eeeb;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0,0,0,.05);
 }
 
 
@@ -970,10 +994,12 @@ TRANSAÇÕES
 }
 
 
+/* TODAS AS CORES PRINCIPAIS EM LARANJA */
+
 .income{
 
     color:
-        var(--green-dark);
+        var(--orange-dark);
 }
 
 
@@ -1045,6 +1071,8 @@ FORMULÁRIOS
 }
 
 
+/* BOTÃO PRINCIPAL LARANJA */
+
 .btn-primary{
 
     border:0;
@@ -1053,8 +1081,8 @@ FORMULÁRIOS
 
         linear-gradient(
             135deg,
-            var(--green),
-            var(--green-dark)
+            var(--orange),
+            var(--orange-dark)
         );
 
     color:white;
@@ -1067,7 +1095,7 @@ FORMULÁRIOS
 
     box-shadow:
         0 7px 18px
-        rgba(24,184,120,.22);
+        rgba(242,140,40,.25);
 }
 
 
@@ -1162,17 +1190,18 @@ PREMIUM
 .feature{
 
     background:
-        var(--orange-soft);
+        #ffffff;
 
     border:
         1px solid
-        rgba(242,140,40,.12);
+        #e8eeeb;
 
     border-radius:12px;
 
     padding:13px;
 
-    color:#7d531f;
+    color:
+        var(--orange-dark);
 
     font-size:13px;
 }
@@ -1201,7 +1230,7 @@ VAZIO
 
 
 /* =========================
-MOBILE
+MENU MOBILE
 ========================= */
 
 .mobile-nav{
@@ -1412,7 +1441,8 @@ MOBILE
 
     .mobile-nav button.active{
 
-        color:#ffab51;
+        color:
+            var(--orange);
     }
 
 
@@ -1626,10 +1656,6 @@ MOBILE
 <main class="content">
 
 
-<!-- =========================
-DASHBOARD
-========================= -->
-
 <section
     id="dashboard"
     class="page active">
@@ -1684,7 +1710,7 @@ DASHBOARD
 
                 <div
                     class="dot"
-                    style="background:var(--green)">
+                    style="background:var(--orange)">
                 </div>
 
                 <div>
@@ -1977,10 +2003,6 @@ DASHBOARD
 
 
 
-<!-- =========================
-RECEITAS
-========================= -->
-
 <section
     id="receitas"
     class="page">
@@ -2061,10 +2083,6 @@ RECEITAS
 
 
 
-<!-- =========================
-DESPESAS
-========================= -->
-
 <section
     id="despesas"
     class="page">
@@ -2139,41 +2157,15 @@ DESPESAS
                     class="input"
                     id="despesaCategoria">
 
-                    <option>
-                        Alimentação
-                    </option>
-
-                    <option>
-                        Moradia
-                    </option>
-
-                    <option>
-                        Transporte
-                    </option>
-
-                    <option>
-                        Saúde
-                    </option>
-
-                    <option>
-                        Educação
-                    </option>
-
-                    <option>
-                        Lazer
-                    </option>
-
-                    <option>
-                        Compras
-                    </option>
-
-                    <option>
-                        Contas
-                    </option>
-
-                    <option>
-                        Outros
-                    </option>
+                    <option>Alimentação</option>
+                    <option>Moradia</option>
+                    <option>Transporte</option>
+                    <option>Saúde</option>
+                    <option>Educação</option>
+                    <option>Lazer</option>
+                    <option>Compras</option>
+                    <option>Contas</option>
+                    <option>Outros</option>
 
                 </select>
 
@@ -2195,10 +2187,6 @@ DESPESAS
 </section>
 
 
-
-<!-- =========================
-LANÇAMENTOS
-========================= -->
 
 <section
     id="lancamentos"
@@ -2223,7 +2211,6 @@ LANÇAMENTOS
 
 
     <div class="panel">
-
 
         <div class="toolbar">
 
@@ -2252,10 +2239,6 @@ LANÇAMENTOS
 </section>
 
 
-
-<!-- =========================
-RELATÓRIOS
-========================= -->
 
 <section
     id="relatorios"
@@ -2322,7 +2305,9 @@ RELATÓRIOS
                 Saldo
             </small>
 
-            <h3 id="relSaldo">
+            <h3
+                class="income"
+                id="relSaldo">
 
                 R$ 0,00
 
@@ -2357,10 +2342,6 @@ RELATÓRIOS
 </section>
 
 
-
-<!-- =========================
-CATEGORIAS
-========================= -->
 
 <section
     id="categorias"
@@ -2422,10 +2403,6 @@ CATEGORIAS
 
 
 
-<!-- =========================
-PREMIUM
-========================= -->
-
 <section
     id="premium"
     class="page">
@@ -2482,7 +2459,11 @@ PREMIUM
 
         <button
             class="btn-primary"
-            onclick="alert('O sistema Premium será ativado em uma próxima versão.')">
+            onclick="
+                alert(
+                    'O sistema Premium será ativado em uma próxima versão.'
+                )
+            ">
 
             Conhecer Premium
 
@@ -2498,10 +2479,6 @@ PREMIUM
 </div>
 
 
-
-<!-- =========================
-MENU MOBILE
-========================= -->
 
 <nav class="mobile-nav">
 
@@ -2656,33 +2633,6 @@ function showPage(pageId,button){
         button.classList
             .add('active');
 
-    }else{
-
-        const desktop =
-            document.querySelector(
-                '.nav button[onclick*="' +
-                pageId +
-                '"]'
-            );
-
-
-        const mobile =
-            document.querySelector(
-                '.mobile-nav button[onclick*="' +
-                pageId +
-                '"]'
-            );
-
-
-        if(desktop)
-            desktop.classList
-                .add('active');
-
-
-        if(mobile)
-            mobile.classList
-                .add('active');
-
     }
 
 
@@ -2690,9 +2640,6 @@ function showPage(pageId,button){
         top:0,
         behavior:'smooth'
     });
-
-
-    updateAll();
 
 }
 
@@ -2732,7 +2679,6 @@ function addTransaction(event,type){
             );
 
     }
-
 
     else{
 
@@ -2981,12 +2927,6 @@ function transactionHTML(item){
         : '💸';
 
 
-    const className =
-        isIncome
-        ? 'income'
-        : 'expense';
-
-
     const sign =
         isIncome
         ? '+'
@@ -3043,7 +2983,7 @@ function transactionHTML(item){
 
                 <div class="
                     transaction-value
-                    ${className}
+                    income
                 ">
 
                     ${sign}
@@ -3374,11 +3314,21 @@ function updateFinanceChart(){
 
                         backgroundColor:[
 
-                            '#18b878',
+                            '#f28c28',
 
-                            '#f28c28'
+                            '#ffffff'
 
                         ],
+
+                        borderColor:[
+
+                            '#d96f0b',
+
+                            '#dfe7e3'
+
+                        ],
+
+                        borderWidth:1,
 
                         borderRadius:9
 
@@ -3520,35 +3470,6 @@ function updateReportChart(){
                             display:false
                         }
 
-                    },
-
-                    scales:{
-
-                        x:{
-
-                            ticks:{
-                                color:'#72847d'
-                            },
-
-                            grid:{
-                                display:false
-                            }
-
-                        },
-
-                        y:{
-
-                            ticks:{
-                                color:'#72847d'
-                            },
-
-                            grid:{
-                                color:
-                                    'rgba(0,0,0,.06)'
-                            }
-
-                        }
-
                     }
 
                 }
@@ -3623,15 +3544,15 @@ function updateCategoryChart(){
 
                             '#f28c28',
 
-                            '#18b878',
+                            '#ffffff',
 
                             '#ffb45f',
 
-                            '#0c8e5d',
+                            '#d96f0b',
 
-                            '#e76f51',
+                            '#f5d4ad',
 
-                            '#82cda9',
+                            '#e9eeeb',
 
                             '#ffc857',
 
@@ -3639,7 +3560,9 @@ function updateCategoryChart(){
 
                         ],
 
-                        borderWidth:0
+                        borderWidth:1,
+
+                        borderColor:'#ffffff'
 
                     }]
 
