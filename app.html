@@ -115,27 +115,52 @@
 
         <nav class="sidebar-nav">
 
-            <button class="nav-item active" data-section="dashboard">
+            <!-- TELA PRINCIPAL -->
+            <button
+                class="nav-item active"
+                data-section="dashboard"
+                type="button"
+            >
                 <span class="nav-icon">⌂</span>
-                <span>Dashboard</span>
+                <span>Tela principal</span>
             </button>
 
-            <button class="nav-item" data-section="transactions">
+            <!-- LANÇAMENTOS -->
+            <button
+                class="nav-item"
+                data-section="transactions"
+                type="button"
+            >
                 <span class="nav-icon">🧾</span>
                 <span>Lançamentos</span>
             </button>
 
-            <button class="nav-item" data-section="categories">
+            <!-- CATEGORIAS -->
+            <button
+                class="nav-item"
+                data-section="categories"
+                type="button"
+            >
                 <span class="nav-icon">📊</span>
                 <span>Categorias</span>
             </button>
 
-            <button class="nav-item" data-section="reports">
+            <!-- RELATÓRIOS -->
+            <button
+                class="nav-item"
+                data-section="reports"
+                type="button"
+            >
                 <span class="nav-icon">📈</span>
                 <span>Relatórios</span>
             </button>
 
-            <button class="nav-item" data-section="premium">
+            <!-- PREMIUM -->
+            <button
+                class="nav-item"
+                data-section="premium"
+                type="button"
+            >
                 <span class="nav-icon">⭐</span>
                 <span>Premium</span>
             </button>
@@ -144,17 +169,29 @@
 
         <div class="sidebar-bottom">
 
-            <button id="themeBtn" class="sidebar-action">
+            <button
+                id="themeBtn"
+                class="sidebar-action"
+                type="button"
+            >
                 <span>🌙</span>
                 <span>Tema escuro</span>
             </button>
 
-            <button id="exportDataBtn" class="sidebar-action">
+            <button
+                id="exportDataBtn"
+                class="sidebar-action"
+                type="button"
+            >
                 <span>💾</span>
                 <span>Exportar dados</span>
             </button>
 
-            <button id="logoutBtn" class="sidebar-action">
+            <button
+                id="logoutBtn"
+                class="sidebar-action"
+                type="button"
+            >
                 <span>↪</span>
                 <span>Sair</span>
             </button>
@@ -164,9 +201,13 @@
     </aside>
 
 
-    <!-- MAIN -->
+    <!-- =========================
+         CONTEÚDO PRINCIPAL
+    ========================= -->
 
     <main class="main-content">
+
+        <!-- TOPBAR -->
 
         <header class="topbar">
 
@@ -176,13 +217,16 @@
                     id="mobileMenuBtn"
                     class="mobile-menu"
                     type="button"
+                    aria-label="Abrir menu"
                 >
                     ☰
                 </button>
 
                 <div>
                     <span class="topbar-small">CONTROLES</span>
-                    <h1 id="pageTitle">Dashboard</h1>
+
+                    <!-- ALTERADO: Dashboard → Tela principal -->
+                    <h1 id="pageTitle">Tela principal</h1>
                 </div>
 
             </div>
@@ -199,13 +243,23 @@
 
                 <div class="user-area">
 
-                    <div id="userAvatar" class="user-avatar">
+                    <div
+                        id="userAvatar"
+                        class="user-avatar"
+                    >
                         U
                     </div>
 
                     <div class="user-info">
-                        <strong id="userName">Usuário</strong>
-                        <span id="userPlan">ControleS Grátis</span>
+
+                        <strong id="userName">
+                            Usuário
+                        </strong>
+
+                        <span id="userPlan">
+                            ControleS Grátis
+                        </span>
+
                     </div>
 
                 </div>
@@ -216,42 +270,69 @@
 
 
         <!-- =========================
-             DASHBOARD
+             TELA PRINCIPAL
         ========================= -->
 
-        <section id="dashboard" class="section">
+        <section
+            id="dashboard"
+            class="section"
+        >
 
             <div class="welcome">
 
                 <div>
-                    <span class="welcome-label">VISÃO GERAL</span>
+
+                    <span class="welcome-label">
+                        VISÃO GERAL
+                    </span>
 
                     <h2>
                         Olá,
-                        <span id="welcomeName">Usuário</span>
+                        <span id="welcomeName">
+                            Usuário
+                        </span>
                         👋
                     </h2>
 
                     <p>
                         Aqui está um resumo das suas finanças.
                     </p>
+
                 </div>
 
-                <div id="currentDate" class="current-date"></div>
+                <div
+                    id="currentDate"
+                    class="current-date"
+                ></div>
 
             </div>
 
 
+            <!-- =========================
+                 CARDS FINANCEIROS
+            ========================= -->
+
             <div class="stats-grid">
+
+                <!-- SALDO -->
 
                 <div class="stat-card">
 
                     <div class="stat-top">
-                        <div class="stat-icon">💰</div>
-                        <span class="stat-label">Saldo atual</span>
+
+                        <div class="stat-icon">
+                            💰
+                        </div>
+
+                        <span class="stat-label">
+                            Saldo atual
+                        </span>
+
                     </div>
 
-                    <strong id="balanceValue">R$ 0,00</strong>
+                    <strong id="balanceValue">
+                        R$ 0,00
+                    </strong>
 
                     <small>
                         Receitas menos despesas
@@ -260,14 +341,25 @@
                 </div>
 
 
+                <!-- RECEITAS -->
+
                 <div class="stat-card income">
 
                     <div class="stat-top">
-                        <div class="stat-icon">↗</div>
-                        <span class="stat-label">Receitas</span>
+
+                        <div class="stat-icon">
+                            ↗
+                        </div>
+
+                        <span class="stat-label">
+                            Receitas
+                        </span>
+
                     </div>
 
-                    <strong id="incomeValue">R$ 0,00</strong>
+                    <strong id="incomeValue">
+                        R$ 0,00
+                    </strong>
 
                     <small>
                         Total recebido
@@ -276,14 +368,25 @@
                 </div>
 
 
+                <!-- DESPESAS -->
+
                 <div class="stat-card expense">
 
                     <div class="stat-top">
-                        <div class="stat-icon">↘</div>
-                        <span class="stat-label">Despesas</span>
+
+                        <div class="stat-icon">
+                            ↘
+                        </div>
+
+                        <span class="stat-label">
+                            Despesas
+                        </span>
+
                     </div>
 
-                    <strong id="expenseValue">R$ 0,00</strong>
+                    <strong id="expenseValue">
+                        R$ 0,00
+                    </strong>
 
                     <small>
                         Total gasto
@@ -292,14 +395,25 @@
                 </div>
 
 
+                <!-- ECONOMIA -->
+
                 <div class="stat-card">
 
                     <div class="stat-top">
-                        <div class="stat-icon">💎</div>
-                        <span class="stat-label">Economia</span>
+
+                        <div class="stat-icon">
+                            💎
+                        </div>
+
+                        <span class="stat-label">
+                            Economia
+                        </span>
+
                     </div>
 
-                    <strong id="economyValue">0%</strong>
+                    <strong id="economyValue">
+                        0%
+                    </strong>
 
                     <small>
                         Percentual economizado
@@ -310,33 +424,57 @@
             </div>
 
 
+            <!-- =========================
+                 GRÁFICO + LANÇAMENTOS
+            ========================= -->
+
             <div class="dashboard-grid">
+
+                <!-- GRÁFICO -->
 
                 <div class="panel">
 
                     <div class="panel-header">
 
                         <div>
-                            <span>VISÃO FINANCEIRA</span>
-                            <h3>Receitas x Despesas</h3>
+
+                            <span>
+                                VISÃO FINANCEIRA
+                            </span>
+
+                            <h3>
+                                Receitas x Despesas
+                            </h3>
+
                         </div>
 
                     </div>
 
                     <div class="chart-container">
+
                         <canvas id="financeChart"></canvas>
+
                     </div>
 
                 </div>
 
+
+                <!-- ÚLTIMOS LANÇAMENTOS -->
 
                 <div class="panel">
 
                     <div class="panel-header">
 
                         <div>
-                            <span>MOVIMENTAÇÕES</span>
-                            <h3>Últimos lançamentos</h3>
+
+                            <span>
+                                MOVIMENTAÇÕES
+                            </span>
+
+                            <h3>
+                                Últimos lançamentos
+                            </h3>
+
                         </div>
 
                         <button
@@ -365,18 +503,27 @@
              LANÇAMENTOS
         ========================= -->
 
-        <section id="transactions" class="section hidden">
+        <section
+            id="transactions"
+            class="section hidden"
+        >
 
             <div class="section-heading">
 
                 <div>
-                    <span>MOVIMENTAÇÕES</span>
 
-                    <h2>Lançamentos</h2>
+                    <span>
+                        MOVIMENTAÇÕES
+                    </span>
+
+                    <h2>
+                        Lançamentos
+                    </h2>
 
                     <p>
                         Consulte e organize suas movimentações.
                     </p>
+
                 </div>
 
                 <button
@@ -406,15 +553,25 @@
 
                 <select id="typeFilter">
 
-                    <option value="all">Todos os tipos</option>
-                    <option value="income">Receitas</option>
-                    <option value="expense">Despesas</option>
+                    <option value="all">
+                        Todos os tipos
+                    </option>
+
+                    <option value="income">
+                        Receitas
+                    </option>
+
+                    <option value="expense">
+                        Despesas
+                    </option>
 
                 </select>
 
                 <select id="categoryFilter">
 
-                    <option value="all">Todas categorias</option>
+                    <option value="all">
+                        Todas categorias
+                    </option>
 
                 </select>
 
@@ -437,18 +594,27 @@
              CATEGORIAS
         ========================= -->
 
-        <section id="categories" class="section hidden">
+        <section
+            id="categories"
+            class="section hidden"
+        >
 
             <div class="section-heading">
 
                 <div>
-                    <span>ORGANIZAÇÃO</span>
 
-                    <h2>Gastos por categoria</h2>
+                    <span>
+                        ORGANIZAÇÃO
+                    </span>
+
+                    <h2>
+                        Gastos por categoria
+                    </h2>
 
                     <p>
                         Descubra onde seu dinheiro está indo.
                     </p>
+
                 </div>
 
             </div>
@@ -456,37 +622,51 @@
 
             <div class="category-layout">
 
+                <!-- GRÁFICO -->
+
                 <div class="panel">
 
                     <div class="panel-header">
 
                         <div>
-                            <span>DISTRIBUIÇÃO</span>
+
+                            <span>
+                                DISTRIBUIÇÃO
+                            </span>
 
                             <h3>
                                 📊 Gráfico de distribuição
                             </h3>
+
                         </div>
 
                     </div>
 
                     <div class="category-chart-container">
+
                         <canvas id="categoryChart"></canvas>
+
                     </div>
 
                 </div>
 
+
+                <!-- ANÁLISE -->
 
                 <div class="panel">
 
                     <div class="panel-header">
 
                         <div>
-                            <span>ANÁLISE</span>
+
+                            <span>
+                                ANÁLISE
+                            </span>
 
                             <h3>
                                 📄 Análise por categoria
                             </h3>
+
                         </div>
 
                     </div>
@@ -504,18 +684,27 @@
              RELATÓRIOS
         ========================= -->
 
-        <section id="reports" class="section hidden">
+        <section
+            id="reports"
+            class="section hidden"
+        >
 
             <div class="section-heading">
 
                 <div>
-                    <span>INTELIGÊNCIA FINANCEIRA</span>
 
-                    <h2>Relatórios</h2>
+                    <span>
+                        INTELIGÊNCIA FINANCEIRA
+                    </span>
+
+                    <h2>
+                        Relatórios
+                    </h2>
 
                     <p>
                         Uma visão mais detalhada do seu dinheiro.
                     </p>
+
                 </div>
 
             </div>
@@ -528,14 +717,25 @@
                     <div class="panel-header">
 
                         <div>
-                            <span>DISTRIBUIÇÃO</span>
-                            <h3>Despesas por categoria</h3>
+
+                            <span>
+                                DISTRIBUIÇÃO
+                            </span>
+
+                            <h3>
+                                Despesas por categoria
+                            </h3>
+
                         </div>
 
                     </div>
 
                     <div class="category-chart-container large">
-                        <canvas id="reportCategoryChart"></canvas>
+
+                        <canvas
+                            id="reportCategoryChart"
+                        ></canvas>
+
                     </div>
 
                 </div>
@@ -546,11 +746,15 @@
                     <div class="panel-header">
 
                         <div>
-                            <span>RESUMO</span>
+
+                            <span>
+                                RESUMO
+                            </span>
 
                             <h3>
                                 📄 Análise financeira
                             </h3>
+
                         </div>
 
                     </div>
@@ -634,8 +838,13 @@
                 </p>
 
                 <div class="premium-economy">
+
                     Economia
-                    <strong id="premiumEconomyValue">0%</strong>
+
+                    <strong id="premiumEconomyValue">
+                        0%
+                    </strong>
+
                 </div>
 
             </div>
@@ -648,11 +857,15 @@
                 <div class="premium-card-header">
 
                     <div>
-                        <span>INDICADOR</span>
+
+                        <span>
+                            INDICADOR
+                        </span>
 
                         <h3>
                             🩺 Saúde financeira
                         </h3>
+
                     </div>
 
                 </div>
@@ -667,7 +880,9 @@
 
                         <span class="health-dot health-red"></span>
 
-                        <strong>Crítica</strong>
+                        <strong>
+                            Crítica
+                        </strong>
 
                         <small>
                             Gastos acima das receitas.
@@ -680,7 +895,9 @@
 
                         <span class="health-dot health-yellow"></span>
 
-                        <strong>Atenção</strong>
+                        <strong>
+                            Atenção
+                        </strong>
 
                         <small>
                             Pouca margem para economizar.
@@ -693,7 +910,9 @@
 
                         <span class="health-dot health-green"></span>
 
-                        <strong>Saudável</strong>
+                        <strong>
+                            Saudável
+                        </strong>
 
                         <small>
                             Boa capacidade de economia.
@@ -718,11 +937,15 @@
                 <div class="premium-card-header">
 
                     <div>
-                        <span>OBJETIVOS</span>
+
+                        <span>
+                            OBJETIVOS
+                        </span>
 
                         <h3>
                             🎯 Metas financeiras
                         </h3>
+
                     </div>
 
                     <button
@@ -760,11 +983,15 @@
                 <div class="premium-card-header">
 
                     <div>
-                        <span>ATENÇÃO</span>
+
+                        <span>
+                            ATENÇÃO
+                        </span>
 
                         <h3>
                             🚨 Alertas inteligentes
                         </h3>
+
                     </div>
 
                 </div>
@@ -784,11 +1011,15 @@
                 <div class="premium-card-header">
 
                     <div>
-                        <span>EVOLUÇÃO</span>
+
+                        <span>
+                            EVOLUÇÃO
+                        </span>
 
                         <h3>
                             📊 Comparação mensal
                         </h3>
+
                     </div>
 
                 </div>
@@ -808,11 +1039,15 @@
                 <div class="premium-card-header">
 
                     <div>
-                        <span>PLANEJAMENTO</span>
+
+                        <span>
+                            PLANEJAMENTO
+                        </span>
 
                         <h3>
                             💰 Orçamento por categoria
                         </h3>
+
                     </div>
 
                     <button
@@ -840,11 +1075,15 @@
                 <div class="premium-card-header">
 
                     <div>
-                        <span>SIMULAÇÃO</span>
+
+                        <span>
+                            SIMULAÇÃO
+                        </span>
 
                         <h3>
                             🔮 Simulador financeiro
                         </h3>
+
                     </div>
 
                 </div>
@@ -896,11 +1135,15 @@
                 <div class="premium-card-header">
 
                     <div>
-                        <span>INTELIGÊNCIA</span>
+
+                        <span>
+                            INTELIGÊNCIA
+                        </span>
 
                         <h3>
                             📄 Análise financeira
                         </h3>
+
                     </div>
 
                 </div>
@@ -923,7 +1166,10 @@
      MODAL LANÇAMENTO
 ========================= -->
 
-<div id="transactionModal" class="modal hidden">
+<div
+    id="transactionModal"
+    class="modal hidden"
+>
 
     <div class="modal-overlay"></div>
 
@@ -932,8 +1178,15 @@
         <div class="modal-header">
 
             <div>
-                <span>NOVO LANÇAMENTO</span>
-                <h2>Adicionar movimentação</h2>
+
+                <span>
+                    NOVO LANÇAMENTO
+                </span>
+
+                <h2>
+                    Adicionar movimentação
+                </h2>
+
             </div>
 
             <button
@@ -1031,10 +1284,21 @@
 
                 <select id="frequencyInput">
 
-                    <option value="once">Única</option>
-                    <option value="daily">Diária</option>
-                    <option value="weekly">Semanal</option>
-                    <option value="monthly">Mensal</option>
+                    <option value="once">
+                        Única
+                    </option>
+
+                    <option value="daily">
+                        Diária
+                    </option>
+
+                    <option value="weekly">
+                        Semanal
+                    </option>
+
+                    <option value="monthly">
+                        Mensal
+                    </option>
 
                 </select>
 
@@ -1049,17 +1313,49 @@
 
                 <select id="transactionCategory">
 
-                    <option>Alimentação</option>
-                    <option>Moradia</option>
-                    <option>Transporte</option>
-                    <option>Lazer</option>
-                    <option>Saúde</option>
-                    <option>Educação</option>
-                    <option>Compras</option>
-                    <option>Contas</option>
-                    <option>Salário</option>
-                    <option>Investimentos</option>
-                    <option>Outros</option>
+                    <option>
+                        Alimentação
+                    </option>
+
+                    <option>
+                        Moradia
+                    </option>
+
+                    <option>
+                        Transporte
+                    </option>
+
+                    <option>
+                        Lazer
+                    </option>
+
+                    <option>
+                        Saúde
+                    </option>
+
+                    <option>
+                        Educação
+                    </option>
+
+                    <option>
+                        Compras
+                    </option>
+
+                    <option>
+                        Contas
+                    </option>
+
+                    <option>
+                        Salário
+                    </option>
+
+                    <option>
+                        Investimentos
+                    </option>
+
+                    <option>
+                        Outros
+                    </option>
 
                 </select>
 
@@ -1084,7 +1380,10 @@
      MODAL META
 ========================= -->
 
-<div id="goalModal" class="modal hidden">
+<div
+    id="goalModal"
+    class="modal hidden"
+>
 
     <div class="modal-overlay"></div>
 
@@ -1093,8 +1392,15 @@
         <div class="modal-header">
 
             <div>
-                <span>OBJETIVO PREMIUM</span>
-                <h2>Nova meta financeira</h2>
+
+                <span>
+                    OBJETIVO PREMIUM
+                </span>
+
+                <h2>
+                    Nova meta financeira
+                </h2>
+
             </div>
 
             <button
@@ -1178,7 +1484,10 @@
      MODAL ORÇAMENTO
 ========================= -->
 
-<div id="budgetModal" class="modal hidden">
+<div
+    id="budgetModal"
+    class="modal hidden"
+>
 
     <div class="modal-overlay"></div>
 
@@ -1187,8 +1496,15 @@
         <div class="modal-header">
 
             <div>
-                <span>PLANEJAMENTO PREMIUM</span>
-                <h2>Definir orçamento</h2>
+
+                <span>
+                    PLANEJAMENTO PREMIUM
+                </span>
+
+                <h2>
+                    Definir orçamento
+                </h2>
+
             </div>
 
             <button
@@ -1212,15 +1528,41 @@
 
                 <select id="budgetCategory">
 
-                    <option>Alimentação</option>
-                    <option>Moradia</option>
-                    <option>Transporte</option>
-                    <option>Lazer</option>
-                    <option>Saúde</option>
-                    <option>Educação</option>
-                    <option>Compras</option>
-                    <option>Contas</option>
-                    <option>Outros</option>
+                    <option>
+                        Alimentação
+                    </option>
+
+                    <option>
+                        Moradia
+                    </option>
+
+                    <option>
+                        Transporte
+                    </option>
+
+                    <option>
+                        Lazer
+                    </option>
+
+                    <option>
+                        Saúde
+                    </option>
+
+                    <option>
+                        Educação
+                    </option>
+
+                    <option>
+                        Compras
+                    </option>
+
+                    <option>
+                        Contas
+                    </option>
+
+                    <option>
+                        Outros
+                    </option>
 
                 </select>
 
@@ -1257,6 +1599,10 @@
 
 </div>
 
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
 
 <script src="app.js"></script>
 
