@@ -12,14 +12,12 @@
 >
 
 <!-- CSS DO APP -->
-<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="style.css">
 
 <!-- CHART.JS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-</head><body><!-- =========================
-     LOGIN
-========================== -->
+</head><body><!-- LOGIN -->
 
 <div id="loginScreen" class="login-screen">
 
@@ -28,7 +26,7 @@
         <div class="login-brand">
 
             <div class="login-logo">
-                <img src="./logo.png" alt="ControleS">
+                <img src="logo.png" alt="ControleS">
             </div>
 
             <h1>ControleS</h1>
@@ -41,7 +39,9 @@
 
             <div class="input-group">
 
-                <label for="loginName">Nome</label>
+                <label for="loginName">
+                    Nome
+                </label>
 
                 <input
                     type="text"
@@ -55,7 +55,9 @@
 
             <div class="input-group">
 
-                <label for="loginEmail">E-mail</label>
+                <label for="loginEmail">
+                    E-mail
+                </label>
 
                 <input
                     type="email"
@@ -69,7 +71,9 @@
 
             <div class="input-group">
 
-                <label for="loginPassword">Senha</label>
+                <label for="loginPassword">
+                    Senha
+                </label>
 
                 <input
                     type="password"
@@ -99,27 +103,35 @@
 </div>
 
 
-<!-- =========================
-     APLICATIVO
-========================== -->
+<!-- APP -->
 
 <div id="app" class="app hidden">
 
     <!-- SIDEBAR -->
 
-    <aside class="sidebar" id="sidebar">
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
 
         <div class="sidebar-brand">
 
             <div class="brand-logo">
-                <img src="./logo.png" alt="ControleS">
+                <img
+                    src="logo.png"
+                    alt="ControleS"
+                >
             </div>
 
             <div class="brand-text">
 
-                <strong>ControleS</strong>
+                <strong>
+                    ControleS
+                </strong>
 
-                <span>Financeiro</span>
+                <span>
+                    Financeiro
+                </span>
 
             </div>
 
@@ -133,44 +145,73 @@
                 data-section="dashboard"
                 type="button"
             >
-                <span class="nav-icon">📊</span>
-                <span>Dashboard</span>
+                <span class="nav-icon">
+                    📊
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
             </button>
+
 
             <button
                 class="nav-item"
                 data-section="transactions"
                 type="button"
             >
-                <span class="nav-icon">🧾</span>
-                <span>Lançamentos</span>
+                <span class="nav-icon">
+                    🧾
+                </span>
+
+                <span>
+                    Lançamentos
+                </span>
             </button>
+
 
             <button
                 class="nav-item"
                 data-section="categories"
                 type="button"
             >
-                <span class="nav-icon">📁</span>
-                <span>Categorias</span>
+                <span class="nav-icon">
+                    📁
+                </span>
+
+                <span>
+                    Categorias
+                </span>
             </button>
+
 
             <button
                 class="nav-item"
                 data-section="reports"
                 type="button"
             >
-                <span class="nav-icon">📈</span>
-                <span>Relatórios</span>
+                <span class="nav-icon">
+                    📈
+                </span>
+
+                <span>
+                    Relatórios
+                </span>
             </button>
+
 
             <button
                 class="nav-item"
                 data-section="premium"
                 type="button"
             >
-                <span class="nav-icon">⭐</span>
-                <span>Premium</span>
+                <span class="nav-icon">
+                    ⭐
+                </span>
+
+                <span>
+                    Premium
+                </span>
             </button>
 
         </nav>
@@ -187,6 +228,7 @@
                 <span>Tema escuro</span>
             </button>
 
+
             <button
                 id="logoutBtn"
                 class="sidebar-action logout"
@@ -201,9 +243,7 @@
     </aside>
 
 
-    <!-- =========================
-         CONTEÚDO PRINCIPAL
-    ========================== -->
+    <!-- CONTEÚDO -->
 
     <main class="main-content">
 
@@ -256,6 +296,7 @@
                         U
                     </div>
 
+
                     <div class="user-info">
 
                         <strong id="userName">
@@ -275,9 +316,7 @@
         </header>
 
 
-        <!-- =========================
-             DASHBOARD
-        ========================== -->
+        <!-- DASHBOARD -->
 
         <section
             id="dashboard"
@@ -305,6 +344,7 @@
                     </p>
 
                 </div>
+
 
                 <div
                     class="current-date"
@@ -438,9 +478,12 @@
 
                     </div>
 
+
                     <div class="chart-container">
 
-                        <canvas id="financeChart"></canvas>
+                        <canvas
+                            id="financeChart"
+                        ></canvas>
 
                     </div>
 
@@ -463,6 +506,7 @@
 
                         </div>
 
+
                         <button
                             class="text-button"
                             data-section="transactions"
@@ -472,6 +516,7 @@
                         </button>
 
                     </div>
+
 
                     <div
                         id="recentTransactions"
@@ -485,9 +530,7 @@
         </section>
 
 
-        <!-- =========================
-             LANÇAMENTOS
-        ========================== -->
+        <!-- LANÇAMENTOS -->
 
         <section
             id="transactions"
@@ -512,6 +555,7 @@
 
                 </div>
 
+
                 <button
                     class="btn-primary"
                     id="newTransactionButton"
@@ -527,7 +571,9 @@
 
                 <div class="search-box">
 
-                    <span>🔎</span>
+                    <span>
+                        🔎
+                    </span>
 
                     <input
                         type="search"
@@ -578,9 +624,7 @@
         </section>
 
 
-        <!-- =========================
-             CATEGORIAS
-        ========================== -->
+        <!-- CATEGORIAS -->
 
         <section
             id="categories"
@@ -628,9 +672,12 @@
 
                     </div>
 
+
                     <div class="category-chart-container">
 
-                        <canvas id="categoryChart"></canvas>
+                        <canvas
+                            id="categoryChart"
+                        ></canvas>
 
                     </div>
 
@@ -655,6 +702,7 @@
 
                     </div>
 
+
                     <div id="categoryList"></div>
 
                 </div>
@@ -664,9 +712,7 @@
         </section>
 
 
-        <!-- =========================
-             RELATÓRIOS
-        ========================== -->
+        <!-- RELATÓRIOS -->
 
         <section
             id="reports"
@@ -728,7 +774,9 @@
 
                 <div class="category-chart-container large">
 
-                    <canvas id="reportCategoryChart"></canvas>
+                    <canvas
+                        id="reportCategoryChart"
+                    ></canvas>
 
                 </div>
 
@@ -737,9 +785,7 @@
         </section>
 
 
-        <!-- =========================
-             PREMIUM
-        ========================== -->
+        <!-- PREMIUM -->
 
         <section
             id="premium"
@@ -765,6 +811,7 @@
                         pessoal e empresarial.
                     </p>
 
+
                     <button
                         id="subscribePremiumBtn"
                         class="btn-premium"
@@ -779,7 +826,7 @@
                 <div class="premium-logo">
 
                     <img
-                        src="./logo.png"
+                        src="logo.png"
                         alt="ControleS"
                     >
 
@@ -888,9 +935,7 @@
 </div>
 
 
-<!-- =========================
-     MODAL NOVO LANÇAMENTO
-========================== -->
+<!-- MODAL -->
 
 <div
     id="transactionModal"
@@ -935,7 +980,10 @@
                 class="type-option active"
                 data-type="income"
             >
-                <span>↗</span>
+                <span>
+                    ↗
+                </span>
+
                 Receita
             </button>
 
@@ -945,7 +993,10 @@
                 class="type-option"
                 data-type="expense"
             >
-                <span>↘</span>
+                <span>
+                    ↘
+                </span>
+
                 Despesa
             </button>
 
@@ -1074,11 +1125,9 @@
 </div>
 
 
-<!-- =========================
-     JAVASCRIPT DO APP
-========================== -->
+<!-- JAVASCRIPT DO APP -->
 
-<script src="./app.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>
