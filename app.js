@@ -1,6 +1,6 @@
 /* =====================================================
    CONTROLES — APP.JS
-   Versão completa — Premium + Login + Finanças
+   Versão completa e corrigida
 ===================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -78,11 +78,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const monthForecast =
         document.getElementById("monthForecast");
 
-    const goalsList =
-        document.getElementById("goalsList");
+    const premiumEconomyValue =
+        document.getElementById("premiumEconomyValue");
 
-    const budgetsList =
-        document.getElementById("budgetsList");
+    const premiumPerformanceText =
+        document.getElementById("premiumPerformanceText");
+
+    const premiumAnalysis =
+        document.getElementById("premiumAnalysis");
 
     const smartAlerts =
         document.getElementById("smartAlerts");
@@ -90,8 +93,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const monthlyComparison =
         document.getElementById("monthlyComparison");
 
-    const premiumAnalysis =
-        document.getElementById("premiumAnalysis");
+    const budgetsList =
+        document.getElementById("budgetsList");
+
+    const goalsList =
+        document.getElementById("goalsList");
 
 
     /* =====================================================
@@ -102,11 +108,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
 
-        transactions = JSON.parse(
-            localStorage.getItem(
-                "controles_transactions"
-            ) || "[]"
-        );
+        transactions =
+            JSON.parse(
+                localStorage.getItem(
+                    "controles_transactions"
+                ) || "[]"
+            );
 
     } catch {
 
@@ -119,11 +126,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
 
-        currentUser = JSON.parse(
-            localStorage.getItem(
-                "controles_user"
-            ) || "null"
-        );
+        currentUser =
+            JSON.parse(
+                localStorage.getItem(
+                    "controles_user"
+                ) || "null"
+            );
 
     } catch {
 
@@ -136,11 +144,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
 
-        goals = JSON.parse(
-            localStorage.getItem(
-                "controles_goals"
-            ) || "[]"
-        );
+        goals =
+            JSON.parse(
+                localStorage.getItem(
+                    "controles_goals"
+                ) || "[]"
+            );
 
     } catch {
 
@@ -153,11 +162,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
 
-        budgets = JSON.parse(
-            localStorage.getItem(
-                "controles_budgets"
-            ) || "{}"
-        );
+        budgets =
+            JSON.parse(
+                localStorage.getItem(
+                    "controles_budgets"
+                ) || "{}"
+            );
 
     } catch {
 
@@ -230,13 +240,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function formatMoney(value) {
 
-        return Number(value || 0).toLocaleString(
-            "pt-BR",
-            {
-                style: "currency",
-                currency: "BRL"
-            }
-        );
+        return Number(value || 0)
+            .toLocaleString(
+                "pt-BR",
+                {
+                    style: "currency",
+                    currency: "BRL"
+                }
+            );
 
     }
 
@@ -249,6 +260,10 @@ document.addEventListener("DOMContentLoaded", () => {
             new Date(
                 dateString + "T00:00:00"
             );
+
+        if (Number.isNaN(date.getTime())) {
+            return "";
+        }
 
         return date.toLocaleDateString(
             "pt-BR"
@@ -315,9 +330,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ===================================================== */
 
     function loadUser() {
-
-        if (!loginScreen || !app) return;
-
 
         if (!currentUser) {
 
@@ -433,10 +445,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     !password
                 ) {
 
-                    alert(
-                        "Preencha nome, e-mail e senha."
-                    );
-
                     return;
 
                 }
@@ -459,16 +467,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                if (nameInput)
+                loginScreen.classList.add(
+                    "hidden"
+                );
+
+                app.classList.remove(
+                    "hidden"
+                );
+
+
+                if (nameInput) {
                     nameInput.value = "";
+                }
 
-
-                if (emailInput)
+                if (emailInput) {
                     emailInput.value = "";
+                }
 
-
-                if (passwordInput)
+                if (passwordInput) {
                     passwordInput.value = "";
+                }
 
 
                 loadUser();
@@ -501,15 +519,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 currentUser = null;
 
-                if (app)
-                    app.classList.add(
-                        "hidden"
-                    );
+                app.classList.add(
+                    "hidden"
+                );
 
-                if (loginScreen)
-                    loginScreen.classList.remove(
-                        "hidden"
-                    );
+                loginScreen.classList.remove(
+                    "hidden"
+                );
 
             }
         );
@@ -532,9 +548,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-    function openSection(
-        sectionName
-    ) {
+    function openSection(sectionName) {
 
         sections.forEach(
             section => {
@@ -617,10 +631,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         item.dataset.section
                     );
 
+
                     const sidebar =
                         document.getElementById(
                             "sidebar"
                         );
+
 
                     if (sidebar) {
 
@@ -641,30 +657,28 @@ document.addEventListener("DOMContentLoaded", () => {
         .querySelectorAll(
             "[data-section]"
         )
-        .forEach(
-            button => {
+        .forEach(button => {
 
-                if (
-                    !button.classList.contains(
-                        "nav-item"
-                    )
-                ) {
+            if (
+                !button.classList.contains(
+                    "nav-item"
+                )
+            ) {
 
-                    button.addEventListener(
-                        "click",
-                        () => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                            openSection(
-                                button.dataset.section
-                            );
+                        openSection(
+                            button.dataset.section
+                        );
 
-                        }
-                    );
-
-                }
+                    }
+                );
 
             }
-        );
+
+        });
 
 
     /* =====================================================
@@ -688,6 +702,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         "sidebar"
                     );
 
+
                 if (sidebar) {
 
                     sidebar.classList.toggle(
@@ -708,9 +723,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function openModal() {
 
-        if (!transactionModal)
-            return;
-
+        if (!transactionModal) return;
 
         transactionModal.classList.remove(
             "hidden"
@@ -741,9 +754,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function closeModal() {
 
-        if (!transactionModal)
-            return;
-
+        if (!transactionModal) return;
 
         transactionModal.classList.add(
             "hidden"
@@ -757,9 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        selectedType =
-            "income";
-
+        selectedType = "income";
 
         updateTypeButtons();
 
@@ -830,7 +839,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    const transactionOverlay =
+    const modalOverlay =
         transactionModal
             ? transactionModal.querySelector(
                 ".modal-overlay"
@@ -838,9 +847,9 @@ document.addEventListener("DOMContentLoaded", () => {
             : null;
 
 
-    if (transactionOverlay) {
+    if (modalOverlay) {
 
-        transactionOverlay.addEventListener(
+        modalOverlay.addEventListener(
             "click",
             closeModal
         );
@@ -849,7 +858,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       TIPO RECEITA / DESPESA
+       TIPO
     ===================================================== */
 
     const typeButtons =
@@ -941,13 +950,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (
                     !description ||
-                    !amount ||
                     amount <= 0 ||
                     !date
                 ) {
 
                     alert(
-                        "Preencha os dados do lançamento."
+                        "Preencha todos os campos corretamente."
                     );
 
                     return;
@@ -960,7 +968,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     id:
                         Date.now() +
                         Math.floor(
-                            Math.random() * 1000
+                            Math.random() * 10000
                         ),
 
                     type:
@@ -1023,8 +1031,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (
-            transaction.frequency ===
-                "once" ||
+            transaction.frequency === "once" ||
             !transaction.frequency
         ) {
 
@@ -1049,8 +1056,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (
-            transaction.frequency ===
-            "daily"
+            transaction.frequency === "daily"
         ) {
 
             while (
@@ -1079,8 +1085,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (
-            transaction.frequency ===
-            "weekly"
+            transaction.frequency === "weekly"
         ) {
 
             while (
@@ -1109,8 +1114,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (
-            transaction.frequency ===
-            "monthly"
+            transaction.frequency === "monthly"
         ) {
 
             while (
@@ -1138,8 +1142,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 if (
-                    current.getDate() !==
-                    day
+                    current.getDate() !== day
                 ) {
 
                     current.setDate(0);
@@ -1207,8 +1210,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function getCurrentMonthRange() {
 
-        const now =
-            new Date();
+        const now = new Date();
 
 
         const start =
@@ -1289,9 +1291,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return {
 
             income,
-
             expense,
-
             balance:
                 income - expense
 
@@ -1386,7 +1386,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       TRANSAÇÕES
+       HTML TRANSAÇÃO
     ===================================================== */
 
     function createTransactionHTML(
@@ -1394,30 +1394,26 @@ document.addEventListener("DOMContentLoaded", () => {
     ) {
 
         const sign =
-            transaction.type ===
-            "income"
+            transaction.type === "income"
                 ? "+"
                 : "-";
 
 
         const valueClass =
-            transaction.type ===
-            "income"
+            transaction.type === "income"
                 ? "income"
                 : "expense";
 
 
         const icon =
-            transaction.type ===
-            "income"
+            transaction.type === "income"
                 ? "↗"
                 : "↘";
 
 
         const occurrenceDate =
             transaction.occurrenceDate
-                ? transaction
-                    .occurrenceDate
+                ? transaction.occurrenceDate
                     .toISOString()
                     .split("T")[0]
                 : transaction.date;
@@ -1440,23 +1436,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     </strong>
 
                     <small>
-
                         ${escapeHTML(
                             transaction.category
                         )}
-
                         •
-
                         ${formatDate(
                             occurrenceDate
                         )}
-
                         •
-
                         ${frequencyLabel(
                             transaction.frequency
                         )}
-
                     </small>
 
                 </div>
@@ -1486,10 +1476,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    /* =====================================================
+       RECENTES
+    ===================================================== */
+
     function updateRecentTransactions() {
 
-        if (!recentTransactions)
-            return;
+        if (!recentTransactions) return;
 
 
         const {
@@ -1542,14 +1535,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    /* =====================================================
+       TODOS LANÇAMENTOS
+    ===================================================== */
+
     function updateAllTransactions() {
 
-        if (!allTransactions)
-            return;
+        if (!allTransactions) return;
 
 
-        const now =
-            new Date();
+        const now = new Date();
 
 
         const start =
@@ -1604,15 +1599,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     const description =
                         String(
-                            item.description ||
-                            ""
+                            item.description || ""
                         ).toLowerCase();
 
 
                     const categoryName =
                         String(
-                            item.category ||
-                            ""
+                            item.category || ""
                         ).toLowerCase();
 
 
@@ -1634,7 +1627,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const matchesCategory =
                         category === "all" ||
                         item.category ===
-                            category;
+                        category;
 
 
                     return (
@@ -1702,27 +1695,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-            const exists =
-                transactions.some(
-                    transaction =>
-                        Number(
-                            transaction.id
-                        ) === id
+            const confirmDelete =
+                confirm(
+                    "Deseja excluir este lançamento?"
                 );
 
 
-            if (!exists) return;
-
-
-            if (
-                !confirm(
-                    "Excluir este lançamento?"
-                )
-            ) {
-
-                return;
-
-            }
+            if (!confirmDelete) return;
 
 
             transactions =
@@ -1778,8 +1757,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateCategoryFilter() {
 
-        if (!categoryFilter)
-            return;
+        if (!categoryFilter) return;
 
 
         const current =
@@ -1882,16 +1860,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             {
 
-                                label:
-                                    "Valor",
+                                label: "Valor",
 
                                 data: [
                                     income,
                                     expense
                                 ],
 
-                                borderWidth:
-                                    0
+                                borderWidth: 0
 
                             }
 
@@ -1901,17 +1877,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     options: {
 
-                        responsive:
-                            true,
+                        responsive: true,
 
-                        maintainAspectRatio:
-                            false,
+                        maintainAspectRatio: false,
 
                         plugins: {
 
                             legend: {
-                                display:
-                                    false
+                                display: false
                             }
 
                         },
@@ -1920,8 +1893,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             y: {
 
-                                beginAtZero:
-                                    true,
+                                beginAtZero: true,
 
                                 ticks: {
 
@@ -1974,7 +1946,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (
                     item.type !==
                     "expense"
-                ) return;
+                ) {
+                    return;
+                }
 
 
                 const category =
@@ -1982,17 +1956,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     "Outros";
 
 
-                if (
-                    !totals[category]
-                ) {
-
-                    totals[category] =
-                        0;
-
-                }
-
-
-                totals[category] +=
+                totals[category] =
+                    (
+                        totals[category] ||
+                        0
+                    ) +
                     Number(
                         item.amount
                     );
@@ -2008,8 +1976,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateCategories() {
 
-        if (!categoryList)
-            return;
+        if (!categoryList) return;
 
 
         const totals =
@@ -2017,12 +1984,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const entries =
-            Object.entries(
-                totals
-            ).sort(
-                (a, b) =>
-                    b[1] - a[1]
-            );
+            Object.entries(totals)
+                .sort(
+                    (a, b) =>
+                        b[1] - a[1]
+                );
 
 
         if (!entries.length) {
@@ -2084,9 +2050,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     ${formatMoney(
                                         value
                                     )}
-                                    (${percentage.toFixed(
-                                        1
-                                    )}%)
+                                    (${percentage.toFixed(1)}%)
                                 </span>
 
                             </div>
@@ -2130,15 +2094,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        const labels =
-            Object.keys(totals);
+        if (
+            !Object.keys(totals).length
+        ) {
 
+            return;
 
-        const values =
-            Object.values(totals);
-
-
-        if (!labels.length) return;
+        }
 
 
         categoryChart =
@@ -2150,17 +2112,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     data: {
 
-                        labels,
+                        labels:
+                            Object.keys(
+                                totals
+                            ),
 
                         datasets: [
 
                             {
 
                                 data:
-                                    values,
+                                    Object.values(
+                                        totals
+                                    ),
 
-                                borderWidth:
-                                    2
+                                borderWidth: 2
 
                             }
 
@@ -2170,11 +2136,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     options: {
 
-                        responsive:
-                            true,
+                        responsive: true,
 
-                        maintainAspectRatio:
-                            false,
+                        maintainAspectRatio: false,
 
                         plugins: {
 
@@ -2201,8 +2165,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateReports() {
 
-        if (!reportAnalysis)
-            return;
+        if (!reportAnalysis) return;
 
 
         const totals =
@@ -2210,12 +2173,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const entries =
-            Object.entries(
-                totals
-            ).sort(
-                (a, b) =>
-                    b[1] - a[1]
-            );
+            Object.entries(totals)
+                .sort(
+                    (a, b) =>
+                        b[1] - a[1]
+                );
 
 
         if (!entries.length) {
@@ -2344,15 +2306,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        const labels =
-            Object.keys(totals);
+        if (
+            !Object.keys(totals).length
+        ) {
 
+            return;
 
-        const values =
-            Object.values(totals);
-
-
-        if (!labels.length) return;
+        }
 
 
         reportCategoryChart =
@@ -2364,17 +2324,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     data: {
 
-                        labels,
+                        labels:
+                            Object.keys(
+                                totals
+                            ),
 
                         datasets: [
 
                             {
 
                                 data:
-                                    values,
+                                    Object.values(
+                                        totals
+                                    ),
 
-                                borderWidth:
-                                    2
+                                borderWidth: 2
 
                             }
 
@@ -2384,11 +2348,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     options: {
 
-                        responsive:
-                            true,
+                        responsive: true,
 
-                        maintainAspectRatio:
-                            false,
+                        maintainAspectRatio: false,
 
                         plugins: {
 
@@ -2410,7 +2372,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       PREMIUM — PREVISÃO CORRIGIDA
+       PREVISÃO CORRIGIDA
+       
+       IMPORTANTE:
+       A previsão considera apenas despesas
+       que realmente aconteceram até hoje.
+
+       Exemplo:
+       Receita = 2.200
+       Despesa = 800
+       Saldo = 1.400
+
+       Se foram gastos R$800 em 1 dia,
+       NÃO significa que você gasta R$800
+       todos os dias.
+
+       Usamos uma média baseada nos DIAS
+       EM QUE EXISTIRAM DESPESAS.
     ===================================================== */
 
     function calculateForecast() {
@@ -2419,10 +2397,29 @@ document.addEventListener("DOMContentLoaded", () => {
             new Date();
 
 
+        const year =
+            now.getFullYear();
+
+
+        const month =
+            now.getMonth();
+
+
+        const today =
+            new Date(
+                year,
+                month,
+                now.getDate(),
+                23,
+                59,
+                59
+            );
+
+
         const startOfMonth =
             new Date(
-                now.getFullYear(),
-                now.getMonth(),
+                year,
+                month,
                 1,
                 0,
                 0,
@@ -2432,8 +2429,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const endOfMonth =
             new Date(
-                now.getFullYear(),
-                now.getMonth() + 1,
+                year,
+                month + 1,
                 0,
                 23,
                 59,
@@ -2441,32 +2438,80 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        const today =
-            new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate(),
-                23,
-                59,
-                59
+        const items =
+            getPeriodTransactions(
+                startOfMonth,
+                today
             );
 
 
-        const totals =
-            calculateMonthTotals();
+        let income = 0;
 
+        let expense = 0;
+
+
+        const expenseByDay = {};
+
+
+        items.forEach(
+            item => {
+
+                const value =
+                    Number(
+                        item.amount
+                    );
+
+
+                if (
+                    item.type ===
+                    "income"
+                ) {
+
+                    income += value;
+
+                } else {
+
+                    expense += value;
+
+
+                    const day =
+                        item.occurrenceDate
+                            .toISOString()
+                            .split("T")[0];
+
+
+                    expenseByDay[day] =
+                        (
+                            expenseByDay[day] ||
+                            0
+                        ) +
+                        value;
+
+                }
+
+            }
+        );
+
+
+        const balance =
+            income - expense;
+
+
+        /*
+         Número real de dias desde
+         o início do mês.
+        */
 
         const elapsedDays =
             Math.max(
                 1,
-                Math.floor(
-                    (
-                        today -
-                        startOfMonth
-                    ) / 86400000
-                ) + 1
+                now.getDate()
             );
 
+
+        /*
+         Quantidade de dias restantes.
+        */
 
         const totalDays =
             endOfMonth.getDate();
@@ -2481,96 +2526,88 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /*
-           PROJEÇÃO INTELIGENTE
-
-           O cálculo considera apenas
-           os dias que realmente já passaram.
-
-           Assim, se houver um gasto de
-           R$ 800 em um único lançamento,
-           ele não será simplesmente tratado
-           como R$ 800 todos os dias.
+         Dias em que realmente houve gasto.
         */
 
-
-        let projectedExpense =
-            totals.expense;
-
-
-        let averageDailyExpense =
-            0;
-
-
-        if (
-            totals.expense > 0 &&
-            elapsedDays > 0
-        ) {
-
-            averageDailyExpense =
-                totals.expense /
-                elapsedDays;
-
-        }
+        const expenseDays =
+            Object.keys(
+                expenseByDay
+            ).length;
 
 
         /*
-           Só projetamos gastos futuros
-           quando já existe algum histórico
-           suficiente no mês.
+         MÉDIA DE GASTO
+         
+         Se houve gasto em apenas 1 dia,
+         a média é mostrada como o gasto
+         real daquele dia.
 
-           Nos primeiros dias, mantemos
-           a previsão mais conservadora.
+         Não usamos essa média para projetar
+         automaticamente milhares de reais
+         para o restante do mês.
         */
 
-
-        if (
-            elapsedDays >= 3
-        ) {
-
-            projectedExpense =
-                totals.expense +
-                (
-                    averageDailyExpense *
-                    remainingDays
-                );
-
-        }
+        const averageDailyExpense =
+            expenseDays > 0
+                ? expense /
+                    expenseDays
+                : 0;
 
 
         /*
-           Receita prevista:
+         Para uma previsão mais segura,
+         usamos a média de gasto considerando
+         o período completo já transcorrido.
 
-           Mantemos a receita já registrada
-           no mês. Assim a previsão não inventa
-           salário ou receita futura.
+         Isso impede que um único lançamento
+         de R$800 no primeiro dia vire
+         R$24.000 de previsão.
         */
 
+        const periodDailyExpense =
+            expense /
+            elapsedDays;
+
+
+        /*
+         Projeção do restante do mês.
+        */
+
+        const estimatedRemainingExpense =
+            periodDailyExpense *
+            remainingDays;
+
+
+        /*
+         Saldo projetado.
+        */
 
         const forecast =
-            totals.income -
-            projectedExpense;
+            balance -
+            estimatedRemainingExpense;
 
 
         return {
 
-            balance:
-                totals.balance,
+            balance,
 
-            income:
-                totals.income,
+            income,
 
-            expense:
-                totals.expense,
-
-            averageDailyExpense,
-
-            remainingDays,
-
-            forecast,
+            expense,
 
             elapsedDays,
 
-            totalDays
+            remainingDays,
+
+            expenseDays,
+
+            averageDailyExpense,
+
+            periodDailyExpense,
+
+            estimatedRemainingExpense,
+
+            forecast
 
         };
 
@@ -2579,15 +2616,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateForecast() {
 
-        if (!monthForecast)
-            return;
+        if (!monthForecast) return;
 
 
         const data =
             calculateForecast();
 
 
-        if (!transactions.length) {
+        if (
+            !transactions.length
+        ) {
 
             monthForecast.innerHTML = `
 
@@ -2612,70 +2650,64 @@ document.addEventListener("DOMContentLoaded", () => {
         const message =
             positive
 
-                ? "Mantendo seu ritmo atual, a projeção indica fechamento positivo."
+                ? "Mantendo o ritmo atual, a projeção indica fechamento positivo."
 
-                : "Atenção: mantendo seu ritmo atual, a projeção indica saldo negativo.";
+                : "Atenção: mantendo o ritmo atual, a projeção indica saldo negativo.";
 
 
         monthForecast.innerHTML = `
 
-            <div class="forecast-card">
+            <div class="forecast-content">
 
-                <span>
-                    SALDO ATUAL
-                </span>
+                <div class="forecast-card">
 
-                <strong>
-                    ${formatMoney(
-                        data.balance
-                    )}
-                </strong>
+                    <span>
+                        SALDO ATUAL
+                    </span>
 
-            </div>
+                    <strong>
+                        ${formatMoney(
+                            data.balance
+                        )}
+                    </strong>
 
-
-            <div class="forecast-card">
-
-                <span>
-                    GASTO MÉDIO DIÁRIO
-                </span>
-
-                <strong>
-                    ${formatMoney(
-                        data.averageDailyExpense
-                    )}
-                </strong>
-
-            </div>
+                </div>
 
 
-            <div class="forecast-card">
+                <div class="forecast-card">
 
-                <span>
-                    ⏳ PREVISÃO DO FIM DO MÊS
-                </span>
+                    <span>
+                        GASTO MÉDIO POR DIA DO MÊS
+                    </span>
 
-                <strong class="${
-                    positive
-                        ? "forecast-positive"
-                        : "forecast-negative"
-                }">
+                    <strong>
+                        ${formatMoney(
+                            data.periodDailyExpense
+                        )}
+                    </strong>
 
-                    ${formatMoney(
-                        data.forecast
-                    )}
-
-                </strong>
-
-            </div>
+                </div>
 
 
-            <div class="forecast-details">
+                <div class="forecast-card">
 
-                <span>
-                    ${data.remainingDays}
-                    dias restantes no mês
-                </span>
+                    <span>
+                        ⏳ PREVISÃO DO FIM DO MÊS
+                    </span>
+
+                    <strong class="${
+                        positive
+                            ? "forecast-positive"
+                            : "forecast-negative"
+                    }">
+
+                        ${formatMoney(
+                            data.forecast
+                        )}
+
+                    </strong>
+
+                </div>
 
             </div>
 
@@ -2692,7 +2724,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       PREMIUM — DESEMPENHO
+       DESEMPENHO PREMIUM
     ===================================================== */
 
     function updatePremiumPerformance() {
@@ -2701,25 +2733,20 @@ document.addEventListener("DOMContentLoaded", () => {
             calculateMonthTotals();
 
 
-        const economy =
+        let economy = 0;
+
+
+        if (
             totals.income > 0
-                ? (
+        ) {
+
+            economy =
+                (
                     totals.balance /
                     totals.income
-                ) * 100
-                : 0;
+                ) * 100;
 
-
-        const performanceText =
-            document.getElementById(
-                "premiumPerformanceText"
-            );
-
-
-        const premiumEconomyValue =
-            document.getElementById(
-                "premiumEconomyValue"
-            );
+        }
 
 
         if (premiumEconomyValue) {
@@ -2730,39 +2757,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        if (performanceText) {
+        if (premiumPerformanceText) {
 
             if (
                 totals.income === 0
             ) {
 
-                performanceText.textContent =
+                premiumPerformanceText.textContent =
                     "Cadastre suas receitas e despesas para acompanhar seu desempenho.";
 
             } else if (
-                economy >= 50
+                totals.balance >= 0
             ) {
 
-                performanceText.textContent =
-                    "Excelente! Você está mantendo uma boa parte da sua receita.";
-
-            } else if (
-                economy >= 20
-            ) {
-
-                performanceText.textContent =
-                    "Seu mês está equilibrado. Continue acompanhando seus gastos.";
-
-            } else if (
-                economy >= 0
-            ) {
-
-                performanceText.textContent =
-                    "Sua economia está baixa. O Premium pode ajudar você a identificar oportunidades.";
+                premiumPerformanceText.textContent =
+                    `Você está mantendo ${economy.toFixed(1)}% da sua receita neste mês.`;
 
             } else {
 
-                performanceText.textContent =
+                premiumPerformanceText.textContent =
                     "Suas despesas estão acima das receitas neste mês.";
 
             }
@@ -2773,13 +2786,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       PREMIUM — METAS
+       METAS
     ===================================================== */
 
     function updateGoals() {
 
-        if (!goalsList)
-            return;
+        if (!goalsList) return;
 
 
         if (!goals.length) {
@@ -2828,57 +2840,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         return `
 
-                            <div class="premium-goal">
+                            <div class="category-summary-item">
 
-                                <div class="premium-goal-top">
+                                <div>
 
                                     <strong>
-                                        🎯 ${escapeHTML(
+                                        ${escapeHTML(
                                             goal.name
                                         )}
                                     </strong>
 
-                                    <button
-                                        type="button"
-                                        class="premium-delete"
-                                        data-delete-goal="${
-                                            goal.id
-                                        }"
-                                    >
-                                        ×
-                                    </button>
+                                    <small style="display:block;margin-top:5px;color:var(--text-light)">
+                                        ${formatMoney(saved)}
+                                        de
+                                        ${formatMoney(target)}
+                                    </small>
 
                                 </div>
 
-                                <div class="goal-values">
-
-                                    <span>
-                                        ${formatMoney(
-                                            saved
-                                        )}
-                                    </span>
-
-                                    <span>
-                                        ${formatMoney(
-                                            target
-                                        )}
-                                    </span>
-
-                                </div>
-
-                                <div class="goal-progress">
-
-                                    <div
-                                        style="width:${percentage}%"
-                                    ></div>
-
-                                </div>
-
-                                <small>
-                                    ${percentage.toFixed(
-                                        0
-                                    )}% concluído
-                                </small>
+                                <span>
+                                    ${percentage.toFixed(0)}%
+                                </span>
 
                             </div>
 
@@ -2903,48 +2885,43 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-    const goalForm =
-        document.getElementById(
-            "goalForm"
-        );
-
-
     const closeGoalModal =
         document.getElementById(
             "closeGoalModal"
         );
 
 
-    function openGoalModal() {
-
-        if (!goalModal) return;
-
-        goalModal.classList.remove(
-            "hidden"
+    const goalForm =
+        document.getElementById(
+            "goalForm"
         );
-
-    }
-
-
-    function closeGoalModalFunction() {
-
-        if (!goalModal) return;
-
-        goalModal.classList.add(
-            "hidden"
-        );
-
-        if (goalForm)
-            goalForm.reset();
-
-    }
 
 
     if (newGoalBtn) {
 
         newGoalBtn.addEventListener(
             "click",
-            openGoalModal
+            () => {
+
+                if (
+                    currentUser?.plan !==
+                    "premium"
+                ) {
+
+                    alert(
+                        "Ative o ControleS Premium para criar metas."
+                    );
+
+                    return;
+
+                }
+
+
+                goalModal.classList.remove(
+                    "hidden"
+                );
+
+            }
         );
 
     }
@@ -2954,7 +2931,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         closeGoalModal.addEventListener(
             "click",
-            closeGoalModalFunction
+            () => {
+
+                goalModal.classList.add(
+                    "hidden"
+                );
+
+            }
         );
 
     }
@@ -2967,11 +2950,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 ".modal-overlay"
             );
 
+
         if (overlay) {
 
             overlay.addEventListener(
                 "click",
-                closeGoalModalFunction
+                () => {
+
+                    goalModal.classList.add(
+                        "hidden"
+                    );
+
+                }
             );
 
         }
@@ -3006,18 +2996,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     Number(
                         document.getElementById(
                             "goalSaved"
-                        ).value || 0
-                    );
+                        ).value
+                    ) || 0;
 
 
                 if (
                     !name ||
                     target <= 0
                 ) {
-
-                    alert(
-                        "Preencha os dados da meta."
-                    );
 
                     return;
 
@@ -3040,7 +3026,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 saveGoals();
 
-                closeGoalModalFunction();
+                goalForm.reset();
+
+                goalModal.classList.add(
+                    "hidden"
+                );
 
                 updateGoals();
 
@@ -3050,48 +3040,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    document.addEventListener(
-        "click",
-        event => {
-
-            const button =
-                event.target.closest(
-                    "[data-delete-goal]"
-                );
-
-
-            if (!button) return;
-
-
-            const id =
-                Number(
-                    button.dataset.deleteGoal
-                );
-
-
-            goals =
-                goals.filter(
-                    goal =>
-                        Number(goal.id) !== id
-                );
-
-
-            saveGoals();
-
-            updateGoals();
-
-        }
-    );
-
-
     /* =====================================================
-       PREMIUM — ORÇAMENTOS
+       ORÇAMENTOS
     ===================================================== */
 
     function updateBudgets() {
 
-        if (!budgetsList)
-            return;
+        if (!budgetsList) return;
 
 
         const entries =
@@ -3115,7 +3070,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        const expenses =
+        const categoryTotals =
             calculateCategories();
 
 
@@ -3126,21 +3081,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         const spent =
                             Number(
-                                expenses[
+                                categoryTotals[
                                     category
                                 ] || 0
                             );
 
 
                         const percentage =
-                            limit > 0
+                            Number(limit) > 0
                                 ? Math.min(
                                     100,
                                     (
                                         spent /
-                                        Number(
-                                            limit
-                                        )
+                                        Number(limit)
                                     ) * 100
                                 )
                                 : 0;
@@ -3148,59 +3101,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         return `
 
-                            <div class="budget-item">
+                            <div class="category-summary-item">
 
-                                <div class="budget-top">
+                                <div>
 
                                     <strong>
-                                        💰 ${escapeHTML(
+                                        ${escapeHTML(
                                             category
                                         )}
                                     </strong>
 
-                                    <button
-                                        type="button"
-                                        class="premium-delete"
-                                        data-delete-budget="${escapeHTML(
-                                            category
-                                        )}"
-                                    >
-                                        ×
-                                    </button>
+                                    <small style="display:block;margin-top:4px;color:var(--text-light)">
+                                        ${formatMoney(spent)}
+                                        de
+                                        ${formatMoney(limit)}
+                                    </small>
 
                                 </div>
 
-                                <div class="budget-values">
-
-                                    <span>
-                                        Gasto:
-                                        ${formatMoney(
-                                            spent
-                                        )}
-                                    </span>
-
-                                    <span>
-                                        Limite:
-                                        ${formatMoney(
-                                            limit
-                                        )}
-                                    </span>
-
-                                </div>
-
-                                <div class="goal-progress">
-
-                                    <div
-                                        style="width:${percentage}%"
-                                    ></div>
-
-                                </div>
-
-                                <small>
-                                    ${percentage.toFixed(
-                                        0
-                                    )}% utilizado
-                                </small>
+                                <span>
+                                    ${percentage.toFixed(0)}%
+                                </span>
 
                             </div>
 
@@ -3225,48 +3146,43 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-    const budgetForm =
-        document.getElementById(
-            "budgetForm"
-        );
-
-
     const closeBudgetModal =
         document.getElementById(
             "closeBudgetModal"
         );
 
 
-    function openBudgetModal() {
-
-        if (!budgetModal) return;
-
-        budgetModal.classList.remove(
-            "hidden"
+    const budgetForm =
+        document.getElementById(
+            "budgetForm"
         );
-
-    }
-
-
-    function closeBudgetModalFunction() {
-
-        if (!budgetModal) return;
-
-        budgetModal.classList.add(
-            "hidden"
-        );
-
-        if (budgetForm)
-            budgetForm.reset();
-
-    }
 
 
     if (newBudgetBtn) {
 
         newBudgetBtn.addEventListener(
             "click",
-            openBudgetModal
+            () => {
+
+                if (
+                    currentUser?.plan !==
+                    "premium"
+                ) {
+
+                    alert(
+                        "Ative o ControleS Premium para definir orçamentos."
+                    );
+
+                    return;
+
+                }
+
+
+                budgetModal.classList.remove(
+                    "hidden"
+                );
+
+            }
         );
 
     }
@@ -3276,7 +3192,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         closeBudgetModal.addEventListener(
             "click",
-            closeBudgetModalFunction
+            () => {
+
+                budgetModal.classList.add(
+                    "hidden"
+                );
+
+            }
         );
 
     }
@@ -3289,11 +3211,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 ".modal-overlay"
             );
 
+
         if (overlay) {
 
             overlay.addEventListener(
                 "click",
-                closeBudgetModalFunction
+                () => {
+
+                    budgetModal.classList.add(
+                        "hidden"
+                    );
+
+                }
             );
 
         }
@@ -3329,10 +3258,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     limit <= 0
                 ) {
 
-                    alert(
-                        "Informe um limite válido."
-                    );
-
                     return;
 
                 }
@@ -3344,11 +3269,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 saveBudgets();
 
-                closeBudgetModalFunction();
+                budgetForm.reset();
+
+                budgetModal.classList.add(
+                    "hidden"
+                );
 
                 updateBudgets();
-
-                updatePremium();
 
             }
         );
@@ -3356,68 +3283,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    document.addEventListener(
-        "click",
-        event => {
-
-            const button =
-                event.target.closest(
-                    "[data-delete-budget]"
-                );
-
-
-            if (!button) return;
-
-
-            const category =
-                button.dataset.deleteBudget;
-
-
-            delete budgets[
-                category
-            ];
-
-
-            saveBudgets();
-
-            updateBudgets();
-
-        }
-    );
-
-
     /* =====================================================
-       PREMIUM — ALERTAS
+       ALERTAS
     ===================================================== */
 
-    function updateSmartAlerts() {
+    function updateAlerts() {
 
-        if (!smartAlerts)
-            return;
+        if (!smartAlerts) return;
 
 
         const totals =
             calculateMonthTotals();
 
 
-        const expenses =
-            calculateCategories();
-
-
         const alerts = [];
 
 
         if (
-            totals.income > 0 &&
             totals.expense >
-                totals.income
+            totals.income &&
+            totals.income > 0
         ) {
 
             alerts.push(
-                "Suas despesas já ultrapassaram suas receitas neste mês."
+                "🚨 Suas despesas estão maiores que suas receitas neste mês."
             );
 
         }
+
+
+        const categoryTotals =
+            calculateCategories();
 
 
         Object.entries(
@@ -3427,7 +3323,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const spent =
                     Number(
-                        expenses[
+                        categoryTotals[
                             category
                         ] || 0
                     );
@@ -3439,16 +3335,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ) {
 
                     alerts.push(
-                        `O orçamento de ${category} foi ultrapassado.`
-                    );
-
-                } else if (
-                    spent >=
-                    Number(limit) * 0.8
-                ) {
-
-                    alerts.push(
-                        `Você já utilizou mais de 80% do orçamento de ${category}.`
+                        `⚠️ O orçamento de ${category} foi atingido.`
                     );
 
                 }
@@ -3477,13 +3364,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 .map(
                     alert => `
 
-                        <div class="premium-alert">
-                            🚨
-                            <span>
-                                ${escapeHTML(
-                                    alert
-                                )}
-                            </span>
+                        <div class="category-summary-item">
+
+                            <strong>
+                                ${escapeHTML(alert)}
+                            </strong>
+
                         </div>
 
                     `
@@ -3494,10 +3380,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       PREMIUM — COMPARAÇÃO MENSAL
+       COMPARAÇÃO MENSAL
     ===================================================== */
 
-    function calculateMonthTotalsFor(
+    function calculateMonthExpense(
         year,
         month
     ) {
@@ -3506,10 +3392,7 @@ document.addEventListener("DOMContentLoaded", () => {
             new Date(
                 year,
                 month,
-                1,
-                0,
-                0,
-                0
+                1
             );
 
 
@@ -3531,54 +3414,35 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        let income = 0;
-        let expense = 0;
-
-
-        items.forEach(
-            item => {
+        return items.reduce(
+            (total, item) => {
 
                 if (
                     item.type ===
-                    "income"
+                    "expense"
                 ) {
 
-                    income +=
+                    return (
+                        total +
                         Number(
                             item.amount
-                        );
-
-                } else {
-
-                    expense +=
-                        Number(
-                            item.amount
-                        );
+                        )
+                    );
 
                 }
 
-            }
+                return total;
+
+            },
+            0
         );
-
-
-        return {
-
-            income,
-
-            expense,
-
-            balance:
-                income - expense
-
-        };
 
     }
 
 
     function updateMonthlyComparison() {
 
-        if (!monthlyComparison)
-            return;
+        if (!monthlyComparison) return;
 
 
         const now =
@@ -3586,40 +3450,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const current =
-            calculateMonthTotalsFor(
+            calculateMonthExpense(
                 now.getFullYear(),
                 now.getMonth()
             );
 
 
         const previous =
-            calculateMonthTotalsFor(
-                now.getMonth() === 0
-                    ? now.getFullYear() - 1
-                    : now.getFullYear(),
-                now.getMonth() === 0
-                    ? 11
-                    : now.getMonth() - 1
+            calculateMonthExpense(
+                now.getFullYear(),
+                now.getMonth() - 1
             );
 
 
+        if (
+            current === 0 &&
+            previous === 0
+        ) {
+
+            monthlyComparison.innerHTML = `
+
+                <div class="empty-state">
+                    Ainda não há dados suficientes para comparar os meses.
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
         const difference =
-            current.expense -
-            previous.expense;
+            current -
+            previous;
 
 
         let message;
 
 
         if (
-            previous.expense === 0 &&
-            current.expense === 0
-        ) {
-
-            message =
-                "Ainda não existem despesas suficientes para comparar.";
-
-        } else if (
             difference > 0
         ) {
 
@@ -3647,38 +3517,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
         monthlyComparison.innerHTML = `
 
-            <div class="comparison-box">
-
-                <span>
-                    MÊS ANTERIOR
-                </span>
+            <div class="category-summary-item">
 
                 <strong>
-                    ${formatMoney(
-                        previous.expense
-                    )}
+                    ${message}
                 </strong>
 
             </div>
 
-
-            <div class="comparison-box">
+            <div class="category-summary-item">
 
                 <span>
-                    MÊS ATUAL
+                    Mês atual
                 </span>
 
                 <strong>
-                    ${formatMoney(
-                        current.expense
-                    )}
+                    ${formatMoney(current)}
                 </strong>
 
             </div>
 
+            <div class="category-summary-item">
 
-            <div class="empty-state">
-                ${message}
+                <span>
+                    Mês anterior
+                </span>
+
+                <strong>
+                    ${formatMoney(previous)}
+                </strong>
+
             </div>
 
         `;
@@ -3687,7 +3555,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       PREMIUM — SIMULADOR
+       SIMULADOR
     ===================================================== */
 
     const simulateBtn =
@@ -3702,6 +3570,20 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
+                if (
+                    currentUser?.plan !==
+                    "premium"
+                ) {
+
+                    alert(
+                        "Ative o ControleS Premium para usar o simulador."
+                    );
+
+                    return;
+
+                }
+
+
                 const input =
                     document.getElementById(
                         "simulationAmount"
@@ -3715,30 +3597,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 const amount =
-                    input
-                        ? Number(
-                            input.value
-                        )
-                        : 0;
+                    Number(
+                        input.value
+                    );
 
 
                 if (
-                    !result
-                ) return;
-
-
-                if (
-                    !amount ||
                     amount <= 0
                 ) {
 
-                    result.innerHTML = `
-
-                        <div class="empty-state">
-                            Informe um valor para simular.
-                        </div>
-
-                    `;
+                    result.textContent =
+                        "Digite um valor válido.";
 
                     return;
 
@@ -3754,61 +3623,23 @@ document.addEventListener("DOMContentLoaded", () => {
                     amount;
 
 
-                const positive =
-                    newBalance >= 0;
-
-
                 result.innerHTML = `
 
-                    <div class="simulation-card">
+                    Saldo atual:
+                    <strong>
+                        ${formatMoney(
+                            totals.balance
+                        )}
+                    </strong>
 
-                        <span>
-                            SALDO ATUAL
-                        </span>
+                    <br>
 
-                        <strong>
-                            ${formatMoney(
-                                totals.balance
-                            )}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="simulation-card">
-
-                        <span>
-                            NOVA DESPESA
-                        </span>
-
-                        <strong>
-                            - ${formatMoney(
-                                amount
-                            )}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="simulation-card">
-
-                        <span>
-                            SALDO APÓS A COMPRA
-                        </span>
-
-                        <strong class="${
-                            positive
-                                ? "forecast-positive"
-                                : "forecast-negative"
-                        }">
-
-                            ${formatMoney(
-                                newBalance
-                            )}
-
-                        </strong>
-
-                    </div>
+                    Saldo após a despesa:
+                    <strong>
+                        ${formatMoney(
+                            newBalance
+                        )}
+                    </strong>
 
                 `;
 
@@ -3819,26 +3650,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       PREMIUM — ANÁLISE
+       PREMIUM
     ===================================================== */
 
     function updatePremiumAnalysis() {
 
-        if (!premiumAnalysis)
-            return;
+        if (!premiumAnalysis) return;
 
 
         const totals =
             calculateMonthTotals();
 
 
-        const categories =
+        const categoryTotals =
             calculateCategories();
 
 
         const entries =
             Object.entries(
-                categories
+                categoryTotals
             ).sort(
                 (a, b) =>
                     b[1] - a[1]
@@ -3853,70 +3683,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
         premiumAnalysis.innerHTML = `
 
-            <div class="premium-analysis-grid">
+            <div class="category-summary-item">
 
-                <div>
+                <strong>
+                    Receitas
+                </strong>
 
-                    <span>
-                        RECEITAS
-                    </span>
-
-                    <strong>
-                        ${formatMoney(
-                            totals.income
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div>
-
-                    <span>
-                        DESPESAS
-                    </span>
-
-                    <strong>
-                        ${formatMoney(
-                            totals.expense
-                        )}
-                    </strong>
-
-                </div>
-
-
-                <div>
-
-                    <span>
-                        SALDO
-                    </span>
-
-                    <strong>
-                        ${formatMoney(
-                            totals.balance
-                        )}
-                    </strong>
-
-                </div>
+                <span>
+                    ${formatMoney(
+                        totals.income
+                    )}
+                </span>
 
             </div>
 
+            <div class="category-summary-item">
 
-            <div class="premium-analysis-message">
+                <strong>
+                    Despesas
+                </strong>
 
-                ${
-                    biggest
+                <span>
+                    ${formatMoney(
+                        totals.expense
+                    )}
+                </span>
 
-                        ? `Sua maior categoria de gasto é
-                           <strong>${escapeHTML(
-                               biggest[0]
-                           )}</strong>,
-                           com ${formatMoney(
-                               biggest[1]
-                           )}.`
+            </div>
 
-                        : "Cadastre despesas para receber uma análise personalizada."
-                }
+            <div class="category-summary-item">
+
+                <strong>
+                    Saldo
+                </strong>
+
+                <span>
+                    ${formatMoney(
+                        totals.balance
+                    )}
+                </span>
+
+            </div>
+
+            <div class="category-summary-item">
+
+                <strong>
+                    Maior categoria de gasto
+                </strong>
+
+                <span>
+                    ${
+                        biggest
+                            ? `${escapeHTML(
+                                biggest[0]
+                            )} (${formatMoney(
+                                biggest[1]
+                            )})`
+                            : "Nenhuma"
+                    }
+                </span>
 
             </div>
 
@@ -3924,10 +3749,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
-    /* =====================================================
-       PREMIUM
-    ===================================================== */
 
     function updatePremium() {
 
@@ -3937,7 +3758,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateForecast();
 
-        updateSmartAlerts();
+        updateAlerts();
 
         updateMonthlyComparison();
 
@@ -3960,8 +3781,15 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
-                if (!currentUser)
+                if (!currentUser) {
+
+                    alert(
+                        "Entre no ControleS primeiro."
+                    );
+
                     return;
+
+                }
 
 
                 currentUser.plan =
@@ -3984,12 +3812,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                updatePremium();
-
-
                 alert(
-                    "Parabéns! Seu ControleS agora está no Premium ⭐"
+                    "🎉 ControleS Premium ativado com sucesso!"
                 );
+
+
+                updatePremium();
 
             }
         );
@@ -3998,13 +3826,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       TEMA ESCURO
+       TEMA
     ===================================================== */
 
     const themeBtn =
         document.getElementById(
             "themeBtn"
         );
+
+
+    function updateThemeButton() {
+
+        if (!themeBtn) return;
+
+
+        const dark =
+            document.body.classList.contains(
+                "dark"
+            );
+
+
+        themeBtn.innerHTML =
+            dark
+                ? "<span>☀️</span><span>Tema claro</span>"
+                : "<span>🌙</span><span>Tema escuro</span>";
+
+    }
 
 
     if (themeBtn) {
@@ -4031,6 +3878,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         : "false"
                 );
 
+
+                updateThemeButton();
+
             }
         );
 
@@ -4050,8 +3900,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    updateThemeButton();
+
+
     /* =====================================================
-       EXPORTAÇÃO DE DADOS
+       EXPORTAÇÃO
     ===================================================== */
 
     const exportDataBtn =
@@ -4066,12 +3919,10 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
-                if (
-                    !transactions.length
-                ) {
+                if (!currentUser) {
 
                     alert(
-                        "Não existem lançamentos para exportar."
+                        "Entre no ControleS para exportar seus dados."
                     );
 
                     return;
@@ -4081,22 +3932,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const data = {
 
-                    sistema:
+                    aplicativo:
                         "ControleS",
 
                     usuario:
                         currentUser,
 
-                    dataExportacao:
-                        new Date().toLocaleString(
-                            "pt-BR"
-                        ),
-
-                    totalLancamentos:
-                        transactions.length,
-
                     lancamentos:
-                        transactions
+                        transactions,
+
+                    metas:
+                        goals,
+
+                    orcamentos:
+                        budgets,
+
+                    exportadoEm:
+                        new Date().toISOString(),
+
+                    observacao:
+                        "Arquivo de backup dos dados financeiros do ControleS."
 
                 };
 
@@ -4112,7 +3967,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         ],
                         {
                             type:
-                                "application/json"
+                                "application/json;charset=utf-8"
                         }
                     );
 
@@ -4129,12 +3984,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     );
 
 
-                link.href =
-                    url;
+                link.href = url;
+
+
+                const date =
+                    new Date()
+                        .toISOString()
+                        .slice(0,10);
 
 
                 link.download =
-                    `controles-exportacao-${todayISO()}.json`;
+                    `controles-backup-${date}.json`;
 
 
                 document.body.appendChild(
@@ -4154,7 +4014,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 alert(
-                    "Dados exportados com sucesso."
+                    "💾 Seus dados foram exportados com sucesso."
                 );
 
             }
@@ -4181,9 +4041,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateReports();
 
+        updatePremiumPerformance();
+
+        updateGoals();
+
         updateForecast();
 
-        updatePremium();
+        updateAlerts();
+
+        updateMonthlyComparison();
+
+        updateBudgets();
+
+        updatePremiumAnalysis();
 
     }
 
