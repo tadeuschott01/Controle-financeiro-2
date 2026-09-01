@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="pt-BR">
-<head>
+<!DOCTYPE html><html lang="pt-BR"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#123c2d"><title>ControleS — Controle Financeiro</title>
@@ -31,6 +30,7 @@
     <form id="loginForm">
 
         <div class="input-group">
+
             <label for="loginName">Nome</label>
 
             <input
@@ -40,9 +40,11 @@
                 autocomplete="name"
                 required
             >
+
         </div>
 
         <div class="input-group">
+
             <label for="loginEmail">E-mail</label>
 
             <input
@@ -52,9 +54,11 @@
                 autocomplete="email"
                 required
             >
+
         </div>
 
         <div class="input-group">
+
             <label for="loginPassword">Senha</label>
 
             <input
@@ -64,9 +68,13 @@
                 autocomplete="current-password"
                 required
             >
+
         </div>
 
-        <button type="submit" class="btn-primary login-submit">
+        <button
+            type="submit"
+            class="btn-primary login-submit"
+        >
             Entrar no ControleS
         </button>
 
@@ -91,35 +99,60 @@
         </div>
 
         <div class="brand-text">
+
             <strong>ControleS</strong>
-            <span>Controle financeiro</span>
+
+            <span>
+                Controle financeiro
+            </span>
+
         </div>
 
     </div>
 
     <nav class="sidebar-nav">
 
-        <button class="nav-item active" data-section="dashboard">
+        <button
+            class="nav-item active"
+            data-section="dashboard"
+            type="button"
+        >
             <span class="nav-icon">⌂</span>
             <span>Tela principal</span>
         </button>
 
-        <button class="nav-item" data-section="transactions">
+        <button
+            class="nav-item"
+            data-section="transactions"
+            type="button"
+        >
             <span class="nav-icon">🧾</span>
             <span>Lançamentos</span>
         </button>
 
-        <button class="nav-item" data-section="categories">
+        <button
+            class="nav-item"
+            data-section="categories"
+            type="button"
+        >
             <span class="nav-icon">📊</span>
             <span>Categorias</span>
         </button>
 
-        <button class="nav-item" data-section="reports">
+        <button
+            class="nav-item"
+            data-section="reports"
+            type="button"
+        >
             <span class="nav-icon">📈</span>
             <span>Relatórios</span>
         </button>
 
-        <button class="nav-item" data-section="premium">
+        <button
+            class="nav-item"
+            data-section="premium"
+            type="button"
+        >
             <span class="nav-icon">⭐</span>
             <span>Premium</span>
         </button>
@@ -128,17 +161,29 @@
 
     <div class="sidebar-bottom">
 
-        <button id="themeBtn" class="sidebar-action">
+        <button
+            id="themeBtn"
+            class="sidebar-action"
+            type="button"
+        >
             <span>🌙</span>
             <span>Tema escuro</span>
         </button>
 
-        <button id="exportDataBtn" class="sidebar-action">
+        <button
+            id="exportDataBtn"
+            class="sidebar-action"
+            type="button"
+        >
             <span>💾</span>
             <span>Exportar dados</span>
         </button>
 
-        <button id="logoutBtn" class="sidebar-action">
+        <button
+            id="logoutBtn"
+            class="sidebar-action"
+            type="button"
+        >
             <span>↪</span>
             <span>Sair</span>
         </button>
@@ -167,11 +212,15 @@
             </button>
 
             <div>
-                <span class="topbar-small">CONTROLES</span>
+
+                <span class="topbar-small">
+                    CONTROLES
+                </span>
 
                 <h1 id="pageTitle">
                     Tela principal
                 </h1>
+
             </div>
 
         </div>
@@ -188,7 +237,10 @@
 
             <div class="user-area">
 
-                <div id="userAvatar" class="user-avatar">
+                <div
+                    id="userAvatar"
+                    class="user-avatar"
+                >
                     U
                 </div>
 
@@ -212,7 +264,7 @@
 
 
     <!-- =================================================
-         TELA PRINCIPAL
+         DASHBOARD
     ================================================= -->
 
     <section id="dashboard" class="section">
@@ -1418,22 +1470,6 @@
 </div>
 
 </div><!-- =====================================================
-     CONFIGURAÇÃO SUPABASE
-===================================================== --><script>
-
-const SUPABASE_URL =
-    "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-    "COLE_SUA_CHAVE_SB_PUBLISHABLE_AQUI";
-
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-    );
-
-window.supabaseClient = supabaseClient;
-
-</script><!-- APP --><script src="app.js"></script></body>
+     APP.JS
+===================================================== --><script src="app.js"></script></body>
 </html>
