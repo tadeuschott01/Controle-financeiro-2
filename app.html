@@ -1,39 +1,60 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#3FAF78">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color"
+      content="#168A55">
 
 <title>ControleS - Controle Financeiro</title>
 
 <style>
 
 /* =====================================================
-   PALETA
+   CONTROLES — PALETA PROFISSIONAL
 ===================================================== */
 
 :root{
+
     --laranja-fundo:#FFF1E6;
+
     --laranja-fundo-claro:#FFF8F3;
 
-    --laranja-principal:#E9A06A;
+    --laranja-principal:#E58A52;
+
     --laranja-claro:#FFF7F0;
 
-    --laranja:#F2A66A;
+    --laranja:#F0A06A;
+
     --laranja-escuro:#D98245;
 
-    --verde-botao:#3FAF78;
-    --verde-botao-hover:#329966;
+
+    --verde:#168A55;
+
+    --verde-hover:#0F7045;
+
+    --verde-escuro:#07502F;
+
 
     --branco:#FFFFFF;
+
     --fundo:#FFF5ED;
 
-    --texto:#4A3426;
-    --cinza:#89766A;
-    --borda:#F0DCCF;
 
-    --vermelho:#DC555D;
+    --texto:#3F3028;
+
+    --cinza:#7C6B60;
+
+    --borda:#DDEBE4;
+
+
+    --vermelho:#D9535D;
+
 }
 
 
@@ -42,16 +63,25 @@
 ===================================================== */
 
 *{
+
     margin:0;
+
     padding:0;
+
     box-sizing:border-box;
+
 }
+
 
 html{
+
     scroll-behavior:smooth;
+
 }
 
+
 body{
+
     font-family:
         Arial,
         Helvetica,
@@ -68,16 +98,23 @@ body{
         );
 
     color:var(--texto);
+
 }
+
 
 button,
 input,
 select{
+
     font-family:inherit;
+
 }
 
+
 button{
+
     cursor:pointer;
+
 }
 
 
@@ -86,96 +123,135 @@ button{
 ===================================================== */
 
 .topbar{
+
     height:72px;
 
     position:sticky;
+
     top:0;
+
     z-index:100;
 
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
 
     padding:0 28px;
 
     background:
-        rgba(255,255,255,.94);
+        rgba(255,255,255,.95);
 
     border-bottom:
         1px solid
         var(--borda);
 
     backdrop-filter:blur(15px);
+
 }
+
 
 .brand{
+
     display:flex;
+
     align-items:center;
+
     gap:12px;
+
 }
 
+
 .brand img{
+
     width:48px;
+
     height:48px;
 
     object-fit:contain;
 
     border-radius:12px;
+
 }
 
+
 .brand strong{
+
     display:block;
 
     color:var(--texto);
 
     font-size:21px;
+
 }
 
+
 .brand span{
+
     color:var(--cinza);
 
     font-size:11px;
+
 }
+
 
 .profile{
+
     display:flex;
+
     align-items:center;
+
     gap:10px;
+
 }
+
 
 .profile-text{
+
     text-align:right;
+
 }
 
+
 .profile-text strong{
-    color:var(--texto);
 
     display:block;
 
+    color:var(--texto);
+
     font-size:13px;
+
 }
 
+
 .profile-text span{
+
     color:var(--cinza);
 
     font-size:10px;
+
 }
 
+
 .avatar{
+
     width:40px;
+
     height:40px;
+
+    display:grid;
+
+    place-items:center;
 
     border-radius:50%;
 
-    display:grid;
-    place-items:center;
-
-    background:
-        var(--laranja-claro);
+    background:var(--laranja-claro);
 
     border:
         1px solid
         var(--borda);
+
 }
 
 
@@ -184,10 +260,12 @@ button{
 ===================================================== */
 
 .app{
+
     display:flex;
 
     min-height:
         calc(100vh - 72px);
+
 }
 
 
@@ -196,6 +274,7 @@ button{
 ===================================================== */
 
 .sidebar{
+
     width:245px;
 
     flex-shrink:0;
@@ -208,9 +287,12 @@ button{
     border-right:
         1px solid
         var(--borda);
+
 }
 
+
 .menu-title{
+
     color:var(--cinza);
 
     font-size:10px;
@@ -221,17 +303,24 @@ button{
 
     padding:
         0 13px 10px;
+
 }
 
+
 .menu{
+
     display:flex;
+
     flex-direction:column;
 
     gap:6px;
+
 }
 
+
 .menu button{
-    border:0;
+
+    border:1px solid transparent;
 
     background:transparent;
 
@@ -244,29 +333,40 @@ button{
     text-align:left;
 
     display:flex;
+
     align-items:center;
 
     gap:12px;
 
     transition:.2s;
+
 }
+
 
 .menu button:hover{
-    background:
-        rgba(242,166,106,.12);
 
-    color:
-        var(--laranja-escuro);
-}
-
-.menu button.active{
     background:
         #FFF0E5;
 
     color:
         var(--laranja-escuro);
 
+}
+
+
+.menu button.active{
+
+    background:
+        #FFF0E5;
+
+    color:
+        var(--laranja-escuro);
+
+    border-color:
+        #F0D7C5;
+
     font-weight:700;
+
 }
 
 
@@ -275,34 +375,53 @@ button{
 ===================================================== */
 
 .content{
+
     width:100%;
 
     max-width:1500px;
 
     padding:32px;
+
 }
 
+
 .page{
+
     display:none;
 
     animation:
         entrada .25s ease;
+
 }
+
 
 .page.active{
+
     display:block;
+
 }
 
+
 @keyframes entrada{
+
     from{
+
         opacity:0;
-        transform:translateY(5px);
+
+        transform:
+            translateY(5px);
+
     }
 
     to{
+
         opacity:1;
-        transform:translateY(0);
+
+        transform:
+            translateY(0);
+
     }
+
 }
 
 
@@ -311,26 +430,35 @@ button{
 ===================================================== */
 
 .page-header{
+
     display:flex;
 
     justify-content:space-between;
+
     align-items:flex-end;
 
     margin-bottom:24px;
+
 }
 
+
 .page-header h1{
+
     color:var(--texto);
 
     font-size:30px;
+
 }
 
+
 .page-header p{
+
     color:var(--cinza);
 
     font-size:14px;
 
     margin-top:7px;
+
 }
 
 
@@ -339,7 +467,12 @@ button{
 ===================================================== */
 
 .balance-card{
-    background:white;
+
+    background:#FFFFFF;
+
+    border:
+        1px solid
+        var(--borda);
 
     border-radius:22px;
 
@@ -347,24 +480,26 @@ button{
 
     margin-bottom:17px;
 
-    border:
-        1px solid
-        var(--borda);
-
     box-shadow:
         0 12px 35px
         rgba(94,61,38,.10);
+
 }
 
+
 .balance-label{
+
     color:var(--cinza);
 
     font-size:13px;
+
 }
 
+
 .balance-value{
+
     color:
-        var(--verde-botao);
+        var(--verde);
 
     font-size:37px;
 
@@ -372,41 +507,57 @@ button{
 
     margin:
         8px 0 20px;
+
 }
 
+
 .balance-info{
+
     display:flex;
 
     gap:28px;
+
 }
 
+
 .balance-item{
+
     display:flex;
 
     align-items:center;
 
     gap:8px;
+
 }
 
+
 .balance-dot{
+
     width:9px;
+
     height:9px;
 
     border-radius:50%;
 
     background:
-        var(--verde-botao);
+        var(--verde);
+
 }
 
+
 .balance-item small{
+
     display:block;
 
     color:var(--cinza);
 
     font-size:10px;
+
 }
 
+
 .balance-item strong{
+
     display:block;
 
     color:var(--texto);
@@ -414,6 +565,7 @@ button{
     font-size:13px;
 
     margin-top:2px;
+
 }
 
 
@@ -422,6 +574,7 @@ button{
 ===================================================== */
 
 .stats{
+
     display:grid;
 
     grid-template-columns:
@@ -430,10 +583,13 @@ button{
     gap:15px;
 
     margin-bottom:18px;
+
 }
 
+
 .stat-card{
-    background:white;
+
+    background:#FFFFFF;
 
     border:
         1px solid
@@ -446,24 +602,36 @@ button{
     box-shadow:
         0 10px 28px
         rgba(94,61,38,.08);
+
 }
 
+
 .stat-top{
+
     display:flex;
 
     justify-content:space-between;
+
     align-items:center;
+
 }
+
 
 .stat-top small{
+
     color:var(--cinza);
+
 }
 
+
 .stat-icon{
+
     width:38px;
+
     height:38px;
 
     display:grid;
+
     place-items:center;
 
     background:
@@ -471,29 +639,37 @@ button{
 
     border:
         1px solid
-        var(--borda);
+        #F0DCCF;
 
     border-radius:11px;
+
 }
 
+
 .stat-card h3{
+
     color:var(--texto);
 
     font-size:23px;
 
     margin-top:14px;
+
 }
+
 
 .green{
+
     color:
-        var(--verde-botao)
-        !important;
+        var(--verde) !important;
+
 }
 
+
 .orange{
+
     color:
-        var(--laranja-escuro)
-        !important;
+        var(--laranja-escuro) !important;
+
 }
 
 
@@ -502,6 +678,7 @@ button{
 ===================================================== */
 
 .quick-actions{
+
     display:grid;
 
     grid-template-columns:
@@ -511,10 +688,13 @@ button{
 
     margin:
         18px 0;
+
 }
 
+
 .quick{
-    background:white;
+
+    background:#FFFFFF;
 
     border:
         1px solid
@@ -531,28 +711,41 @@ button{
         rgba(94,61,38,.08);
 
     transition:.2s;
+
 }
+
 
 .quick:hover{
-    transform:translateY(-2px);
+
+    transform:
+        translateY(-2px);
 
     border-color:
-        #E9A06A;
+        var(--laranja);
+
 }
 
+
 .quick-icon{
+
     font-size:22px;
 
     margin-bottom:9px;
+
 }
 
+
 .quick strong{
+
     display:block;
 
     font-size:13px;
+
 }
 
+
 .quick span{
+
     display:block;
 
     color:var(--cinza);
@@ -560,6 +753,7 @@ button{
     font-size:10px;
 
     margin-top:4px;
+
 }
 
 
@@ -568,12 +762,14 @@ button{
 ===================================================== */
 
 .dashboard-grid{
+
     display:grid;
 
     grid-template-columns:
         1.35fr .9fr;
 
     gap:18px;
+
 }
 
 
@@ -582,7 +778,8 @@ button{
 ===================================================== */
 
 .panel{
-    background:white;
+
+    background:#FFFFFF;
 
     border:
         1px solid
@@ -595,27 +792,38 @@ button{
     box-shadow:
         0 10px 28px
         rgba(94,61,38,.08);
+
 }
 
+
 .panel-header{
+
     display:flex;
 
     justify-content:space-between;
+
     align-items:center;
 
     margin-bottom:18px;
+
 }
 
+
 .panel-header h2{
+
     color:var(--texto);
 
     font-size:17px;
+
 }
 
+
 .panel-header span{
+
     color:var(--cinza);
 
     font-size:11px;
+
 }
 
 
@@ -624,6 +832,7 @@ button{
 ===================================================== */
 
 .chart-area{
+
     position:relative;
 
     width:100%;
@@ -651,54 +860,81 @@ button{
         );
 
     border-radius:14px;
+
 }
 
+
 .chart-lines{
+
     position:absolute;
 
     left:20px;
+
     right:20px;
 
     top:20px;
+
     bottom:40px;
 
     pointer-events:none;
+
 }
 
+
 .chart-line{
+
     position:absolute;
 
     left:0;
+
     right:0;
 
     height:1px;
 
-    background:
-        #F0E7E0;
+    background:#F0E7E0;
+
 }
+
 
 .chart-line:nth-child(1){
+
     top:0;
+
 }
+
 
 .chart-line:nth-child(2){
+
     top:25%;
+
 }
+
 
 .chart-line:nth-child(3){
+
     top:50%;
+
 }
+
 
 .chart-line:nth-child(4){
+
     top:75%;
+
 }
+
 
 .chart-line:nth-child(5){
+
     bottom:0;
+
 }
 
+
 .chart-column{
+
     width:70px;
+
     height:100%;
 
     display:flex;
@@ -712,9 +948,12 @@ button{
     position:relative;
 
     z-index:2;
+
 }
 
+
 .bar-value{
+
     font-size:11px;
 
     font-weight:bold;
@@ -724,9 +963,12 @@ button{
     margin-bottom:7px;
 
     white-space:nowrap;
+
 }
 
+
 .bar{
+
     width:58px;
 
     min-height:5px;
@@ -736,27 +978,36 @@ button{
 
     transition:
         height .5s ease;
+
 }
 
+
 .bar.receita{
+
     background:
         linear-gradient(
             to top,
-            #3FAF78,
-            #68C997
+            #168A55,
+            #55B987
         );
+
 }
 
+
 .bar.despesa{
+
     background:
         linear-gradient(
             to top,
             #D98245,
             #F2B07A
         );
+
 }
 
+
 .bar-label{
+
     position:absolute;
 
     bottom:-28px;
@@ -766,9 +1017,12 @@ button{
     font-size:11px;
 
     font-weight:bold;
+
 }
 
+
 .chart-legend{
+
     display:flex;
 
     justify-content:center;
@@ -776,9 +1030,12 @@ button{
     gap:25px;
 
     margin-top:17px;
+
 }
 
+
 .legend-item{
+
     display:flex;
 
     align-items:center;
@@ -788,23 +1045,34 @@ button{
     color:var(--cinza);
 
     font-size:11px;
+
 }
 
+
 .legend-dot{
+
     width:9px;
+
     height:9px;
 
     border-radius:50%;
+
 }
+
 
 .legend-green{
+
     background:
-        var(--verde-botao);
+        var(--verde);
+
 }
 
+
 .legend-orange{
+
     background:
         var(--laranja);
+
 }
 
 
@@ -813,12 +1081,16 @@ button{
 ===================================================== */
 
 .transaction-list{
+
     display:flex;
 
     flex-direction:column;
+
 }
 
+
 .transaction{
+
     display:flex;
 
     justify-content:space-between;
@@ -832,13 +1104,19 @@ button{
     border-bottom:
         1px solid
         #F1E9E3;
+
 }
+
 
 .transaction:last-child{
+
     border-bottom:0;
+
 }
 
+
 .transaction-left{
+
     display:flex;
 
     align-items:center;
@@ -846,10 +1124,14 @@ button{
     gap:12px;
 
     min-width:0;
+
 }
 
+
 .transaction-icon{
+
     width:42px;
+
     height:42px;
 
     display:grid;
@@ -861,12 +1143,15 @@ button{
 
     border:
         1px solid
-        var(--borda);
+        #F0DCCF;
 
     border-radius:12px;
+
 }
 
+
 .transaction-name{
+
     color:var(--texto);
 
     font-size:13px;
@@ -878,32 +1163,45 @@ button{
     text-overflow:ellipsis;
 
     white-space:nowrap;
+
 }
 
+
 .transaction-date{
+
     color:var(--cinza);
 
     font-size:10px;
 
     margin-top:4px;
+
 }
 
+
 .transaction-value{
+
     font-size:13px;
 
     font-weight:bold;
 
     white-space:nowrap;
+
 }
+
 
 .value-income{
+
     color:
-        var(--verde-botao);
+        var(--verde);
+
 }
 
+
 .value-expense{
+
     color:
         var(--laranja-escuro);
+
 }
 
 
@@ -912,16 +1210,23 @@ button{
 ===================================================== */
 
 .form-panel{
+
     max-width:650px;
+
 }
 
+
 .form{
+
     display:grid;
 
     gap:15px;
+
 }
 
+
 .field label{
+
     display:block;
 
     color:var(--cinza);
@@ -929,9 +1234,12 @@ button{
     font-size:12px;
 
     margin-bottom:7px;
+
 }
 
+
 .input{
+
     width:100%;
 
     background:#FFFBF8;
@@ -947,74 +1255,107 @@ button{
     color:var(--texto);
 
     outline:none;
+
 }
 
+
 .input:focus{
+
     border-color:
         var(--laranja);
 
     box-shadow:
         0 0 0 3px
         rgba(242,166,106,.13);
+
 }
 
 
 /* =====================================================
-   BOTÃO PRINCIPAL — VERDE
+   BOTÃO PRINCIPAL
+   VERDE + BORDA VERDE ESCURO
 ===================================================== */
 
 .btn-primary{
-    border:0;
+
+    border:
+        2px solid
+        #07502F !important;
 
     background:
-        #3FAF78;
+        #168A55 !important;
 
-    color:#FFFFFF;
+    color:
+        #FFFFFF !important;
 
-    padding:14px 18px;
+    padding:
+        14px 20px;
 
-    border-radius:11px;
+    border-radius:
+        11px;
 
-    font-weight:800;
+    font-weight:
+        800;
 
-    font-size:14px;
+    font-size:
+        14px;
 
     cursor:pointer;
 
     box-shadow:
-        0 6px 15px
-        rgba(63,175,120,.20);
+        0 6px 16px
+        rgba(22,138,85,.25);
 
     transition:.2s;
+
 }
 
+
 .btn-primary:hover{
+
     background:
-        #329966;
+        #0F7045 !important;
+
+    border-color:
+        #043D24 !important;
 
     transform:
         translateY(-1px);
+
 }
+
 
 .btn-primary:active{
+
+    background:
+        #0B603B !important;
+
+    border-color:
+        #032E1B !important;
+
     transform:
         translateY(0);
+
 }
 
+
 .btn-secondary{
+
     border:
         1px solid
         var(--borda);
 
-    background:white;
+    background:#FFFFFF;
 
     color:var(--texto);
 
-    padding:13px 17px;
+    padding:
+        13px 17px;
 
     border-radius:11px;
 
     font-weight:bold;
+
 }
 
 
@@ -1023,11 +1364,13 @@ button{
 ===================================================== */
 
 .toolbar{
+
     display:flex;
 
     gap:10px;
 
     margin-bottom:15px;
+
 }
 
 
@@ -1036,17 +1379,22 @@ button{
 ===================================================== */
 
 .empty{
+
     text-align:center;
 
     padding:40px 15px;
 
     color:var(--cinza);
+
 }
 
+
 .empty-icon{
+
     font-size:34px;
 
     margin-bottom:9px;
+
 }
 
 
@@ -1055,12 +1403,15 @@ button{
 ===================================================== */
 
 .premium-card{
+
     background:
+
         radial-gradient(
             circle at 100% 0,
             rgba(242,166,106,.18),
             transparent 35%
         ),
+
         linear-gradient(
             135deg,
             white,
@@ -1078,18 +1429,25 @@ button{
     box-shadow:
         0 15px 35px
         rgba(94,61,38,.10);
+
 }
 
+
 .premium-heading{
+
     display:flex;
 
     align-items:center;
 
     gap:13px;
+
 }
 
+
 .premium-star{
+
     width:53px;
+
     height:53px;
 
     display:grid;
@@ -1101,24 +1459,33 @@ button{
     border-radius:15px;
 
     font-size:27px;
+
 }
 
+
 .premium-heading h2{
+
     color:
         var(--laranja-escuro);
 
     font-size:27px;
+
 }
 
+
 .premium-heading p{
+
     color:var(--cinza);
 
     margin-top:6px;
 
     line-height:1.5;
+
 }
 
+
 .premium-grid{
+
     display:grid;
 
     grid-template-columns:
@@ -1127,16 +1494,19 @@ button{
     gap:13px;
 
     margin:25px 0;
+
 }
 
+
 .premium-feature{
+
     display:flex;
 
     align-items:center;
 
     gap:13px;
 
-    background:white;
+    background:#FFFFFF;
 
     border:
         1px solid
@@ -1145,10 +1515,14 @@ button{
     border-radius:15px;
 
     padding:17px;
+
 }
 
+
 .feature-icon{
+
     width:42px;
+
     height:42px;
 
     flex-shrink:0;
@@ -1162,22 +1536,28 @@ button{
 
     border:
         1px solid
-        var(--borda);
+        #F0DCCF;
 
     border-radius:12px;
 
     font-size:19px;
+
 }
 
+
 .premium-feature strong{
+
     display:block;
 
     color:var(--texto);
 
     font-size:13px;
+
 }
 
+
 .premium-feature span{
+
     display:block;
 
     color:var(--cinza);
@@ -1185,13 +1565,19 @@ button{
     font-size:10px;
 
     margin-top:4px;
+
 }
+
 
 .lock{
+
     margin-left:auto;
+
 }
 
+
 .premium-bottom{
+
     display:flex;
 
     justify-content:space-between;
@@ -1205,15 +1591,21 @@ button{
     border-top:
         1px solid
         var(--borda);
+
 }
 
+
 .price strong{
+
     color:var(--texto);
 
     font-size:20px;
+
 }
 
+
 .price span{
+
     display:block;
 
     color:var(--cinza);
@@ -1221,6 +1613,7 @@ button{
     font-size:11px;
 
     margin-top:4px;
+
 }
 
 
@@ -1229,28 +1622,41 @@ button{
 ===================================================== */
 
 .mobile-nav{
+
     display:none;
+
 }
 
 
 @media(max-width:950px){
 
     .sidebar{
+
         width:210px;
+
     }
+
 
     .content{
+
         padding:
             25px 20px;
+
     }
+
 
     .dashboard-grid{
+
         grid-template-columns:1fr;
+
     }
 
+
     .quick-actions{
+
         grid-template-columns:
             repeat(2,1fr);
+
     }
 
 }
@@ -1259,82 +1665,129 @@ button{
 @media(max-width:700px){
 
     .topbar{
+
         height:68px;
 
         padding:
             0 15px;
+
     }
+
 
     .brand img{
+
         width:43px;
+
         height:43px;
+
     }
 
+
     .brand strong{
+
         font-size:18px;
+
     }
+
 
     .brand span,
     .profile-text{
+
         display:none;
+
     }
+
 
     .sidebar{
+
         display:none;
+
     }
+
 
     .content{
+
         padding:
             20px 14px 90px;
+
     }
+
 
     .page-header h1{
+
         font-size:25px;
+
     }
+
 
     .stats{
+
         grid-template-columns:1fr;
+
     }
 
+
     .quick-actions{
+
         grid-template-columns:
             1fr 1fr;
 
         gap:9px;
+
     }
+
 
     .panel{
+
         padding:17px;
+
     }
 
+
     .chart-area{
+
         height:260px;
 
         gap:35px;
 
         padding:
             20px 10px 40px;
+
     }
+
 
     .bar{
+
         width:48px;
+
     }
+
 
     .chart-column{
+
         width:60px;
+
     }
+
 
     .premium-grid{
+
         grid-template-columns:1fr;
+
     }
 
+
     .premium-bottom{
+
         flex-direction:column;
 
         align-items:stretch;
+
     }
 
+
     .mobile-nav{
+
         position:fixed;
 
         display:flex;
@@ -1344,7 +1797,9 @@ button{
         justify-content:space-around;
 
         bottom:0;
+
         left:0;
+
         right:0;
 
         height:70px;
@@ -1357,9 +1812,12 @@ button{
             var(--borda);
 
         z-index:200;
+
     }
 
+
     .mobile-nav button{
+
         border:0;
 
         background:none;
@@ -1369,19 +1827,26 @@ button{
         font-size:10px;
 
         min-width:55px;
+
     }
+
 
     .mobile-nav button.active{
+
         color:
-            var(--verde-botao);
+            var(--verde);
+
     }
 
+
     .mobile-icon{
+
         display:block;
 
         font-size:19px;
 
         margin-bottom:4px;
+
     }
 
 }
@@ -1390,20 +1855,29 @@ button{
 @media(max-width:380px){
 
     .quick-actions{
+
         grid-template-columns:1fr;
+
     }
+
 
     .balance-value{
+
         font-size:31px;
+
     }
 
+
     .chart-area{
+
         gap:20px;
+
     }
 
 }
 
 </style>
+
 </head>
 
 
@@ -1464,7 +1938,7 @@ button{
 
 
 <!-- =====================================================
-     MENU
+     SIDEBAR
 ===================================================== -->
 
 <aside class="sidebar">
@@ -1766,8 +2240,6 @@ button{
     <div class="dashboard-grid">
 
 
-        <!-- GRÁFICO -->
-
         <div class="panel">
 
             <div class="panel-header">
@@ -1788,9 +2260,13 @@ button{
                 <div class="chart-lines">
 
                     <div class="chart-line"></div>
+
                     <div class="chart-line"></div>
+
                     <div class="chart-line"></div>
+
                     <div class="chart-line"></div>
+
                     <div class="chart-line"></div>
 
                 </div>
@@ -1844,15 +2320,20 @@ button{
 
                 <div class="legend-item">
 
-                    <div class="legend-dot legend-green"></div>
+                    <div
+                        class="legend-dot legend-green">
+                    </div>
 
                     Receitas
 
                 </div>
 
+
                 <div class="legend-item">
 
-                    <div class="legend-dot legend-orange"></div>
+                    <div
+                        class="legend-dot legend-orange">
+                    </div>
 
                     Despesas
 
@@ -1862,8 +2343,6 @@ button{
 
         </div>
 
-
-        <!-- ÚLTIMOS LANÇAMENTOS -->
 
         <div class="panel">
 
@@ -2257,9 +2736,13 @@ button{
             <div class="chart-lines">
 
                 <div class="chart-line"></div>
+
                 <div class="chart-line"></div>
+
                 <div class="chart-line"></div>
+
                 <div class="chart-line"></div>
+
                 <div class="chart-line"></div>
 
             </div>
@@ -2345,37 +2828,32 @@ button{
 
         <div class="panel">
 
-            <div class="chart-area">
+            <div
+                style="
+                    text-align:center;
+                    padding:65px 10px;
+                ">
 
                 <div
                     style="
-                        text-align:center;
-                        width:100%;
-                        padding-top:90px;
+                        font-size:60px;
+                        margin-bottom:12px;
                     ">
-
-                    <div
-                        style="
-                            font-size:45px;
-                        ">
-                        🍩
-                    </div>
-
-                    <strong>
-                        Gastos por categoria
-                    </strong>
-
-                    <p
-                        id="categoryTotalText"
-                        style="
-                            color:#89766A;
-                            font-size:12px;
-                            margin-top:5px;
-                        ">
-                        R$ 0,00
-                    </p>
-
+                    🍩
                 </div>
+
+                <h2>
+                    Gastos por categoria
+                </h2>
+
+                <p
+                    id="categoryTotalText"
+                    style="
+                        color:#7C6B60;
+                        margin-top:7px;
+                    ">
+                    R$ 0,00
+                </p>
 
             </div>
 
@@ -2786,18 +3264,19 @@ let transactions =
 
 
 /* =====================================================
-   FORMATAÇÃO
+   DINHEIRO
 ===================================================== */
 
 function money(value){
 
-    return Number(value).toLocaleString(
-        'pt-BR',
-        {
-            style:'currency',
-            currency:'BRL'
-        }
-    );
+    return Number(value)
+        .toLocaleString(
+            'pt-BR',
+            {
+                style:'currency',
+                currency:'BRL'
+            }
+        );
 
 }
 
@@ -2811,16 +3290,26 @@ function showPage(pageId,button){
     document
         .querySelectorAll('.page')
         .forEach(page=>{
-            page.classList.remove('active');
+
+            page.classList.remove(
+                'active'
+            );
+
         });
 
 
     const page =
-        document.getElementById(pageId);
+        document.getElementById(
+            pageId
+        );
 
 
     if(page){
-        page.classList.add('active');
+
+        page.classList.add(
+            'active'
+        );
+
     }
 
 
@@ -2829,28 +3318,40 @@ function showPage(pageId,button){
             '.menu button,.mobile-nav button'
         )
         .forEach(btn=>{
-            btn.classList.remove('active');
+
+            btn.classList.remove(
+                'active'
+            );
+
         });
 
 
     if(button){
-        button.classList.add('active');
+
+        button.classList.add(
+            'active'
+        );
+
     }
 
 
     if(pageId === 'dashboard'){
+
         setTimeout(
             updateCharts,
             50
         );
+
     }
 
 
     if(pageId === 'relatorios'){
+
         setTimeout(
             updateReportChart,
             50
         );
+
     }
 
 
@@ -2863,20 +3364,27 @@ function showPage(pageId,button){
 
 
 /* =====================================================
-   ADICIONAR
+   ADICIONAR TRANSAÇÃO
 ===================================================== */
 
-function addTransaction(event,type){
+function addTransaction(
+    event,
+    type
+){
 
     event.preventDefault();
 
 
     let descricao = '';
+
     let valor = 0;
+
     let categoria = '';
 
 
-    if(type === 'receita'){
+    if(
+        type === 'receita'
+    ){
 
         descricao =
             document
@@ -2897,6 +3405,7 @@ function addTransaction(event,type){
             );
 
     }
+
     else{
 
         descricao =
@@ -2944,15 +3453,20 @@ function addTransaction(event,type){
 
     transactions.unshift({
 
-        id:Date.now(),
+        id:
+            Date.now(),
 
-        type:type,
+        type:
+            type,
 
-        descricao:descricao,
+        descricao:
+            descricao,
 
-        valor:valor,
+        valor:
+            valor,
 
-        categoria:categoria,
+        categoria:
+            categoria,
 
         data:
             new Date()
@@ -2973,11 +3487,17 @@ function addTransaction(event,type){
 
 
     alert(
+
         type === 'receita'
+
         ?
+
         'Receita adicionada com sucesso!'
+
         :
+
         'Despesa adicionada com sucesso!'
+
     );
 
 
@@ -2995,10 +3515,13 @@ function addTransaction(event,type){
 function save(){
 
     localStorage.setItem(
+
         'controles_transactions',
+
         JSON.stringify(
             transactions
         )
+
     );
 
 }
@@ -3011,6 +3534,7 @@ function save(){
 function getTotals(){
 
     let receitas = 0;
+
     let despesas = 0;
 
 
@@ -3021,13 +3545,18 @@ function getTotals(){
         ){
 
             receitas +=
-                Number(item.valor);
+                Number(
+                    item.valor
+                );
 
         }
+
         else{
 
             despesas +=
-                Number(item.valor);
+                Number(
+                    item.valor
+                );
 
         }
 
@@ -3037,10 +3566,12 @@ function getTotals(){
     return{
 
         receitas,
+
         despesas,
 
         saldo:
-            receitas - despesas
+            receitas -
+            despesas
 
     };
 
@@ -3152,14 +3683,20 @@ function updateCharts(){
     const receitaHeight =
         Math.max(
             5,
-            (t.receitas / max) * 210
+            (
+                t.receitas /
+                max
+            ) * 210
         );
 
 
     const despesaHeight =
         Math.max(
             5,
-            (t.despesas / max) * 210
+            (
+                t.despesas /
+                max
+            ) * 210
         );
 
 
@@ -3178,7 +3715,8 @@ function updateCharts(){
     if(receitaBar){
 
         receitaBar.style.height =
-            receitaHeight + 'px';
+            receitaHeight +
+            'px';
 
     }
 
@@ -3186,7 +3724,8 @@ function updateCharts(){
     if(despesaBar){
 
         despesaBar.style.height =
-            despesaHeight + 'px';
+            despesaHeight +
+            'px';
 
     }
 
@@ -3210,7 +3749,7 @@ function updateCharts(){
 
 
 /* =====================================================
-   GRÁFICO RELATÓRIO
+   RELATÓRIO
 ===================================================== */
 
 function updateReportChart(){
@@ -3232,10 +3771,15 @@ function updateReportChart(){
             'relReceitaBar'
         )
         .style.height =
+
         Math.max(
             5,
-            (t.receitas / max) * 210
-        ) + 'px';
+            (
+                t.receitas /
+                max
+            ) * 210
+        )
+        + 'px';
 
 
     document
@@ -3243,10 +3787,15 @@ function updateReportChart(){
             'relDespesaBar'
         )
         .style.height =
+
         Math.max(
             5,
-            (t.despesas / max) * 210
-        ) + 'px';
+            (
+                t.despesas /
+                max
+            ) * 210
+        )
+        + 'px';
 
 
     document
@@ -3268,7 +3817,7 @@ function updateReportChart(){
 
 
 /* =====================================================
-   SEGURANÇA HTML
+   SEGURANÇA
 ===================================================== */
 
 function escapeHTML(text){
@@ -3304,7 +3853,7 @@ function escapeHTML(text){
 
 
 /* =====================================================
-   TRANSAÇÃO
+   TRANSAÇÃO HTML
 ===================================================== */
 
 function transactionHTML(item){
@@ -3320,8 +3869,11 @@ function transactionHTML(item){
             <div class="transaction-left">
 
                 <div class="transaction-icon">
+
                     ${income ? '💰' : '💸'}
+
                 </div>
+
 
                 <div>
 
@@ -3333,18 +3885,23 @@ function transactionHTML(item){
 
                     </div>
 
+
                     <div class="transaction-date">
 
                         ${item.data}
 
                         ${
                             item.categoria
+
                             ?
+
                             ' • ' +
                             escapeHTML(
                                 item.categoria
                             )
+
                             :
+
                             ''
                         }
 
@@ -3360,24 +3917,37 @@ function transactionHTML(item){
                 <div
                     class="
                         transaction-value
+
                         ${
                             income
+
                             ?
+
                             'value-income'
+
                             :
+
                             'value-expense'
                         }
                     ">
 
                     ${income ? '+' : '-'}
 
-                    ${money(item.valor)}
+                    ${money(
+                        item.valor
+                    )}
 
                 </div>
 
 
                 <button
-                    onclick="removeTransaction(${item.id})"
+
+                    onclick="
+                        removeTransaction(
+                            ${item.id}
+                        )
+                    "
+
                     style="
                         border:0;
                         background:none;
@@ -3435,16 +4005,19 @@ function renderLatest(){
 
 
     box.innerHTML =
+
         transactions
             .slice(0,5)
-            .map(transactionHTML)
+            .map(
+                transactionHTML
+            )
             .join('');
 
 }
 
 
 /* =====================================================
-   TODOS
+   TODOS OS LANÇAMENTOS
 ===================================================== */
 
 function renderTransactions(){
@@ -3463,11 +4036,15 @@ function renderTransactions(){
 
     const search =
         input
+
         ?
+
         input.value
             .toLowerCase()
             .trim()
+
         :
+
         '';
 
 
@@ -3477,15 +4054,20 @@ function renderTransactions(){
 
             item.descricao
                 .toLowerCase()
-                .includes(search)
+                .includes(
+                    search
+                )
 
             ||
 
             (
-                item.categoria || ''
+                item.categoria ||
+                ''
             )
                 .toLowerCase()
-                .includes(search)
+                .includes(
+                    search
+                )
 
         );
 
@@ -3514,8 +4096,11 @@ function renderTransactions(){
 
 
     box.innerHTML =
+
         filtered
-            .map(transactionHTML)
+            .map(
+                transactionHTML
+            )
             .join('');
 
 }
@@ -3551,20 +4136,27 @@ function renderCategories(){
 
 
             categories[category] =
+
                 (
-                    categories[category]
-                    || 0
+                    categories[category] ||
+                    0
                 )
+
                 +
-                Number(item.valor);
+
+                Number(
+                    item.valor
+                );
 
         });
 
 
     const total =
+
         Object.values(
             categories
         )
+
         .reduce(
             (a,b)=>a+b,
             0
@@ -3617,7 +4209,10 @@ function renderCategories(){
 
 
     box.innerHTML =
-        keys.map(category=>`
+
+        keys
+
+        .map(category=>`
 
             <div class="transaction">
 
@@ -3658,6 +4253,7 @@ function renderCategories(){
             </div>
 
         `)
+
         .join('');
 
 }
@@ -3674,11 +4270,14 @@ function removeTransaction(id){
             'Deseja excluir este lançamento?'
         )
     ){
+
         return;
+
     }
 
 
     transactions =
+
         transactions.filter(
             item =>
             item.id !== id
@@ -3700,7 +4299,7 @@ function premiumMessage(){
 
     alert(
 
-        '⭐ ControleS Premium\\n\\n' +
+        '⭐ ControleS Premium\n\n' +
 
         'Em breve você poderá assinar ' +
 
@@ -3749,5 +4348,7 @@ document.addEventListener(
 
 </script>
 
+
 </body>
+
 </html>
