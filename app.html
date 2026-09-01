@@ -3,38 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07111f">
 
-<title>ControleS - APP</title>
+<title>ControleS • Controle Financeiro</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+
+:root{
+    --bg:#07111f;
+    --surface:#0d1b2e;
+    --surface2:#12243a;
+    --surface3:#172c45;
+    --green:#20d58a;
+    --green2:#12b875;
+    --white:#ffffff;
+    --text:#eef5ff;
+    --muted:#8da0b8;
+    --red:#ff5d6c;
+    --yellow:#ffc857;
+    --blue:#4d8dff;
+    --border:rgba(255,255,255,.07);
+    --shadow:0 20px 50px rgba(0,0,0,.22);
+}
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial,Helvetica,sans-serif;
 }
 
-:root{
-    --bg:#08111f;
-    --card:#101d30;
-    --card2:#14243a;
-    --primary:#19c37d;
-    --text:#ffffff;
-    --muted:#8fa0b7;
-    --danger:#ff5c6c;
-    --border:rgba(255,255,255,.08);
+html{
+    scroll-behavior:smooth;
 }
 
 body{
+    font-family:Inter,Arial,Helvetica,sans-serif;
     background:
-        radial-gradient(circle at top right,#123c45 0%,transparent 35%),
-        radial-gradient(circle at bottom left,#102b4d 0%,transparent 35%),
+        radial-gradient(circle at 10% 0%,rgba(32,213,138,.10),transparent 25%),
+        radial-gradient(circle at 100% 10%,rgba(77,141,255,.10),transparent 28%),
         var(--bg);
     color:var(--text);
     min-height:100vh;
 }
 
-button,input,select{
+button,
+input,
+select{
     font:inherit;
 }
 
@@ -42,20 +58,27 @@ button{
     cursor:pointer;
 }
 
-/* HEADER */
+button:active{
+    transform:scale(.98);
+}
 
-header{
-    height:72px;
-    padding:0 22px;
+
+/* =========================
+   HEADER
+========================= */
+
+.topbar{
+    height:76px;
+    position:sticky;
+    top:0;
+    z-index:100;
     display:flex;
     align-items:center;
     justify-content:space-between;
+    padding:0 28px;
+    background:rgba(7,17,31,.88);
+    backdrop-filter:blur(18px);
     border-bottom:1px solid var(--border);
-    background:rgba(8,17,31,.92);
-    backdrop-filter:blur(12px);
-    position:sticky;
-    top:0;
-    z-index:20;
 }
 
 .brand{
@@ -68,209 +91,398 @@ header{
     width:48px;
     height:48px;
     object-fit:contain;
-    border-radius:12px;
+    border-radius:13px;
 }
 
-.brand strong{
-    font-size:22px;
+.brand-text strong{
+    display:block;
+    font-size:21px;
+    letter-spacing:.2px;
 }
 
-.user{
+.brand-text span{
+    display:block;
+    font-size:11px;
     color:var(--muted);
-    font-size:14px;
+    margin-top:2px;
 }
 
-/* LAYOUT */
+.profile{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.profile-avatar{
+    width:39px;
+    height:39px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:var(--surface2);
+    border:1px solid var(--border);
+}
+
+.profile-info{
+    text-align:right;
+}
+
+.profile-info strong{
+    display:block;
+    font-size:13px;
+}
+
+.profile-info span{
+    color:var(--muted);
+    font-size:11px;
+}
+
+
+/* =========================
+   APP
+========================= */
 
 .app{
     display:flex;
-    min-height:calc(100vh - 72px);
+    min-height:calc(100vh - 76px);
 }
 
 .sidebar{
-    width:235px;
-    padding:22px 14px;
+    width:245px;
+    flex-shrink:0;
+    padding:25px 15px;
     border-right:1px solid var(--border);
-    background:rgba(8,17,31,.72);
+    background:rgba(7,17,31,.55);
+}
+
+.nav-title{
+    color:#60738c;
+    font-size:10px;
+    font-weight:bold;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    padding:0 13px 10px;
 }
 
 .nav{
     display:flex;
     flex-direction:column;
-    gap:8px;
+    gap:6px;
 }
 
 .nav button{
     width:100%;
-    padding:13px 14px;
     border:0;
-    border-radius:12px;
-    color:var(--muted);
     background:transparent;
+    color:var(--muted);
+    padding:13px 14px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    gap:12px;
     text-align:left;
+    transition:.2s;
 }
 
-.nav button:hover,
+.nav button:hover{
+    background:rgba(255,255,255,.04);
+    color:white;
+}
+
 .nav button.active{
-    color:#fff;
-    background:var(--card2);
+    background:linear-gradient(90deg,rgba(32,213,138,.17),rgba(32,213,138,.04));
+    color:var(--green);
+}
+
+.nav-icon{
+    width:22px;
+    text-align:center;
+    font-size:17px;
 }
 
 .content{
-    flex:1;
-    padding:28px;
-    max-width:1400px;
+    width:100%;
+    max-width:1450px;
+    padding:32px;
 }
 
-/* PAGES */
+
+/* =========================
+   PAGES
+========================= */
 
 .page{
     display:none;
+    animation:fade .25s ease;
 }
 
 .page.active{
     display:block;
 }
 
-.title{
-    margin-bottom:22px;
+@keyframes fade{
+    from{
+        opacity:0;
+        transform:translateY(5px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
-.title h1{
-    font-size:28px;
-    margin-bottom:6px;
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:20px;
+    margin-bottom:25px;
 }
 
-.title p{
+.page-header h1{
+    font-size:30px;
+    letter-spacing:-.5px;
+}
+
+.page-header p{
     color:var(--muted);
+    margin-top:7px;
+    font-size:14px;
 }
 
-/* CARDS */
+.date-badge{
+    padding:10px 13px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    border-radius:10px;
+    color:var(--muted);
+    font-size:12px;
+}
 
-.cards{
+
+/* =========================
+   BALANCE
+========================= */
+
+.balance{
+    position:relative;
+    overflow:hidden;
+    background:
+        linear-gradient(135deg,rgba(32,213,138,.17),rgba(13,27,46,.94) 58%),
+        var(--surface);
+    border:1px solid rgba(32,213,138,.16);
+    border-radius:23px;
+    padding:27px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+}
+
+.balance:after{
+    content:"";
+    position:absolute;
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    background:rgba(32,213,138,.08);
+    right:-90px;
+    top:-100px;
+}
+
+.balance-label{
+    color:#a9bbce;
+    font-size:13px;
+}
+
+.balance-value{
+    font-size:37px;
+    font-weight:800;
+    margin:8px 0 20px;
+    letter-spacing:-1px;
+}
+
+.balance-footer{
+    display:flex;
+    gap:25px;
+    position:relative;
+    z-index:2;
+}
+
+.balance-mini{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+}
+
+.balance-mini small{
+    color:var(--muted);
+    display:block;
+    font-size:11px;
+}
+
+.balance-mini strong{
+    display:block;
+    margin-top:2px;
+    font-size:13px;
+}
+
+
+/* =========================
+   STAT CARDS
+========================= */
+
+.stats{
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:16px;
-    margin-bottom:22px;
+    gap:15px;
+    margin-bottom:18px;
 }
 
-.card{
-    background:linear-gradient(145deg,var(--card),var(--card2));
+.stat{
+    background:var(--surface);
     border:1px solid var(--border);
     border-radius:18px;
-    padding:22px;
-    box-shadow:0 12px 30px rgba(0,0,0,.18);
+    padding:21px;
+    box-shadow:0 12px 35px rgba(0,0,0,.12);
 }
 
-.card small{
-    color:var(--muted);
+.stat-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
 }
 
-.card h2{
-    margin-top:10px;
-    font-size:27px;
-}
-
-.green{
-    color:var(--primary);
-}
-
-.red{
-    color:var(--danger);
-}
-
-/* MENU */
-
-.quick{
+.stat-icon{
+    width:38px;
+    height:38px;
     display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:14px;
-    margin-bottom:22px;
+    place-items:center;
+    border-radius:11px;
+    background:var(--surface2);
+    font-size:18px;
 }
 
-.quick button{
-    background:var(--card);
-    color:#fff;
+.stat small{
+    color:var(--muted);
+    font-size:12px;
+}
+
+.stat h3{
+    font-size:23px;
+    margin-top:6px;
+}
+
+.stat-change{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:7px;
+}
+
+
+/* =========================
+   DASH GRID
+========================= */
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:1.35fr .9fr;
+    gap:18px;
+}
+
+.panel{
+    background:var(--surface);
     border:1px solid var(--border);
-    border-radius:16px;
-    padding:20px;
+    border-radius:19px;
+    padding:21px;
+    box-shadow:0 12px 35px rgba(0,0,0,.12);
+}
+
+.panel-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.panel-header h2{
+    font-size:17px;
+}
+
+.panel-header span{
+    color:var(--muted);
+    font-size:11px;
+}
+
+.chart-box{
+    height:275px;
+}
+
+
+/* =========================
+   QUICK ACTIONS
+========================= */
+
+.quick-actions{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin:18px 0;
+}
+
+.quick-btn{
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:white;
+    border-radius:15px;
+    padding:16px;
     text-align:left;
     transition:.2s;
 }
 
-.quick button:hover{
+.quick-btn:hover{
     transform:translateY(-2px);
-    border-color:rgba(25,195,125,.45);
+    border-color:rgba(32,213,138,.35);
 }
 
-.quick .icon{
-    font-size:27px;
-    display:block;
+.quick-btn-icon{
+    font-size:22px;
     margin-bottom:10px;
 }
 
-.quick span:last-child{
-    color:var(--muted);
+.quick-btn strong{
+    display:block;
     font-size:13px;
 }
 
-/* BOX */
-
-.box{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:22px;
-    margin-bottom:20px;
+.quick-btn span{
+    display:block;
+    color:var(--muted);
+    font-size:10px;
+    margin-top:4px;
 }
 
-.box h2{
-    font-size:19px;
-    margin-bottom:18px;
+
+/* =========================
+   TRANSACTIONS
+========================= */
+
+.transaction-list{
+    display:flex;
+    flex-direction:column;
 }
-
-/* FORM */
-
-.form{
-    display:grid;
-    gap:12px;
-}
-
-.input{
-    width:100%;
-    padding:14px;
-    color:white;
-    background:#0a1627;
-    border:1px solid var(--border);
-    border-radius:10px;
-    outline:none;
-}
-
-.input:focus{
-    border-color:var(--primary);
-}
-
-.btn{
-    border:0;
-    border-radius:10px;
-    padding:14px;
-    background:var(--primary);
-    color:#04120c;
-    font-weight:bold;
-}
-
-.btn-danger{
-    background:var(--danger);
-    color:white;
-}
-
-/* TRANSACTIONS */
 
 .transaction{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:15px 0;
+    gap:15px;
+    padding:14px 0;
     border-bottom:1px solid var(--border);
 }
 
@@ -278,616 +490,1235 @@ header{
     border-bottom:0;
 }
 
-.transaction small{
-    display:block;
+.transaction-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+}
+
+.transaction-icon{
+    width:42px;
+    height:42px;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    border-radius:12px;
+    background:var(--surface2);
+}
+
+.transaction-name{
+    font-size:13px;
+    font-weight:bold;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.transaction-date{
     color:var(--muted);
+    font-size:10px;
     margin-top:4px;
 }
 
-/* SEARCH */
+.transaction-value{
+    font-size:13px;
+    font-weight:bold;
+    white-space:nowrap;
+}
 
-.search{
+.income{
+    color:var(--green);
+}
+
+.expense{
+    color:var(--red);
+}
+
+
+/* =========================
+   FORMS
+========================= */
+
+.form-panel{
+    max-width:650px;
+}
+
+.form{
+    display:grid;
+    gap:14px;
+}
+
+.field label{
+    display:block;
+    color:var(--muted);
+    font-size:12px;
+    margin-bottom:7px;
+}
+
+.input{
+    width:100%;
+    background:#091729;
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:14px;
+    color:white;
+    outline:none;
+}
+
+.input:focus{
+    border-color:rgba(32,213,138,.55);
+    box-shadow:0 0 0 3px rgba(32,213,138,.07);
+}
+
+.btn-primary{
+    border:0;
+    background:var(--green);
+    color:#03150d;
+    padding:14px 18px;
+    border-radius:11px;
+    font-weight:800;
+}
+
+.btn-primary:hover{
+    background:#2be49a;
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+.toolbar{
     display:flex;
     gap:10px;
-    margin-bottom:18px;
+    margin-bottom:17px;
 }
 
-/* PREMIUM */
+.search{
+    flex:1;
+}
 
-.premium{
+
+/* =========================
+   PREMIUM
+========================= */
+
+.premium-card{
     background:
-        linear-gradient(135deg,rgba(25,195,125,.15),rgba(20,36,58,.9)),
-        var(--card);
-    border:1px solid rgba(25,195,125,.25);
+        radial-gradient(circle at 100% 0%,rgba(255,200,87,.18),transparent 35%),
+        linear-gradient(135deg,#172c45,#0d1b2e);
+    border:1px solid rgba(255,200,87,.18);
+    border-radius:23px;
+    padding:30px;
 }
 
-.premium h2{
-    color:var(--primary);
+.premium-card h2{
+    color:var(--yellow);
+    font-size:26px;
 }
 
-.premium ul{
-    margin:18px 0 20px 20px;
+.premium-card p{
     color:var(--muted);
-    line-height:2;
+    margin-top:8px;
 }
 
-/* MOBILE */
+.features{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin:25px 0;
+}
 
-.mobile-menu{
+.feature{
+    background:rgba(255,255,255,.035);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:13px;
+    color:#d7e1ed;
+    font-size:13px;
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty{
+    text-align:center;
+    padding:45px 15px;
+    color:var(--muted);
+}
+
+.empty-icon{
+    font-size:35px;
+    margin-bottom:10px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+.mobile-nav{
     display:none;
 }
 
-@media(max-width:800px){
+@media(max-width:950px){
+
+    .sidebar{
+        width:210px;
+    }
+
+    .content{
+        padding:25px 20px;
+    }
+
+    .dashboard-grid{
+        grid-template-columns:1fr;
+    }
+
+    .quick-actions{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:700px){
+
+    .topbar{
+        height:68px;
+        padding:0 15px;
+    }
+
+    .brand img{
+        width:43px;
+        height:43px;
+    }
+
+    .brand-text strong{
+        font-size:18px;
+    }
+
+    .brand-text span{
+        display:none;
+    }
+
+    .profile-info{
+        display:none;
+    }
+
+    .app{
+        min-height:calc(100vh - 68px);
+    }
 
     .sidebar{
         display:none;
     }
 
-    .mobile-menu{
-        display:flex;
-        position:fixed;
-        bottom:0;
-        left:0;
-        right:0;
-        height:65px;
-        background:#0b1728;
-        border-top:1px solid var(--border);
-        z-index:50;
-        justify-content:space-around;
-        align-items:center;
-    }
-
-    .mobile-menu button{
-        background:none;
-        border:0;
-        color:var(--muted);
-        font-size:12px;
-    }
-
     .content{
-        padding:20px 15px 85px;
+        padding:20px 14px 90px;
     }
 
-    .cards{
+    .page-header{
+        align-items:flex-start;
+        margin-bottom:19px;
+    }
+
+    .page-header h1{
+        font-size:25px;
+    }
+
+    .date-badge{
+        display:none;
+    }
+
+    .balance{
+        padding:22px;
+        border-radius:19px;
+    }
+
+    .balance-value{
+        font-size:31px;
+    }
+
+    .stats{
         grid-template-columns:1fr;
     }
 
-    .quick{
+    .stat{
+        padding:17px;
+    }
+
+    .quick-actions{
         grid-template-columns:1fr 1fr;
     }
 
-    .quick button{
-        padding:16px;
+    .quick-btn{
+        padding:14px;
     }
 
-}
-
-@media(max-width:480px){
-
-    header{
-        padding:0 14px;
+    .dashboard-grid{
+        gap:14px;
     }
 
-    .brand strong{
+    .panel{
+        padding:17px;
+    }
+
+    .chart-box{
+        height:230px;
+    }
+
+    .mobile-nav{
+        position:fixed;
+        display:flex;
+        align-items:center;
+        justify-content:space-around;
+        bottom:0;
+        left:0;
+        right:0;
+        height:70px;
+        background:rgba(8,18,32,.96);
+        backdrop-filter:blur(18px);
+        border-top:1px solid var(--border);
+        z-index:200;
+    }
+
+    .mobile-nav button{
+        border:0;
+        background:none;
+        color:var(--muted);
+        font-size:10px;
+        min-width:55px;
+    }
+
+    .mobile-nav button.active{
+        color:var(--green);
+    }
+
+    .mobile-nav-icon{
+        display:block;
         font-size:19px;
+        margin-bottom:4px;
     }
 
-    .brand img{
-        width:42px;
-        height:42px;
-    }
-
-    .quick{
+    .features{
         grid-template-columns:1fr;
     }
 
-    .title h1{
-        font-size:24px;
-    }
 }
+
+@media(max-width:430px){
+
+    .quick-actions{
+        gap:9px;
+    }
+
+    .quick-btn{
+        padding:12px;
+    }
+
+    .quick-btn-icon{
+        font-size:19px;
+    }
+
+    .quick-btn strong{
+        font-size:12px;
+    }
+
+    .balance-footer{
+        gap:15px;
+    }
+
+}
+
 </style>
 </head>
 
+
 <body>
 
-<header>
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="topbar">
 
     <div class="brand">
 
         <img src="logo.png" alt="ControleS">
 
-        <strong>ControleS</strong>
+        <div class="brand-text">
+
+            <strong>ControleS</strong>
+
+            <span>Seu controle financeiro</span>
+
+        </div>
 
     </div>
 
-    <div class="user">
-        👤 Minha conta
+
+    <div class="profile">
+
+        <div class="profile-info">
+
+            <strong>Minha conta</strong>
+
+            <span>Usuário</span>
+
+        </div>
+
+        <div class="profile-avatar">
+            👤
+        </div>
+
     </div>
 
 </header>
 
+
+
 <div class="app">
 
-    <!-- MENU DESKTOP -->
 
-    <aside class="sidebar">
+<!-- =========================
+     SIDEBAR
+========================= -->
 
-        <nav class="nav">
+<aside class="sidebar">
 
-            <button class="active" onclick="showPage('dashboard',this)">
-                📊 Dashboard
-            </button>
+    <div class="nav-title">
+        Menu
+    </div>
 
-            <button onclick="showPage('receitas',this)">
-                💰 Receitas
-            </button>
+    <nav class="nav">
 
-            <button onclick="showPage('despesas',this)">
-                💸 Despesas
-            </button>
+        <button class="active"
+                onclick="showPage('dashboard',this)">
 
-            <button onclick="showPage('lancamentos',this)">
-                🧾 Lançamentos
-            </button>
+            <span class="nav-icon">📊</span>
+            Dashboard
 
-            <button onclick="showPage('relatorios',this)">
-                📈 Relatórios
-            </button>
-
-            <button onclick="showPage('categorias',this)">
-                🍩 Categorias
-            </button>
-
-            <button onclick="showPage('premium',this)">
-                ⭐ Premium
-            </button>
-
-        </nav>
-
-    </aside>
+        </button>
 
 
-    <main class="content">
+        <button onclick="showPage('receitas',this)">
 
-        <!-- DASHBOARD -->
+            <span class="nav-icon">💰</span>
+            Receitas
 
-        <section id="dashboard" class="page active">
-
-            <div class="title">
-
-                <h1>Dashboard</h1>
-
-                <p>
-                    Controle suas finanças de forma simples.
-                </p>
-
-            </div>
+        </button>
 
 
-            <div class="cards">
+        <button onclick="showPage('despesas',this)">
 
-                <div class="card">
+            <span class="nav-icon">💸</span>
+            Despesas
 
-                    <small>Saldo atual</small>
+        </button>
 
-                    <h2 id="saldo">
-                        R$ 0,00
-                    </h2>
 
+        <button onclick="showPage('lancamentos',this)">
+
+            <span class="nav-icon">🧾</span>
+            Lançamentos
+
+        </button>
+
+
+        <button onclick="showPage('relatorios',this)">
+
+            <span class="nav-icon">📈</span>
+            Relatórios
+
+        </button>
+
+
+        <button onclick="showPage('categorias',this)">
+
+            <span class="nav-icon">🍩</span>
+            Categorias
+
+        </button>
+
+
+        <button onclick="showPage('premium',this)">
+
+            <span class="nav-icon">⭐</span>
+            Premium
+
+        </button>
+
+    </nav>
+
+</aside>
+
+
+
+<!-- =========================
+     CONTENT
+========================= -->
+
+<main class="content">
+
+
+<!-- DASHBOARD -->
+
+<section id="dashboard" class="page active">
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>Dashboard</h1>
+
+            <p>
+                Aqui está o resumo das suas finanças.
+            </p>
+
+        </div>
+
+        <div class="date-badge" id="today">
+            Hoje
+        </div>
+
+    </div>
+
+
+    <div class="balance">
+
+        <div class="balance-label">
+            Saldo disponível
+        </div>
+
+        <div class="balance-value" id="saldo">
+            R$ 0,00
+        </div>
+
+
+        <div class="balance-footer">
+
+            <div class="balance-mini">
+
+                <div class="dot"
+                     style="background:var(--green)">
                 </div>
 
-
-                <div class="card">
+                <div>
 
                     <small>Receitas</small>
 
-                    <h2 class="green" id="totalReceitas">
+                    <strong id="balanceReceitas">
                         R$ 0,00
-                    </h2>
+                    </strong>
 
                 </div>
 
+            </div>
 
-                <div class="card">
+
+            <div class="balance-mini">
+
+                <div class="dot"
+                     style="background:var(--red)">
+                </div>
+
+                <div>
 
                     <small>Despesas</small>
 
-                    <h2 class="red" id="totalDespesas">
+                    <strong id="balanceDespesas">
                         R$ 0,00
-                    </h2>
+                    </strong>
 
                 </div>
 
             </div>
 
+        </div>
 
-            <div class="quick">
+    </div>
 
-                <button onclick="showPage('receitas')">
-                    <span class="icon">💰</span>
-                    Adicionar receita
-                    <br>
-                    <span>Registrar dinheiro recebido</span>
-                </button>
 
-                <button onclick="showPage('despesas')">
-                    <span class="icon">💸</span>
-                    Adicionar despesa
-                    <br>
-                    <span>Registrar um gasto</span>
-                </button>
+    <div class="stats">
 
-                <button onclick="showPage('lancamentos')">
-                    <span class="icon">🧾</span>
-                    Lançamentos
-                    <br>
-                    <span>Ver movimentações</span>
-                </button>
+        <div class="stat">
 
-                <button onclick="showPage('relatorios')">
-                    <span class="icon">📈</span>
-                    Relatórios
-                    <br>
-                    <span>Acompanhar resultados</span>
-                </button>
+            <div class="stat-top">
 
-                <button onclick="showPage('categorias')">
-                    <span class="icon">🍩</span>
-                    Categorias
-                    <br>
-                    <span>Ver onde gasta</span>
-                </button>
+                <small>Receitas</small>
 
-                <button onclick="showPage('premium')">
-                    <span class="icon">⭐</span>
-                    Premium
-                    <br>
-                    <span>Recursos exclusivos</span>
-                </button>
+                <div class="stat-icon">
+                    💰
+                </div>
 
             </div>
 
+            <h3 class="income"
+                id="totalReceitas">
+                R$ 0,00
+            </h3>
 
-            <div class="box">
+            <div class="stat-change">
+                Total recebido
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-top">
+
+                <small>Despesas</small>
+
+                <div class="stat-icon">
+                    💸
+                </div>
+
+            </div>
+
+            <h3 class="expense"
+                id="totalDespesas">
+                R$ 0,00
+            </h3>
+
+            <div class="stat-change">
+                Total gasto
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-top">
+
+                <small>Lançamentos</small>
+
+                <div class="stat-icon">
+                    🧾
+                </div>
+
+            </div>
+
+            <h3 id="totalLancamentos">
+                0
+            </h3>
+
+            <div class="stat-change">
+                Movimentações registradas
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="quick-actions">
+
+        <button class="quick-btn"
+                onclick="showPage('receitas')">
+
+            <div class="quick-btn-icon">
+                💰
+            </div>
+
+            <strong>Nova receita</strong>
+
+            <span>
+                Adicionar entrada
+            </span>
+
+        </button>
+
+
+        <button class="quick-btn"
+                onclick="showPage('despesas')">
+
+            <div class="quick-btn-icon">
+                💸
+            </div>
+
+            <strong>Nova despesa</strong>
+
+            <span>
+                Registrar gasto
+            </span>
+
+        </button>
+
+
+        <button class="quick-btn"
+                onclick="showPage('lancamentos')">
+
+            <div class="quick-btn-icon">
+                🧾
+            </div>
+
+            <strong>Lançamentos</strong>
+
+            <span>
+                Ver movimentações
+            </span>
+
+        </button>
+
+
+        <button class="quick-btn"
+                onclick="showPage('relatorios')">
+
+            <div class="quick-btn-icon">
+                📈
+            </div>
+
+            <strong>Relatórios</strong>
+
+            <span>
+                Analisar finanças
+            </span>
+
+        </button>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h2>Visão financeira</h2>
+
+                <span>
+                    Receitas x despesas
+                </span>
+
+            </div>
+
+            <div class="chart-box">
+
+                <canvas id="financeChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-header">
 
                 <h2>Últimos lançamentos</h2>
 
-                <div id="ultimos">
-
-                    <p style="color:var(--muted)">
-                        Nenhum lançamento cadastrado.
-                    </p>
-
-                </div>
+                <span>
+                    Recentes
+                </span>
 
             </div>
 
-        </section>
-
-
-        <!-- RECEITAS -->
-
-        <section id="receitas" class="page">
-
-            <div class="title">
-
-                <h1>💰 Receitas</h1>
-
-                <p>
-                    Cadastre seus recebimentos.
-                </p>
+            <div id="latestList"
+                 class="transaction-list">
 
             </div>
 
-            <div class="box">
-
-                <form class="form" onsubmit="addTransaction(event,'receita')">
-
-                    <input
-                        class="input"
-                        id="receitaDescricao"
-                        type="text"
-                        placeholder="Descrição"
-                        required
-                    >
-
-                    <input
-                        class="input"
-                        id="receitaValor"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="Valor"
-                        required
-                    >
-
-                    <button class="btn" type="submit">
-                        Adicionar receita
-                    </button>
-
-                </form>
-
-            </div>
-
-        </section>
+        </div>
 
 
-        <!-- DESPESAS -->
+    </div>
 
-        <section id="despesas" class="page">
+</section>
 
-            <div class="title">
 
-                <h1>💸 Despesas</h1>
 
-                <p>
-                    Registre seus gastos.
-                </p>
+<!-- RECEITAS -->
 
-            </div>
+<section id="receitas" class="page">
 
-            <div class="box">
+    <div class="page-header">
 
-                <form class="form" onsubmit="addTransaction(event,'despesa')">
+        <div>
 
-                    <input
-                        class="input"
-                        id="despesaDescricao"
-                        type="text"
-                        placeholder="Descrição"
-                        required
-                    >
+            <h1>💰 Receitas</h1>
 
-                    <input
-                        class="input"
-                        id="despesaValor"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="Valor"
-                        required
-                    >
+            <p>
+                Registre todo dinheiro que entra.
+            </p>
 
-                    <select
-                        class="input"
-                        id="despesaCategoria"
-                    >
+        </div>
 
-                        <option>Alimentação</option>
-                        <option>Moradia</option>
-                        <option>Transporte</option>
-                        <option>Lazer</option>
-                        <option>Saúde</option>
-                        <option>Educação</option>
-                        <option>Outros</option>
+    </div>
 
-                    </select>
 
-                    <button class="btn" type="submit">
-                        Adicionar despesa
-                    </button>
+    <div class="panel form-panel">
 
-                </form>
+        <form class="form"
+              onsubmit="addTransaction(event,'receita')">
+
+            <div class="field">
+
+                <label>
+                    Descrição
+                </label>
+
+                <input
+                    class="input"
+                    id="receitaDescricao"
+                    type="text"
+                    placeholder="Ex.: Salário"
+                    required>
 
             </div>
 
-        </section>
 
+            <div class="field">
 
-        <!-- LANÇAMENTOS -->
+                <label>
+                    Valor
+                </label>
 
-        <section id="lancamentos" class="page">
-
-            <div class="title">
-
-                <h1>🧾 Lançamentos</h1>
-
-                <p>
-                    Todas as suas movimentações.
-                </p>
-
-            </div>
-
-            <div class="box">
-
-                <div class="search">
-
-                    <input
-                        class="input"
-                        id="pesquisa"
-                        type="text"
-                        placeholder="🔎 Pesquisar lançamento..."
-                        oninput="renderTransactions()"
-                    >
-
-                </div>
-
-                <div id="listaLancamentos"></div>
+                <input
+                    class="input"
+                    id="receitaValor"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    placeholder="R$ 0,00"
+                    required>
 
             </div>
 
-        </section>
+
+            <button class="btn-primary"
+                    type="submit">
+
+                + Adicionar receita
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
 
 
-        <!-- RELATÓRIOS -->
 
-        <section id="relatorios" class="page">
+<!-- DESPESAS -->
 
-            <div class="title">
+<section id="despesas" class="page">
 
-                <h1>📈 Relatórios</h1>
+    <div class="page-header">
 
-                <p>
-                    Resumo financeiro.
-                </p>
+        <div>
 
-            </div>
+            <h1>💸 Despesas</h1>
 
-            <div class="cards">
+            <p>
+                Registre seus gastos e organize por categoria.
+            </p>
 
-                <div class="card">
-                    <small>Total recebido</small>
-                    <h2 class="green" id="relReceitas">R$ 0,00</h2>
-                </div>
+        </div>
 
-                <div class="card">
-                    <small>Total gasto</small>
-                    <h2 class="red" id="relDespesas">R$ 0,00</h2>
-                </div>
-
-                <div class="card">
-                    <small>Resultado</small>
-                    <h2 id="relSaldo">R$ 0,00</h2>
-                </div>
-
-            </div>
-
-        </section>
+    </div>
 
 
-        <!-- CATEGORIAS -->
+    <div class="panel form-panel">
 
-        <section id="categorias" class="page">
+        <form class="form"
+              onsubmit="addTransaction(event,'despesa')">
 
-            <div class="title">
+            <div class="field">
 
-                <h1>🍩 Gastos por categoria</h1>
+                <label>
+                    Descrição
+                </label>
 
-                <p>
-                    Veja suas principais categorias de despesas.
-                </p>
-
-            </div>
-
-            <div class="box">
-
-                <div id="listaCategorias">
-
-                    <p style="color:var(--muted)">
-                        Nenhuma despesa cadastrada.
-                    </p>
-
-                </div>
+                <input
+                    class="input"
+                    id="despesaDescricao"
+                    type="text"
+                    placeholder="Ex.: Mercado"
+                    required>
 
             </div>
 
-        </section>
 
+            <div class="field">
 
-        <!-- PREMIUM -->
+                <label>
+                    Valor
+                </label>
 
-        <section id="premium" class="page">
-
-            <div class="title">
-
-                <h1>⭐ Premium</h1>
-
-                <p>
-                    Recursos exclusivos do ControleS.
-                </p>
-
-            </div>
-
-            <div class="box premium">
-
-                <h2>ControleS Premium</h2>
-
-                <ul>
-
-                    <li>Relatórios avançados</li>
-                    <li>Controle por categorias</li>
-                    <li>Mais recursos financeiros</li>
-                    <li>Experiência sem limitações</li>
-
-                </ul>
-
-                <button class="btn"
-                    onclick="alert('Área Premium em desenvolvimento.')">
-                    Conhecer Premium
-                </button>
+                <input
+                    class="input"
+                    id="despesaValor"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    placeholder="R$ 0,00"
+                    required>
 
             </div>
 
-        </section>
 
-    </main>
+            <div class="field">
+
+                <label>
+                    Categoria
+                </label>
+
+                <select
+                    class="input"
+                    id="despesaCategoria">
+
+                    <option>Alimentação</option>
+                    <option>Moradia</option>
+                    <option>Transporte</option>
+                    <option>Saúde</option>
+                    <option>Educação</option>
+                    <option>Lazer</option>
+                    <option>Compras</option>
+                    <option>Contas</option>
+                    <option>Outros</option>
+
+                </select>
+
+            </div>
+
+
+            <button class="btn-primary"
+                    type="submit">
+
+                + Adicionar despesa
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+
+<!-- LANÇAMENTOS -->
+
+<section id="lancamentos" class="page">
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>🧾 Lançamentos</h1>
+
+            <p>
+                Consulte e pesquise todas as suas movimentações.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div class="toolbar">
+
+            <div class="search">
+
+                <input
+                    class="input"
+                    id="pesquisa"
+                    type="text"
+                    placeholder="🔎 Pesquisar..."
+                    oninput="renderTransactions()">
+
+            </div>
+
+        </div>
+
+
+        <div id="allTransactions"
+             class="transaction-list">
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- RELATÓRIOS -->
+
+<section id="relatorios" class="page">
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>📈 Relatórios</h1>
+
+            <p>
+                Acompanhe a evolução das suas finanças.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <small>Receitas</small>
+
+            <h3 class="income"
+                id="relReceitas">
+                R$ 0,00
+            </h3>
+
+        </div>
+
+
+        <div class="stat">
+
+            <small>Despesas</small>
+
+            <h3 class="expense"
+                id="relDespesas">
+                R$ 0,00
+            </h3>
+
+        </div>
+
+
+        <div class="stat">
+
+            <small>Saldo</small>
+
+            <h3 id="relSaldo">
+                R$ 0,00
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <h2>Resumo financeiro</h2>
+
+        </div>
+
+        <div class="chart-box">
+
+            <canvas id="reportChart"></canvas>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- CATEGORIAS -->
+
+<section id="categorias" class="page">
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>🍩 Gastos por categoria</h1>
+
+            <p>
+                Descubra para onde seu dinheiro está indo.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-grid">
+
+        <div class="panel">
+
+            <div class="chart-box">
+
+                <canvas id="categoryChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h2>Categorias</h2>
+
+            </div>
+
+            <div id="categoryList">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- PREMIUM -->
+
+<section id="premium" class="page">
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>⭐ Premium</h1>
+
+            <p>
+                Aproveite todo o potencial do ControleS.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="premium-card">
+
+        <h2>ControleS Premium</h2>
+
+        <p>
+            Recursos avançados para quem quer ter ainda mais controle.
+        </p>
+
+
+        <div class="features">
+
+            <div class="feature">
+                ✓ Relatórios avançados
+            </div>
+
+            <div class="feature">
+                ✓ Gráficos completos
+            </div>
+
+            <div class="feature">
+                ✓ Controle por categorias
+            </div>
+
+            <div class="feature">
+                ✓ Mais recursos exclusivos
+            </div>
+
+        </div>
+
+
+        <button class="btn-primary"
+                onclick="alert('O sistema Premium será ativado em uma próxima versão.')">
+
+            Conhecer Premium
+
+        </button>
+
+    </div>
+
+</section>
+
+
+</main>
 
 </div>
 
 
-<!-- MENU MOBILE -->
 
-<nav class="mobile-menu">
+<!-- MOBILE NAV -->
 
-    <button onclick="showPage('dashboard')">
-        📊<br>Início
+<nav class="mobile-nav">
+
+    <button class="active"
+            onclick="showPage('dashboard',this)">
+
+        <span class="mobile-nav-icon">📊</span>
+        Início
+
     </button>
 
-    <button onclick="showPage('receitas')">
-        💰<br>Receitas
+
+    <button onclick="showPage('receitas',this)">
+
+        <span class="mobile-nav-icon">💰</span>
+        Receitas
+
     </button>
 
-    <button onclick="showPage('despesas')">
-        💸<br>Despesas
+
+    <button onclick="showPage('despesas',this)">
+
+        <span class="mobile-nav-icon">💸</span>
+        Despesas
+
     </button>
 
-    <button onclick="showPage('lancamentos')">
-        🧾<br>Lançamentos
+
+    <button onclick="showPage('lancamentos',this)">
+
+        <span class="mobile-nav-icon">🧾</span>
+        Lançamentos
+
     </button>
 
-    <button onclick="showPage('premium')">
-        ⭐<br>Premium
+
+    <button onclick="showPage('premium',this)">
+
+        <span class="mobile-nav-icon">⭐</span>
+        Premium
+
     </button>
 
 </nav>
 
 
+
 <script>
 
 /* =========================
-   CONTROLE DE PÁGINAS
-========================= */
-
-function showPage(pageId, button){
-
-    document
-        .querySelectorAll('.page')
-        .forEach(function(page){
-            page.classList.remove('active');
-        });
-
-    const page = document.getElementById(pageId);
-
-    if(page){
-        page.classList.add('active');
-    }
-
-    document
-        .querySelectorAll('.nav button')
-        .forEach(function(btn){
-            btn.classList.remove('active');
-        });
-
-    if(button){
-        button.classList.add('active');
-    }
-
-    window.scrollTo({
-        top:0,
-        behavior:'smooth'
-    });
-
-    updateAll();
-
-}
-
-
-/* =========================
-   DADOS
+   STORAGE
 ========================= */
 
 let transactions =
-    JSON.parse(localStorage.getItem('controles_transactions') || '[]');
+    JSON.parse(
+        localStorage.getItem('controles_transactions') || '[]'
+    );
+
+
+/* =========================
+   CHARTS
+========================= */
+
+let financeChart = null;
+let reportChart = null;
+let categoryChart = null;
 
 
 /* =========================
@@ -896,10 +1727,97 @@ let transactions =
 
 function money(value){
 
-    return Number(value).toLocaleString('pt-BR',{
-        style:'currency',
-        currency:'BRL'
+    return Number(value).toLocaleString(
+        'pt-BR',
+        {
+            style:'currency',
+            currency:'BRL'
+        }
+    );
+
+}
+
+
+/* =========================
+   PÁGINAS
+========================= */
+
+function showPage(pageId,button){
+
+    document
+        .querySelectorAll('.page')
+        .forEach(function(page){
+
+            page.classList.remove('active');
+
+        });
+
+
+    const page =
+        document.getElementById(pageId);
+
+
+    if(page){
+        page.classList.add('active');
+    }
+
+
+    document
+        .querySelectorAll('.nav button')
+        .forEach(function(btn){
+
+            btn.classList.remove('active');
+
+        });
+
+
+    document
+        .querySelectorAll('.mobile-nav button')
+        .forEach(function(btn){
+
+            btn.classList.remove('active');
+
+        });
+
+
+    if(button){
+
+        button.classList.add('active');
+
+    }else{
+
+        const desktop =
+            document.querySelector(
+                '.nav button[onclick*="' +
+                pageId +
+                '"]'
+            );
+
+        const mobile =
+            document.querySelector(
+                '.mobile-nav button[onclick*="' +
+                pageId +
+                '"]'
+            );
+
+        if(desktop){
+            desktop.classList.add('active');
+        }
+
+        if(mobile){
+            mobile.classList.add('active');
+        }
+
+    }
+
+
+    window.scrollTo({
+        top:0,
+        behavior:'smooth'
     });
+
+
+    updateAll();
 
 }
 
@@ -912,38 +1830,58 @@ function addTransaction(event,type){
 
     event.preventDefault();
 
-    let descricao;
-    let valor;
+
+    let descricao = '';
+    let valor = 0;
     let categoria = '';
+
 
     if(type === 'receita'){
 
         descricao =
-            document.getElementById('receitaDescricao').value.trim();
+            document
+                .getElementById('receitaDescricao')
+                .value
+                .trim();
 
         valor =
-            Number(document.getElementById('receitaValor').value);
+            Number(
+                document
+                    .getElementById('receitaValor')
+                    .value
+            );
 
     }else{
 
         descricao =
-            document.getElementById('despesaDescricao').value.trim();
+            document
+                .getElementById('despesaDescricao')
+                .value
+                .trim();
 
         valor =
-            Number(document.getElementById('despesaValor').value);
+            Number(
+                document
+                    .getElementById('despesaValor')
+                    .value
+            );
 
         categoria =
-            document.getElementById('despesaCategoria').value;
+            document
+                .getElementById('despesaCategoria')
+                .value;
 
     }
 
+
     if(!descricao || !valor || valor <= 0){
 
-        alert('Preencha os campos corretamente.');
+        alert('Preencha os dados corretamente.');
 
         return;
 
     }
+
 
     transactions.unshift({
 
@@ -961,13 +1899,15 @@ function addTransaction(event,type){
 
     });
 
-    localStorage.setItem(
-        'controles_transactions',
-        JSON.stringify(transactions)
-    );
+
+    save();
 
 
     event.target.reset();
+
+
+    updateAll();
+
 
     alert(
         type === 'receita'
@@ -976,103 +1916,182 @@ function addTransaction(event,type){
     );
 
 
-    updateAll();
-
     showPage('dashboard');
 
 }
 
 
 /* =========================
-   RENDER
+   SALVAR
 ========================= */
 
-function renderTransactions(){
+function save(){
 
-    const lista =
-        document.getElementById('listaLancamentos');
+    localStorage.setItem(
+        'controles_transactions',
+        JSON.stringify(transactions)
+    );
 
-    const pesquisa =
-        (document.getElementById('pesquisa')?.value || '')
-        .toLowerCase();
-
-    const filtrados =
-        transactions.filter(function(item){
-
-            return item.descricao
-                .toLowerCase()
-                .includes(pesquisa);
-
-        });
+}
 
 
-    if(!filtrados.length){
+/* =========================
+   TOTAIS
+========================= */
 
-        lista.innerHTML =
-            '<p style="color:var(--muted)">Nenhum lançamento encontrado.</p>';
+function getTotals(){
 
-        return;
-
-    }
+    let receitas = 0;
+    let despesas = 0;
 
 
-    lista.innerHTML =
-        filtrados.map(function(item){
+    transactions.forEach(function(item){
 
-            const cor =
-                item.type === 'receita'
-                ? 'green'
-                : 'red';
+        if(item.type === 'receita'){
 
-            const sinal =
-                item.type === 'receita'
-                ? '+'
-                : '-';
+            receitas += Number(item.valor);
 
-            return `
+        }else{
 
-                <div class="transaction">
+            despesas += Number(item.valor);
 
-                    <div>
+        }
 
-                        <strong>
-                            ${escapeHTML(item.descricao)}
-                        </strong>
+    });
 
-                        <small>
-                            ${item.data}
-                            ${item.categoria ? ' • '+escapeHTML(item.categoria) : ''}
-                        </small>
 
+    return {
+
+        receitas:receitas,
+
+        despesas:despesas,
+
+        saldo:receitas-despesas
+
+    };
+
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+function updateDashboard(){
+
+    const totals =
+        getTotals();
+
+
+    document.getElementById('saldo').textContent =
+        money(totals.saldo);
+
+
+    document.getElementById('balanceReceitas').textContent =
+        money(totals.receitas);
+
+
+    document.getElementById('balanceDespesas').textContent =
+        money(totals.despesas);
+
+
+    document.getElementById('totalReceitas').textContent =
+        money(totals.receitas);
+
+
+    document.getElementById('totalDespesas').textContent =
+        money(totals.despesas);
+
+
+    document.getElementById('totalLancamentos').textContent =
+        transactions.length;
+
+
+    document.getElementById('relReceitas').textContent =
+        money(totals.receitas);
+
+
+    document.getElementById('relDespesas').textContent =
+        money(totals.despesas);
+
+
+    document.getElementById('relSaldo').textContent =
+        money(totals.saldo);
+
+}
+
+
+/* =========================
+   TRANSAÇÕES
+========================= */
+
+function transactionHTML(item){
+
+    const isIncome =
+        item.type === 'receita';
+
+    const icon =
+        isIncome ? '💰' : '💸';
+
+    const className =
+        isIncome ? 'income' : 'expense';
+
+    const sign =
+        isIncome ? '+' : '-';
+
+
+    return `
+
+        <div class="transaction">
+
+            <div class="transaction-left">
+
+                <div class="transaction-icon">
+                    ${icon}
+                </div>
+
+                <div>
+
+                    <div class="transaction-name">
+                        ${escapeHTML(item.descricao)}
                     </div>
 
-                    <div>
-
-                        <strong class="${cor}">
-                            ${sinal} ${money(item.valor)}
-                        </strong>
-
-                        <br>
-
-                        <button
-                            onclick="removeTransaction(${item.id})"
-                            style="
-                                border:0;
-                                background:none;
-                                color:var(--muted);
-                                font-size:12px;
-                            "
-                        >
-                            Excluir
-                        </button>
-
+                    <div class="transaction-date">
+                        ${item.data}
+                        ${item.categoria
+                            ? ' • '+escapeHTML(item.categoria)
+                            : ''}
                     </div>
 
                 </div>
 
-            `;
+            </div>
 
-        }).join('');
+
+            <div style="text-align:right">
+
+                <div class="transaction-value ${className}">
+                    ${sign} ${money(item.valor)}
+                </div>
+
+                <button
+                    onclick="removeTransaction(${item.id})"
+                    style="
+                        border:0;
+                        background:none;
+                        color:var(--muted);
+                        font-size:10px;
+                        margin-top:5px;
+                    "
+                >
+                    Excluir
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
 
 }
 
@@ -1084,12 +2103,24 @@ function renderTransactions(){
 function renderLatest(){
 
     const box =
-        document.getElementById('ultimos');
+        document.getElementById('latestList');
+
 
     if(!transactions.length){
 
-        box.innerHTML =
-            '<p style="color:var(--muted)">Nenhum lançamento cadastrado.</p>';
+        box.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🧾
+                </div>
+
+                Nenhum lançamento ainda.
+
+            </div>
+
+        `;
 
         return;
 
@@ -1097,43 +2128,74 @@ function renderLatest(){
 
 
     box.innerHTML =
-        transactions.slice(0,5).map(function(item){
+        transactions
+            .slice(0,5)
+            .map(transactionHTML)
+            .join('');
 
-            const cor =
-                item.type === 'receita'
-                ? 'green'
-                : 'red';
+}
 
-            const sinal =
-                item.type === 'receita'
-                ? '+'
-                : '-';
 
-            return `
+/* =========================
+   TODOS
+========================= */
 
-                <div class="transaction">
+function renderTransactions(){
 
-                    <div>
+    const box =
+        document.getElementById('allTransactions');
 
-                        <strong>
-                            ${escapeHTML(item.descricao)}
-                        </strong>
 
-                        <small>
-                            ${item.data}
-                        </small>
+    const search =
+        (
+            document.getElementById('pesquisa')?.value
+            || ''
+        )
+        .toLowerCase()
+        .trim();
 
-                    </div>
 
-                    <strong class="${cor}">
-                        ${sinal} ${money(item.valor)}
-                    </strong>
+    const filtered =
+        transactions.filter(function(item){
 
+            return (
+                item.descricao
+                    .toLowerCase()
+                    .includes(search)
+                ||
+                (item.categoria || '')
+                    .toLowerCase()
+                    .includes(search)
+            );
+
+        });
+
+
+    if(!filtered.length){
+
+        box.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🔎
                 </div>
 
-            `;
+                Nenhum lançamento encontrado.
 
-        }).join('');
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+        filtered
+            .map(transactionHTML)
+            .join('');
 
 }
 
@@ -1142,53 +2204,106 @@ function renderLatest(){
    CATEGORIAS
 ========================= */
 
-function renderCategories(){
+function getCategories(){
 
-    const box =
-        document.getElementById('listaCategorias');
+    const categories = {};
 
-    const categorias = {};
 
     transactions
         .filter(item => item.type === 'despesa')
         .forEach(function(item){
 
-            const cat =
+            const category =
                 item.categoria || 'Outros';
 
-            categorias[cat] =
-                (categorias[cat] || 0) + item.valor;
+
+            categories[category] =
+                (categories[category] || 0)
+                + Number(item.valor);
 
         });
 
 
+    return categories;
+
+}
+
+
+/* =========================
+   CATEGORIA LIST
+========================= */
+
+function renderCategories(){
+
+    const box =
+        document.getElementById('categoryList');
+
+
+    const categories =
+        getCategories();
+
+
     const keys =
-        Object.keys(categorias);
+        Object.keys(categories);
 
 
     if(!keys.length){
 
-        box.innerHTML =
-            '<p style="color:var(--muted)">Nenhuma despesa cadastrada.</p>';
+        box.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🍩
+                </div>
+
+                Nenhuma despesa cadastrada.
+
+            </div>
+
+        `;
 
         return;
 
     }
 
 
+    keys.sort(
+        (a,b) =>
+            categories[b] -
+            categories[a]
+    );
+
+
     box.innerHTML =
-        keys.map(function(cat){
+        keys.map(function(category){
 
             return `
 
                 <div class="transaction">
 
-                    <strong>
-                        ${escapeHTML(cat)}
-                    </strong>
+                    <div class="transaction-left">
 
-                    <strong class="red">
-                        ${money(categorias[cat])}
+                        <div class="transaction-icon">
+                            🍩
+                        </div>
+
+                        <div>
+
+                            <div class="transaction-name">
+                                ${escapeHTML(category)}
+                            </div>
+
+                            <div class="transaction-date">
+                                Gastos
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <strong class="expense">
+                        ${money(categories[category])}
                     </strong>
 
                 </div>
@@ -1201,73 +2316,338 @@ function renderCategories(){
 
 
 /* =========================
-   TOTAIS
+   CHART FINANCEIRO
 ========================= */
 
-function updateTotals(){
+function updateFinanceChart(){
 
-    let receitas = 0;
-    let despesas = 0;
-
-
-    transactions.forEach(function(item){
-
-        if(item.type === 'receita'){
-            receitas += item.valor;
-        }else{
-            despesas += item.valor;
-        }
-
-    });
+    const totals =
+        getTotals();
 
 
-    const saldo =
-        receitas - despesas;
+    const ctx =
+        document
+            .getElementById('financeChart')
+            .getContext('2d');
 
 
-    document.getElementById('saldo').textContent =
-        money(saldo);
-
-    document.getElementById('totalReceitas').textContent =
-        money(receitas);
-
-    document.getElementById('totalDespesas').textContent =
-        money(despesas);
+    if(financeChart){
+        financeChart.destroy();
+    }
 
 
-    document.getElementById('relReceitas').textContent =
-        money(receitas);
+    financeChart =
+        new Chart(
+            ctx,
+            {
+                type:'bar',
 
-    document.getElementById('relDespesas').textContent =
-        money(despesas);
+                data:{
 
-    document.getElementById('relSaldo').textContent =
-        money(saldo);
+                    labels:[
+                        'Receitas',
+                        'Despesas'
+                    ],
+
+                    datasets:[{
+
+                        label:'Valor',
+
+                        data:[
+                            totals.receitas,
+                            totals.despesas
+                        ],
+
+                        backgroundColor:[
+                            '#20d58a',
+                            '#ff5d6c'
+                        ],
+
+                        borderRadius:8
+
+                    }]
+
+                },
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+                    plugins:{
+
+                        legend:{
+                            display:false
+                        }
+
+                    },
+
+                    scales:{
+
+                        x:{
+                            ticks:{
+                                color:'#8da0b8'
+                            },
+
+                            grid:{
+                                display:false
+                            }
+                        },
+
+                        y:{
+                            beginAtZero:true,
+
+                            ticks:{
+                                color:'#8da0b8',
+
+                                callback:function(value){
+
+                                    return money(value);
+
+                                }
+
+                            },
+
+                            grid:{
+                                color:'rgba(255,255,255,.05)'
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
 
 }
 
 
 /* =========================
-   EXCLUIR
+   REPORT CHART
+========================= */
+
+function updateReportChart(){
+
+    const totals =
+        getTotals();
+
+
+    const ctx =
+        document
+            .getElementById('reportChart')
+            .getContext('2d');
+
+
+    if(reportChart){
+        reportChart.destroy();
+    }
+
+
+    reportChart =
+        new Chart(
+            ctx,
+            {
+                type:'line',
+
+                data:{
+
+                    labels:[
+                        'Receitas',
+                        'Despesas',
+                        'Saldo'
+                    ],
+
+                    datasets:[{
+
+                        label:'Financeiro',
+
+                        data:[
+                            totals.receitas,
+                            totals.despesas,
+                            totals.saldo
+                        ],
+
+                        borderColor:'#20d58a',
+
+                        backgroundColor:
+                            'rgba(32,213,138,.10)',
+
+                        fill:true,
+
+                        tension:.35
+
+                    }]
+
+                },
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+                    plugins:{
+                        legend:{
+                            display:false
+                        }
+                    },
+
+                    scales:{
+
+                        x:{
+                            ticks:{
+                                color:'#8da0b8'
+                            },
+
+                            grid:{
+                                display:false
+                            }
+                        },
+
+                        y:{
+                            ticks:{
+                                color:'#8da0b8'
+                            },
+
+                            grid:{
+                                color:'rgba(255,255,255,.05)'
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================
+   CATEGORY CHART
+========================= */
+
+function updateCategoryChart(){
+
+    const categories =
+        getCategories();
+
+
+    const keys =
+        Object.keys(categories);
+
+
+    const ctx =
+        document
+            .getElementById('categoryChart')
+            .getContext('2d');
+
+
+    if(categoryChart){
+        categoryChart.destroy();
+    }
+
+
+    categoryChart =
+        new Chart(
+            ctx,
+            {
+                type:'doughnut',
+
+                data:{
+
+                    labels:
+                        keys.length
+                        ? keys
+                        : ['Sem despesas'],
+
+                    datasets:[{
+
+                        data:
+                            keys.length
+                            ? keys.map(
+                                key => categories[key]
+                            )
+                            : [1],
+
+                        backgroundColor:[
+                            '#20d58a',
+                            '#4d8dff',
+                            '#ffc857',
+                            '#ff5d6c',
+                            '#9b6cff',
+                            '#36cfc9',
+                            '#ff9f43',
+                            '#78909c'
+                        ],
+
+                        borderWidth:0
+
+                    }]
+
+                },
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+                    cutout:'68%',
+
+                    plugins:{
+
+                        legend:{
+
+                            position:'bottom',
+
+                            labels:{
+                                color:'#8da0b8',
+                                padding:14,
+                                font:{
+                                    size:11
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================
+   DELETE
 ========================= */
 
 function removeTransaction(id){
 
-    if(!confirm('Deseja excluir este lançamento?')){
+    if(
+        !confirm(
+            'Deseja excluir este lançamento?'
+        )
+    ){
         return;
     }
 
+
     transactions =
-        transactions.filter(function(item){
-            return item.id !== id;
-        });
+        transactions.filter(
+            item => item.id !== id
+        );
 
 
-    localStorage.setItem(
-        'controles_transactions',
-        JSON.stringify(transactions)
-    );
-
+    save();
 
     updateAll();
 
@@ -1275,7 +2655,7 @@ function removeTransaction(id){
 
 
 /* =========================
-   SEGURANÇA DE TEXTO
+   ESCAPE
 ========================= */
 
 function escapeHTML(text){
@@ -1291,12 +2671,36 @@ function escapeHTML(text){
 
 
 /* =========================
-   ATUALIZA TUDO
+   DATA
+========================= */
+
+function updateDate(){
+
+    const today =
+        new Date()
+        .toLocaleDateString(
+            'pt-BR',
+            {
+                day:'2-digit',
+                month:'2-digit',
+                year:'numeric'
+            }
+        );
+
+
+    document.getElementById('today')
+        .textContent = today;
+
+}
+
+
+/* =========================
+   UPDATE
 ========================= */
 
 function updateAll(){
 
-    updateTotals();
+    updateDashboard();
 
     renderLatest();
 
@@ -1304,18 +2708,29 @@ function updateAll(){
 
     renderCategories();
 
+    updateFinanceChart();
+
+    updateReportChart();
+
+    updateCategoryChart();
+
 }
 
 
 /* =========================
-   INICIALIZAÇÃO
+   INIT
 ========================= */
 
-document.addEventListener('DOMContentLoaded',function(){
+document.addEventListener(
+    'DOMContentLoaded',
+    function(){
 
-    updateAll();
+        updateDate();
 
-});
+        updateAll();
+
+    }
+);
 
 </script>
 
