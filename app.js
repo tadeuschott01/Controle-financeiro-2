@@ -1,3 +1,8 @@
+/* =====================================================
+   CONTROLES — APP.JS
+   VERSÃO PREMIUM
+===================================================== */
+
 document.addEventListener("DOMContentLoaded", () => {
 
     /* =========================
@@ -12,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const userAvatar = document.getElementById("userAvatar");
     const welcomeName = document.getElementById("welcomeName");
     const userPlan = document.getElementById("userPlan");
-
     const pageTitle = document.getElementById("pageTitle");
     const currentDate = document.getElementById("currentDate");
 
@@ -39,37 +43,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const categoryList = document.getElementById("categoryList");
     const reportAnalysis = document.getElementById("reportAnalysis");
-
     const monthForecast = document.getElementById("monthForecast");
-
-    const goalsList = document.getElementById("goalsList");
-    const budgetList = document.getElementById("budgetList");
-    const smartAlerts = document.getElementById("smartAlerts");
-    const monthlyComparison = document.getElementById("monthlyComparison");
-    const financialCalendar = document.getElementById("financialCalendar");
-    const financialInsights = document.getElementById("financialInsights");
-
-    const healthScore = document.getElementById("healthScore");
-    const healthProgress = document.getElementById("healthProgress");
-    const healthMessage = document.getElementById("healthMessage");
-
-    const simulationAmount = document.getElementById("simulationAmount");
-    const simulationType = document.getElementById("simulationType");
-    const simulationResult = document.getElementById("simulationResult");
 
     const goalModal = document.getElementById("goalModal");
     const goalForm = document.getElementById("goalForm");
 
+    const budgetModal = document.getElementById("budgetModal");
+    const budgetForm = document.getElementById("budgetForm");
 
     /* =========================
        DADOS
     ========================= */
 
-    let transactions = loadJSON("controles_transactions", []);
-    let goals = loadJSON("controles_goals", []);
-    let budgets = loadJSON("controles_budgets", []);
+    let transactions = loadJSON(
+        "controles_transactions",
+        []
+    );
 
-    let currentUser = loadJSON("controles_user", null);
+    let currentUser = loadJSON(
+        "controles_user",
+        null
+    );
+
+    let goals = loadJSON(
+        "controles_goals",
+        []
+    );
+
+    let budgets = loadJSON(
+        "controles_budgets",
+        {}
+    );
 
     let selectedType = "income";
 
@@ -91,7 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "Outros"
     ];
 
-
     /* =========================
        UTILITÁRIOS
     ========================= */
@@ -100,9 +103,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
 
-            const value = localStorage.getItem(key);
+            const data = localStorage.getItem(key);
 
-            return value ? JSON.parse(value) : fallback;
+            return data
+                ? JSON.parse(data)
+                : fallback;
 
         } catch {
 
@@ -112,31 +117,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
-    function saveJSON(key, value) {
+    function saveTransactions() {
 
         localStorage.setItem(
-            key,
-            JSON.stringify(value)
+            "controles_transactions",
+            JSON.stringify(transactions)
         );
 
     }
 
-
-    function saveTransactions() {
-        saveJSON("controles_transactions", transactions);
-    }
-
-
     function saveGoals() {
-        saveJSON("controles_goals", goals);
-    }
 
+        localStorage.setItem(
+            "controles_goals",
+            JSON.stringify(goals)
+        );
+
+    }
 
     function saveBudgets() {
-        saveJSON("controles_budgets", budgets);
-    }
 
+        localStorage.setItem(
+            "controles_budgets",
+            JSON.stringify(budgets)
+        );
+
+    }
 
     function formatMoney(value) {
 
@@ -150,42 +156,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
-    function todayISO() {
-
-        const d = new Date();
-
-        return [
-            d.getFullYear(),
-            String(d.getMonth() + 1).padStart(2, "0"),
-            String(d.getDate()).padStart(2, "0")
-        ].join("-");
-
-    }
-
-
     function formatDate(dateString) {
 
         if (!dateString) return "";
 
-        const d = new Date(dateString + "T00:00:00");
+        const date = new Date(
+            dateString + "T00:00:00"
+        );
 
-        return d.toLocaleDateString("pt-BR");
-
-    }
-
-
-    function escapeHTML(text) {
-
-        return String(text ?? "")
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
+        return date.toLocaleDateString("pt-BR");
 
     }
 
+    function todayISO() {
+
+        const date = new Date();
+
+        return [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, "0"),
+            String(date.getDate()).padStart(2, "0")
+        ].join("-");
+
+    }
 
     function frequencyLabel(frequency) {
 
@@ -200,26 +193,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+    function escapeHTML(text) {
 
-    let toastTimer = null;
-
-    function showToast(message) {
-
-        const toast = document.getElementById("toast");
-
-        if (!toast) return;
-
-        toast.textContent = message;
-        toast.classList.add("show");
-
-        clearTimeout(toastTimer);
-
-        toastTimer = setTimeout(() => {
-            toast.classList.remove("show");
-        }, 2500);
+        return String(text)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
 
     }
-
 
     function isPremium() {
 
@@ -227,7 +210,6 @@ document.addEventListener("DOMContentLoaded", () => {
             currentUser.plan === "premium";
 
     }
-
 
     /* =========================
        LOGIN
@@ -251,7 +233,9 @@ document.addEventListener("DOMContentLoaded", () => {
         welcomeName.textContent = currentUser.name;
 
         userAvatar.textContent =
-            currentUser.name.charAt(0).toUpperCase();
+            currentUser.name
+                .charAt(0)
+                .toUpperCase();
 
         userPlan.textContent =
             isPremium()
@@ -262,51 +246,62 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+    loginForm.addEventListener(
+        "submit",
+        event => {
 
-    loginForm.addEventListener("submit", event => {
+            event.preventDefault();
 
-        event.preventDefault();
+            const name =
+                document.getElementById("loginName")
+                    .value.trim();
 
-        const name =
-            document.getElementById("loginName").value.trim();
+            const email =
+                document.getElementById("loginEmail")
+                    .value.trim();
 
-        const email =
-            document.getElementById("loginEmail").value.trim();
+            const password =
+                document.getElementById("loginPassword")
+                    .value;
 
-        const password =
-            document.getElementById("loginPassword").value;
+            if (!name || !email || !password) {
+                return;
+            }
 
-        if (!name || !email || !password) return;
+            currentUser = {
+                name,
+                email,
+                plan: "free"
+            };
 
-        currentUser = {
-            name,
-            email,
-            plan: "free"
-        };
+            localStorage.setItem(
+                "controles_user",
+                JSON.stringify(currentUser)
+            );
 
-        saveJSON("controles_user", currentUser);
+            loadUser();
 
-        loadUser();
+        }
+    );
 
-        showToast("Bem-vindo ao ControleS! 👋");
+    /* =========================
+       LOGOUT
+    ========================= */
 
-    });
-
-
-    document.getElementById("logoutBtn")
+    document
+        .getElementById("logoutBtn")
         .addEventListener("click", () => {
 
-            localStorage.removeItem("controles_user");
+            localStorage.removeItem(
+                "controles_user"
+            );
 
             currentUser = null;
 
             app.classList.add("hidden");
             loginScreen.classList.remove("hidden");
 
-            showToast("Você saiu do ControleS.");
-
         });
-
 
     /* =========================
        NAVEGAÇÃO
@@ -317,7 +312,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const sections =
         document.querySelectorAll(".section");
-
 
     function openSection(sectionName) {
 
@@ -358,12 +352,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
     navItems.forEach(item => {
 
         item.addEventListener("click", () => {
 
-            openSection(item.dataset.section);
+            openSection(
+                item.dataset.section
+            );
 
             document
                 .getElementById("sidebar")
@@ -373,24 +368,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-
-    document.querySelectorAll("[data-section]")
+    document
+        .querySelectorAll("[data-section]")
         .forEach(button => {
 
             if (!button.classList.contains("nav-item")) {
 
-                button.addEventListener("click", () => {
-
-                    openSection(button.dataset.section);
-
-                });
+                button.addEventListener(
+                    "click",
+                    () => {
+                        openSection(
+                            button.dataset.section
+                        );
+                    }
+                );
 
             }
 
         });
 
+    /* =========================
+       MOBILE
+    ========================= */
 
-    document.getElementById("mobileMenuBtn")
+    document
+        .getElementById("mobileMenuBtn")
         .addEventListener("click", () => {
 
             document
@@ -398,7 +400,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 .classList.toggle("mobile-open");
 
         });
-
 
     /* =========================
        MODAL LANÇAMENTO
@@ -411,10 +412,11 @@ document.addEventListener("DOMContentLoaded", () => {
         dateInput.value =
             dateInput.value || todayISO();
 
+        frequencyInput.value = "once";
+
         descriptionInput.focus();
 
     }
-
 
     function closeModal() {
 
@@ -431,19 +433,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
-    document.getElementById("openTransactionBtn")
+    document
+        .getElementById("openTransactionBtn")
         .addEventListener("click", openModal);
 
-    document.getElementById("newTransactionButton")
+    document
+        .getElementById("newTransactionButton")
         .addEventListener("click", openModal);
 
-    document.getElementById("closeModal")
+    document
+        .getElementById("closeModal")
         .addEventListener("click", closeModal);
 
-    document.querySelector("#transactionModal .modal-overlay")
+    document
+        .querySelector("#transactionModal .modal-overlay")
         .addEventListener("click", closeModal);
-
 
     /* =========================
        TIPO
@@ -451,7 +455,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const typeButtons =
         document.querySelectorAll(".type-option");
-
 
     function updateTypeButtons() {
 
@@ -466,12 +469,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
     typeButtons.forEach(button => {
 
         button.addEventListener("click", () => {
 
-            selectedType = button.dataset.type;
+            selectedType =
+                button.dataset.type;
 
             updateTypeButtons();
 
@@ -479,129 +482,74 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-
     /* =========================
-       CATEGORIAS
+       SALVAR
     ========================= */
 
-    function populateTransactionCategories() {
+    transactionForm.addEventListener(
+        "submit",
+        event => {
 
-        transactionCategory.innerHTML = "";
+            event.preventDefault();
 
-        categories.forEach(category => {
+            const description =
+                descriptionInput.value.trim();
 
-            const option =
-                document.createElement("option");
+            const amount =
+                Number(amountInput.value);
 
-            option.value = category;
-            option.textContent = category;
+            const date =
+                dateInput.value;
 
-            transactionCategory.appendChild(option);
+            const frequency =
+                frequencyInput.value || "once";
 
-        });
+            const category =
+                transactionCategory.value;
 
-    }
+            if (
+                !description ||
+                amount <= 0 ||
+                !date
+            ) {
+                return;
+            }
 
+            const transaction = {
 
-    function updateCategoryFilter() {
+                id:
+                    `${Date.now()}-${Math.random()
+                        .toString(36)
+                        .slice(2)}`,
 
-        const current = categoryFilter.value;
+                type:
+                    selectedType,
 
-        categoryFilter.innerHTML =
-            `<option value="all">Todas categorias</option>`;
+                description,
 
-        categories.forEach(category => {
+                amount,
 
-            const option =
-                document.createElement("option");
+                date,
 
-            option.value = category;
-            option.textContent = category;
+                frequency,
 
-            categoryFilter.appendChild(option);
+                category
 
-        });
+            };
 
-        if (categories.includes(current)) {
-            categoryFilter.value = current;
-        }
+            transactions.push(transaction);
 
-    }
+            saveTransactions();
 
+            closeModal();
 
-    populateTransactionCategories();
-    updateCategoryFilter();
-
-
-    /* =========================
-       SALVAR LANÇAMENTO
-    ========================= */
-
-    transactionForm.addEventListener("submit", event => {
-
-        event.preventDefault();
-
-        const description =
-            descriptionInput.value.trim();
-
-        const amount =
-            Number(amountInput.value);
-
-        const date =
-            dateInput.value;
-
-        const frequency =
-            frequencyInput.value;
-
-        const category =
-            transactionCategory.value;
-
-        if (
-            !description ||
-            !amount ||
-            amount <= 0 ||
-            !date
-        ) {
-
-            showToast("Preencha os campos corretamente.");
-
-            return;
+            updateAll();
 
         }
-
-        transactions.push({
-
-            id: crypto.randomUUID
-                ? crypto.randomUUID()
-                : `${Date.now()}-${Math.random()}`,
-
-            type: selectedType,
-
-            description,
-
-            amount,
-
-            date,
-
-            frequency,
-
-            category
-
-        });
-
-        saveTransactions();
-
-        closeModal();
-
-        updateAll();
-
-        showToast("Lançamento salvo com sucesso! ✅");
-
-    });
-
+    );
 
     /* =========================
-       OCORRÊNCIAS
+       RECORRÊNCIA
     ========================= */
 
     function transactionOccurrences(
@@ -613,85 +561,89 @@ document.addEventListener("DOMContentLoaded", () => {
         const occurrences = [];
 
         const original =
-            new Date(transaction.date + "T00:00:00");
+            new Date(
+                transaction.date + "T00:00:00"
+            );
 
-        if (Number.isNaN(original.getTime())) {
-            return occurrences;
-        }
+        let current =
+            new Date(original);
 
-        let current = new Date(original);
+        const frequency =
+            transaction.frequency || "once";
 
-        if (transaction.frequency === "once") {
+        if (frequency === "once") {
 
             if (
                 current >= startDate &&
                 current <= endDate
             ) {
-                occurrences.push(new Date(current));
+                occurrences.push(
+                    new Date(current)
+                );
             }
 
             return occurrences;
+
         }
-
-
-        /*
-           IMPORTANTE:
-
-           A recorrência mensal acontece UMA VEZ por mês.
-           Portanto, um salário mensal não vira 30 salários
-           nem é projetado para o ano inteiro.
-        */
 
         while (current <= endDate) {
 
             if (current >= startDate) {
-                occurrences.push(new Date(current));
+
+                occurrences.push(
+                    new Date(current)
+                );
+
             }
 
-            if (transaction.frequency === "daily") {
+            if (frequency === "daily") {
 
                 current.setDate(
                     current.getDate() + 1
                 );
 
-            } else if (transaction.frequency === "weekly") {
+            } else if (frequency === "weekly") {
 
                 current.setDate(
                     current.getDate() + 7
                 );
 
-            } else if (transaction.frequency === "monthly") {
+            } else if (frequency === "monthly") {
+
+                /*
+                 IMPORTANTE:
+                 mensal acontece uma vez por mês.
+                 */
 
                 const originalDay =
-                    new Date(transaction.date + "T00:00:00")
-                        .getDate();
+                    original.getDate();
 
                 const nextMonth =
                     current.getMonth() + 1;
 
-                const year =
-                    current.getFullYear() +
-                    Math.floor(nextMonth / 12);
-
-                const month =
-                    nextMonth % 12;
-
-                const daysInMonth =
-                    new Date(
-                        year,
-                        month + 1,
-                        0
-                    ).getDate();
+                const nextYear =
+                    current.getFullYear();
 
                 current =
                     new Date(
-                        year,
-                        month,
-                        Math.min(
-                            originalDay,
-                            daysInMonth
-                        )
+                        nextYear,
+                        nextMonth,
+                        1
                     );
+
+                const lastDay =
+                    new Date(
+                        nextYear,
+                        nextMonth + 1,
+                        0
+                    ).getDate();
+
+                current.setDate(
+                    Math.min(
+                        originalDay,
+                        lastDay
+                    )
+                );
 
             } else {
 
@@ -705,22 +657,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
-    function getPeriodTransactions(startDate, endDate) {
+    function getPeriodTransactions(
+        startDate,
+        endDate
+    ) {
 
         const result = [];
 
         transactions.forEach(transaction => {
 
-            transactionOccurrences(
-                transaction,
-                startDate,
-                endDate
-            ).forEach(date => {
+            const occurrences =
+                transactionOccurrences(
+                    transaction,
+                    startDate,
+                    endDate
+                );
+
+            occurrences.forEach(date => {
 
                 result.push({
                     ...transaction,
-                    occurrenceDate: new Date(date)
+                    occurrenceDate: date
                 });
 
             });
@@ -731,9 +688,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
     /* =========================
-       MÊS
+       MÊS ATUAL
     ========================= */
 
     function getCurrentMonthRange() {
@@ -746,7 +702,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 new Date(
                     now.getFullYear(),
                     now.getMonth(),
-                    1
+                    1,
+                    0,
+                    0,
+                    0
                 ),
 
             end:
@@ -763,42 +722,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
-    function getMonthRange(offset = 0) {
-
-        const now = new Date();
-
-        return {
-
-            start:
-                new Date(
-                    now.getFullYear(),
-                    now.getMonth() + offset,
-                    1
-                ),
-
-            end:
-                new Date(
-                    now.getFullYear(),
-                    now.getMonth() + offset + 1,
-                    0,
-                    23,
-                    59,
-                    59
-                )
-
-        };
-
-    }
-
-
-    function calculateMonthTotals(offset = 0) {
+    function calculateMonthTotals() {
 
         const { start, end } =
-            getMonthRange(offset);
+            getCurrentMonthRange();
 
         const items =
-            getPeriodTransactions(start, end);
+            getPeriodTransactions(
+                start,
+                end
+            );
 
         let income = 0;
         let expense = 0;
@@ -821,7 +754,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
     /* =========================
        DASHBOARD
     ========================= */
@@ -840,10 +772,15 @@ document.addEventListener("DOMContentLoaded", () => {
         expenseValue.textContent =
             formatMoney(totals.expense);
 
-        const economy =
-            totals.income > 0
-                ? (totals.balance / totals.income) * 100
-                : 0;
+        let economy = 0;
+
+        if (totals.income > 0) {
+
+            economy =
+                (totals.balance /
+                    totals.income) * 100;
+
+        }
 
         economyValue.textContent =
             `${economy.toFixed(1)}%`;
@@ -863,9 +800,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
     /* =========================
-       TRANSAÇÕES
+       HTML TRANSAÇÃO
     ========================= */
 
     function createTransactionHTML(transaction) {
@@ -903,26 +839,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="transaction-info">
 
                     <strong>
-                        ${escapeHTML(transaction.description)}
+                        ${escapeHTML(
+                            transaction.description
+                        )}
                     </strong>
 
                     <small>
-                        ${escapeHTML(transaction.category)}
+                        ${escapeHTML(
+                            transaction.category
+                        )}
                         •
                         ${formatDate(occurrenceDate)}
                         •
-                        ${frequencyLabel(transaction.frequency)}
+                        ${frequencyLabel(
+                            transaction.frequency
+                        )}
                     </small>
 
                 </div>
 
                 <div class="transaction-value ${valueClass}">
-                    ${sign} ${formatMoney(transaction.amount)}
+                    ${sign}${formatMoney(
+                        transaction.amount
+                    )}
                 </div>
 
                 <button
                     class="transaction-delete"
-                    data-delete-id="${String(transaction.id)}"
+                    data-delete-id="${String(
+                        transaction.id
+                    )}"
                     title="Excluir lançamento"
                     type="button"
                 >
@@ -935,6 +881,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+    /* =========================
+       RECENTES
+    ========================= */
 
     function updateRecentTransactions() {
 
@@ -942,61 +891,72 @@ document.addEventListener("DOMContentLoaded", () => {
             getCurrentMonthRange();
 
         let items =
-            getPeriodTransactions(start, end);
+            getPeriodTransactions(
+                start,
+                end
+            );
 
         items.sort(
-            (a,b) =>
-                b.occurrenceDate - a.occurrenceDate
+            (a, b) =>
+                b.occurrenceDate -
+                a.occurrenceDate
         );
 
-        items = items.slice(0,5);
+        items =
+            items.slice(0, 5);
 
         if (!items.length) {
 
-            recentTransactions.innerHTML =
-                `<div class="empty-state">
+            recentTransactions.innerHTML = `
+                <div class="empty-state">
                     Nenhum lançamento neste mês.
-                </div>`;
+                </div>
+            `;
 
             return;
 
         }
 
         recentTransactions.innerHTML =
-            items.map(createTransactionHTML).join("");
+            items
+                .map(createTransactionHTML)
+                .join("");
 
     }
 
+    /* =========================
+       TODOS OS LANÇAMENTOS
+    ========================= */
 
     function updateAllTransactions() {
 
         /*
-           Mostra somente uma janela razoável:
-           12 meses anteriores + mês atual + 12 meses futuros.
-           Isso evita uma lista infinita.
+         Mostra os lançamentos reais
+         e ocorrências dentro de uma janela
+         ampla apenas para consulta.
         */
 
         const now = new Date();
 
         const start =
             new Date(
-                now.getFullYear(),
-                now.getMonth() - 12,
+                now.getFullYear() - 2,
+                now.getMonth(),
                 1
             );
 
         const end =
             new Date(
-                now.getFullYear(),
-                now.getMonth() + 13,
-                0,
-                23,
-                59,
-                59
+                now.getFullYear() + 2,
+                now.getMonth() + 1,
+                0
             );
 
         let items =
-            getPeriodTransactions(start,end);
+            getPeriodTransactions(
+                start,
+                end
+            );
 
         const search =
             searchInput.value
@@ -1009,99 +969,99 @@ document.addEventListener("DOMContentLoaded", () => {
         const category =
             categoryFilter.value;
 
-        items = items.filter(item => {
+        items =
+            items.filter(item => {
 
-            const matchesSearch =
-                !search ||
-                String(item.description)
-                    .toLowerCase()
-                    .includes(search) ||
-                String(item.category)
-                    .toLowerCase()
-                    .includes(search);
+                const matchesSearch =
+                    !search ||
+                    item.description
+                        .toLowerCase()
+                        .includes(search) ||
+                    item.category
+                        .toLowerCase()
+                        .includes(search);
 
-            const matchesType =
-                type === "all" ||
-                item.type === type;
+                const matchesType =
+                    type === "all" ||
+                    item.type === type;
 
-            const matchesCategory =
-                category === "all" ||
-                item.category === category;
+                const matchesCategory =
+                    category === "all" ||
+                    item.category === category;
 
-            return (
-                matchesSearch &&
-                matchesType &&
-                matchesCategory
-            );
+                return (
+                    matchesSearch &&
+                    matchesType &&
+                    matchesCategory
+                );
 
-        });
+            });
 
         items.sort(
-            (a,b) =>
-                b.occurrenceDate - a.occurrenceDate
+            (a, b) =>
+                b.occurrenceDate -
+                a.occurrenceDate
         );
 
         if (!items.length) {
 
-            allTransactions.innerHTML =
-                `<div class="empty-state">
+            allTransactions.innerHTML = `
+                <div class="empty-state">
                     Nenhum lançamento encontrado.
-                </div>`;
+                </div>
+            `;
 
             return;
 
         }
 
         allTransactions.innerHTML =
-            items.map(createTransactionHTML).join("");
+            items
+                .map(createTransactionHTML)
+                .join("");
 
     }
 
+    /* =========================
+       EXCLUSÃO
+    ========================= */
 
-    /*
-       EXCLUSÃO CORRIGIDA
+    document.addEventListener(
+        "click",
+        event => {
 
-       O ID agora é comparado como texto.
-       Assim funciona tanto com IDs antigos
-       numéricos quanto com os novos IDs.
-    */
+            const button =
+                event.target.closest(
+                    "[data-delete-id]"
+                );
 
-    document.addEventListener("click", event => {
+            if (!button) return;
 
-        const button =
-            event.target.closest("[data-delete-id]");
+            const id =
+                String(
+                    button.dataset.deleteId
+                );
 
-        if (!button) return;
+            const index =
+                transactions.findIndex(
+                    transaction =>
+                        String(transaction.id) === id
+                );
 
-        const id =
-            String(button.dataset.deleteId);
+            if (index === -1) return;
 
-        const index =
-            transactions.findIndex(
-                transaction =>
-                    String(transaction.id) === id
-            );
+            transactions.splice(index, 1);
 
-        if (index === -1) {
+            saveTransactions();
 
-            showToast(
-                "Não foi possível encontrar esse lançamento."
-            );
-
-            return;
+            updateAll();
 
         }
+    );
 
-        transactions.splice(index,1);
-
-        saveTransactions();
-
-        updateAll();
-
-        showToast("Lançamento excluído com sucesso! 🗑️");
-
-    });
-
+    /* =========================
+       FILTROS
+    ========================= */
 
     searchInput.addEventListener(
         "input",
@@ -1118,15 +1078,46 @@ document.addEventListener("DOMContentLoaded", () => {
         updateAllTransactions
     );
 
+    function updateCategoryFilter() {
+
+        const current =
+            categoryFilter.value;
+
+        categoryFilter.innerHTML = `
+            <option value="all">
+                Todas categorias
+            </option>
+        `;
+
+        categories.forEach(category => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = category;
+            option.textContent = category;
+
+            categoryFilter.appendChild(option);
+
+        });
+
+        categoryFilter.value =
+            categories.includes(current)
+                ? current
+                : "all";
+
+    }
 
     /* =========================
-       GRÁFICO
+       GRÁFICO FINANCEIRO
     ========================= */
 
     function updateFinanceChart() {
 
         const canvas =
-            document.getElementById("financeChart");
+            document.getElementById(
+                "financeChart"
+            );
 
         if (!canvas) return;
 
@@ -1150,7 +1141,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     ],
 
                     datasets: [{
-                        label: "Valor",
                         data: [
                             totals.income,
                             totals.expense
@@ -1174,11 +1164,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     scales: {
 
                         y: {
+
                             beginAtZero: true,
 
                             ticks: {
-                                callback: value =>
-                                    formatMoney(value)
+                                callback:
+                                    value =>
+                                        formatMoney(value)
                             }
 
                         }
@@ -1191,27 +1183,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
     /* =========================
        CATEGORIAS
     ========================= */
 
-    function calculateCategories(offset = 0) {
+    function calculateCategories() {
 
         const { start, end } =
-            getMonthRange(offset);
+            getCurrentMonthRange();
 
         const items =
-            getPeriodTransactions(start,end);
+            getPeriodTransactions(
+                start,
+                end
+            );
 
         const totals = {};
 
         items.forEach(item => {
 
-            if (item.type !== "expense") return;
+            if (item.type !== "expense") {
+                return;
+            }
 
-            totals[item.category] =
-                (totals[item.category] || 0) +
+            if (!totals[item.category]) {
+                totals[item.category] = 0;
+            }
+
+            totals[item.category] +=
                 Number(item.amount);
 
         });
@@ -1220,7 +1219,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
     function updateCategories() {
 
         const totals =
@@ -1228,14 +1226,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const entries =
             Object.entries(totals)
-                .sort((a,b) => b[1] - a[1]);
+                .sort(
+                    (a, b) => b[1] - a[1]
+                );
 
         if (!entries.length) {
 
-            categoryList.innerHTML =
-                `<div class="empty-state">
+            categoryList.innerHTML = `
+                <div class="empty-state">
                     Nenhuma despesa cadastrada neste mês.
-                </div>`;
+                </div>
+            `;
 
             updateCategoryChart({});
 
@@ -1245,52 +1246,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const total =
             entries.reduce(
-                (sum,[,value]) => sum + value,
+                (sum, [, value]) =>
+                    sum + value,
                 0
             );
 
         categoryList.innerHTML =
-            entries.map(([category,value]) => {
+            entries.map(
+                ([category, value]) => {
 
-                const percentage =
-                    total > 0
-                        ? value / total * 100
-                        : 0;
+                    const percentage =
+                        total > 0
+                            ? value / total * 100
+                            : 0;
 
-                return `
+                    return `
 
-                    <div class="category-summary-item">
+                        <div class="category-summary-item">
 
-                        <div class="category-summary-left">
+                            <div class="category-summary-left">
 
-                            <div class="category-dot"></div>
+                                <div class="category-dot"></div>
 
-                            <strong>
-                                ${escapeHTML(category)}
-                            </strong>
+                                <strong>
+                                    ${escapeHTML(category)}
+                                </strong>
+
+                            </div>
+
+                            <span>
+                                ${formatMoney(value)}
+                                (${percentage.toFixed(1)}%)
+                            </span>
 
                         </div>
 
-                        <span>
-                            ${formatMoney(value)}
-                            (${percentage.toFixed(1)}%)
-                        </span>
+                    `;
 
-                    </div>
-
-                `;
-
-            }).join("");
+                }
+            ).join("");
 
         updateCategoryChart(totals);
 
     }
 
-
     function updateCategoryChart(totals) {
 
         const canvas =
-            document.getElementById("categoryChart");
+            document.getElementById(
+                "categoryChart"
+            );
 
         if (!canvas) return;
 
@@ -1305,10 +1310,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 data: {
 
-                    labels: Object.keys(totals),
+                    labels:
+                        Object.keys(totals),
 
                     datasets: [{
-                        data: Object.values(totals),
+                        data:
+                            Object.values(totals),
                         borderWidth: 2
                     }]
 
@@ -1331,7 +1338,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
     /* =========================
        RELATÓRIOS
     ========================= */
@@ -1343,14 +1349,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const entries =
             Object.entries(totals)
-                .sort((a,b) => b[1] - a[1]);
+                .sort(
+                    (a, b) => b[1] - a[1]
+                );
 
         if (!entries.length) {
 
-            reportAnalysis.innerHTML =
-                `<div class="empty-state">
+            reportAnalysis.innerHTML = `
+                <div class="empty-state">
                     Cadastre despesas para gerar sua análise.
-                </div>`;
+                </div>
+            `;
 
             updateReportChart({});
 
@@ -1360,15 +1369,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const total =
             entries.reduce(
-                (sum,[,value]) => sum + value,
+                (sum, [, value]) =>
+                    sum + value,
                 0
             );
 
-        const biggest = entries[0];
+        const biggest =
+            entries[0];
 
         reportAnalysis.innerHTML = `
 
             <div class="category-summary-item">
+
                 <div class="category-summary-left">
                     <div class="category-dot"></div>
                     <strong>Total gasto</strong>
@@ -1377,9 +1389,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span>
                     ${formatMoney(total)}
                 </span>
+
             </div>
 
             <div class="category-summary-item">
+
                 <div class="category-summary-left">
                     <div class="category-dot"></div>
                     <strong>Maior categoria</strong>
@@ -1388,9 +1402,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span>
                     ${escapeHTML(biggest[0])}
                 </span>
+
             </div>
 
             <div class="category-summary-item">
+
                 <div class="category-summary-left">
                     <div class="category-dot"></div>
                     <strong>Maior gasto</strong>
@@ -1399,6 +1415,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span>
                     ${formatMoney(biggest[1])}
                 </span>
+
             </div>
 
         `;
@@ -1406,7 +1423,6 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReportChart(totals);
 
     }
-
 
     function updateReportChart(totals) {
 
@@ -1428,10 +1444,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 data: {
 
-                    labels: Object.keys(totals),
+                    labels:
+                        Object.keys(totals),
 
                     datasets: [{
-                        data: Object.values(totals),
+                        data:
+                            Object.values(totals),
                         borderWidth: 2
                     }]
 
@@ -1454,47 +1472,107 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
-    /* =========================
+    /* =================================================
        PREMIUM
-    ========================= */
+    ================================================= */
 
-    function premiumCheck() {
+    function updatePremium() {
 
-        if (!isPremium()) {
-
-            showToast(
-                "Esse recurso faz parte do ControleS Premium ⭐"
-            );
-
-            return false;
-
-        }
-
-        return true;
+        updatePremiumOverview();
+        updateForecast();
+        updateGoals();
+        updateAlerts();
+        updateComparison();
+        updateBudgets();
+        updatePremiumAnalysis();
 
     }
 
+    /* =========================
+       VISÃO PREMIUM
+    ========================= */
 
-    function updateForecast() {
+    function updatePremiumOverview() {
 
-        if (!monthForecast) return;
+        const totals =
+            calculateMonthTotals();
 
-        if (!isPremium()) {
+        const economy =
+            totals.income > 0
+                ? (totals.balance /
+                    totals.income) * 100
+                : 0;
 
-            monthForecast.innerHTML =
-                `<div class="empty-state">
-                    Ative o Premium para usar a previsão financeira. ⭐
-                </div>`;
+        const premiumEconomy =
+            document.getElementById(
+                "premiumEconomy"
+            );
 
-            return;
+        const text =
+            document.getElementById(
+                "premiumPerformanceText"
+            );
+
+        premiumEconomy.textContent =
+            `${economy.toFixed(1)}%`;
+
+        if (totals.income === 0) {
+
+            text.textContent =
+                "Adicione lançamentos para acompanhar seu desempenho.";
+
+        } else if (totals.balance >= 0) {
+
+            text.textContent =
+                `Você está mantendo ${economy.toFixed(1)}% da sua receita neste mês.`;
+
+        } else {
+
+            text.textContent =
+                "Suas despesas estão acima das receitas neste mês.";
 
         }
 
+    }
+
+    /* =========================
+       PREVISÃO DO MÊS
+    ========================= */
+
+    function updateForecast() {
+
+        const forecastValue =
+            document.getElementById(
+                "premiumForecastValue"
+            );
+
+        const forecastText =
+            document.getElementById(
+                "premiumForecastText"
+            );
+
+        if (!forecastValue || !forecastText) {
+            return;
+        }
+
+        const totals =
+            calculateMonthTotals();
+
         const now = new Date();
 
-        const { start, end } =
-            getCurrentMonthRange();
+        const start =
+            new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                1
+            );
+
+        const end =
+            new Date(
+                now.getFullYear(),
+                now.getMonth() + 1,
+                0
+            );
 
         const today =
             new Date(
@@ -1503,16 +1581,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 now.getDate()
             );
 
-        const totalDays =
-            end.getDate();
-
         const elapsedDays =
             Math.max(
                 1,
                 Math.floor(
-                    (today - start) / 86400000
+                    (today - start) /
+                    86400000
                 ) + 1
             );
+
+        const totalDays =
+            end.getDate();
 
         const remainingDays =
             Math.max(
@@ -1520,339 +1599,135 @@ document.addEventListener("DOMContentLoaded", () => {
                 totalDays - elapsedDays
             );
 
-        const currentItems =
+        /*
+         Só usa despesas que aconteceram
+         até hoje para projetar o restante.
+        */
+
+        const monthItems =
             getPeriodTransactions(
                 start,
                 today
             );
 
-        let incomeUntilToday = 0;
-        let expenseUntilToday = 0;
+        let expensesUntilToday = 0;
 
-        currentItems.forEach(item => {
+        monthItems.forEach(item => {
 
-            if (item.type === "income") {
-                incomeUntilToday += Number(item.amount);
-            } else {
-                expenseUntilToday += Number(item.amount);
+            if (item.type === "expense") {
+                expensesUntilToday +=
+                    Number(item.amount);
             }
 
         });
-
-
-        /*
-           Aqui está a correção principal:
-
-           A previsão considera somente o mês atual.
-           Receitas/despesas mensais futuras dentro deste
-           mesmo mês entram uma vez na data em que ocorrem.
-
-           Não multiplica salário mensal por 12 meses.
-        */
-
-        const allMonthItems =
-            getPeriodTransactions(
-                start,
-                end
-            );
-
-        let futureIncome = 0;
-        let futureExpense = 0;
-
-        allMonthItems.forEach(item => {
-
-            if (item.occurrenceDate > today) {
-
-                if (item.type === "income") {
-                    futureIncome += Number(item.amount);
-                } else {
-                    futureExpense += Number(item.amount);
-                }
-
-            }
-
-        });
-
 
         const averageDailyExpense =
-            expenseUntilToday / elapsedDays;
+            expensesUntilToday /
+            elapsedDays;
 
-        const estimatedExtraExpense =
-            averageDailyExpense * remainingDays;
-
-        /*
-           Despesas recorrentes que já estão previstas
-           no restante do mês não devem ser duplicadas.
-
-           Usamos o maior valor entre a previsão diária
-           e as despesas futuras já cadastradas.
-        */
-
-        const remainingExpense =
-            Math.max(
-                estimatedExtraExpense,
-                futureExpense
-            );
+        const estimatedFutureExpenses =
+            averageDailyExpense *
+            remainingDays;
 
         const forecast =
-            incomeUntilToday +
-            futureIncome -
-            expenseUntilToday -
-            remainingExpense;
+            totals.balance -
+            estimatedFutureExpenses;
 
-
-        let message;
+        forecastValue.textContent =
+            formatMoney(forecast);
 
         if (forecast >= 0) {
 
-            message =
-                "A projeção indica um fechamento positivo. 💰";
+            forecastText.textContent =
+                "Mantendo seu ritmo atual, a projeção indica fechamento positivo.";
 
         } else {
 
-            message =
-                "Atenção: a projeção indica possível saldo negativo. 🚨";
+            forecastText.textContent =
+                "Mantendo seu ritmo atual, existe possibilidade de fechar o mês no negativo.";
 
         }
 
-
-        monthForecast.innerHTML = `
-
-            <div class="category-summary-item">
-                <div class="category-summary-left">
-                    <div class="category-dot"></div>
-                    <strong>Saldo realizado</strong>
-                </div>
-
-                <span>
-                    ${formatMoney(
-                        incomeUntilToday -
-                        expenseUntilToday
-                    )}
-                </span>
-            </div>
-
-            <div class="category-summary-item">
-                <div class="category-summary-left">
-                    <div class="category-dot"></div>
-                    <strong>Receitas futuras</strong>
-                </div>
-
-                <span>
-                    ${formatMoney(futureIncome)}
-                </span>
-            </div>
-
-            <div class="category-summary-item">
-                <div class="category-summary-left">
-                    <div class="category-dot"></div>
-                    <strong>Despesas previstas</strong>
-                </div>
-
-                <span>
-                    ${formatMoney(remainingExpense)}
-                </span>
-            </div>
-
-            <div class="category-summary-item">
-                <div class="category-summary-left">
-                    <div class="category-dot"></div>
-                    <strong>Previsão no fim do mês</strong>
-                </div>
-
-                <span>
-                    ${formatMoney(forecast)}
-                </span>
-            </div>
-
-            <div class="empty-state">
-                ${message}
-            </div>
-
-        `;
-
     }
-
 
     /* =========================
        METAS
     ========================= */
 
-    function openGoalModal() {
-
-        if (!premiumCheck()) return;
-
-        goalModal.classList.remove("hidden");
-
-    }
-
-
-    function closeGoalModal() {
-
-        goalModal.classList.add("hidden");
-
-        goalForm.reset();
-
-        document.getElementById("goalSaved").value = 0;
-
-    }
-
-
-    document.getElementById("addGoalBtn")
-        .addEventListener("click", openGoalModal);
-
-    document.getElementById("closeGoalModal")
-        .addEventListener("click", closeGoalModal);
-
-    document.querySelector("#goalModal .modal-overlay")
-        .addEventListener("click", closeGoalModal);
-
-
-    goalForm.addEventListener("submit", event => {
-
-        event.preventDefault();
-
-        if (!premiumCheck()) return;
-
-        const name =
-            document.getElementById("goalName")
-                .value.trim();
-
-        const target =
-            Number(
-                document.getElementById("goalTarget").value
-            );
-
-        const saved =
-            Number(
-                document.getElementById("goalSaved").value
-            ) || 0;
-
-        const monthly =
-            Number(
-                document.getElementById("goalMonthly").value
-            );
-
-
-        if (
-            !name ||
-            target <= 0 ||
-            saved < 0 ||
-            monthly <= 0
-        ) {
-
-            showToast("Preencha a meta corretamente.");
-
-            return;
-
-        }
-
-
-        goals.push({
-
-            id:
-                crypto.randomUUID
-                    ? crypto.randomUUID()
-                    : `${Date.now()}-${Math.random()}`,
-
-            name,
-            target,
-            saved: Math.min(saved,target),
-            monthly
-
-        });
-
-
-        saveGoals();
-
-        closeGoalModal();
-
-        updateGoals();
-
-        showToast("Meta criada com sucesso! 🎯");
-
-    });
-
-
     function updateGoals() {
 
-        if (!isPremium()) {
-
-            goalsList.innerHTML =
-                `<div class="empty-state">
-                    Ative o Premium para criar metas financeiras. ⭐
-                </div>`;
-
-            return;
-
-        }
+        const list =
+            document.getElementById(
+                "goalsList"
+            );
 
         if (!goals.length) {
 
-            goalsList.innerHTML =
-                `<div class="empty-state">
+            list.innerHTML = `
+                <div class="empty-state">
                     Você ainda não criou nenhuma meta.
-                </div>`;
+                </div>
+            `;
 
             return;
 
         }
 
-
-        goalsList.innerHTML =
+        list.innerHTML =
             goals.map(goal => {
 
+                const target =
+                    Number(goal.target);
+
+                const saved =
+                    Number(goal.saved);
+
                 const percentage =
-                    Math.min(
-                        100,
-                        goal.saved /
-                        goal.target *
-                        100
-                    );
-
-                const remaining =
-                    Math.max(
-                        0,
-                        goal.target -
-                        goal.saved
-                    );
-
-                const months =
-                    remaining > 0
-                        ? Math.ceil(
-                            remaining /
-                            goal.monthly
+                    target > 0
+                        ? Math.min(
+                            100,
+                            saved / target * 100
                         )
                         : 0;
 
-                let completion = "";
-
-                if (months === 0) {
-
-                    completion =
-                        "Meta concluída! 🎉";
-
-                } else {
-
-                    completion =
-                        `Aproximadamente ${months} mês(es) para concluir.`;
-
-                }
-
-
                 return `
 
-                    <div class="goal-card">
+                    <div class="goal-item">
 
-                        <div class="goal-card-header">
+                        <div class="goal-top">
 
                             <strong>
-                                🎯 ${escapeHTML(goal.name)}
+                                ${escapeHTML(goal.name)}
                             </strong>
+
+                            <span>
+                                ${percentage.toFixed(0)}%
+                            </span>
+
+                        </div>
+
+                        <div class="progress-bar">
+
+                            <div
+                                class="progress-fill"
+                                style="width:${percentage}%"
+                            ></div>
+
+                        </div>
+
+                        <div class="goal-values">
+
+                            <span>
+                                ${formatMoney(saved)}
+                            </span>
+
+                            <span>
+                                Meta: ${formatMoney(target)}
+                            </span>
 
                             <button
                                 class="goal-delete"
-                                data-goal-delete="${String(goal.id)}"
+                                data-goal-id="${goal.id}"
                                 type="button"
                             >
                                 ×
@@ -1860,38 +1735,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         </div>
 
-                        <div class="goal-value">
-                            ${formatMoney(goal.saved)}
-                            /
-                            ${formatMoney(goal.target)}
-                        </div>
-
-                        <div class="goal-progress">
-                            <div style="width:${percentage}%"></div>
-                        </div>
-
-                        <div class="goal-details">
-
-                            <div class="goal-detail">
-                                <small>Falta</small>
-                                <strong>
-                                    ${formatMoney(remaining)}
-                                </strong>
-                            </div>
-
-                            <div class="goal-detail">
-                                <small>Por mês</small>
-                                <strong>
-                                    ${formatMoney(goal.monthly)}
-                                </strong>
-                            </div>
-
-                        </div>
-
-                        <p>
-                            ${completion}
-                        </p>
-
                     </div>
 
                 `;
@@ -1900,963 +1743,655 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
+    document
+        .getElementById("addGoalBtn")
+        .addEventListener("click", () => {
 
-    document.addEventListener("click", event => {
+            goalModal.classList.remove("hidden");
 
-        const button =
-            event.target.closest("[data-goal-delete]");
+        });
 
-        if (!button) return;
+    document
+        .getElementById("closeGoalModal")
+        .addEventListener("click", () => {
 
-        const id =
-            String(button.dataset.goalDelete);
+            goalModal.classList.add("hidden");
 
-        goals =
-            goals.filter(
-                goal =>
-                    String(goal.id) !== id
-            );
+        });
 
-        saveGoals();
+    goalModal
+        .querySelector(".modal-overlay")
+        .addEventListener("click", () => {
 
-        updateGoals();
+            goalModal.classList.add("hidden");
 
-        showToast("Meta excluída.");
+        });
 
-    });
+    goalForm.addEventListener(
+        "submit",
+        event => {
 
+            event.preventDefault();
 
-    /* =========================
-       ORÇAMENTO
-    ========================= */
+            const name =
+                document
+                    .getElementById("goalName")
+                    .value.trim();
 
-    function updateBudgetList() {
+            const target =
+                Number(
+                    document
+                        .getElementById("goalTarget")
+                        .value
+                );
 
-        if (!isPremium()) {
+            const saved =
+                Number(
+                    document
+                        .getElementById("goalSaved")
+                        .value || 0
+                );
 
-            budgetList.innerHTML =
-                `<div class="empty-state">
-                    Ative o Premium para controlar seu orçamento. ⭐
-                </div>`;
+            if (!name || target <= 0) {
+                return;
+            }
 
-            return;
+            goals.push({
 
-        }
+                id:
+                    `${Date.now()}-${Math.random()
+                        .toString(36)
+                        .slice(2)}`,
 
+                name,
+                target,
+                saved:
+                    Math.min(saved, target)
 
-        budgetList.innerHTML =
-            categories.map(category => {
-
-                const spent =
-                    calculateCategories()[category] || 0;
-
-                const budget =
-                    budgets.find(
-                        item =>
-                            item.category === category
-                    );
-
-                const limit =
-                    budget
-                        ? Number(budget.limit)
-                        : 0;
-
-                const percentage =
-                    limit > 0
-                        ? spent / limit * 100
-                        : 0;
-
-                const displayPercentage =
-                    Math.min(100,percentage);
-
-                return `
-
-                    <div class="budget-item">
-
-                        <div class="budget-header">
-
-                            <strong>
-                                ${escapeHTML(category)}
-                            </strong>
-
-                            <span>
-                                ${formatMoney(spent)}
-                                /
-                                ${limit > 0
-                                    ? formatMoney(limit)
-                                    : "Sem limite"}
-                            </span>
-
-                        </div>
-
-                        <div class="budget-progress">
-
-                            <div
-                                class="${percentage > 100 ? "over" : ""}"
-                                style="width:${displayPercentage}%"
-                            ></div>
-
-                        </div>
-
-                        <div class="budget-footer">
-
-                            <span>
-                                ${
-                                    limit > 0
-                                        ? `${percentage.toFixed(0)}% utilizado`
-                                        : "Clique para definir limite"
-                                }
-                            </span>
-
-                            <button
-                                class="text-button"
-                                data-budget-category="${escapeHTML(category)}"
-                                type="button"
-                            >
-                                ${limit > 0 ? "Alterar" : "Definir"}
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            }).join("");
-
-    }
-
-
-    document.addEventListener("click", event => {
-
-        const button =
-            event.target.closest("[data-budget-category]");
-
-        if (!button) return;
-
-        if (!premiumCheck()) return;
-
-        const category =
-            button.dataset.budgetCategory;
-
-        const current =
-            budgets.find(
-                item => item.category === category
-            );
-
-        const value =
-            prompt(
-                `Defina o limite mensal para ${category}:`,
-                current ? current.limit : ""
-            );
-
-        /*
-           Prompt é usado somente para edição do orçamento.
-           Não é uma mensagem de alerta.
-        */
-
-        if (value === null) return;
-
-        const limit =
-            Number(
-                String(value)
-                    .replace(",", ".")
-            );
-
-        if (!limit || limit <= 0) {
-
-            showToast("Digite um limite válido.");
-
-            return;
-
-        }
-
-        const existing =
-            budgets.find(
-                item => item.category === category
-            );
-
-        if (existing) {
-
-            existing.limit = limit;
-
-        } else {
-
-            budgets.push({
-                category,
-                limit
             });
 
+            saveGoals();
+
+            goalForm.reset();
+
+            goalModal.classList.add("hidden");
+
+            updatePremium();
+
         }
+    );
 
-        saveBudgets();
+    document.addEventListener(
+        "click",
+        event => {
 
-        updateBudgetList();
+            const button =
+                event.target.closest(
+                    "[data-goal-id]"
+                );
 
-        showToast("Orçamento atualizado! 💰");
+            if (!button) return;
 
-    });
+            const id =
+                String(
+                    button.dataset.goalId
+                );
 
+            goals =
+                goals.filter(
+                    goal =>
+                        String(goal.id) !== id
+                );
+
+            saveGoals();
+
+            updatePremium();
+
+        }
+    );
 
     /* =========================
-       ALERTAS INTELIGENTES
+       ALERTAS
     ========================= */
 
-    function updateSmartAlerts() {
+    function updateAlerts() {
 
-        if (!isPremium()) {
-
-            smartAlerts.innerHTML =
-                `<div class="empty-state">
-                    Ative o Premium para receber alertas inteligentes. ⭐
-                </div>`;
-
-            return;
-
-        }
+        const container =
+            document.getElementById(
+                "premiumAlerts"
+            );
 
         const totals =
             calculateMonthTotals();
 
-        const previous =
-            calculateMonthTotals(-1);
-
         const alerts = [];
 
-
         if (
+            totals.expense > 0 &&
+            totals.income > 0 &&
             totals.expense >
-            previous.expense &&
-            previous.expense > 0
+                totals.income * 0.8
         ) {
 
-            const increase =
-                (
-                    (totals.expense -
-                    previous.expense) /
-                    previous.expense
-                ) * 100;
-
-            if (increase >= 10) {
-
-                alerts.push({
-                    title: "🚨 Seus gastos aumentaram",
-                    text:
-                        `As despesas estão ${increase.toFixed(0)}% maiores que no mês anterior.`
-                });
-
-            }
+            alerts.push(
+                "Seus gastos já representam mais de 80% das receitas deste mês."
+            );
 
         }
 
-
-        const categoryTotals =
+        const categoriesData =
             calculateCategories();
 
-        Object.entries(categoryTotals)
-            .forEach(([category,value]) => {
+        Object.entries(categoriesData)
+            .forEach(
+                ([category, value]) => {
 
-                const budget =
-                    budgets.find(
-                        item =>
-                            item.category === category
-                    );
+                    const limit =
+                        Number(
+                            budgets[category] || 0
+                        );
 
-                if (
-                    budget &&
-                    value > budget.limit
-                ) {
+                    if (
+                        limit > 0 &&
+                        value > limit
+                    ) {
 
-                    alerts.push({
-                        title:
-                            `🚨 Orçamento ultrapassado: ${category}`,
-                        text:
-                            `Você já gastou ${formatMoney(value)} de um limite de ${formatMoney(budget.limit)}.`
-                    });
+                        alerts.push(
+                            `O orçamento de ${category} foi ultrapassado.`
+                        );
+
+                    }
 
                 }
-
-            });
-
-
-        if (totals.income > 0 && totals.balance < 0) {
-
-            alerts.push({
-                title: "⚠️ Atenção ao saldo",
-                text:
-                    "Suas despesas já ultrapassaram suas receitas neste mês."
-            });
-
-        }
-
+            );
 
         if (!alerts.length) {
 
-            alerts.push({
-                title: "✅ Tudo sob controle",
-                text:
-                    "Não encontramos nenhum alerta importante neste momento."
-            });
+            container.innerHTML =
+                `<p>Nenhum alerta importante no momento. ✓</p>`;
+
+            return;
 
         }
 
-
-        smartAlerts.innerHTML =
-            alerts.map(alert => `
-
-                <div class="smart-alert">
-
-                    <strong>
-                        ${escapeHTML(alert.title)}
-                    </strong>
-
-                    <p>
-                        ${escapeHTML(alert.text)}
-                    </p>
-
-                </div>
-
-            `).join("");
+        container.innerHTML =
+            alerts
+                .map(
+                    alert =>
+                        `<div class="alert-item">🚨 ${escapeHTML(alert)}</div>`
+                )
+                .join("");
 
     }
-
 
     /* =========================
        COMPARAÇÃO MENSAL
     ========================= */
 
-    function updateMonthlyComparison() {
-
-        if (!isPremium()) {
-
-            monthlyComparison.innerHTML =
-                `<div class="empty-state">
-                    Ative o Premium para comparar seus meses. ⭐
-                </div>`;
-
-            return;
-
-        }
-
-        const current =
-            calculateMonthTotals(0);
-
-        const previous =
-            calculateMonthTotals(-1);
-
-
-        function variation(currentValue, previousValue) {
-
-            if (previousValue === 0) {
-
-                return currentValue === 0
-                    ? "0%"
-                    : "Novo";
-
-            }
-
-            const value =
-                (
-                    (currentValue -
-                    previousValue) /
-                    previousValue
-                ) * 100;
-
-            return `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
-
-        }
-
-
-        monthlyComparison.innerHTML = `
-
-            <div class="comparison-grid">
-
-                <div class="comparison-card">
-                    <span>Receitas</span>
-
-                    <strong>
-                        ${formatMoney(current.income)}
-                    </strong>
-
-                    <small>
-                        ${variation(
-                            current.income,
-                            previous.income
-                        )}
-                        vs. mês anterior
-                    </small>
-                </div>
-
-                <div class="comparison-card">
-                    <span>Despesas</span>
-
-                    <strong>
-                        ${formatMoney(current.expense)}
-                    </strong>
-
-                    <small>
-                        ${variation(
-                            current.expense,
-                            previous.expense
-                        )}
-                        vs. mês anterior
-                    </small>
-                </div>
-
-                <div class="comparison-card">
-                    <span>Saldo</span>
-
-                    <strong>
-                        ${formatMoney(current.balance)}
-                    </strong>
-
-                    <small>
-                        ${variation(
-                            current.balance,
-                            previous.balance
-                        )}
-                        vs. mês anterior
-                    </small>
-                </div>
-
-            </div>
-
-        `;
-
-    }
-
-
-    /* =========================
-       CALENDÁRIO
-    ========================= */
-
-    function updateCalendar() {
-
-        if (!isPremium()) {
-
-            financialCalendar.innerHTML =
-                `<div class="empty-state">
-                    Ative o Premium para usar o calendário financeiro. ⭐
-                </div>`;
-
-            return;
-
-        }
-
-
-        const now = new Date();
-
-        const year =
-            now.getFullYear();
-
-        const month =
-            now.getMonth();
-
-        const firstDay =
-            new Date(year,month,1)
-                .getDay();
-
-        const daysInMonth =
-            new Date(year,month + 1,0)
-                .getDate();
-
+    function getMonthTotals(
+        year,
+        month
+    ) {
 
         const start =
-            new Date(year,month,1);
+            new Date(
+                year,
+                month,
+                1
+            );
 
         const end =
             new Date(
                 year,
-                month,
-                daysInMonth,
+                month + 1,
+                0,
                 23,
                 59,
                 59
             );
 
-
         const items =
-            getPeriodTransactions(start,end);
+            getPeriodTransactions(
+                start,
+                end
+            );
 
-
-        const byDay = {};
+        let income = 0;
+        let expense = 0;
 
         items.forEach(item => {
 
-            const day =
-                item.occurrenceDate.getDate();
-
-            if (!byDay[day]) {
-                byDay[day] = {
-                    income: 0,
-                    expense: 0
-                };
-            }
-
             if (item.type === "income") {
-                byDay[day].income += Number(item.amount);
+                income += Number(item.amount);
             } else {
-                byDay[day].expense += Number(item.amount);
+                expense += Number(item.amount);
             }
 
         });
 
-
-        const monthName =
-            new Date(year,month,1)
-                .toLocaleDateString(
-                    "pt-BR",
-                    {
-                        month: "long",
-                        year: "numeric"
-                    }
-                );
-
-
-        let html = `
-
-            <div class="calendar-title">
-                ${monthName}
-            </div>
-
-            <div class="calendar-grid">
-
-                <div class="calendar-day-name">Dom</div>
-                <div class="calendar-day-name">Seg</div>
-                <div class="calendar-day-name">Ter</div>
-                <div class="calendar-day-name">Qua</div>
-                <div class="calendar-day-name">Qui</div>
-                <div class="calendar-day-name">Sex</div>
-                <div class="calendar-day-name">Sáb</div>
-
-        `;
-
-
-        for (let i = 0; i < firstDay; i++) {
-
-            html += `<div></div>`;
-
-        }
-
-
-        for (let day = 1; day <= daysInMonth; day++) {
-
-            const data =
-                byDay[day];
-
-            const isToday =
-                day === now.getDate();
-
-            let className =
-                "calendar-day";
-
-            if (isToday) {
-                className += " today";
-            }
-
-            if (data?.income) {
-                className += " income-day";
-            }
-
-            if (data?.expense) {
-                className += " expense-day";
-            }
-
-
-            html += `
-
-                <div class="${className}">
-
-                    <strong>${day}</strong>
-
-                    ${
-                        data
-                            ? `
-                                <div class="calendar-amount">
-                                    ${
-                                        data.income
-                                            ? "↗ " + formatMoney(data.income)
-                                            : ""
-                                    }
-                                </div>
-
-                                <div class="calendar-amount">
-                                    ${
-                                        data.expense
-                                            ? "↘ " + formatMoney(data.expense)
-                                            : ""
-                                    }
-                                </div>
-                              `
-                            : ""
-                    }
-
-                </div>
-
-            `;
-
-        }
-
-
-        html += `</div>`;
-
-        financialCalendar.innerHTML = html;
+        return {
+            income,
+            expense,
+            balance:
+                income - expense
+        };
 
     }
 
+    function updateComparison() {
+
+        const container =
+            document.getElementById(
+                "monthlyComparison"
+            );
+
+        const now =
+            new Date();
+
+        const current =
+            getMonthTotals(
+                now.getFullYear(),
+                now.getMonth()
+            );
+
+        const previous =
+            getMonthTotals(
+                now.getFullYear(),
+                now.getMonth() - 1
+            );
+
+        if (
+            current.expense === 0 &&
+            previous.expense === 0
+        ) {
+
+            container.innerHTML =
+                "Ainda não há dados suficientes para comparar.";
+
+            return;
+
+        }
+
+        const difference =
+            current.expense -
+            previous.expense;
+
+        if (difference < 0) {
+
+            container.innerHTML = `
+                Você gastou
+                <strong class="comparison-positive">
+                    ${formatMoney(Math.abs(difference))}
+                </strong>
+                a menos que no mês anterior. ✓
+            `;
+
+        } else if (difference > 0) {
+
+            container.innerHTML = `
+                Você gastou
+                <strong class="comparison-negative">
+                    ${formatMoney(difference)}
+                </strong>
+                a mais que no mês anterior.
+            `;
+
+        } else {
+
+            container.innerHTML =
+                "Seus gastos estão no mesmo nível do mês anterior.";
+
+        }
+
+    }
+
+    /* =========================
+       ORÇAMENTOS
+    ========================= */
+
+    function prepareBudgetCategories() {
+
+        const select =
+            document.getElementById(
+                "budgetCategory"
+            );
+
+        select.innerHTML = "";
+
+        categories
+            .filter(
+                category =>
+                    category !== "Salário"
+            )
+            .forEach(category => {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = category;
+                option.textContent = category;
+
+                select.appendChild(option);
+
+            });
+
+    }
+
+    function updateBudgets() {
+
+        const list =
+            document.getElementById(
+                "budgetList"
+            );
+
+        const entries =
+            Object.entries(budgets);
+
+        if (!entries.length) {
+
+            list.innerHTML =
+                `<p>Nenhum orçamento definido.</p>`;
+
+            return;
+
+        }
+
+        const totals =
+            calculateCategories();
+
+        list.innerHTML =
+            entries.map(
+                ([category, limit]) => {
+
+                    const spent =
+                        Number(
+                            totals[category] || 0
+                        );
+
+                    const percentage =
+                        limit > 0
+                            ? Math.min(
+                                100,
+                                spent / limit * 100
+                            )
+                            : 0;
+
+                    return `
+
+                        <div class="budget-item">
+
+                            <div class="budget-item-top">
+
+                                <strong>
+                                    ${escapeHTML(category)}
+                                </strong>
+
+                                <span>
+                                    ${formatMoney(spent)}
+                                    /
+                                    ${formatMoney(limit)}
+                                </span>
+
+                            </div>
+
+                            <div class="budget-progress">
+
+                                <div
+                                    style="width:${percentage}%"
+                                ></div>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            ).join("");
+
+    }
+
+    document
+        .getElementById("addBudgetBtn")
+        .addEventListener("click", () => {
+
+            prepareBudgetCategories();
+
+            budgetModal.classList.remove(
+                "hidden"
+            );
+
+        });
+
+    document
+        .getElementById("closeBudgetModal")
+        .addEventListener("click", () => {
+
+            budgetModal.classList.add(
+                "hidden"
+            );
+
+        });
+
+    budgetModal
+        .querySelector(".modal-overlay")
+        .addEventListener("click", () => {
+
+            budgetModal.classList.add(
+                "hidden"
+            );
+
+        });
+
+    budgetForm.addEventListener(
+        "submit",
+        event => {
+
+            event.preventDefault();
+
+            const category =
+                document
+                    .getElementById(
+                        "budgetCategory"
+                    )
+                    .value;
+
+            const amount =
+                Number(
+                    document
+                        .getElementById(
+                            "budgetAmount"
+                        )
+                        .value
+                );
+
+            if (!category || amount <= 0) {
+                return;
+            }
+
+            budgets[category] = amount;
+
+            saveBudgets();
+
+            budgetForm.reset();
+
+            budgetModal.classList.add(
+                "hidden"
+            );
+
+            updatePremium();
+
+        }
+    );
 
     /* =========================
        SIMULADOR
     ========================= */
 
-    document.getElementById("simulateBtn")
+    document
+        .getElementById("simulateBtn")
         .addEventListener("click", () => {
 
-            if (!premiumCheck()) return;
-
             const amount =
-                Number(simulationAmount.value);
+                Number(
+                    document
+                        .getElementById(
+                            "simulationAmount"
+                        )
+                        .value
+                );
 
-            if (!amount || amount <= 0) {
+            const result =
+                document.getElementById(
+                    "simulationResult"
+                );
 
-                showToast("Digite um valor para simular.");
+            if (amount <= 0) {
+
+                result.textContent =
+                    "Digite um valor válido.";
 
                 return;
 
             }
 
-            const current =
+            const totals =
                 calculateMonthTotals();
 
-            let simulated =
-                current.balance;
+            const simulated =
+                totals.balance - amount;
 
-            if (simulationType.value === "expense") {
+            if (simulated >= 0) {
 
-                simulated -= amount;
+                result.innerHTML = `
+                    Depois dessa despesa,
+                    seu saldo estimado seria
+                    <strong class="comparison-positive">
+                        ${formatMoney(simulated)}
+                    </strong>.
+                `;
 
             } else {
 
-                simulated += amount;
+                result.innerHTML = `
+                    Essa despesa deixaria seu saldo em
+                    <strong class="comparison-negative">
+                        ${formatMoney(simulated)}
+                    </strong>.
+                `;
 
             }
 
-            simulationResult.className =
-                "simulation-result";
-
-            simulationResult.innerHTML = `
-
-                <strong>
-                    Saldo atual:
-                </strong>
-
-                ${formatMoney(current.balance)}
-
-                <br><br>
-
-                <strong>
-                    Saldo simulado:
-                </strong>
-
-                ${formatMoney(simulated)}
-
-            `;
-
         });
 
-
     /* =========================
-       INSIGHTS
+       ANÁLISE PREMIUM
     ========================= */
 
-    function updateInsights() {
+    function updatePremiumAnalysis() {
 
-        if (!isPremium()) {
-
-            financialInsights.innerHTML =
-                `<div class="empty-state">
-                    Ative o Premium para receber insights financeiros. ⭐
-                </div>`;
-
-            return;
-
-        }
+        const container =
+            document.getElementById(
+                "premiumAnalysis"
+            );
 
         const totals =
             calculateMonthTotals();
 
-        const categoryTotals =
+        const categoriesData =
             calculateCategories();
 
         const entries =
-            Object.entries(categoryTotals)
-                .sort((a,b) => b[1] - a[1]);
+            Object.entries(
+                categoriesData
+            ).sort(
+                (a, b) => b[1] - a[1]
+            );
 
-        const insights = [];
+        if (
+            totals.income === 0 &&
+            totals.expense === 0
+        ) {
 
-
-        if (totals.income > 0) {
-
-            const economy =
-                totals.balance /
-                totals.income *
-                100;
-
-            if (economy >= 20) {
-
-                insights.push({
-                    title: "💎 Boa capacidade de economia",
-                    text:
-                        `Você está economizando aproximadamente ${economy.toFixed(1)}% das suas receitas neste mês.`
-                });
-
-            } else if (economy >= 0) {
-
-                insights.push({
-                    title: "💡 Dá para melhorar",
-                    text:
-                        "Seu saldo está positivo, mas existe espaço para aumentar sua economia."
-                });
-
-            } else {
-
-                insights.push({
-                    title: "🚨 Atenção aos gastos",
-                    text:
-                        "Suas despesas estão maiores que suas receitas neste mês."
-                });
-
-            }
-
-        }
-
-
-        if (entries.length) {
-
-            insights.push({
-                title:
-                    `📄 Maior categoria: ${entries[0][0]}`,
-                text:
-                    `Você gastou ${formatMoney(entries[0][1])} nessa categoria neste mês.`
-            });
-
-        }
-
-
-        if (!insights.length) {
-
-            insights.push({
-                title: "💡 Comece a registrar seus lançamentos",
-                text:
-                    "Com mais dados, o ControleS poderá gerar análises mais inteligentes."
-            });
-
-        }
-
-
-        financialInsights.innerHTML =
-            insights.map(item => `
-
-                <div class="insight">
-
-                    <strong>
-                        ${escapeHTML(item.title)}
-                    </strong>
-
-                    <p>
-                        ${escapeHTML(item.text)}
-                    </p>
-
-                </div>
-
-            `).join("");
-
-    }
-
-
-    /* =========================
-       SAÚDE FINANCEIRA
-    ========================= */
-
-    function updateFinancialHealth() {
-
-        if (!isPremium()) {
-
-            healthScore.textContent = "0/100";
-            healthProgress.style.width = "0%";
-
-            healthMessage.textContent =
-                "Ative o Premium para analisar sua saúde financeira.";
+            container.textContent =
+                "Adicione lançamentos para gerar sua análise.";
 
             return;
 
         }
 
+        let text =
+            `Receitas: ${formatMoney(totals.income)}. ` +
+            `Despesas: ${formatMoney(totals.expense)}. ` +
+            `Saldo: ${formatMoney(totals.balance)}.`;
 
-        const totals =
-            calculateMonthTotals();
+        if (entries.length) {
 
-        let score = 50;
-
-
-        if (totals.income > 0) {
-
-            const economy =
-                totals.balance /
-                totals.income;
-
-            score += economy * 40;
+            text +=
+                ` Maior categoria de gasto: ${entries[0][0]} ` +
+                `(${formatMoney(entries[0][1])}).`;
 
         }
 
-
-        if (totals.balance < 0) {
-            score -= 20;
-        }
-
-        if (totals.expense === 0 && totals.income === 0) {
-            score = 50;
-        }
-
-        score =
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    Math.round(score)
-                )
-            );
-
-
-        healthScore.textContent =
-            `${score}/100`;
-
-        healthProgress.style.width =
-            `${score}%`;
-
-
-        if (score >= 80) {
-
-            healthMessage.textContent =
-                "Excelente! Suas finanças apresentam uma boa margem de segurança. 💎";
-
-        } else if (score >= 60) {
-
-            healthMessage.textContent =
-                "Boa situação. Continue controlando seus gastos. 👍";
-
-        } else if (score >= 40) {
-
-            healthMessage.textContent =
-                "Atenção. Você pode melhorar sua margem de economia. 💡";
-
-        } else {
-
-            healthMessage.textContent =
-                "Cuidado. Seus gastos estão pressionando seu orçamento. 🚨";
-
-        }
+        container.textContent = text;
 
     }
-
-
-    /* =========================
-       PREMIUM ATIVAÇÃO
-    ========================= */
-
-    document.getElementById("subscribePremiumBtn")
-        .addEventListener("click", () => {
-
-            if (!currentUser) return;
-
-            if (isPremium()) {
-
-                showToast(
-                    "Você já possui o ControleS Premium ⭐"
-                );
-
-                return;
-
-            }
-
-            currentUser.plan = "premium";
-
-            saveJSON(
-                "controles_user",
-                currentUser
-            );
-
-            userPlan.textContent =
-                "ControleS Premium ⭐";
-
-            updatePremium();
-
-            showToast(
-                "ControleS Premium ativado! ⭐"
-            );
-
-        });
-
-
-    function updatePremium() {
-
-        updateForecast();
-        updateGoals();
-        updateBudgetList();
-        updateSmartAlerts();
-        updateMonthlyComparison();
-        updateCalendar();
-        updateInsights();
-        updateFinancialHealth();
-
-    }
-
 
     /* =========================
        TEMA
     ========================= */
 
-    document.getElementById("themeBtn")
+    document
+        .getElementById("themeBtn")
         .addEventListener("click", () => {
 
-            document.body.classList.toggle("dark");
+            document.body.classList.toggle(
+                "dark"
+            );
 
             const dark =
-                document.body.classList.contains("dark");
+                document.body.classList.contains(
+                    "dark"
+                );
 
             localStorage.setItem(
                 "controles_dark",
-                String(dark)
+                dark
             );
 
         });
 
-
     if (
-        localStorage.getItem("controles_dark") === "true"
+        localStorage.getItem(
+            "controles_dark"
+        ) === "true"
     ) {
 
         document.body.classList.add("dark");
 
     }
 
-
     /* =========================
        EXPORTAR
     ========================= */
 
-    document.getElementById("exportDataBtn")
+    document
+        .getElementById("exportDataBtn")
         .addEventListener("click", () => {
 
             const data = {
 
-                user: currentUser,
+                user:
+                    currentUser,
 
-                transactions,
+                transactions:
+                    transactions,
 
-                goals,
+                goals:
+                    goals,
 
-                budgets,
+                budgets:
+                    budgets,
 
                 exportedAt:
                     new Date().toISOString()
@@ -2873,7 +2408,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         )
                     ],
                     {
-                        type: "application/json"
+                        type:
+                            "application/json"
                     }
                 );
 
@@ -2884,7 +2420,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.createElement("a");
 
             link.href = url;
-
             link.download =
                 "controles-dados.json";
 
@@ -2896,10 +2431,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
             URL.revokeObjectURL(url);
 
-            showToast("Dados exportados! 💾");
-
         });
 
+    /* =========================
+       ATIVAR PREMIUM
+    ========================= */
+
+    document
+        .getElementById(
+            "subscribePremiumBtn"
+        )
+        ?.addEventListener(
+            "click",
+            () => {
+
+                if (!currentUser) return;
+
+                currentUser.plan =
+                    "premium";
+
+                localStorage.setItem(
+                    "controles_user",
+                    JSON.stringify(
+                        currentUser
+                    )
+                );
+
+                userPlan.textContent =
+                    "ControleS Premium ⭐";
+
+                updatePremium();
+
+            }
+        );
 
     /* =========================
        ATUALIZAÇÃO GERAL
@@ -2923,12 +2487,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
     /* =========================
        INICIALIZAÇÃO
     ========================= */
 
-    dateInput.value = todayISO();
+    dateInput.value =
+        todayISO();
 
     loadUser();
 
