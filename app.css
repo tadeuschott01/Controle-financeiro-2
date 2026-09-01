@@ -4,39 +4,30 @@
 ===================================================== */
 
 :root {
-
     --orange: #f97316;
     --orange-dark: #ea580c;
-    --orange-light: #fff1e8;
+    --orange-light: #fff1e7;
 
     --green: #123c2d;
     --green-2: #18533d;
-    --green-3: #21664b;
+    --green-3: #236b4f;
     --green-light: #e7f3ed;
 
-    --background: #f5f7f6;
+    --background: #f4f7f5;
     --surface: #ffffff;
     --surface-2: #f8faf9;
 
     --text: #17352b;
     --text-light: #708078;
 
-    --border: #e4ebe7;
+    --border: #e1e9e4;
 
     --danger: #dc2626;
-    --danger-light: #fee2e2;
-
-    --warning: #eab308;
-    --warning-light: #fef9c3;
-
     --success: #16805a;
-    --success-light: #dcfce7;
+    --yellow: #f59e0b;
 
-    --shadow:
-        0 10px 30px rgba(18, 60, 45, .08);
-
-    --shadow-premium:
-        0 18px 45px rgba(18, 60, 45, .14);
+    --shadow: 0 12px 35px rgba(18, 60, 45, .08);
+    --shadow-hover: 0 18px 45px rgba(18, 60, 45, .14);
 
     --radius: 18px;
 }
@@ -57,7 +48,6 @@ html {
 }
 
 body {
-
     font-family:
         Inter,
         -apple-system,
@@ -100,7 +90,6 @@ img {
 ===================================================== */
 
 .login-screen {
-
     min-height: 100vh;
 
     display: flex;
@@ -111,30 +100,34 @@ img {
 
     background:
         radial-gradient(
-            circle at top right,
-            rgba(249,115,22,.15),
+            circle at 90% 10%,
+            rgba(249, 115, 22, .18),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 10% 90%,
+            rgba(18, 60, 45, .12),
             transparent 35%
         ),
         linear-gradient(
             135deg,
-            #f6faf8,
+            #f7faf8,
             #edf4f0
         );
 }
 
 .login-card {
-
     width: 100%;
     max-width: 430px;
 
-    background: var(--surface);
+    background: rgba(255,255,255,.97);
 
     border-radius: 28px;
 
     padding: 38px;
 
     box-shadow:
-        0 25px 70px rgba(18,60,45,.13);
+        0 30px 80px rgba(18,60,45,.15);
 
     border: 1px solid var(--border);
 }
@@ -145,7 +138,6 @@ img {
 }
 
 .login-logo {
-
     width: 82px;
     height: 82px;
 
@@ -160,26 +152,24 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    box-shadow:
+        0 12px 30px rgba(18,60,45,.18);
 }
 
 .login-logo img {
-
     width: 100%;
     height: 100%;
-
     object-fit: contain;
 }
 
 .login-brand h1 {
-
     font-size: 30px;
     font-weight: 800;
-
     color: var(--green);
 }
 
 .login-brand p {
-
     color: var(--text-light);
     margin-top: 5px;
 }
@@ -196,7 +186,6 @@ img {
 
 .input-group label,
 .form-group label {
-
     display: block;
 
     font-size: 13px;
@@ -209,7 +198,6 @@ img {
 
 input,
 select {
-
     width: 100%;
     height: 50px;
 
@@ -227,25 +215,25 @@ select {
     transition: .2s;
 }
 
+input::placeholder {
+    color: #9aa8a1;
+}
+
 input:focus,
 select:focus {
-
     border-color: var(--orange);
 
     box-shadow:
-        0 0 0 3px rgba(249,115,22,.10);
+        0 0 0 4px rgba(249,115,22,.10);
 }
 
 .login-submit {
-
     width: 100%;
     height: 52px;
-
     margin-top: 5px;
 }
 
 .login-footer {
-
     text-align: center;
 
     color: var(--text-light);
@@ -261,14 +249,18 @@ select:focus {
 ===================================================== */
 
 .btn-primary {
-
     border: 0;
 
     border-radius: 13px;
 
     padding: 12px 18px;
 
-    background: var(--orange);
+    background:
+        linear-gradient(
+            135deg,
+            var(--orange),
+            var(--orange-dark)
+        );
 
     color: white;
 
@@ -277,17 +269,14 @@ select:focus {
     transition: .2s;
 
     box-shadow:
-        0 8px 18px rgba(249,115,22,.20);
+        0 9px 22px rgba(249,115,22,.23);
 }
 
 .btn-primary:hover {
-
-    background: var(--orange-dark);
-
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 
     box-shadow:
-        0 12px 24px rgba(249,115,22,.28);
+        0 13px 28px rgba(249,115,22,.30);
 }
 
 .btn-primary:active {
@@ -295,39 +284,39 @@ select:focus {
 }
 
 .btn-premium {
-
     border: 0;
 
-    border-radius: 13px;
+    border-radius: 14px;
 
     padding: 14px 22px;
 
-    background: var(--orange);
+    background:
+        linear-gradient(
+            135deg,
+            #ff8a24,
+            #ea580c
+        );
 
     color: white;
 
-    font-weight: 800;
+    font-weight: 900;
 
     margin-top: 20px;
 
     box-shadow:
-        0 10px 25px rgba(249,115,22,.30);
+        0 12px 28px rgba(249,115,22,.35);
 
-    transition: .2s;
+    transition: .25s;
 }
 
 .btn-premium:hover {
-
-    background: #fb923c;
-
-    transform: translateY(-2px);
+    transform: translateY(-3px);
 
     box-shadow:
-        0 15px 30px rgba(249,115,22,.40);
+        0 18px 35px rgba(249,115,22,.45);
 }
 
 .text-button {
-
     background: none;
     border: 0;
 
@@ -342,9 +331,7 @@ select:focus {
 ===================================================== */
 
 .app {
-
     min-height: 100vh;
-
     display: flex;
 }
 
@@ -354,7 +341,6 @@ select:focus {
 ===================================================== */
 
 .sidebar {
-
     width: 255px;
 
     min-height: 100vh;
@@ -365,7 +351,12 @@ select:focus {
     top: 0;
     bottom: 0;
 
-    background: var(--green);
+    background:
+        linear-gradient(
+            180deg,
+            #123c2d,
+            #0d2f23
+        );
 
     color: white;
 
@@ -377,11 +368,10 @@ select:focus {
     z-index: 1000;
 
     box-shadow:
-        5px 0 25px rgba(18,60,45,.08);
+        8px 0 30px rgba(18,60,45,.08);
 }
 
 .sidebar-brand {
-
     display: flex;
     align-items: center;
 
@@ -391,7 +381,6 @@ select:focus {
 }
 
 .brand-logo {
-
     width: 45px;
     height: 45px;
 
@@ -400,10 +389,12 @@ select:focus {
     overflow: hidden;
 
     background: white;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.12);
 }
 
 .brand-logo img {
-
     width: 100%;
     height: 100%;
 
@@ -411,7 +402,6 @@ select:focus {
 }
 
 .brand-text {
-
     display: flex;
     flex-direction: column;
 }
@@ -421,7 +411,6 @@ select:focus {
 }
 
 .brand-text span {
-
     font-size: 11px;
 
     color: #b7cec3;
@@ -430,7 +419,6 @@ select:focus {
 }
 
 .sidebar-nav {
-
     display: flex;
     flex-direction: column;
 
@@ -439,7 +427,6 @@ select:focus {
 
 .nav-item,
 .sidebar-action {
-
     width: 100%;
 
     border: 0;
@@ -468,36 +455,34 @@ select:focus {
 
 .nav-item:hover,
 .sidebar-action:hover {
-
     background: rgba(255,255,255,.08);
-
     color: white;
-
-    transform: translateX(2px);
 }
 
 .nav-item.active {
-
-    background: var(--orange);
+    background:
+        linear-gradient(
+            135deg,
+            var(--orange),
+            var(--orange-dark)
+        );
 
     color: white;
 
     box-shadow:
-        0 8px 20px rgba(249,115,22,.20);
+        0 8px 20px rgba(249,115,22,.22);
 }
 
 .nav-icon {
-
     width: 22px;
-
     text-align: center;
 }
 
 .sidebar-bottom {
-
     margin-top: auto;
 
-    border-top: 1px solid rgba(255,255,255,.10);
+    border-top:
+        1px solid rgba(255,255,255,.10);
 
     padding-top: 15px;
 }
@@ -508,7 +493,6 @@ select:focus {
 ===================================================== */
 
 .main-content {
-
     width: calc(100% - 255px);
 
     margin-left: 255px;
@@ -522,19 +506,17 @@ select:focus {
 ===================================================== */
 
 .topbar {
-
     height: 78px;
 
-    background: rgba(255,255,255,.92);
+    background: rgba(255,255,255,.94);
 
     backdrop-filter: blur(15px);
 
-    border-bottom: 1px solid var(--border);
+    border-bottom:
+        1px solid var(--border);
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     padding: 0 32px;
@@ -547,9 +529,7 @@ select:focus {
 }
 
 .topbar-left {
-
     display: flex;
-
     align-items: center;
 
     gap: 15px;
@@ -561,7 +541,6 @@ select:focus {
 .panel-header span,
 .premium-section-label,
 .premium-card-header span {
-
     font-size: 10px;
 
     letter-spacing: 1.2px;
@@ -572,51 +551,50 @@ select:focus {
 }
 
 .topbar h1 {
-
     font-size: 20px;
-
     margin-top: 2px;
 }
 
 .topbar-right {
-
     display: flex;
-
     align-items: center;
 
     gap: 18px;
 }
 
 .user-area {
-
     display: flex;
-
     align-items: center;
 
     gap: 9px;
 }
 
 .user-avatar {
-
     width: 40px;
     height: 40px;
 
     border-radius: 50%;
 
-    background: var(--orange);
+    background:
+        linear-gradient(
+            135deg,
+            var(--orange),
+            var(--orange-dark)
+        );
 
     color: white;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     font-weight: 800;
+
+    box-shadow:
+        0 7px 18px rgba(249,115,22,.22);
 }
 
 .user-info {
-
     display: flex;
     flex-direction: column;
 }
@@ -626,7 +604,6 @@ select:focus {
 }
 
 .user-info span {
-
     color: var(--text-light);
 
     font-size: 10px;
@@ -635,7 +612,6 @@ select:focus {
 }
 
 .mobile-menu {
-
     display: none;
 
     border: 0;
@@ -656,12 +632,10 @@ select:focus {
 ===================================================== */
 
 .section {
-
     padding: 30px 32px 60px;
 }
 
 .welcome {
-
     display: flex;
 
     justify-content: space-between;
@@ -672,22 +646,17 @@ select:focus {
 }
 
 .welcome h2 {
-
     font-size: 28px;
-
     margin-top: 6px;
 }
 
 .welcome p,
 .section-heading p {
-
     color: var(--text-light);
-
     margin-top: 5px;
 }
 
 .current-date {
-
     color: var(--text-light);
 
     font-size: 13px;
@@ -701,7 +670,6 @@ select:focus {
 ===================================================== */
 
 .stats-grid {
-
     display: grid;
 
     grid-template-columns:
@@ -713,10 +681,10 @@ select:focus {
 }
 
 .stat-card {
-
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius);
 
@@ -724,19 +692,16 @@ select:focus {
 
     box-shadow: var(--shadow);
 
-    transition: .2s;
+    transition: .25s;
 }
 
 .stat-card:hover {
-
     transform: translateY(-3px);
 
-    box-shadow:
-        0 15px 35px rgba(18,60,45,.11);
+    box-shadow: var(--shadow-hover);
 }
 
 .stat-top {
-
     display: flex;
 
     align-items: center;
@@ -745,7 +710,6 @@ select:focus {
 }
 
 .stat-icon {
-
     width: 35px;
     height: 35px;
 
@@ -754,13 +718,11 @@ select:focus {
     background: var(--green-light);
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 }
 
 .stat-label {
-
     font-size: 12px;
 
     color: var(--text-light);
@@ -769,7 +731,6 @@ select:focus {
 }
 
 .stat-card > strong {
-
     display: block;
 
     font-size: 24px;
@@ -778,7 +739,6 @@ select:focus {
 }
 
 .stat-card small {
-
     display: block;
 
     color: var(--text-light);
@@ -789,17 +749,11 @@ select:focus {
 }
 
 .stat-card.income .stat-icon {
-
     color: var(--success);
-
-    background: var(--success-light);
 }
 
 .stat-card.expense .stat-icon {
-
     color: var(--danger);
-
-    background: var(--danger-light);
 }
 
 
@@ -809,7 +763,6 @@ select:focus {
 
 .dashboard-grid,
 .category-layout {
-
     display: grid;
 
     grid-template-columns:
@@ -819,10 +772,10 @@ select:focus {
 }
 
 .panel {
-
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius);
 
@@ -832,7 +785,6 @@ select:focus {
 }
 
 .panel-header {
-
     display: flex;
 
     justify-content: space-between;
@@ -843,7 +795,6 @@ select:focus {
 }
 
 .panel-header h3 {
-
     margin-top: 4px;
 
     font-size: 17px;
@@ -854,7 +805,6 @@ select:focus {
 }
 
 .category-chart-container {
-
     height: 320px;
 
     display: flex;
@@ -874,7 +824,6 @@ select:focus {
 ===================================================== */
 
 .section-heading {
-
     display: flex;
 
     justify-content: space-between;
@@ -885,7 +834,6 @@ select:focus {
 }
 
 .section-heading h2 {
-
     font-size: 27px;
 
     margin-top: 5px;
@@ -897,7 +845,6 @@ select:focus {
 ===================================================== */
 
 .filters-panel {
-
     display: grid;
 
     grid-template-columns:
@@ -907,24 +854,27 @@ select:focus {
 
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius);
 
     padding: 14px;
 
     margin-bottom: 16px;
+
+    box-shadow: var(--shadow);
 }
 
 .search-box {
-
     display: flex;
 
     align-items: center;
 
     gap: 8px;
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: 12px;
 
@@ -932,7 +882,6 @@ select:focus {
 }
 
 .search-box input {
-
     border: 0;
 
     box-shadow: none;
@@ -944,7 +893,6 @@ select:focus {
 ===================================================== */
 
 .transaction {
-
     display: flex;
 
     align-items: center;
@@ -953,7 +901,8 @@ select:focus {
 
     padding: 13px 0;
 
-    border-bottom: 1px solid var(--border);
+    border-bottom:
+        1px solid var(--border);
 }
 
 .transaction:last-child {
@@ -961,7 +910,6 @@ select:focus {
 }
 
 .transaction-icon {
-
     width: 38px;
     height: 38px;
 
@@ -978,14 +926,12 @@ select:focus {
 }
 
 .transaction-info {
-
     flex: 1;
 
     min-width: 0;
 }
 
 .transaction-info strong {
-
     display: block;
 
     font-size: 13px;
@@ -998,7 +944,6 @@ select:focus {
 }
 
 .transaction-info small {
-
     display: block;
 
     color: var(--text-light);
@@ -1009,7 +954,6 @@ select:focus {
 }
 
 .transaction-value {
-
     font-size: 13px;
 
     font-weight: 800;
@@ -1024,7 +968,6 @@ select:focus {
 }
 
 .transaction-delete {
-
     border: 0;
 
     background: transparent;
@@ -1041,7 +984,6 @@ select:focus {
 }
 
 .empty-state {
-
     padding: 25px;
 
     text-align: center;
@@ -1057,7 +999,6 @@ select:focus {
 ===================================================== */
 
 .category-summary-item {
-
     display: flex;
 
     align-items: center;
@@ -1066,11 +1007,11 @@ select:focus {
 
     padding: 13px 0;
 
-    border-bottom: 1px solid var(--border);
+    border-bottom:
+        1px solid var(--border);
 }
 
 .category-summary-left {
-
     display: flex;
 
     align-items: center;
@@ -1079,7 +1020,6 @@ select:focus {
 }
 
 .category-dot {
-
     width: 9px;
     height: 9px;
 
@@ -1093,7 +1033,6 @@ select:focus {
 }
 
 .category-summary-item span {
-
     font-size: 12px;
 
     color: var(--text-light);
@@ -1101,20 +1040,19 @@ select:focus {
 
 
 /* =====================================================
-   PREMIUM — VISUAL FORTE
+   PREMIUM — ÁREA PRINCIPAL
 ===================================================== */
 
 .premium-section {
-
     background:
         radial-gradient(
-            circle at top right,
-            rgba(249,115,22,.08),
-            transparent 30%
+            circle at 100% 0%,
+            rgba(249,115,22,.10),
+            transparent 28%
         ),
         linear-gradient(
             180deg,
-            #f8fbf9,
+            #f7faf8,
             var(--background)
         );
 }
@@ -1125,27 +1063,26 @@ select:focus {
 ===================================================== */
 
 .premium-hero {
-
     position: relative;
 
     background:
         radial-gradient(
             circle at 85% 20%,
-            rgba(249,115,22,.35),
-            transparent 25%
+            rgba(249,115,22,.28),
+            transparent 28%
         ),
         linear-gradient(
             135deg,
-            #0b2a1e,
-            var(--green),
-            #1d6247
+            #0d3023,
+            #18533d 60%,
+            #123c2d
         );
 
     color: white;
 
     border-radius: 26px;
 
-    padding: 40px;
+    padding: 42px;
 
     display: flex;
 
@@ -1158,11 +1095,27 @@ select:focus {
     margin-bottom: 20px;
 
     box-shadow:
-        0 20px 50px rgba(18,60,45,.20);
+        0 22px 55px rgba(18,60,45,.22);
+}
+
+.premium-hero::before {
+    content: "";
+
+    position: absolute;
+
+    width: 300px;
+    height: 300px;
+
+    right: -120px;
+    top: -160px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(249,115,22,.20);
 }
 
 .premium-hero::after {
-
     content: "";
 
     position: absolute;
@@ -1170,17 +1123,17 @@ select:focus {
     width: 220px;
     height: 220px;
 
-    border-radius: 50%;
-
-    right: -80px;
+    right: -70px;
     bottom: -100px;
 
-    background: rgba(249,115,22,.18);
+    border-radius: 50%;
+
+    background:
+        rgba(249,115,22,.16);
 }
 
 .premium-content {
-
-    max-width: 650px;
+    max-width: 680px;
 
     position: relative;
 
@@ -1188,16 +1141,17 @@ select:focus {
 }
 
 .premium-tag {
+    display: inline-flex;
 
-    display: inline-block;
+    align-items: center;
 
     background:
-        rgba(249,115,22,.20);
+        rgba(249,115,22,.18);
 
     border:
-        1px solid rgba(249,115,22,.45);
+        1px solid rgba(249,115,22,.35);
 
-    color: #fed7aa;
+    color: #ffb477;
 
     border-radius: 20px;
 
@@ -1205,31 +1159,28 @@ select:focus {
 
     font-size: 10px;
 
-    font-weight: 800;
-
-    letter-spacing: .5px;
+    font-weight: 900;
 }
 
 .premium-content h2 {
+    font-size: 36px;
 
-    font-size: 34px;
+    line-height: 1.15;
 
     margin-top: 15px;
-
-    letter-spacing: -.5px;
 }
 
 .premium-content p {
-
     color: #d1e2da;
 
-    line-height: 1.6;
+    line-height: 1.65;
 
-    margin-top: 8px;
+    margin-top: 10px;
+
+    max-width: 600px;
 }
 
 .premium-logo {
-
     width: 135px;
     height: 135px;
 
@@ -1244,11 +1195,10 @@ select:focus {
     z-index: 2;
 
     box-shadow:
-        0 20px 40px rgba(0,0,0,.20);
+        0 18px 40px rgba(0,0,0,.18);
 }
 
 .premium-logo img {
-
     width: 100%;
     height: 100%;
 
@@ -1262,64 +1212,80 @@ select:focus {
 
 .premium-performance,
 .premium-card {
-
     background: var(--surface);
 
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     border-radius: var(--radius);
 
-    padding: 24px;
+    padding: 25px;
 
-    margin-bottom: 16px;
+    margin-bottom: 17px;
 
     box-shadow: var(--shadow);
 
-    transition: .2s;
+    transition: .25s;
 }
 
+.premium-performance:hover,
 .premium-card:hover {
-
-    box-shadow: var(--shadow-premium);
+    box-shadow: var(--shadow-hover);
 
     transform: translateY(-2px);
 }
 
 .premium-performance {
+    position: relative;
 
-    border-top:
-        4px solid var(--orange);
+    overflow: hidden;
+}
+
+.premium-performance::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 5px;
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--orange),
+            var(--green)
+        );
 }
 
 .premium-performance h2 {
-
     font-size: 21px;
 
     margin-top: 7px;
 }
 
 .premium-performance p {
-
     color: var(--text-light);
 
     margin-top: 5px;
 }
 
 .premium-economy {
-
     display: inline-flex;
 
-    gap: 8px;
+    gap: 9px;
 
     align-items: center;
 
-    margin-top: 17px;
+    margin-top: 18px;
 
     background:
         linear-gradient(
             135deg,
             var(--green-light),
-            #d8eee4
+            #dcefe6
         );
 
     color: var(--green);
@@ -1331,6 +1297,9 @@ select:focus {
     font-size: 12px;
 
     font-weight: 700;
+
+    border:
+        1px solid #cfe5da;
 }
 
 .premium-economy strong {
@@ -1343,23 +1312,22 @@ select:focus {
 ===================================================== */
 
 .premium-card-header {
-
     display: flex;
 
     justify-content: space-between;
 
     align-items: center;
+
+    gap: 15px;
 }
 
 .premium-card-header h3 {
-
     font-size: 18px;
 
     margin-top: 4px;
 }
 
 .premium-small-button {
-
     border:
         1px solid var(--orange);
 
@@ -1377,7 +1345,6 @@ select:focus {
 }
 
 .premium-small-button:hover {
-
     background: var(--orange);
 
     color: white;
@@ -1386,7 +1353,6 @@ select:focus {
 }
 
 .premium-description {
-
     color: var(--text-light);
 
     margin: 8px 0;
@@ -1396,11 +1362,10 @@ select:focus {
 
 
 /* =====================================================
-   SAÚDE FINANCEIRA
+   STATUS / SAÚDE FINANCEIRA
 ===================================================== */
 
-.financial-health {
-
+.health-status {
     display: grid;
 
     grid-template-columns:
@@ -1411,83 +1376,61 @@ select:focus {
     margin-top: 18px;
 }
 
-.health-status {
+.health-item {
+    border-radius: 14px;
 
-    border-radius: 15px;
-
-    padding: 18px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    border: 1px solid var(--border);
+    padding: 16px;
 
     background: var(--surface-2);
+
+    border:
+        1px solid var(--border);
 
     transition: .2s;
 }
 
-.health-status:hover {
-
+.health-item:hover {
     transform: translateY(-2px);
 
-    box-shadow:
-        0 8px 20px rgba(18,60,45,.08);
+    box-shadow: var(--shadow);
 }
 
-.health-dot {
-
-    width: 16px;
-    height: 16px;
-
-    min-width: 16px;
-
-    border-radius: 50%;
-}
-
-.health-status.green .health-dot {
-
-    background: #22c55e;
-
-    box-shadow:
-        0 0 0 5px rgba(34,197,94,.15);
-}
-
-.health-status.yellow .health-dot {
-
-    background: #eab308;
-
-    box-shadow:
-        0 0 0 5px rgba(234,179,8,.15);
-}
-
-.health-status.red .health-dot {
-
-    background: #ef4444;
-
-    box-shadow:
-        0 0 0 5px rgba(239,68,68,.15);
-}
-
-.health-status strong {
-
+.health-item strong {
     display: block;
+
+    margin-top: 8px;
 
     font-size: 14px;
 }
 
-.health-status span {
+.health-dot {
+    width: 12px;
+    height: 12px;
 
-    display: block;
+    border-radius: 50%;
 
-    color: var(--text-light);
+    display: inline-block;
+}
 
-    font-size: 11px;
+.health-yellow {
+    background: #f59e0b;
 
-    margin-top: 3px;
+    box-shadow:
+        0 0 0 5px rgba(245,158,11,.12);
+}
+
+.health-red {
+    background: #dc2626;
+
+    box-shadow:
+        0 0 0 5px rgba(220,38,38,.12);
+}
+
+.health-green {
+    background: #16a34a;
+
+    box-shadow:
+        0 0 0 5px rgba(22,163,74,.12);
 }
 
 
@@ -1496,7 +1439,6 @@ select:focus {
 ===================================================== */
 
 .simulator {
-
     display: flex;
 
     align-items: end;
@@ -1509,7 +1451,6 @@ select:focus {
 }
 
 .simulation-result {
-
     margin-top: 15px;
 
     font-weight: 700;
@@ -1517,7 +1458,6 @@ select:focus {
 
 .comparison-content,
 .premium-analysis {
-
     color: var(--text);
 
     line-height: 1.7;
@@ -1529,11 +1469,69 @@ select:focus {
 
 
 /* =====================================================
+   PREVISÃO
+===================================================== */
+
+.forecast-content {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+}
+
+.forecast-card {
+    background: var(--surface-2);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 14px;
+
+    padding: 17px;
+
+    transition: .2s;
+}
+
+.forecast-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow: var(--shadow);
+}
+
+.forecast-card span {
+    display: block;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    color: var(--text-light);
+}
+
+.forecast-card strong {
+    display: block;
+
+    font-size: 20px;
+
+    margin-top: 8px;
+}
+
+.forecast-positive {
+    color: var(--success);
+}
+
+.forecast-negative {
+    color: var(--danger);
+}
+
+
+/* =====================================================
    MODAIS
 ===================================================== */
 
 .modal {
-
     position: fixed;
 
     inset: 0;
@@ -1550,18 +1548,17 @@ select:focus {
 }
 
 .modal-overlay {
-
     position: absolute;
 
     inset: 0;
 
-    background: rgba(4,20,14,.62);
+    background:
+        rgba(4,20,14,.68);
 
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(6px);
 }
 
 .modal-box {
-
     position: relative;
 
     z-index: 1;
@@ -1581,11 +1578,25 @@ select:focus {
     padding: 25px;
 
     box-shadow:
-        0 30px 80px rgba(0,0,0,.25);
+        0 30px 80px rgba(0,0,0,.30);
+
+    animation:
+        modalOpen .2s ease;
+}
+
+@keyframes modalOpen {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .modal-header {
-
     display: flex;
 
     justify-content: space-between;
@@ -1596,7 +1607,6 @@ select:focus {
 }
 
 .modal-header span {
-
     color: var(--orange);
 
     font-size: 10px;
@@ -1607,14 +1617,12 @@ select:focus {
 }
 
 .modal-header h2 {
-
     font-size: 22px;
 
     margin-top: 4px;
 }
 
 .modal-close {
-
     width: 36px;
     height: 36px;
 
@@ -1627,10 +1635,17 @@ select:focus {
     font-size: 23px;
 
     color: var(--text);
+
+    transition: .2s;
+}
+
+.modal-close:hover {
+    background: var(--orange);
+
+    color: white;
 }
 
 .form-row {
-
     display: grid;
 
     grid-template-columns:
@@ -1640,7 +1655,6 @@ select:focus {
 }
 
 .type-selector {
-
     display: grid;
 
     grid-template-columns:
@@ -1652,8 +1666,8 @@ select:focus {
 }
 
 .type-option {
-
-    border: 1px solid var(--border);
+    border:
+        1px solid var(--border);
 
     background: var(--surface-2);
 
@@ -1664,10 +1678,15 @@ select:focus {
     padding: 12px;
 
     font-weight: 800;
+
+    transition: .2s;
+}
+
+.type-option:hover {
+    border-color: var(--orange);
 }
 
 .type-option.active {
-
     background: var(--green);
 
     color: white;
@@ -1676,7 +1695,6 @@ select:focus {
 }
 
 .save-transaction {
-
     width: 100%;
 
     margin-top: 5px;
@@ -1688,7 +1706,6 @@ select:focus {
 ===================================================== */
 
 body.dark {
-
     --background: #08150f;
 
     --surface: #10241b;
@@ -1703,94 +1720,116 @@ body.dark {
 
     --green-light: #173a2d;
 
-    --orange-light: #3b2112;
+    --orange-light: #3a2415;
 }
 
 body.dark .topbar {
-
-    background: rgba(16,36,27,.92);
+    background:
+        rgba(16,36,27,.94);
 }
 
 body.dark input,
 body.dark select {
-
     background: var(--surface-2);
 
     color: var(--text);
 }
 
-body.dark .premium-small-button {
-
+body.dark .search-box {
     background: var(--surface);
 }
 
-body.dark .modal-close {
+body.dark .premium-small-button {
+    background: var(--surface);
 
+    color: var(--orange);
+}
+
+body.dark .modal-close {
     background: var(--surface-2);
 
     color: white;
 }
 
-body.dark .health-status {
+body.dark .premium-section {
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(249,115,22,.10),
+            transparent 28%
+        ),
+        var(--background);
+}
 
-    background: var(--surface-2);
+body.dark .login-card {
+    background: var(--surface);
+}
+
+body.dark .login-screen {
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(249,115,22,.14),
+            transparent 30%
+        ),
+        var(--background);
+}
+
+body.dark .login-brand h1 {
+    color: white;
 }
 
 
 /* =====================================================
-   RESPONSIVO
+   RESPONSIVO — TABLET
 ===================================================== */
 
 @media (max-width: 1050px) {
 
     .stats-grid {
-
         grid-template-columns:
             repeat(2, 1fr);
     }
 
     .dashboard-grid,
     .category-layout {
-
         grid-template-columns: 1fr;
     }
 
 }
 
 
+/* =====================================================
+   RESPONSIVO — MOBILE
+===================================================== */
+
 @media (max-width: 800px) {
 
     .sidebar {
-
         transform: translateX(-100%);
 
         transition: .25s;
     }
 
     .sidebar.mobile-open {
-
         transform: translateX(0);
     }
 
     .main-content {
-
         width: 100%;
 
         margin-left: 0;
     }
 
     .mobile-menu {
-
         display: block;
     }
 
     .topbar {
-
         padding: 0 16px;
     }
 
     .topbar-right > .btn-primary {
-
         display: none;
     }
 
@@ -1799,34 +1838,42 @@ body.dark .health-status {
     }
 
     .section {
-
-        padding: 22px 16px 50px;
+        padding:
+            22px 16px 50px;
     }
 
     .filters-panel {
-
         grid-template-columns: 1fr;
     }
 
-    .financial-health {
+    .forecast-content {
+        grid-template-columns: 1fr;
+    }
 
+    .health-status {
         grid-template-columns: 1fr;
     }
 
 }
 
 
+/* =====================================================
+   RESPONSIVO — CELULAR
+===================================================== */
+
 @media (max-width: 560px) {
 
     .login-card {
-
         padding: 27px 20px;
 
         border-radius: 22px;
     }
 
-    .stats-grid {
+    .login-brand h1 {
+        font-size: 27px;
+    }
 
+    .stats-grid {
         grid-template-columns:
             1fr 1fr;
 
@@ -1834,87 +1881,107 @@ body.dark .health-status {
     }
 
     .stat-card {
-
         padding: 14px;
     }
 
     .stat-card > strong {
-
         font-size: 19px;
     }
 
     .welcome {
-
         display: block;
     }
 
-    .current-date {
+    .welcome h2 {
+        font-size: 24px;
+    }
 
+    .current-date {
         margin-top: 10px;
     }
 
     .section-heading {
-
         display: block;
     }
 
     .section-heading .btn-primary {
-
         width: 100%;
 
         margin-top: 15px;
     }
 
     .premium-hero {
+        padding: 26px 22px;
 
-        padding: 27px 22px;
+        border-radius: 22px;
     }
 
     .premium-content h2 {
-
-        font-size: 26px;
+        font-size: 27px;
     }
 
     .premium-logo {
-
         display: none;
     }
 
-    .premium-performance,
-    .premium-card {
-
+    .premium-card,
+    .premium-performance {
         padding: 19px;
     }
 
     .premium-card-header {
-
         align-items: flex-start;
+    }
 
-        gap: 10px;
+    .premium-small-button {
+        padding: 8px 10px;
+
+        font-size: 11px;
     }
 
     .form-row {
-
         grid-template-columns: 1fr;
 
         gap: 0;
     }
 
     .simulator {
-
         display: block;
     }
 
     .simulator .btn-primary {
-
         width: 100%;
 
         margin-top: 10px;
     }
 
     .transaction-value {
-
         font-size: 11px;
+    }
+
+    .panel {
+        padding: 17px;
+    }
+
+}
+
+
+/* =====================================================
+   CELULARES MUITO PEQUENOS
+===================================================== */
+
+@media (max-width: 380px) {
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .premium-content h2 {
+        font-size: 24px;
+    }
+
+    .topbar h1 {
+        font-size: 17px;
     }
 
 }
