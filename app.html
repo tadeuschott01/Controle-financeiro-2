@@ -2,25 +2,25 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#061f19">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#06231b">
 
-<title>ControleS • Controle Financeiro</title>
+<title>ControleS - Controle Financeiro</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+
 :root{
-    --bg:#061f19;
-    --bg2:#092b22;
-    --white:#fff;
-    --orange:#f28c28;
-    --orange-dark:#d96f0b;
-    --orange-soft:#fff1df;
-    --text:#18251f;
-    --muted:#75857f;
-    --border:#e7ece9;
-    --red:#e95461;
+    --verde:#06231b;
+    --verde2:#0b3025;
+    --laranja:#f28c28;
+    --laranja2:#d96f0b;
+    --branco:#ffffff;
+    --texto:#1d2b25;
+    --cinza:#71827b;
+    --borda:#e5ebe8;
+    --vermelho:#e0525d;
 }
 
 *{
@@ -30,33 +30,50 @@
 }
 
 body{
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:Arial, Helvetica, sans-serif;
     background:
-        radial-gradient(circle at 0 0,rgba(242,140,40,.10),transparent 28%),
-        linear-gradient(135deg,#061f19,#092b22 55%,#061b16);
+        radial-gradient(
+            circle at top left,
+            rgba(242,140,40,.10),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            var(--verde),
+            var(--verde2)
+        );
     min-height:100vh;
-    color:var(--text);
+    color:var(--texto);
 }
 
-button,input,select{
-    font:inherit;
+button,
+input,
+select{
+    font-family:inherit;
 }
 
 button{
     cursor:pointer;
 }
 
+
+/* =========================
+   TOPO
+========================= */
+
 .topbar{
-    height:76px;
+    height:74px;
     position:sticky;
     top:0;
     z-index:100;
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
     padding:0 28px;
-    background:rgba(6,31,25,.96);
-    backdrop-filter:blur(18px);
+
+    background:rgba(6,35,27,.96);
+    backdrop-filter:blur(15px);
+
     border-bottom:1px solid rgba(255,255,255,.08);
 }
 
@@ -70,17 +87,17 @@ button{
     width:48px;
     height:48px;
     object-fit:contain;
-    border-radius:13px;
+    border-radius:12px;
 }
 
 .brand strong{
     display:block;
-    color:#fff;
+    color:white;
     font-size:21px;
 }
 
 .brand span{
-    color:#91aaa0;
+    color:#8da69d;
     font-size:11px;
 }
 
@@ -90,18 +107,18 @@ button{
     gap:10px;
 }
 
-.profile-info{
+.profile-text{
     text-align:right;
 }
 
-.profile-info strong{
-    color:#fff;
+.profile-text strong{
+    color:white;
     display:block;
     font-size:13px;
 }
 
-.profile-info span{
-    color:#91aaa0;
+.profile-text span{
+    color:#8da69d;
     font-size:11px;
 }
 
@@ -111,246 +128,339 @@ button{
     border-radius:50%;
     display:grid;
     place-items:center;
+
     background:rgba(255,255,255,.08);
-    color:#fff;
+    color:white;
 }
+
+
+/* =========================
+   APP
+========================= */
 
 .app{
     display:flex;
-    min-height:calc(100vh - 76px);
+    min-height:calc(100vh - 74px);
 }
+
+
+/* =========================
+   MENU
+========================= */
 
 .sidebar{
     width:245px;
     flex-shrink:0;
     padding:25px 15px;
-    background:rgba(5,27,21,.7);
+
+    background:rgba(3,25,19,.65);
+
     border-right:1px solid rgba(255,255,255,.07);
 }
 
-.nav-title{
-    color:#66867a;
+.menu-title{
+    color:#66877b;
     font-size:10px;
     text-transform:uppercase;
     letter-spacing:1.5px;
     padding:0 13px 10px;
 }
 
-.nav{
+.menu{
     display:flex;
     flex-direction:column;
     gap:6px;
 }
 
-.nav button{
+.menu button{
     width:100%;
     border:0;
     background:transparent;
-    color:#9bb4aa;
+
+    color:#9ab3aa;
+
     padding:13px;
     border-radius:12px;
+
     text-align:left;
+
     display:flex;
     align-items:center;
     gap:12px;
+
+    transition:.2s;
 }
 
-.nav button:hover{
+.menu button:hover{
     background:rgba(255,255,255,.05);
-    color:#fff;
+    color:white;
 }
 
-.nav button.active{
+.menu button.active{
     background:rgba(242,140,40,.15);
-    color:var(--orange);
+    color:var(--laranja);
 }
+
+
+/* =========================
+   CONTEÚDO
+========================= */
 
 .content{
     width:100%;
-    max-width:1450px;
+    max-width:1500px;
     padding:32px;
 }
 
 .page{
     display:none;
-    animation:fade .25s ease;
+    animation:entrada .25s ease;
 }
 
 .page.active{
     display:block;
 }
 
-@keyframes fade{
-    from{opacity:0;transform:translateY(5px)}
-    to{opacity:1;transform:translateY(0)}
+@keyframes entrada{
+
+    from{
+        opacity:0;
+        transform:translateY(5px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
 }
+
+
+/* =========================
+   CABEÇALHO
+========================= */
 
 .page-header{
     display:flex;
     justify-content:space-between;
     align-items:flex-end;
-    margin-bottom:25px;
+
+    margin-bottom:24px;
 }
 
 .page-header h1{
-    color:#fff;
+    color:white;
     font-size:30px;
 }
 
 .page-header p{
-    color:#91aaa0;
+    color:#91aaa1;
     font-size:14px;
     margin-top:7px;
 }
 
-.balance{
-    position:relative;
-    overflow:hidden;
-    background:#fff;
+
+/* =========================
+   SALDO
+========================= */
+
+.balance-card{
+    background:white;
+
     border-radius:22px;
+
     padding:27px;
-    margin-bottom:18px;
-    box-shadow:0 12px 35px rgba(0,0,0,.16);
+
+    margin-bottom:17px;
+
+    box-shadow:0 12px 35px rgba(0,0,0,.18);
 }
 
 .balance-label{
-    color:#74877f;
+    color:var(--cinza);
     font-size:13px;
 }
 
 .balance-value{
-    color:var(--orange-dark);
+    color:var(--laranja2);
+
     font-size:37px;
+
     font-weight:800;
+
     margin:8px 0 20px;
 }
 
-.balance-footer{
+.balance-info{
     display:flex;
-    gap:25px;
+    gap:28px;
 }
 
-.balance-mini{
+.balance-item{
     display:flex;
     align-items:center;
     gap:8px;
 }
 
-.dot{
-    width:8px;
-    height:8px;
+.balance-dot{
+    width:9px;
+    height:9px;
     border-radius:50%;
-    background:var(--orange);
+    background:var(--laranja);
 }
 
-.balance-mini small{
-    color:#879991;
+.balance-item small{
     display:block;
-    font-size:11px;
+    color:#899991;
+    font-size:10px;
 }
 
-.balance-mini strong{
+.balance-item strong{
     display:block;
-    color:#24342e;
+    color:#25352e;
     font-size:13px;
     margin-top:2px;
 }
+
+
+/* =========================
+   CARDS
+========================= */
 
 .stats{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:15px;
+
     margin-bottom:18px;
 }
 
-.stat{
-    background:#fff;
-    border:1px solid var(--border);
+.stat-card{
+    background:white;
+
+    border:1px solid var(--borda);
+
     border-radius:18px;
+
     padding:21px;
+
     box-shadow:0 10px 28px rgba(0,0,0,.13);
 }
 
 .stat-top{
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
 }
 
-.stat small{
-    color:#71837c;
+.stat-top small{
+    color:var(--cinza);
 }
 
 .stat-icon{
     width:38px;
     height:38px;
+
     display:grid;
     place-items:center;
-    background:#fff;
-    border:1px solid #edf0ee;
+
+    background:white;
+
+    border:1px solid #e8edeb;
+
     border-radius:11px;
 }
 
-.stat h3{
-    color:#18251f;
+.stat-card h3{
+    color:var(--texto);
+
     font-size:23px;
+
     margin-top:14px;
 }
 
 .orange{
-    color:var(--orange-dark)!important;
+    color:var(--laranja2)!important;
 }
+
+
+/* =========================
+   AÇÕES
+========================= */
 
 .quick-actions{
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:12px;
+
     margin:18px 0;
 }
 
-.quick-btn{
-    background:#fff;
-    border:1px solid var(--border);
-    color:#1b2924;
+.quick{
+    background:white;
+
+    border:1px solid var(--borda);
+
     border-radius:15px;
+
     padding:16px;
+
     text-align:left;
+
     box-shadow:0 8px 22px rgba(0,0,0,.10);
+
+    transition:.2s;
 }
 
-.quick-btn:hover{
-    border-color:rgba(242,140,40,.5);
+.quick:hover{
     transform:translateY(-2px);
+    border-color:rgba(242,140,40,.5);
 }
 
-.quick-btn-icon{
+.quick-icon{
     font-size:22px;
-    margin-bottom:10px;
+    margin-bottom:9px;
 }
 
-.quick-btn strong{
+.quick strong{
     display:block;
     font-size:13px;
 }
 
-.quick-btn span{
+.quick span{
+    display:block;
     color:#84948e;
     font-size:10px;
-    display:block;
     margin-top:4px;
 }
 
+
+/* =========================
+   GRID DASHBOARD
+========================= */
+
 .dashboard-grid{
     display:grid;
+
     grid-template-columns:1.35fr .9fr;
+
     gap:18px;
 }
 
+
+/* =========================
+   PAINEL
+========================= */
+
 .panel{
-    background:#fff;
-    border:1px solid var(--border);
+    background:white;
+
+    border:1px solid var(--borda);
+
     border-radius:19px;
+
     padding:21px;
+
     box-shadow:0 10px 28px rgba(0,0,0,.12);
 }
 
@@ -358,6 +468,7 @@ button{
     display:flex;
     justify-content:space-between;
     align-items:center;
+
     margin-bottom:18px;
 }
 
@@ -371,11 +482,33 @@ button{
     font-size:11px;
 }
 
-.chart-box{
-    width:100%;
-    height:280px;
+
+/* =========================
+   GRÁFICO
+========================= */
+
+.chart-container{
     position:relative;
+
+    width:100%;
+
+    height:300px;
+
+    min-height:300px;
 }
+
+.chart-container canvas{
+    display:block !important;
+
+    width:100% !important;
+
+    height:100% !important;
+}
+
+
+/* =========================
+   LANÇAMENTOS
+========================= */
 
 .transaction-list{
     display:flex;
@@ -384,10 +517,13 @@ button{
 
 .transaction{
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
+
     gap:15px;
+
     padding:14px 0;
+
     border-bottom:1px solid #edf1ef;
 }
 
@@ -399,23 +535,29 @@ button{
     display:flex;
     align-items:center;
     gap:12px;
+
     min-width:0;
 }
 
 .transaction-icon{
     width:42px;
     height:42px;
+
     display:grid;
     place-items:center;
+
+    background:white;
+
+    border:1px solid #e8eeeb;
+
     border-radius:12px;
-    background:#fff;
-    border:1px solid #e9eeeb;
 }
 
 .transaction-name{
     color:#25342e;
     font-size:13px;
     font-weight:bold;
+
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
@@ -428,11 +570,16 @@ button{
 }
 
 .transaction-value{
-    color:var(--orange-dark);
+    color:var(--laranja2);
     font-size:13px;
     font-weight:bold;
     white-space:nowrap;
 }
+
+
+/* =========================
+   FORMULÁRIO
+========================= */
 
 .form-panel{
     max-width:650px;
@@ -440,188 +587,277 @@ button{
 
 .form{
     display:grid;
-    gap:14px;
+    gap:15px;
 }
 
 .field label{
     display:block;
+
     color:#71837c;
+
     font-size:12px;
+
     margin-bottom:7px;
 }
 
 .input{
     width:100%;
+
     background:#f8faf9;
+
     border:1px solid #dfe7e3;
+
     border-radius:11px;
+
     padding:14px;
+
     color:#1b2924;
+
     outline:none;
 }
 
 .input:focus{
-    border-color:var(--orange);
-    box-shadow:0 0 0 3px rgba(242,140,40,.1);
+    border-color:var(--laranja);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(242,140,40,.1);
 }
 
 .btn-primary{
     border:0;
-    background:linear-gradient(135deg,var(--orange),var(--orange-dark));
-    color:#fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--laranja),
+            var(--laranja2)
+        );
+
+    color:white;
+
     padding:14px 18px;
+
     border-radius:11px;
+
     font-weight:800;
 }
 
 .btn-secondary{
     border:1px solid #dfe7e3;
-    background:#fff;
+
+    background:white;
+
     color:#26352f;
+
     padding:13px 17px;
+
     border-radius:11px;
+
     font-weight:bold;
 }
+
+
+/* =========================
+   BARRA PESQUISA
+========================= */
 
 .toolbar{
     display:flex;
     gap:10px;
-    margin-bottom:17px;
+
+    margin-bottom:15px;
 }
 
-.search{
-    flex:1;
-}
+
+/* =========================
+   VAZIO
+========================= */
 
 .empty{
     text-align:center;
-    padding:45px 15px;
+
+    padding:40px 15px;
+
     color:#899a93;
 }
 
 .empty-icon{
-    font-size:35px;
-    margin-bottom:10px;
+    font-size:34px;
+
+    margin-bottom:9px;
 }
 
-/* PREMIUM */
 
-.premium-hero{
+/* =========================
+   PREMIUM
+========================= */
+
+.premium-card{
     background:
-        radial-gradient(circle at 100% 0,rgba(242,140,40,.20),transparent 35%),
-        linear-gradient(135deg,#fff,#f4f8f6);
-    border:1px solid #e2ebe6;
+        radial-gradient(
+            circle at 100% 0,
+            rgba(242,140,40,.18),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            white,
+            #f4f8f6
+        );
+
+    border:1px solid #e1eae6;
+
     border-radius:24px;
+
     padding:30px;
+
     box-shadow:0 15px 35px rgba(0,0,0,.15);
-    margin-bottom:18px;
 }
 
-.premium-title{
+.premium-heading{
     display:flex;
     align-items:center;
-    gap:12px;
+    gap:13px;
 }
 
 .premium-star{
-    width:52px;
-    height:52px;
+    width:53px;
+    height:53px;
+
     display:grid;
     place-items:center;
-    background:var(--orange-soft);
-    border-radius:15px;
-    font-size:26px;
-}
 
-.premium-hero h2{
-    color:var(--orange-dark);
+    background:#fff0dc;
+
+    border-radius:15px;
+
     font-size:27px;
 }
 
-.premium-hero p{
+.premium-heading h2{
+    color:var(--laranja2);
+
+    font-size:27px;
+}
+
+.premium-heading p{
     color:#75857f;
-    margin-top:7px;
+
+    margin-top:6px;
+
     line-height:1.5;
 }
 
 .premium-grid{
     display:grid;
+
     grid-template-columns:repeat(2,1fr);
+
     gap:13px;
+
     margin:25px 0;
 }
 
 .premium-feature{
-    position:relative;
     display:flex;
+
     align-items:center;
+
     gap:13px;
-    background:#fff;
+
+    background:white;
+
     border:1px solid #e6ece9;
+
     border-radius:15px;
+
     padding:17px;
 }
 
 .feature-icon{
     width:42px;
     height:42px;
+
     flex-shrink:0;
+
     display:grid;
     place-items:center;
-    background:#fff;
+
+    background:white;
+
     border:1px solid #e5ebe8;
+
     border-radius:12px;
+
     font-size:19px;
 }
 
 .premium-feature strong{
     display:block;
+
     color:#23332d;
+
     font-size:13px;
 }
 
 .premium-feature span{
     display:block;
+
     color:#84938d;
+
     font-size:10px;
+
     margin-top:4px;
 }
 
 .lock{
     margin-left:auto;
-    font-size:15px;
 }
 
-.premium-price{
+.premium-bottom{
     display:flex;
-    align-items:center;
+
     justify-content:space-between;
+
+    align-items:center;
+
     gap:20px;
+
     padding-top:20px;
+
     border-top:1px solid #e7ece9;
 }
 
 .price strong{
     color:#17251f;
-    font-size:27px;
+
+    font-size:24px;
 }
 
 .price span{
+    display:block;
+
     color:#899991;
+
     font-size:11px;
+
+    margin-top:4px;
 }
 
-.premium-note{
-    margin-top:13px;
-    color:#899991;
-    font-size:10px;
-}
 
-/* MOBILE */
+/* =========================
+   MENU MOBILE
+========================= */
 
 .mobile-nav{
     display:none;
 }
+
+
+/* =========================
+   TABLET
+========================= */
 
 @media(max-width:950px){
 
@@ -640,12 +876,19 @@ button{
     .quick-actions{
         grid-template-columns:repeat(2,1fr);
     }
+
 }
+
+
+/* =========================
+   CELULAR
+========================= */
 
 @media(max-width:700px){
 
     .topbar{
         height:68px;
+
         padding:0 15px;
     }
 
@@ -659,7 +902,7 @@ button{
     }
 
     .brand span,
-    .profile-info{
+    .profile-text{
         display:none;
     }
 
@@ -684,71 +927,108 @@ button{
         gap:9px;
     }
 
-    .dashboard-grid{
-        gap:14px;
-    }
-
     .panel{
         padding:17px;
     }
 
+
     /*
-       GRÁFICO MOBILE
-       Agora ele tem altura própria,
-       evitando desaparecer no aplicativo.
+       CORREÇÃO DO GRÁFICO NO CELULAR
     */
 
-    .chart-box{
-        height:250px;
-        min-height:250px;
+    .chart-container{
+        height:260px;
+        min-height:260px;
     }
+
 
     .premium-grid{
         grid-template-columns:1fr;
     }
 
-    .premium-price{
+    .premium-bottom{
         flex-direction:column;
+
         align-items:stretch;
     }
 
     .mobile-nav{
         position:fixed;
+
         display:flex;
+
         align-items:center;
+
         justify-content:space-around;
+
         bottom:0;
         left:0;
         right:0;
+
         height:70px;
-        background:rgba(5,27,21,.98);
-        border-top:1px solid rgba(255,255,255,.08);
+
+        background:rgba(4,28,21,.98);
+
+        border-top:
+            1px solid
+            rgba(255,255,255,.08);
+
         z-index:200;
     }
 
     .mobile-nav button{
         border:0;
+
         background:none;
+
         color:#8ca59b;
+
         font-size:10px;
+
         min-width:55px;
     }
 
     .mobile-nav button.active{
-        color:var(--orange);
+        color:var(--laranja);
     }
 
-    .mobile-nav-icon{
+    .mobile-icon{
         display:block;
+
         font-size:19px;
+
         margin-bottom:4px;
     }
+
+}
+
+
+/* =========================
+   CELULAR PEQUENO
+========================= */
+
+@media(max-width:380px){
+
+    .quick-actions{
+        grid-template-columns:1fr;
+    }
+
+    .balance-value{
+        font-size:31px;
+    }
+
 }
 
 </style>
 </head>
 
+
 <body>
+
+
+<!-- =========================
+     TOPO
+========================= -->
 
 <header class="topbar">
 
@@ -757,20 +1037,31 @@ button{
         <img src="logo.png" alt="ControleS">
 
         <div>
+
             <strong>ControleS</strong>
-            <span>Seu controle financeiro</span>
+
+            <span>
+                Seu controle financeiro
+            </span>
+
         </div>
 
     </div>
 
+
     <div class="profile">
 
-        <div class="profile-info">
+        <div class="profile-text">
+
             <strong>Minha conta</strong>
+
             <span>Usuário</span>
+
         </div>
 
-        <div class="avatar">👤</div>
+        <div class="avatar">
+            👤
+        </div>
 
     </div>
 
@@ -779,38 +1070,52 @@ button{
 
 <div class="app">
 
+
+<!-- =========================
+     MENU DESKTOP
+========================= -->
+
 <aside class="sidebar">
 
-    <div class="nav-title">Menu</div>
+    <div class="menu-title">
+        Menu
+    </div>
 
-    <nav class="nav">
+    <nav class="menu">
 
-        <button class="active"
-                onclick="showPage('dashboard',this)">
+        <button
+            class="active"
+            onclick="showPage('dashboard',this)">
             📊 Dashboard
         </button>
 
-        <button onclick="showPage('receitas',this)">
+        <button
+            onclick="showPage('receitas',this)">
             💰 Receitas
         </button>
 
-        <button onclick="showPage('despesas',this)">
+        <button
+            onclick="showPage('despesas',this)">
             💸 Despesas
         </button>
 
-        <button onclick="showPage('lancamentos',this)">
+        <button
+            onclick="showPage('lancamentos',this)">
             🧾 Lançamentos
         </button>
 
-        <button onclick="showPage('relatorios',this)">
+        <button
+            onclick="showPage('relatorios',this)">
             📈 Relatórios
         </button>
 
-        <button onclick="showPage('categorias',this)">
+        <button
+            onclick="showPage('categorias',this)">
             🍩 Categorias
         </button>
 
-        <button onclick="showPage('premium',this)">
+        <button
+            onclick="showPage('premium',this)">
             ⭐ Premium
         </button>
 
@@ -819,49 +1124,85 @@ button{
 </aside>
 
 
+<!-- =========================
+     CONTEÚDO
+========================= -->
+
 <main class="content">
 
 
-<!-- DASHBOARD -->
+<!-- =========================
+     DASHBOARD
+========================= -->
 
-<section id="dashboard" class="page active">
+<section
+    id="dashboard"
+    class="page active">
+
 
     <div class="page-header">
 
         <div>
+
             <h1>Dashboard</h1>
-            <p>Resumo das suas finanças.</p>
+
+            <p>
+                Resumo das suas finanças.
+            </p>
+
         </div>
 
     </div>
 
 
-    <div class="balance">
+    <!-- SALDO -->
+
+    <div class="balance-card">
 
         <div class="balance-label">
             Saldo disponível
         </div>
 
-        <div class="balance-value" id="saldo">
+        <div
+            class="balance-value"
+            id="saldo">
             R$ 0,00
         </div>
 
-        <div class="balance-footer">
 
-            <div class="balance-mini">
-                <div class="dot"></div>
+        <div class="balance-info">
+
+            <div class="balance-item">
+
+                <div class="balance-dot"></div>
+
                 <div>
+
                     <small>Receitas</small>
-                    <strong id="balanceReceitas">R$ 0,00</strong>
+
+                    <strong id="balanceReceitas">
+                        R$ 0,00
+                    </strong>
+
                 </div>
+
             </div>
 
-            <div class="balance-mini">
-                <div class="dot"></div>
+
+            <div class="balance-item">
+
+                <div class="balance-dot"></div>
+
                 <div>
+
                     <small>Despesas</small>
-                    <strong id="balanceDespesas">R$ 0,00</strong>
+
+                    <strong id="balanceDespesas">
+                        R$ 0,00
+                    </strong>
+
                 </div>
+
             </div>
 
         </div>
@@ -869,41 +1210,63 @@ button{
     </div>
 
 
+    <!-- CARDS -->
+
     <div class="stats">
 
-        <div class="stat">
+
+        <div class="stat-card">
 
             <div class="stat-top">
+
                 <small>Receitas</small>
-                <div class="stat-icon">💰</div>
+
+                <div class="stat-icon">
+                    💰
+                </div>
+
             </div>
 
-            <h3 class="orange" id="totalReceitas">
+            <h3
+                class="orange"
+                id="totalReceitas">
                 R$ 0,00
             </h3>
 
         </div>
 
 
-        <div class="stat">
+        <div class="stat-card">
 
             <div class="stat-top">
+
                 <small>Despesas</small>
-                <div class="stat-icon">💸</div>
+
+                <div class="stat-icon">
+                    💸
+                </div>
+
             </div>
 
-            <h3 class="orange" id="totalDespesas">
+            <h3
+                class="orange"
+                id="totalDespesas">
                 R$ 0,00
             </h3>
 
         </div>
 
 
-        <div class="stat">
+        <div class="stat-card">
 
             <div class="stat-top">
+
                 <small>Lançamentos</small>
-                <div class="stat-icon">🧾</div>
+
+                <div class="stat-icon">
+                    🧾
+                </div>
+
             </div>
 
             <h3 id="totalLancamentos">
@@ -915,54 +1278,111 @@ button{
     </div>
 
 
+    <!-- AÇÕES -->
+
     <div class="quick-actions">
 
-        <button class="quick-btn"
-                onclick="showPage('receitas')">
-            <div class="quick-btn-icon">💰</div>
-            <strong>Nova receita</strong>
-            <span>Adicionar entrada</span>
+
+        <button
+            class="quick"
+            onclick="showPage('receitas')">
+
+            <div class="quick-icon">
+                💰
+            </div>
+
+            <strong>
+                Nova receita
+            </strong>
+
+            <span>
+                Adicionar entrada
+            </span>
+
         </button>
 
-        <button class="quick-btn"
-                onclick="showPage('despesas')">
-            <div class="quick-btn-icon">💸</div>
-            <strong>Nova despesa</strong>
-            <span>Registrar gasto</span>
+
+        <button
+            class="quick"
+            onclick="showPage('despesas')">
+
+            <div class="quick-icon">
+                💸
+            </div>
+
+            <strong>
+                Nova despesa
+            </strong>
+
+            <span>
+                Registrar gasto
+            </span>
+
         </button>
 
-        <button class="quick-btn"
-                onclick="showPage('lancamentos')">
-            <div class="quick-btn-icon">🧾</div>
-            <strong>Lançamentos</strong>
-            <span>Ver movimentações</span>
+
+        <button
+            class="quick"
+            onclick="showPage('lancamentos')">
+
+            <div class="quick-icon">
+                🧾
+            </div>
+
+            <strong>
+                Lançamentos
+            </strong>
+
+            <span>
+                Ver movimentações
+            </span>
+
         </button>
 
-        <button class="quick-btn"
-                onclick="showPage('premium')">
-            <div class="quick-btn-icon">⭐</div>
-            <strong>Premium</strong>
-            <span>Recursos exclusivos</span>
+
+        <button
+            class="quick"
+            onclick="showPage('premium')">
+
+            <div class="quick-icon">
+                ⭐
+            </div>
+
+            <strong>
+                Premium
+            </strong>
+
+            <span>
+                Recursos exclusivos
+            </span>
+
         </button>
+
 
     </div>
 
 
+    <!-- GRÁFICO -->
+
     <div class="dashboard-grid">
 
-        <!-- GRÁFICO PRINCIPAL -->
 
         <div class="panel">
 
             <div class="panel-header">
 
-                <h2>Visão financeira</h2>
+                <h2>
+                    Visão financeira
+                </h2>
 
-                <span>Receitas x despesas</span>
+                <span>
+                    Receitas x despesas
+                </span>
 
             </div>
 
-            <div class="chart-box">
+
+            <div class="chart-container">
 
                 <canvas id="financeChart"></canvas>
 
@@ -971,36 +1391,58 @@ button{
         </div>
 
 
+        <!-- ÚLTIMOS LANÇAMENTOS -->
+
         <div class="panel">
 
             <div class="panel-header">
 
-                <h2>Últimos lançamentos</h2>
+                <h2>
+                    Últimos lançamentos
+                </h2>
 
-                <span>Recentes</span>
+                <span>
+                    Recentes
+                </span>
 
             </div>
 
-            <div id="latestList"
-                 class="transaction-list">
+
+            <div
+                id="latestList"
+                class="transaction-list">
             </div>
 
         </div>
 
+
     </div>
+
 
 </section>
 
 
-<!-- RECEITAS -->
+<!-- =========================
+     RECEITAS
+========================= -->
 
-<section id="receitas" class="page">
+<section
+    id="receitas"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
-            <h1>💰 Receitas</h1>
-            <p>Registre todo dinheiro que entra.</p>
+
+            <h1>
+                💰 Receitas
+            </h1>
+
+            <p>
+                Registre todo dinheiro que entra.
+            </p>
+
         </div>
 
     </div>
@@ -1008,12 +1450,17 @@ button{
 
     <div class="panel form-panel">
 
-        <form class="form"
-              onsubmit="addTransaction(event,'receita')">
+
+        <form
+            class="form"
+            onsubmit="addTransaction(event,'receita')">
+
 
             <div class="field">
 
-                <label>Descrição</label>
+                <label>
+                    Descrição
+                </label>
 
                 <input
                     class="input"
@@ -1026,7 +1473,9 @@ button{
 
             <div class="field">
 
-                <label>Valor</label>
+                <label>
+                    Valor
+                </label>
 
                 <input
                     class="input"
@@ -1044,22 +1493,36 @@ button{
                 + Adicionar receita
             </button>
 
+
         </form>
 
     </div>
 
+
 </section>
 
 
-<!-- DESPESAS -->
+<!-- =========================
+     DESPESAS
+========================= -->
 
-<section id="despesas" class="page">
+<section
+    id="despesas"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
-            <h1>💸 Despesas</h1>
-            <p>Registre seus gastos.</p>
+
+            <h1>
+                💸 Despesas
+            </h1>
+
+            <p>
+                Registre seus gastos.
+            </p>
+
         </div>
 
     </div>
@@ -1067,12 +1530,17 @@ button{
 
     <div class="panel form-panel">
 
-        <form class="form"
-              onsubmit="addTransaction(event,'despesa')">
+
+        <form
+            class="form"
+            onsubmit="addTransaction(event,'despesa')">
+
 
             <div class="field">
 
-                <label>Descrição</label>
+                <label>
+                    Descrição
+                </label>
 
                 <input
                     class="input"
@@ -1085,7 +1553,9 @@ button{
 
             <div class="field">
 
-                <label>Valor</label>
+                <label>
+                    Valor
+                </label>
 
                 <input
                     class="input"
@@ -1101,20 +1571,49 @@ button{
 
             <div class="field">
 
-                <label>Categoria</label>
+                <label>
+                    Categoria
+                </label>
 
-                <select class="input"
-                        id="despesaCategoria">
+                <select
+                    class="input"
+                    id="despesaCategoria">
 
-                    <option>Alimentação</option>
-                    <option>Moradia</option>
-                    <option>Transporte</option>
-                    <option>Saúde</option>
-                    <option>Educação</option>
-                    <option>Lazer</option>
-                    <option>Compras</option>
-                    <option>Contas</option>
-                    <option>Outros</option>
+                    <option>
+                        Alimentação
+                    </option>
+
+                    <option>
+                        Moradia
+                    </option>
+
+                    <option>
+                        Transporte
+                    </option>
+
+                    <option>
+                        Saúde
+                    </option>
+
+                    <option>
+                        Educação
+                    </option>
+
+                    <option>
+                        Lazer
+                    </option>
+
+                    <option>
+                        Compras
+                    </option>
+
+                    <option>
+                        Contas
+                    </option>
+
+                    <option>
+                        Outros
+                    </option>
 
                 </select>
 
@@ -1125,22 +1624,36 @@ button{
                 + Adicionar despesa
             </button>
 
+
         </form>
 
     </div>
 
+
 </section>
 
 
-<!-- LANÇAMENTOS -->
+<!-- =========================
+     LANÇAMENTOS
+========================= -->
 
-<section id="lancamentos" class="page">
+<section
+    id="lancamentos"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
-            <h1>🧾 Lançamentos</h1>
-            <p>Todas as suas movimentações.</p>
+
+            <h1>
+                🧾 Lançamentos
+            </h1>
+
+            <p>
+                Todas as suas movimentações.
+            </p>
+
         </div>
 
     </div>
@@ -1148,34 +1661,51 @@ button{
 
     <div class="panel">
 
+
         <div class="toolbar">
 
             <input
-                class="input search"
+                class="input"
                 id="pesquisa"
                 placeholder="🔎 Pesquisar..."
                 oninput="renderTransactions()">
 
         </div>
 
-        <div id="allTransactions"
-             class="transaction-list">
+
+        <div
+            id="allTransactions"
+            class="transaction-list">
         </div>
 
+
     </div>
+
 
 </section>
 
 
-<!-- RELATÓRIOS -->
+<!-- =========================
+     RELATÓRIOS
+========================= -->
 
-<section id="relatorios" class="page">
+<section
+    id="relatorios"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
-            <h1>📈 Relatórios</h1>
-            <p>Acompanhe sua evolução financeira.</p>
+
+            <h1>
+                📈 Relatórios
+            </h1>
+
+            <p>
+                Acompanhe sua evolução financeira.
+            </p>
+
         </div>
 
     </div>
@@ -1183,11 +1713,15 @@ button{
 
     <div class="stats">
 
-        <div class="stat">
 
-            <small>Receitas</small>
+        <div class="stat-card">
 
-            <h3 class="orange"
+            <small>
+                Receitas
+            </small>
+
+            <h3
+                class="orange"
                 id="relReceitas">
                 R$ 0,00
             </h3>
@@ -1195,11 +1729,14 @@ button{
         </div>
 
 
-        <div class="stat">
+        <div class="stat-card">
 
-            <small>Despesas</small>
+            <small>
+                Despesas
+            </small>
 
-            <h3 class="orange"
+            <h3
+                class="orange"
                 id="relDespesas">
                 R$ 0,00
             </h3>
@@ -1207,16 +1744,20 @@ button{
         </div>
 
 
-        <div class="stat">
+        <div class="stat-card">
 
-            <small>Saldo</small>
+            <small>
+                Saldo
+            </small>
 
-            <h3 class="orange"
+            <h3
+                class="orange"
                 id="relSaldo">
                 R$ 0,00
             </h3>
 
         </div>
+
 
     </div>
 
@@ -1224,10 +1765,15 @@ button{
     <div class="panel">
 
         <div class="panel-header">
-            <h2>Resumo financeiro</h2>
+
+            <h2>
+                Resumo financeiro
+            </h2>
+
         </div>
 
-        <div class="chart-box">
+
+        <div class="chart-container">
 
             <canvas id="reportChart"></canvas>
 
@@ -1235,18 +1781,31 @@ button{
 
     </div>
 
+
 </section>
 
 
-<!-- CATEGORIAS -->
+<!-- =========================
+     CATEGORIAS
+========================= -->
 
-<section id="categorias" class="page">
+<section
+    id="categorias"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
-            <h1>🍩 Gastos por categoria</h1>
-            <p>Veja onde seu dinheiro está sendo gasto.</p>
+
+            <h1>
+                🍩 Gastos por categoria
+            </h1>
+
+            <p>
+                Veja onde seu dinheiro está sendo gasto.
+            </p>
+
         </div>
 
     </div>
@@ -1254,9 +1813,10 @@ button{
 
     <div class="dashboard-grid">
 
+
         <div class="panel">
 
-            <div class="chart-box">
+            <div class="chart-container">
 
                 <canvas id="categoryChart"></canvas>
 
@@ -1268,35 +1828,55 @@ button{
         <div class="panel">
 
             <div class="panel-header">
-                <h2>Categorias</h2>
+
+                <h2>
+                    Categorias
+                </h2>
+
             </div>
+
 
             <div id="categoryList"></div>
 
         </div>
 
+
     </div>
+
 
 </section>
 
 
-<!-- PREMIUM -->
+<!-- =========================
+     PREMIUM
+========================= -->
 
-<section id="premium" class="page">
+<section
+    id="premium"
+    class="page">
+
 
     <div class="page-header">
 
         <div>
-            <h1>⭐ ControleS Premium</h1>
-            <p>Mais controle, organização e inteligência financeira.</p>
+
+            <h1>
+                ⭐ ControleS Premium
+            </h1>
+
+            <p>
+                Mais controle e inteligência financeira.
+            </p>
+
         </div>
 
     </div>
 
 
-    <div class="premium-hero">
+    <div class="premium-card">
 
-        <div class="premium-title">
+
+        <div class="premium-heading">
 
             <div class="premium-star">
                 ⭐
@@ -1304,11 +1884,13 @@ button{
 
             <div>
 
-                <h2>ControleS Premium</h2>
+                <h2>
+                    ControleS Premium
+                </h2>
 
                 <p>
                     Desbloqueie ferramentas avançadas
-                    para controlar melhor seu dinheiro.
+                    para cuidar melhor do seu dinheiro.
                 </p>
 
             </div>
@@ -1327,15 +1909,19 @@ button{
 
                 <div>
 
-                    <strong>Relatórios avançados</strong>
+                    <strong>
+                        Relatórios avançados
+                    </strong>
 
                     <span>
-                        Análises mais completas das suas finanças.
+                        Análises completas das suas finanças.
                     </span>
 
                 </div>
 
-                <div class="lock">🔒</div>
+                <div class="lock">
+                    🔒
+                </div>
 
             </div>
 
@@ -1348,15 +1934,19 @@ button{
 
                 <div>
 
-                    <strong>Comparação entre meses</strong>
+                    <strong>
+                        Comparação entre meses
+                    </strong>
 
                     <span>
-                        Compare receitas, despesas e evolução.
+                        Compare sua evolução financeira.
                     </span>
 
                 </div>
 
-                <div class="lock">🔒</div>
+                <div class="lock">
+                    🔒
+                </div>
 
             </div>
 
@@ -1369,15 +1959,19 @@ button{
 
                 <div>
 
-                    <strong>Análise por categoria</strong>
+                    <strong>
+                        Análise por categoria
+                    </strong>
 
                     <span>
-                        Descubra exatamente onde você gasta.
+                        Saiba onde seu dinheiro está indo.
                     </span>
 
                 </div>
 
-                <div class="lock">🔒</div>
+                <div class="lock">
+                    🔒
+                </div>
 
             </div>
 
@@ -1390,15 +1984,19 @@ button{
 
                 <div>
 
-                    <strong>Filtros avançados</strong>
+                    <strong>
+                        Filtros avançados
+                    </strong>
 
                     <span>
-                        Encontre qualquer movimentação rapidamente.
+                        Encontre lançamentos rapidamente.
                     </span>
 
                 </div>
 
-                <div class="lock">🔒</div>
+                <div class="lock">
+                    🔒
+                </div>
 
             </div>
 
@@ -1411,7 +2009,9 @@ button{
 
                 <div>
 
-                    <strong>Exportar PDF</strong>
+                    <strong>
+                        Exportação em PDF
+                    </strong>
 
                     <span>
                         Gere relatórios financeiros.
@@ -1419,7 +2019,9 @@ button{
 
                 </div>
 
-                <div class="lock">🔒</div>
+                <div class="lock">
+                    🔒
+                </div>
 
             </div>
 
@@ -1432,15 +2034,19 @@ button{
 
                 <div>
 
-                    <strong>Backup dos dados</strong>
+                    <strong>
+                        Backup dos dados
+                    </strong>
 
                     <span>
-                        Proteja seus dados financeiros.
+                        Proteja suas informações.
                     </span>
 
                 </div>
 
-                <div class="lock">🔒</div>
+                <div class="lock">
+                    🔒
+                </div>
 
             </div>
 
@@ -1453,15 +2059,19 @@ button{
 
                 <div>
 
-                    <strong>Sincronização</strong>
+                    <strong>
+                        Sincronização
+                    </strong>
 
                     <span>
-                        Acesse seus dados em outros dispositivos.
+                        Use seus dados em outros dispositivos.
                     </span>
 
                 </div>
 
-                <div class="lock">🔒</div>
+                <div class="lock">
+                    🔒
+                </div>
 
             </div>
 
@@ -1474,28 +2084,34 @@ button{
 
                 <div>
 
-                    <strong>Sem anúncios</strong>
+                    <strong>
+                        Sem anúncios
+                    </strong>
 
                     <span>
-                        Experiência mais limpa e confortável.
+                        Uma experiência mais limpa.
                     </span>
 
                 </div>
 
-                <div class="lock">🔒</div>
+                <div class="lock">
+                    🔒
+                </div>
 
             </div>
+
 
         </div>
 
 
-        <div class="premium-price">
+        <div class="premium-bottom">
+
 
             <div class="price">
 
-                <strong>ControleS Premium</strong>
-
-                <br>
+                <strong>
+                    ControleS Premium
+                </strong>
 
                 <span>
                     Assinatura disponível em breve
@@ -1512,17 +2128,12 @@ button{
 
             </button>
 
-        </div>
-
-
-        <div class="premium-note">
-
-            A assinatura e o pagamento serão
-            ativados em uma próxima versão.
 
         </div>
+
 
     </div>
+
 
 </section>
 
@@ -1532,38 +2143,83 @@ button{
 </div>
 
 
+<!-- =========================
+     MENU MOBILE
+========================= -->
+
 <nav class="mobile-nav">
 
-    <button class="active"
-            onclick="showPage('dashboard',this)">
-        <span class="mobile-nav-icon">📊</span>
+
+    <button
+        class="active"
+        onclick="showPage('dashboard',this)">
+
+        <span class="mobile-icon">
+            📊
+        </span>
+
         Início
+
     </button>
 
-    <button onclick="showPage('receitas',this)">
-        <span class="mobile-nav-icon">💰</span>
+
+    <button
+        onclick="showPage('receitas',this)">
+
+        <span class="mobile-icon">
+            💰
+        </span>
+
         Receitas
+
     </button>
 
-    <button onclick="showPage('despesas',this)">
-        <span class="mobile-nav-icon">💸</span>
+
+    <button
+        onclick="showPage('despesas',this)">
+
+        <span class="mobile-icon">
+            💸
+        </span>
+
         Despesas
+
     </button>
 
-    <button onclick="showPage('lancamentos',this)">
-        <span class="mobile-nav-icon">🧾</span>
+
+    <button
+        onclick="showPage('lancamentos',this)">
+
+        <span class="mobile-icon">
+            🧾
+        </span>
+
         Lançamentos
+
     </button>
 
-    <button onclick="showPage('premium',this)">
-        <span class="mobile-nav-icon">⭐</span>
+
+    <button
+        onclick="showPage('premium',this)">
+
+        <span class="mobile-icon">
+            ⭐
+        </span>
+
         Premium
+
     </button>
+
 
 </nav>
 
 
 <script>
+
+
+/* =========================
+   DADOS
+========================= */
 
 let transactions =
     JSON.parse(
@@ -1572,10 +2228,17 @@ let transactions =
         ) || '[]'
     );
 
-let financeChart=null;
-let reportChart=null;
-let categoryChart=null;
 
+let financeChart = null;
+
+let reportChart = null;
+
+let categoryChart = null;
+
+
+/* =========================
+   DINHEIRO
+========================= */
 
 function money(value){
 
@@ -1590,45 +2253,67 @@ function money(value){
 }
 
 
-function showPage(pageId,button){
+/* =========================
+   NAVEGAÇÃO
+========================= */
+
+function showPage(pageId, button){
 
     document
         .querySelectorAll('.page')
-        .forEach(p=>p.classList.remove('active'));
+        .forEach(page=>{
+            page.classList.remove('active');
+        });
 
-    const page=document.getElementById(pageId);
+
+    const page =
+        document.getElementById(pageId);
+
 
     if(page){
+
         page.classList.add('active');
+
     }
 
 
     document
-        .querySelectorAll('.nav button,.mobile-nav button')
-        .forEach(b=>b.classList.remove('active'));
+        .querySelectorAll(
+            '.menu button,.mobile-nav button'
+        )
+        .forEach(btn=>{
+            btn.classList.remove('active');
+        });
 
 
     if(button){
+
         button.classList.add('active');
+
     }
 
 
     /*
-       Quando abrir Dashboard,
-       garantimos que o gráfico seja redesenhado.
+       Pequeno atraso para o Chart.js
+       calcular corretamente a largura
+       depois que a página fica visível.
     */
 
-    if(pageId==='dashboard'){
-        setTimeout(updateFinanceChart,100);
-    }
+    setTimeout(()=>{
 
-    if(pageId==='relatorios'){
-        setTimeout(updateReportChart,100);
-    }
+        if(pageId === 'dashboard'){
+            updateFinanceChart();
+        }
 
-    if(pageId==='categorias'){
-        setTimeout(updateCategoryChart,100);
-    }
+        if(pageId === 'relatorios'){
+            updateReportChart();
+        }
+
+        if(pageId === 'categorias'){
+            updateCategoryChart();
+        }
+
+    },150);
 
 
     window.scrollTo({
@@ -1639,45 +2324,81 @@ function showPage(pageId,button){
 }
 
 
+/* =========================
+   ADICIONAR
+========================= */
+
 function addTransaction(event,type){
 
     event.preventDefault();
 
-    let descricao='';
-    let valor=0;
-    let categoria='';
+
+    let descricao = '';
+
+    let valor = 0;
+
+    let categoria = '';
 
 
-    if(type==='receita'){
+    if(type === 'receita'){
 
-        descricao=document
-            .getElementById('receitaDescricao')
-            .value.trim();
+        descricao =
+            document
+                .getElementById(
+                    'receitaDescricao'
+                )
+                .value
+                .trim();
 
-        valor=Number(document
-            .getElementById('receitaValor')
-            .value);
 
-    }else{
-
-        descricao=document
-            .getElementById('despesaDescricao')
-            .value.trim();
-
-        valor=Number(document
-            .getElementById('despesaValor')
-            .value);
-
-        categoria=document
-            .getElementById('despesaCategoria')
-            .value;
+        valor =
+            Number(
+                document
+                    .getElementById(
+                        'receitaValor'
+                    )
+                    .value
+            );
 
     }
 
 
-    if(!descricao || valor<=0){
+    else{
 
-        alert('Preencha os dados corretamente.');
+        descricao =
+            document
+                .getElementById(
+                    'despesaDescricao'
+                )
+                .value
+                .trim();
+
+
+        valor =
+            Number(
+                document
+                    .getElementById(
+                        'despesaValor'
+                    )
+                    .value
+            );
+
+
+        categoria =
+            document
+                .getElementById(
+                    'despesaCategoria'
+                )
+                .value;
+
+    }
+
+
+    if(!descricao || valor <= 0){
+
+        alert(
+            'Preencha os dados corretamente.'
+        );
 
         return;
 
@@ -1696,7 +2417,11 @@ function addTransaction(event,type){
 
         categoria:categoria,
 
-        data:new Date().toLocaleDateString('pt-BR')
+        data:
+            new Date()
+                .toLocaleDateString(
+                    'pt-BR'
+                )
 
     });
 
@@ -1707,18 +2432,24 @@ function addTransaction(event,type){
 
     updateAll();
 
+
     alert(
-        type==='receita'
+        type === 'receita'
         ?
         'Receita adicionada com sucesso!'
         :
         'Despesa adicionada com sucesso!'
     );
 
+
     showPage('dashboard');
 
 }
 
+
+/* =========================
+   SALVAR
+========================= */
 
 function save(){
 
@@ -1730,565 +2461,115 @@ function save(){
 }
 
 
+/* =========================
+   TOTAIS
+========================= */
+
 function getTotals(){
 
-    let receitas=0;
-    let despesas=0;
+    let receitas = 0;
+
+    let despesas = 0;
 
 
     transactions.forEach(item=>{
 
-        if(item.type==='receita'){
-            receitas+=Number(item.valor);
-        }else{
-            despesas+=Number(item.valor);
+        if(item.type === 'receita'){
+
+            receitas += Number(item.valor);
+
+        }
+
+        else{
+
+            despesas += Number(item.valor);
+
         }
 
     });
 
 
     return{
-        receitas,
-        despesas,
+
+        receitas:receitas,
+
+        despesas:despesas,
+
         saldo:receitas-despesas
+
     };
 
 }
 
 
+/* =========================
+   DASHBOARD
+========================= */
+
 function updateDashboard(){
 
-    const t=getTotals();
+    const t = getTotals();
 
 
-    document.getElementById('saldo').textContent=
+    document
+        .getElementById('saldo')
+        .textContent =
         money(t.saldo);
 
-    document.getElementById('balanceReceitas').textContent=
+
+    document
+        .getElementById('balanceReceitas')
+        .textContent =
         money(t.receitas);
 
-    document.getElementById('balanceDespesas').textContent=
+
+    document
+        .getElementById('balanceDespesas')
+        .textContent =
         money(t.despesas);
 
-    document.getElementById('totalReceitas').textContent=
+
+    document
+        .getElementById('totalReceitas')
+        .textContent =
         money(t.receitas);
 
-    document.getElementById('totalDespesas').textContent=
+
+    document
+        .getElementById('totalDespesas')
+        .textContent =
         money(t.despesas);
 
-    document.getElementById('totalLancamentos').textContent=
+
+    document
+        .getElementById('totalLancamentos')
+        .textContent =
         transactions.length;
 
-    document.getElementById('relReceitas').textContent=
+
+    document
+        .getElementById('relReceitas')
+        .textContent =
         money(t.receitas);
 
-    document.getElementById('relDespesas').textContent=
+
+    document
+        .getElementById('relDespesas')
+        .textContent =
         money(t.despesas);
 
-    document.getElementById('relSaldo').textContent=
+
+    document
+        .getElementById('relSaldo')
+        .textContent =
         money(t.saldo);
 
 }
 
 
-function transactionHTML(item){
-
-    const income=item.type==='receita';
-
-    return`
-
-    <div class="transaction">
-
-        <div class="transaction-left">
-
-            <div class="transaction-icon">
-                ${income?'💰':'💸'}
-            </div>
-
-            <div>
-
-                <div class="transaction-name">
-                    ${escapeHTML(item.descricao)}
-                </div>
-
-                <div class="transaction-date">
-                    ${item.data}
-                    ${item.categoria?' • '+escapeHTML(item.categoria):''}
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div style="text-align:right">
-
-            <div class="transaction-value">
-
-                ${income?'+':'-'}
-                ${money(item.valor)}
-
-            </div>
-
-            <button
-                onclick="removeTransaction(${item.id})"
-                style="
-                    border:0;
-                    background:none;
-                    color:#899a93;
-                    font-size:10px;
-                    margin-top:5px;
-                ">
-
-                Excluir
-
-            </button>
-
-        </div>
-
-    </div>
-
-    `;
-
-}
-
-
-function renderLatest(){
-
-    const box=document.getElementById('latestList');
-
-
-    if(!transactions.length){
-
-        box.innerHTML=`
-            <div class="empty">
-                <div class="empty-icon">🧾</div>
-                Nenhum lançamento ainda.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    box.innerHTML=transactions
-        .slice(0,5)
-        .map(transactionHTML)
-        .join('');
-
-}
-
-
-function renderTransactions(){
-
-    const box=document.getElementById('allTransactions');
-
-    const search=(
-        document.getElementById('pesquisa')?.value || ''
-    ).toLowerCase().trim();
-
-
-    const filtered=transactions.filter(item=>
-
-        item.descricao.toLowerCase().includes(search)
-
-        ||
-
-        (item.categoria||'')
-            .toLowerCase()
-            .includes(search)
-
-    );
-
-
-    if(!filtered.length){
-
-        box.innerHTML=`
-            <div class="empty">
-                <div class="empty-icon">🔎</div>
-                Nenhum lançamento encontrado.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    box.innerHTML=filtered
-        .map(transactionHTML)
-        .join('');
-
-}
-
-
-function getCategories(){
-
-    const categories={};
-
-
-    transactions
-        .filter(item=>item.type==='despesa')
-        .forEach(item=>{
-
-            const category=item.categoria||'Outros';
-
-            categories[category]=
-                (categories[category]||0)
-                +
-                Number(item.valor);
-
-        });
-
-
-    return categories;
-
-}
-
-
-function renderCategories(){
-
-    const box=document.getElementById('categoryList');
-
-    const categories=getCategories();
-
-    const keys=Object.keys(categories);
-
-
-    if(!keys.length){
-
-        box.innerHTML=`
-            <div class="empty">
-                <div class="empty-icon">🍩</div>
-                Nenhuma despesa cadastrada.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    keys.sort(
-        (a,b)=>categories[b]-categories[a]
-    );
-
-
-    box.innerHTML=keys.map(category=>`
-
-        <div class="transaction">
-
-            <div class="transaction-left">
-
-                <div class="transaction-icon">
-                    🍩
-                </div>
-
-                <div>
-
-                    <div class="transaction-name">
-                        ${escapeHTML(category)}
-                    </div>
-
-                    <div class="transaction-date">
-                        Gastos
-                    </div>
-
-                </div>
-
-            </div>
-
-            <strong class="orange">
-                ${money(categories[category])}
-            </strong>
-
-        </div>
-
-    `).join('');
-
-}
-
-
-function updateFinanceChart(){
-
-    const canvas=document.getElementById('financeChart');
-
-    if(!canvas)return;
-
-
-    const t=getTotals();
-
-
-    if(financeChart){
-        financeChart.destroy();
-    }
-
-
-    financeChart=new Chart(
-        canvas.getContext('2d'),
-        {
-            type:'bar',
-
-            data:{
-                labels:['Receitas','Despesas'],
-
-                datasets:[{
-
-                    data:[
-                        t.receitas,
-                        t.despesas
-                    ],
-
-                    backgroundColor:[
-                        '#f28c28',
-                        '#ffffff'
-                    ],
-
-                    borderColor:[
-                        '#d96f0b',
-                        '#dfe7e3'
-                    ],
-
-                    borderWidth:1,
-
-                    borderRadius:9
-
-                }]
-
-            },
-
-            options:{
-
-                responsive:true,
-
-                maintainAspectRatio:false,
-
-                plugins:{
-                    legend:{
-                        display:false
-                    }
-                },
-
-                scales:{
-
-                    x:{
-                        ticks:{
-                            color:'#72847d'
-                        },
-
-                        grid:{
-                            display:false
-                        }
-                    },
-
-                    y:{
-
-                        beginAtZero:true,
-
-                        ticks:{
-                            color:'#72847d'
-                        },
-
-                        grid:{
-                            color:'rgba(0,0,0,.06)'
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-    );
-
-}
-
-
-function updateReportChart(){
-
-    const canvas=document.getElementById('reportChart');
-
-    if(!canvas)return;
-
-
-    const t=getTotals();
-
-
-    if(reportChart){
-        reportChart.destroy();
-    }
-
-
-    reportChart=new Chart(
-        canvas.getContext('2d'),
-        {
-
-            type:'line',
-
-            data:{
-
-                labels:[
-                    'Receitas',
-                    'Despesas',
-                    'Saldo'
-                ],
-
-                datasets:[{
-
-                    data:[
-                        t.receitas,
-                        t.despesas,
-                        t.saldo
-                    ],
-
-                    borderColor:'#f28c28',
-
-                    backgroundColor:
-                        'rgba(242,140,40,.10)',
-
-                    fill:true,
-
-                    tension:.35
-
-                }]
-
-            },
-
-            options:{
-                responsive:true,
-                maintainAspectRatio:false,
-
-                plugins:{
-                    legend:{
-                        display:false
-                    }
-                }
-            }
-
-        }
-    );
-
-}
-
-
-function updateCategoryChart(){
-
-    const canvas=document.getElementById('categoryChart');
-
-    if(!canvas)return;
-
-
-    const categories=getCategories();
-
-    const keys=Object.keys(categories);
-
-
-    if(categoryChart){
-        categoryChart.destroy();
-    }
-
-
-    categoryChart=new Chart(
-        canvas.getContext('2d'),
-        {
-
-            type:'doughnut',
-
-            data:{
-
-                labels:
-                    keys.length
-                    ?
-                    keys
-                    :
-                    ['Sem despesas'],
-
-                datasets:[{
-
-                    data:
-                        keys.length
-                        ?
-                        keys.map(k=>categories[k])
-                        :
-                        [1],
-
-                    backgroundColor:[
-
-                        '#f28c28',
-                        '#ffffff',
-                        '#ffb45f',
-                        '#d96f0b',
-                        '#f5d4ad',
-                        '#e9eeeb',
-                        '#ffc857',
-                        '#91aaa0'
-
-                    ],
-
-                    borderColor:'#ffffff',
-
-                    borderWidth:1
-
-                }]
-
-            },
-
-            options:{
-
-                responsive:true,
-
-                maintainAspectRatio:false,
-
-                cutout:'68%',
-
-                plugins:{
-
-                    legend:{
-
-                        position:'bottom',
-
-                        labels:{
-                            color:'#72847d',
-                            padding:14,
-                            font:{
-                                size:11
-                            }
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-    );
-
-}
-
-
-function removeTransaction(id){
-
-    if(!confirm(
-        'Deseja excluir este lançamento?'
-    )){
-        return;
-    }
-
-
-    transactions=transactions.filter(
-        item=>item.id!==id
-    );
-
-
-    save();
-
-    updateAll();
-
-}
-
+/* =========================
+   HTML SEGURO
+========================= */
 
 function escapeHTML(text){
 
@@ -2307,16 +2588,854 @@ function escapeHTML(text){
 }
 
 
+/* =========================
+   ITEM
+========================= */
+
+function transactionHTML(item){
+
+    const income =
+        item.type === 'receita';
+
+
+    return `
+
+        <div class="transaction">
+
+            <div class="transaction-left">
+
+                <div class="transaction-icon">
+                    ${income ? '💰' : '💸'}
+                </div>
+
+                <div>
+
+                    <div class="transaction-name">
+
+                        ${escapeHTML(
+                            item.descricao
+                        )}
+
+                    </div>
+
+                    <div class="transaction-date">
+
+                        ${item.data}
+
+                        ${
+                            item.categoria
+                            ?
+                            ' • ' +
+                            escapeHTML(
+                                item.categoria
+                            )
+                            :
+                            ''
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div style="text-align:right">
+
+                <div class="transaction-value">
+
+                    ${income ? '+' : '-'}
+
+                    ${money(item.valor)}
+
+                </div>
+
+
+                <button
+                    onclick="removeTransaction(${item.id})"
+                    style="
+                        border:0;
+                        background:none;
+                        color:#899a93;
+                        font-size:10px;
+                        margin-top:5px;
+                    ">
+
+                    Excluir
+
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   ÚLTIMOS
+========================= */
+
+function renderLatest(){
+
+    const box =
+        document.getElementById(
+            'latestList'
+        );
+
+
+    if(!transactions.length){
+
+        box.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🧾
+                </div>
+
+                Nenhum lançamento ainda.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+        transactions
+            .slice(0,5)
+            .map(transactionHTML)
+            .join('');
+
+}
+
+
+/* =========================
+   TODOS
+========================= */
+
+function renderTransactions(){
+
+    const box =
+        document.getElementById(
+            'allTransactions'
+        );
+
+
+    const input =
+        document.getElementById(
+            'pesquisa'
+        );
+
+
+    const search =
+        input
+        ?
+        input.value
+            .toLowerCase()
+            .trim()
+        :
+        '';
+
+
+    const filtered =
+        transactions.filter(item=>{
+
+            return (
+
+                item.descricao
+                    .toLowerCase()
+                    .includes(search)
+
+                ||
+
+                (item.categoria || '')
+                    .toLowerCase()
+                    .includes(search)
+
+            );
+
+        });
+
+
+    if(!filtered.length){
+
+        box.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🔎
+                </div>
+
+                Nenhum lançamento encontrado.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+        filtered
+            .map(transactionHTML)
+            .join('');
+
+}
+
+
+/* =========================
+   CATEGORIAS
+========================= */
+
+function getCategories(){
+
+    const categories = {};
+
+
+    transactions
+
+        .filter(
+            item =>
+            item.type === 'despesa'
+        )
+
+        .forEach(item=>{
+
+            const category =
+                item.categoria ||
+                'Outros';
+
+
+            categories[category] =
+                (
+                    categories[category] ||
+                    0
+                )
+                +
+                Number(item.valor);
+
+        });
+
+
+    return categories;
+
+}
+
+
+/* =========================
+   LISTA CATEGORIAS
+========================= */
+
+function renderCategories(){
+
+    const box =
+        document.getElementById(
+            'categoryList'
+        );
+
+
+    const categories =
+        getCategories();
+
+
+    const keys =
+        Object.keys(categories);
+
+
+    if(!keys.length){
+
+        box.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🍩
+                </div>
+
+                Nenhuma despesa cadastrada.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    keys.sort(
+        (a,b)=>
+        categories[b]-categories[a]
+    );
+
+
+    box.innerHTML =
+        keys.map(category=>`
+
+            <div class="transaction">
+
+                <div class="transaction-left">
+
+                    <div class="transaction-icon">
+                        🍩
+                    </div>
+
+                    <div>
+
+                        <div class="transaction-name">
+
+                            ${escapeHTML(
+                                category
+                            )}
+
+                        </div>
+
+                        <div class="transaction-date">
+                            Gastos
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <strong class="orange">
+
+                    ${money(
+                        categories[category]
+                    )}
+
+                </strong>
+
+            </div>
+
+        `)
+        .join('');
+
+}
+
+
+/* =========================
+   GRÁFICO PRINCIPAL
+========================= */
+
+function updateFinanceChart(){
+
+    const canvas =
+        document.getElementById(
+            'financeChart'
+        );
+
+
+    if(
+        !canvas ||
+        typeof Chart === 'undefined'
+    ){
+
+        console.log(
+            'Chart.js não carregou.'
+        );
+
+        return;
+
+    }
+
+
+    const t =
+        getTotals();
+
+
+    if(financeChart){
+
+        financeChart.destroy();
+
+        financeChart = null;
+
+    }
+
+
+    financeChart =
+        new Chart(
+            canvas.getContext('2d'),
+            {
+
+                type:'bar',
+
+
+                data:{
+
+                    labels:[
+                        'Receitas',
+                        'Despesas'
+                    ],
+
+
+                    datasets:[{
+
+                        label:'Valor',
+
+                        data:[
+                            t.receitas,
+                            t.despesas
+                        ],
+
+
+                        backgroundColor:[
+
+                            '#f28c28',
+
+                            '#ffffff'
+
+                        ],
+
+
+                        borderColor:[
+
+                            '#d96f0b',
+
+                            '#dfe7e3'
+
+                        ],
+
+
+                        borderWidth:2,
+
+                        borderRadius:10,
+
+                        barThickness:55
+
+                    }]
+
+                },
+
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+
+                    animation:{
+                        duration:700
+                    },
+
+
+                    plugins:{
+
+                        legend:{
+                            display:false
+                        },
+
+
+                        tooltip:{
+
+                            callbacks:{
+
+                                label:function(context){
+
+                                    return ' ' +
+                                        money(
+                                            context.raw
+                                        );
+
+                                }
+
+                            }
+
+                        }
+
+                    },
+
+
+                    scales:{
+
+                        y:{
+
+                            beginAtZero:true,
+
+
+                            ticks:{
+
+                                color:'#71827b',
+
+
+                                callback:function(value){
+
+                                    return money(
+                                        value
+                                    );
+
+                                }
+
+                            },
+
+
+                            grid:{
+
+                                color:
+                                'rgba(0,0,0,.07)'
+
+                            }
+
+                        },
+
+
+                        x:{
+
+                            ticks:{
+
+                                color:'#26352f',
+
+                                font:{
+                                    weight:'bold'
+                                }
+
+                            },
+
+
+                            grid:{
+                                display:false
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================
+   RELATÓRIO
+========================= */
+
+function updateReportChart(){
+
+    const canvas =
+        document.getElementById(
+            'reportChart'
+        );
+
+
+    if(
+        !canvas ||
+        typeof Chart === 'undefined'
+    ){
+
+        return;
+
+    }
+
+
+    const t =
+        getTotals();
+
+
+    if(reportChart){
+
+        reportChart.destroy();
+
+    }
+
+
+    reportChart =
+        new Chart(
+            canvas.getContext('2d'),
+            {
+
+                type:'line',
+
+
+                data:{
+
+                    labels:[
+                        'Receitas',
+                        'Despesas',
+                        'Saldo'
+                    ],
+
+
+                    datasets:[{
+
+                        label:'Valor',
+
+                        data:[
+                            t.receitas,
+                            t.despesas,
+                            t.saldo
+                        ],
+
+
+                        borderColor:
+                            '#f28c28',
+
+
+                        backgroundColor:
+                            'rgba(242,140,40,.12)',
+
+
+                        fill:true,
+
+                        tension:.35,
+
+                        pointRadius:5
+
+                    }]
+
+                },
+
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+
+                    plugins:{
+
+                        legend:{
+                            display:false
+                        }
+
+                    },
+
+
+                    scales:{
+
+                        y:{
+
+                            beginAtZero:true,
+
+                            ticks:{
+
+                                callback:function(value){
+
+                                    return money(value);
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        );
+
+}
+
+
+/* =========================
+   GRÁFICO CATEGORIAS
+========================= */
+
+function updateCategoryChart(){
+
+    const canvas =
+        document.getElementById(
+            'categoryChart'
+        );
+
+
+    if(
+        !canvas ||
+        typeof Chart === 'undefined'
+    ){
+
+        return;
+
+    }
+
+
+    const categories =
+        getCategories();
+
+
+    const keys =
+        Object.keys(categories);
+
+
+    if(categoryChart){
+
+        categoryChart.destroy();
+
+    }
+
+
+    categoryChart =
+        new Chart(
+            canvas.getContext('2d'),
+            {
+
+                type:'doughnut',
+
+
+                data:{
+
+                    labels:
+                        keys.length
+                        ?
+                        keys
+                        :
+                        ['Sem despesas'],
+
+
+                    datasets:[{
+
+                        data:
+                            keys.length
+                            ?
+                            keys.map(
+                                key =>
+                                categories[key]
+                            )
+                            :
+                            [1],
+
+
+                        backgroundColor:[
+
+                            '#f28c28',
+
+                            '#ffffff',
+
+                            '#ffb45f',
+
+                            '#d96f0b',
+
+                            '#f5d4ad',
+
+                            '#e9eeeb',
+
+                            '#ffc857',
+
+                            '#91aaa0'
+
+                        ],
+
+
+                        borderColor:
+                            '#ffffff',
+
+                        borderWidth:2
+
+                    }]
+
+                },
+
+
+                options:{
+
+                    responsive:true,
+
+                    maintainAspectRatio:false,
+
+
+                    cutout:'65%',
+
+
+                    plugins:{
+
+                        legend:{
+
+                            position:'bottom',
+
+                            labels:{
+
+                                color:'#71827b',
+
+                                padding:13,
+
+                                font:{
+                                    size:11
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        );
+
+}
+
+
+/* =========================
+   EXCLUIR
+========================= */
+
+function removeTransaction(id){
+
+    if(
+        !confirm(
+            'Deseja excluir este lançamento?'
+        )
+    ){
+
+        return;
+
+    }
+
+
+    transactions =
+        transactions.filter(
+            item =>
+            item.id !== id
+        );
+
+
+    save();
+
+    updateAll();
+
+}
+
+
+/* =========================
+   PREMIUM
+========================= */
+
 function premiumMessage(){
 
     alert(
-        '⭐ O ControleS Premium está sendo preparado.\\n\\n' +
-        'Em breve você poderá ativar sua assinatura e ' +
-        'desbloquear todos os recursos Premium.'
+        '⭐ ControleS Premium\\n\\n' +
+
+        'Em breve você poderá assinar ' +
+        'o Premium e desbloquear todos ' +
+        'os recursos exclusivos.'
     );
 
 }
 
+
+/* =========================
+   ATUALIZAR TUDO
+========================= */
 
 function updateAll(){
 
@@ -2328,14 +3447,37 @@ function updateAll(){
 
     renderCategories();
 
-    updateFinanceChart();
+    /*
+       Só desenha o gráfico quando
+       o Dashboard está visível.
+    */
 
-    updateReportChart();
+    const dashboard =
+        document.getElementById(
+            'dashboard'
+        );
 
-    updateCategoryChart();
+
+    if(
+        dashboard &&
+        dashboard.classList.contains(
+            'active'
+        )
+    ){
+
+        setTimeout(
+            updateFinanceChart,
+            100
+        );
+
+    }
 
 }
 
+
+/* =========================
+   INICIAR
+========================= */
 
 document.addEventListener(
     'DOMContentLoaded',
