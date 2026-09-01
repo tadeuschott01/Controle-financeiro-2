@@ -1,206 +1,132 @@
 /* =========================================================
    CONTROLES — APP.JS
-   Supabase + Auth + Dashboard + Premium
-   ========================================================= */
+   Supabase + Login + Dashboard + Premium
+========================================================= */
 
 const SUPABASE_URL = "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
-const SUPABASE_KEY = "COLE_AQUI_SUA_SB_PUBLISHABLE_KEY";
+const SUPABASE_KEY = "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+const SUPABASE_CDN =
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
-/* =========================================================
-   ESTADO
-   ========================================================= */
-
+let supabaseClient = null;
 let currentUser = null;
-let currentProfile = null;
+
 let transactions = [];
 let goals = [];
 let budgets = [];
+let subscription = null;
+
 let financeChart = null;
 let categoryChart = null;
 let reportCategoryChart = null;
-let transactionType = "income";
 
-/* =========================================================
-   ELEMENTOS
-   ========================================================= */
-
-const loginScreen = document.getElementById("loginScreen");
-const app = document.getElementById("app");
-
-const loginForm = document.getElementById("loginForm");
-const loginName = document.getElementById("loginName");
-const loginEmail = document.getElementById("loginEmail");
-const loginPassword = document.getElementById("loginPassword");
-
-const userName = document.getElementById("userName");
-const welcomeName = document.getElementById("welcomeName");
-const userAvatar = document.getElementById("userAvatar");
-const userPlan = document.getElementById("userPlan");
-
-const pageTitle = document.getElementById("pageTitle");
-const currentDate = document.getElementById("currentDate");
+let selectedTransactionType = "income";
 
 /* =========================================================
    INICIALIZAÇÃO
-   ========================================================= */
+========================================================= */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    configurarEventos();
-    configurarDataAtual();
-    configurarDataLancamento();
+    await loadSupabase();
 
-    const {
-        data: { session }
-    } = await supabaseClient.auth.getSession();
+    setupEvents();
 
-    if (session && session.user) {
-        currentUser = session.user;
-        await carregarAplicacao();
-    } else {
-        mostrarLogin();
-    }
+    setCurrentDate();
 
-    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    setDefaultDate();
 
-        if (session && session.user) {
-            currentUser = session.user;
+    await checkSession();
 
-            if (
-                event === "SIGNED_IN" ||
-                event === "INITIAL_SESSION"
-            ) {
-                await carregarAplicacao();
-            }
-
-        } else if (event === "SIGNED_OUT") {
-
-            currentUser = null;
-            currentProfile = null;
-
-            mostrarLogin();
-        }
-    });
 });
 
+
 /* =========================================================
-   LOGIN / CADASTRO
-   ========================================================= */
+   CARREGAR SUPABASE
+========================================================= */
 
-function configurarEventos() {
+function loadSupabase() {
 
-    loginForm?.addEventListener("submit", async (event) => {
+    return new Promise((resolve, reject) => {
 
-        event.preventDefault();
+        if (window.supabase) {
+            supabaseClient = window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
 
-        const nome = loginName.value.trim();
-        const email = loginEmail.value.trim();
-        const senha = loginPassword.value;
-
-        if (!email || !senha) {
-            alert("Digite seu e-mail e senha.");
+            resolve();
             return;
         }
 
-        const submitButton =
-            loginForm.querySelector("button[type='submit']");
+        const script = document.createElement("script");
 
-        if (submitButton) {
-            submitButton.disabled = true;
-            submitButton.textContent = "Entrando...";
-        }
+        script.src = SUPABASE_CDN;
 
-        try {
+        script.onload = () => {
 
-            /*
-             * Primeiro tenta LOGIN.
-             */
-
-            const loginResult =
-                await supabaseClient.auth.signInWithPassword({
-                    email,
-                    password: senha
-                });
-
-            if (!loginResult.error) {
-
-                currentUser = loginResult.data.user;
-
-                await carregarAplicacao();
-
-                return;
-            }
-
-            /*
-             * Se o usuário não existir, tenta CADASTRO.
-             */
-
-            if (!nome) {
-
-                alert(
-                    "Usuário não encontrado.\n\n" +
-                    "Para criar uma conta, preencha também o campo Nome."
-                );
-
-                return;
-            }
-
-            const signupResult =
-                await supabaseClient.auth.signUp({
-                    email,
-                    password: senha,
-                    options: {
-                        data: {
-                            full_name: nome
-                        }
-                    }
-                });
-
-            if (signupResult.error) {
-                throw signupResult.error;
-            }
-
-            if (!signupResult.data.session) {
-
-                alert(
-                    "Cadastro realizado!\n\n" +
-                    "Verifique seu e-mail para confirmar a conta " +
-                    "e depois entre novamente."
-                );
-
-                return;
-            }
-
-            currentUser = signupResult.data.user;
-
-            await criarOuAtualizarProfile(nome);
-
-            await carregarAplicacao();
-
-        } catch (error) {
-
-            console.error("Erro de autenticação:", error);
-
-            alert(
-                "Não foi possível entrar.\n\n" +
-                (error.message || "Erro desconhecido.")
+            supabaseClient = window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
             );
 
-        } finally {
+            resolve();
 
-            if (submitButton) {
-                submitButton.disabled = false;
-                submitButton.textContent = "Entrar no ControleS";
-            }
-        }
+        };
+
+        script.onerror = () => {
+            console.error("Não foi possível carregar o Supabase.");
+            reject(new Error("Supabase não carregou."));
+        };
+
+        document.head.appendChild(script);
+
     });
 
-    /* Navegação */
+}
+
+
+/* =========================================================
+   EVENTOS
+========================================================= */
+
+function setupEvents() {
+
+    const loginForm = document.getElementById("loginForm");
+
+    if (loginForm) {
+        loginForm.addEventListener("submit", handleLogin);
+    }
+
+
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", logout);
+    }
+
+
+    const themeBtn = document.getElementById("themeBtn");
+
+    if (themeBtn) {
+        themeBtn.addEventListener("click", toggleTheme);
+    }
+
+
+    const exportBtn = document.getElementById("exportDataBtn");
+
+    if (exportBtn) {
+        exportBtn.addEventListener("click", exportData);
+    }
+
+
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener("click", toggleMobileMenu);
+    }
+
 
     document.querySelectorAll(".nav-item").forEach(button => {
 
@@ -208,296 +134,737 @@ function configurarEventos() {
 
             const section = button.dataset.section;
 
-            mostrarSecao(section);
+            showSection(section);
 
-            document
-                .getElementById("sidebar")
-                ?.classList.remove("mobile-open");
         });
+
     });
+
 
     document.querySelectorAll("[data-section]").forEach(button => {
 
-        if (button.classList.contains("nav-item")) return;
+        if (
+            !button.classList.contains("nav-item") &&
+            button.dataset.section
+        ) {
 
-        button.addEventListener("click", () => {
+            button.addEventListener("click", () => {
 
-            const section = button.dataset.section;
+                showSection(button.dataset.section);
 
-            if (section) {
-                mostrarSecao(section);
-            }
-        });
+            });
+
+        }
+
     });
 
-    /* Menu mobile */
 
-    document
-        .getElementById("mobileMenuBtn")
-        ?.addEventListener("click", () => {
+    const openTransactionBtn =
+        document.getElementById("openTransactionBtn");
 
-            document
-                .getElementById("sidebar")
-                ?.classList.toggle("mobile-open");
-        });
+    const newTransactionButton =
+        document.getElementById("newTransactionButton");
 
-    /* Tema */
+    if (openTransactionBtn) {
+        openTransactionBtn.addEventListener(
+            "click",
+            openTransactionModal
+        );
+    }
 
-    document
-        .getElementById("themeBtn")
-        ?.addEventListener("click", alternarTema);
+    if (newTransactionButton) {
+        newTransactionButton.addEventListener(
+            "click",
+            openTransactionModal
+        );
+    }
 
-    /* Logout */
 
-    document
-        .getElementById("logoutBtn")
-        ?.addEventListener("click", async () => {
+    const closeModal =
+        document.getElementById("closeModal");
 
-            await supabaseClient.auth.signOut();
+    if (closeModal) {
+        closeModal.addEventListener(
+            "click",
+            closeTransactionModal
+        );
+    }
 
-            currentUser = null;
-
-            mostrarLogin();
-        });
-
-    /* Novo lançamento */
-
-    document
-        .getElementById("openTransactionBtn")
-        ?.addEventListener("click", abrirModalLancamento);
-
-    document
-        .getElementById("newTransactionButton")
-        ?.addEventListener("click", abrirModalLancamento);
-
-    document
-        .getElementById("closeModal")
-        ?.addEventListener("click", fecharModalLancamento);
-
-    /* Tipo */
-
-    document.querySelectorAll(".type-option").forEach(button => {
-
-        button.addEventListener("click", () => {
-
-            document
-                .querySelectorAll(".type-option")
-                .forEach(item =>
-                    item.classList.remove("active")
-                );
-
-            button.classList.add("active");
-
-            transactionType = button.dataset.type;
-        });
-    });
-
-    /* Form lançamento */
-
-    document
-        .getElementById("transactionForm")
-        ?.addEventListener("submit", salvarLancamento);
-
-    /* Filtros */
-
-    document
-        .getElementById("searchInput")
-        ?.addEventListener("input", renderTransactions);
-
-    document
-        .getElementById("typeFilter")
-        ?.addEventListener("change", renderTransactions);
-
-    document
-        .getElementById("categoryFilter")
-        ?.addEventListener("change", renderTransactions);
-
-    /* Premium */
-
-    document
-        .getElementById("newGoalBtn")
-        ?.addEventListener("click", abrirModalMeta);
-
-    document
-        .getElementById("closeGoalModal")
-        ?.addEventListener("click", fecharModalMeta);
-
-    document
-        .getElementById("goalForm")
-        ?.addEventListener("submit", salvarMeta);
-
-    document
-        .getElementById("newBudgetBtn")
-        ?.addEventListener("click", abrirModalOrcamento);
-
-    document
-        .getElementById("closeBudgetModal")
-        ?.addEventListener("click", fecharModalOrcamento);
-
-    document
-        .getElementById("budgetForm")
-        ?.addEventListener("submit", salvarOrcamento);
-
-    document
-        .getElementById("simulateBtn")
-        ?.addEventListener("click", simularDespesa);
-
-    document
-        .getElementById("subscribePremiumBtn")
-        ?.addEventListener("click", ativarPremium);
-
-    document
-        .getElementById("exportDataBtn")
-        ?.addEventListener("click", exportarDados);
-
-    /* Fechar modal clicando no fundo */
 
     document.querySelectorAll(".modal-overlay").forEach(overlay => {
 
         overlay.addEventListener("click", () => {
 
-            overlay.parentElement.classList.add("hidden");
+            const modal = overlay.closest(".modal");
+
+            if (modal) {
+                modal.classList.add("hidden");
+            }
 
         });
+
     });
+
+
+    document.querySelectorAll(".type-option").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            document.querySelectorAll(".type-option")
+                .forEach(item => item.classList.remove("active"));
+
+            button.classList.add("active");
+
+            selectedTransactionType =
+                button.dataset.type || "income";
+
+        });
+
+    });
+
+
+    const transactionForm =
+        document.getElementById("transactionForm");
+
+    if (transactionForm) {
+        transactionForm.addEventListener(
+            "submit",
+            saveTransaction
+        );
+    }
+
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    const typeFilter =
+        document.getElementById("typeFilter");
+
+    const categoryFilter =
+        document.getElementById("categoryFilter");
+
+    if (searchInput) {
+        searchInput.addEventListener(
+            "input",
+            renderTransactions
+        );
+    }
+
+    if (typeFilter) {
+        typeFilter.addEventListener(
+            "change",
+            renderTransactions
+        );
+    }
+
+    if (categoryFilter) {
+        categoryFilter.addEventListener(
+            "change",
+            renderTransactions
+        );
+    }
+
+
+    const subscribePremiumBtn =
+        document.getElementById("subscribePremiumBtn");
+
+    if (subscribePremiumBtn) {
+
+        subscribePremiumBtn.addEventListener(
+            "click",
+            activatePremium
+        );
+
+    }
+
+
+    const newGoalBtn =
+        document.getElementById("newGoalBtn");
+
+    if (newGoalBtn) {
+
+        newGoalBtn.addEventListener(
+            "click",
+            openGoalModal
+        );
+
+    }
+
+
+    const closeGoalModal =
+        document.getElementById("closeGoalModal");
+
+    if (closeGoalModal) {
+
+        closeGoalModal.addEventListener(
+            "click",
+            () => {
+                document
+                    .getElementById("goalModal")
+                    .classList.add("hidden");
+            }
+        );
+
+    }
+
+
+    const goalForm =
+        document.getElementById("goalForm");
+
+    if (goalForm) {
+        goalForm.addEventListener(
+            "submit",
+            saveGoal
+        );
+    }
+
+
+    const newBudgetBtn =
+        document.getElementById("newBudgetBtn");
+
+    if (newBudgetBtn) {
+
+        newBudgetBtn.addEventListener(
+            "click",
+            openBudgetModal
+        );
+
+    }
+
+
+    const closeBudgetModal =
+        document.getElementById("closeBudgetModal");
+
+    if (closeBudgetModal) {
+
+        closeBudgetModal.addEventListener(
+            "click",
+            () => {
+                document
+                    .getElementById("budgetModal")
+                    .classList.add("hidden");
+            }
+        );
+
+    }
+
+
+    const budgetForm =
+        document.getElementById("budgetForm");
+
+    if (budgetForm) {
+
+        budgetForm.addEventListener(
+            "submit",
+            saveBudget
+        );
+
+    }
+
+
+    const simulateBtn =
+        document.getElementById("simulateBtn");
+
+    if (simulateBtn) {
+
+        simulateBtn.addEventListener(
+            "click",
+            simulateExpense
+        );
+
+    }
+
+
+    /* Fecha modal com ESC */
+
+    document.addEventListener("keydown", event => {
+
+        if (event.key === "Escape") {
+
+            document
+                .querySelectorAll(".modal")
+                .forEach(modal => {
+
+                    modal.classList.add("hidden");
+
+                });
+
+        }
+
+    });
+
 }
+
 
 /* =========================================================
-   TELA DE LOGIN
-   ========================================================= */
+   LOGIN / SESSÃO
+========================================================= */
 
-function mostrarLogin() {
-
-    loginScreen?.classList.remove("hidden");
-    app?.classList.add("hidden");
-}
-
-async function carregarAplicacao() {
-
-    if (!currentUser) return;
+async function checkSession() {
 
     try {
 
-        await criarOuAtualizarProfile(
-            currentUser.user_metadata?.full_name ||
-            currentUser.email?.split("@")[0] ||
-            "Usuário"
-        );
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.getSession();
 
-        await carregarProfile();
-        await carregarTransactions();
-        await carregarGoals();
-        await carregarBudgets();
+        if (error) {
+            console.error(error);
+            showLogin();
+            return;
+        }
 
-        loginScreen?.classList.add("hidden");
-        app?.classList.remove("hidden");
+        currentUser = data.session
+            ? data.session.user
+            : null;
 
-        atualizarUsuario();
-        atualizarTudo();
+        if (currentUser) {
 
-        mostrarSecao("dashboard");
+            await enterApp();
+
+        } else {
+
+            showLogin();
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        showLogin();
+
+    }
+
+
+    supabaseClient.auth.onAuthStateChange(
+        async (_event, session) => {
+
+            currentUser = session
+                ? session.user
+                : null;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function handleLogin(event) {
+
+    event.preventDefault();
+
+    const name =
+        document.getElementById("loginName").value.trim();
+
+    const email =
+        document.getElementById("loginEmail").value.trim();
+
+    const password =
+        document.getElementById("loginPassword").value;
+
+
+    if (!email || !password || !name) {
+
+        alert("Preencha nome, e-mail e senha.");
+
+        return;
+
+    }
+
+
+    const button =
+        document.querySelector("#loginForm button");
+
+    if (button) {
+
+        button.disabled = true;
+
+        button.textContent = "Entrando...";
+
+    }
+
+
+    try {
+
+        /*
+         Primeiro tenta entrar.
+        */
+
+        let {
+            data,
+            error
+        } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+
+        /*
+         Se o usuário ainda não existir,
+         cria a conta.
+        */
+
+        if (error) {
+
+            const signUpResult =
+                await supabaseClient.auth.signUp({
+
+                    email,
+                    password,
+
+                    options: {
+                        data: {
+                            full_name: name
+                        }
+                    }
+
+                });
+
+
+            if (signUpResult.error) {
+
+                throw signUpResult.error;
+
+            }
+
+
+            /*
+             Se o Supabase estiver exigindo confirmação
+             de e-mail, ainda não haverá sessão.
+            */
+
+            if (!signUpResult.data.session) {
+
+                alert(
+                    "Cadastro criado! Verifique seu e-mail para confirmar a conta e depois entre novamente."
+                );
+
+                return;
+
+            }
+
+
+            data = signUpResult.data;
+
+        }
+
+
+        currentUser = data.user;
+
+
+        if (!currentUser) {
+
+            throw new Error(
+                "Não foi possível identificar o usuário."
+            );
+
+        }
+
+
+        await createProfileIfNeeded(name);
+
+        await enterApp();
+
 
     } catch (error) {
 
         console.error(error);
 
         alert(
-            "Sua conta entrou, mas houve um problema ao carregar seus dados.\n\n" +
-            error.message
+            "Não foi possível entrar: " +
+            (error.message || "erro desconhecido")
         );
+
+    } finally {
+
+        if (button) {
+
+            button.disabled = false;
+
+            button.textContent = "Entrar no ControleS";
+
+        }
+
     }
+
 }
+
 
 /* =========================================================
    PROFILE
-   ========================================================= */
+========================================================= */
 
-async function criarOuAtualizarProfile(nome) {
-
-    if (!currentUser) return;
-
-    const { error } = await supabaseClient
-        .from("profiles")
-        .upsert(
-            {
-                id: currentUser.id,
-                full_name: nome || "Usuário",
-                account_type: "personal"
-            },
-            {
-                onConflict: "id"
-            }
-        );
-
-    if (error) {
-        console.warn("Profile:", error.message);
-    }
-}
-
-async function carregarProfile() {
+async function createProfileIfNeeded(name) {
 
     if (!currentUser) return;
 
-    const { data, error } = await supabaseClient
+
+    const {
+        data,
+        error
+    } = await supabaseClient
         .from("profiles")
         .select("*")
         .eq("id", currentUser.id)
         .maybeSingle();
 
+
     if (error) {
-        console.warn("Erro profile:", error.message);
+
+        console.warn(
+            "Erro consultando profile:",
+            error
+        );
+
         return;
+
     }
 
-    currentProfile = data;
-}
 
-function atualizarUsuario() {
+    if (!data) {
 
-    const nome =
-        currentProfile?.full_name ||
-        currentUser?.user_metadata?.full_name ||
-        currentUser?.email?.split("@")[0] ||
-        "Usuário";
+        const {
+            error: insertError
+        } = await supabaseClient
+            .from("profiles")
+            .insert({
 
-    if (userName) userName.textContent = nome;
-    if (welcomeName) welcomeName.textContent = nome;
+                id: currentUser.id,
 
-    if (userAvatar) {
-        userAvatar.textContent =
-            nome.charAt(0).toUpperCase();
+                full_name:
+                    name ||
+                    currentUser.user_metadata?.full_name ||
+                    "Usuário",
+
+                account_type: "personal",
+
+                company_name: null
+
+            });
+
+
+        if (insertError) {
+
+            console.warn(
+                "Não foi possível criar profile:",
+                insertError
+            );
+
+        }
+
     }
 
-    verificarPremium();
 }
+
 
 /* =========================================================
-   TRANSAÇÕES
-   ========================================================= */
+   ENTRAR NO APP
+========================================================= */
 
-async function carregarTransactions() {
+async function enterApp() {
 
     if (!currentUser) return;
 
-    const { data, error } = await supabaseClient
+
+    const loginScreen =
+        document.getElementById("loginScreen");
+
+    const app =
+        document.getElementById("app");
+
+
+    if (loginScreen) {
+        loginScreen.classList.add("hidden");
+    }
+
+    if (app) {
+        app.classList.remove("hidden");
+    }
+
+
+    await loadUserData();
+
+    showSection("dashboard");
+
+}
+
+
+/* =========================================================
+   MOSTRAR LOGIN
+========================================================= */
+
+function showLogin() {
+
+    const loginScreen =
+        document.getElementById("loginScreen");
+
+    const app =
+        document.getElementById("app");
+
+
+    if (loginScreen) {
+        loginScreen.classList.remove("hidden");
+    }
+
+    if (app) {
+        app.classList.add("hidden");
+    }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout() {
+
+    if (!supabaseClient) return;
+
+
+    const confirmed =
+        confirm("Deseja realmente sair?");
+
+    if (!confirmed) return;
+
+
+    const {
+        error
+    } = await supabaseClient.auth.signOut();
+
+
+    if (error) {
+
+        alert(
+            "Erro ao sair: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    currentUser = null;
+
+    transactions = [];
+    goals = [];
+    budgets = [];
+    subscription = null;
+
+
+    showLogin();
+
+}
+
+
+/* =========================================================
+   CARREGAR DADOS
+========================================================= */
+
+async function loadUserData() {
+
+    if (!currentUser) return;
+
+
+    await createProfileIfNeeded(
+        currentUser.user_metadata?.full_name ||
+        "Usuário"
+    );
+
+
+    await Promise.all([
+
+        loadTransactions(),
+
+        loadGoals(),
+
+        loadBudgets(),
+
+        loadSubscription()
+
+    ]);
+
+
+    updateUserInterface();
+
+    updateDashboard();
+
+    renderTransactions();
+
+    updateCategoryFilter();
+
+    renderCategories();
+
+    renderReports();
+
+    renderGoals();
+
+    renderBudgets();
+
+    renderAlerts();
+
+    renderMonthlyComparison();
+
+    renderPremiumAnalysis();
+
+}
+
+
+/* =========================================================
+   TRANSAÇÕES
+========================================================= */
+
+async function loadTransactions() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
         .from("transactions")
         .select("*")
         .eq("user_id", currentUser.id)
-        .order("date", { ascending: false })
-        .order("created_at", { ascending: false });
+        .order("date", {
+            ascending: false
+        });
+
 
     if (error) {
-        console.error("Transactions:", error);
-        throw error;
+
+        console.error(
+            "Erro carregando transações:",
+            error
+        );
+
+        transactions = [];
+
+        return;
+
     }
 
-    transactions = data || [];
+
+    transactions = (data || []).map(normalizeTransaction);
+
 }
 
-function normalizarTransaction(item) {
+
+/* =========================================================
+   NORMALIZAR TRANSAÇÃO
+========================================================= */
+
+function normalizeTransaction(item) {
 
     return {
+
         id: item.id,
+
+        user_id: item.user_id,
 
         type:
             item.type ||
@@ -527,223 +894,442 @@ function normalizarTransaction(item) {
             item.data_iso ||
             new Date().toISOString().slice(0, 10),
 
-        area: item.area || "",
-        note: item.note || ""
+        area:
+            item.area || "",
+
+        note:
+            item.note || ""
+
     };
+
 }
 
-async function salvarLancamento(event) {
+
+/* =========================================================
+   SALVAR TRANSAÇÃO
+========================================================= */
+
+async function saveTransaction(event) {
 
     event.preventDefault();
 
+
     if (!currentUser) {
+
         alert("Faça login primeiro.");
+
         return;
+
     }
+
 
     const description =
-        document.getElementById("descriptionInput").value.trim();
+        document
+            .getElementById("descriptionInput")
+            .value
+            .trim();
+
 
     const amount =
-        Number(document.getElementById("amountInput").value);
+        Number(
+            document
+                .getElementById("amountInput")
+                .value
+        );
+
 
     const date =
-        document.getElementById("dateInput").value;
+        document
+            .getElementById("dateInput")
+            .value;
+
 
     const category =
-        document.getElementById("transactionCategory").value;
+        document
+            .getElementById("transactionCategory")
+            .value;
+
+
+    const frequency =
+        document
+            .getElementById("frequencyInput")
+            .value;
+
 
     if (!description || !amount || !date) {
+
         alert("Preencha todos os campos obrigatórios.");
+
         return;
+
     }
 
-    const payload = {
 
-        user_id: currentUser.id,
+    const button =
+        document.querySelector(
+            "#transactionForm .save-transaction"
+        );
 
-        type: transactionType,
 
-        description,
+    if (button) {
 
-        amount,
+        button.disabled = true;
 
-        category,
+        button.textContent = "Salvando...";
 
-        date,
+    }
 
-        area: "",
 
-        note: ""
-    };
+    try {
 
-    const { error } = await supabaseClient
-        .from("transactions")
-        .insert(payload);
+        const {
+            error
+        } = await supabaseClient
+            .from("transactions")
+            .insert({
 
-    if (error) {
+                user_id: currentUser.id,
+
+                type: selectedTransactionType,
+
+                description,
+
+                amount,
+
+                category,
+
+                date,
+
+                area: "",
+
+                note: frequency !== "once"
+                    ? `Frequência: ${frequency}`
+                    : ""
+
+            });
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        closeTransactionModal();
+
+
+        document
+            .getElementById("transactionForm")
+            .reset();
+
+
+        selectedTransactionType = "income";
+
+
+        document
+            .querySelectorAll(".type-option")
+            .forEach((item, index) => {
+
+                item.classList.toggle(
+                    "active",
+                    index === 0
+                );
+
+            });
+
+
+        await loadUserData();
+
+
+        alert("Lançamento salvo com sucesso!");
+
+
+    } catch (error) {
 
         console.error(error);
 
         alert(
-            "Erro ao salvar lançamento:\n\n" +
+            "Erro ao salvar lançamento: " +
             error.message
         );
 
-        return;
+    } finally {
+
+        if (button) {
+
+            button.disabled = false;
+
+            button.textContent =
+                "Salvar lançamento";
+
+        }
+
     }
 
-    fecharModalLancamento();
-
-    document.getElementById("transactionForm").reset();
-
-    transactionType = "income";
-
-    document
-        .querySelectorAll(".type-option")
-        .forEach((button, index) => {
-
-            button.classList.toggle(
-                "active",
-                index === 0
-            );
-        });
-
-    await carregarTransactions();
-
-    atualizarTudo();
-
-    alert("Lançamento salvo com sucesso! ✅");
 }
 
-async function excluirLancamento(id) {
 
-    if (!confirm("Deseja excluir este lançamento?")) {
-        return;
-    }
+/* =========================================================
+   EXCLUIR TRANSAÇÃO
+========================================================= */
 
-    const { error } = await supabaseClient
+async function deleteTransaction(id) {
+
+    if (!currentUser) return;
+
+
+    const confirmed =
+        confirm("Excluir este lançamento?");
+
+
+    if (!confirmed) return;
+
+
+    const {
+        error
+    } = await supabaseClient
         .from("transactions")
         .delete()
         .eq("id", id)
         .eq("user_id", currentUser.id);
 
+
     if (error) {
 
         alert(
-            "Erro ao excluir:\n\n" +
+            "Erro ao excluir: " +
             error.message
         );
 
         return;
+
     }
 
-    await carregarTransactions();
 
-    atualizarTudo();
+    await loadUserData();
+
 }
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function updateDashboard() {
+
+    const income =
+        transactions
+            .filter(t => t.type === "income")
+            .reduce(
+                (sum, t) => sum + t.amount,
+                0
+            );
+
+
+    const expense =
+        transactions
+            .filter(t => t.type === "expense")
+            .reduce(
+                (sum, t) => sum + t.amount,
+                0
+            );
+
+
+    const balance =
+        income - expense;
+
+
+    const economy =
+        income > 0
+            ? ((balance / income) * 100)
+            : 0;
+
+
+    setText(
+        "balanceValue",
+        formatCurrency(balance)
+    );
+
+
+    setText(
+        "incomeValue",
+        formatCurrency(income)
+    );
+
+
+    setText(
+        "expenseValue",
+        formatCurrency(expense)
+    );
+
+
+    setText(
+        "economyValue",
+        `${Math.max(0, economy).toFixed(1)}%`
+    );
+
+
+    setText(
+        "premiumEconomyValue",
+        `${Math.max(0, economy).toFixed(1)}%`
+    );
+
+
+    renderRecentTransactions();
+
+    updateFinanceChart();
+
+}
+
+
+/* =========================================================
+   TRANSAÇÕES RECENTES
+========================================================= */
+
+function renderRecentTransactions() {
+
+    const container =
+        document.getElementById(
+            "recentTransactions"
+        );
+
+
+    if (!container) return;
+
+
+    const list =
+        transactions.slice(0, 5);
+
+
+    if (!list.length) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                Nenhum lançamento cadastrado.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        list.map(transactionHTML).join("");
+
+}
+
+
+/* =========================================================
+   TODAS TRANSAÇÕES
+========================================================= */
 
 function renderTransactions() {
 
     const container =
-        document.getElementById("allTransactions");
+        document.getElementById(
+            "allTransactions"
+        );
 
-    const recent =
-        document.getElementById("recentTransactions");
+
+    if (!container) return;
+
 
     const search =
         (
-            document.getElementById("searchInput")?.value ||
-            ""
-        ).toLowerCase();
+            document.getElementById("searchInput")
+                ?.value || ""
+        )
+            .toLowerCase()
+            .trim();
+
 
     const type =
-        document.getElementById("typeFilter")?.value ||
-        "all";
+        document.getElementById("typeFilter")
+            ?.value || "all";
+
 
     const category =
-        document.getElementById("categoryFilter")?.value ||
-        "all";
+        document.getElementById("categoryFilter")
+            ?.value || "all";
 
-    const lista =
-        transactions
-            .map(normalizarTransaction)
-            .filter(item => {
 
-                const texto =
-                    (
-                        item.description +
-                        " " +
-                        item.category
-                    ).toLowerCase();
+    const filtered =
+        transactions.filter(item => {
 
-                const matchSearch =
-                    !search ||
-                    texto.includes(search);
+            const matchesSearch =
+                !search ||
+                item.description
+                    .toLowerCase()
+                    .includes(search) ||
+                item.category
+                    .toLowerCase()
+                    .includes(search);
 
-                const matchType =
-                    type === "all" ||
-                    item.type === type;
 
-                const matchCategory =
-                    category === "all" ||
-                    item.category === category;
+            const matchesType =
+                type === "all" ||
+                item.type === type;
 
-                return (
-                    matchSearch &&
-                    matchType &&
-                    matchCategory
-                );
-            });
 
-    if (container) {
+            const matchesCategory =
+                category === "all" ||
+                item.category === category;
 
-        container.innerHTML =
-            lista.length
-                ? lista.map(transactionHTML).join("")
-                : `<div class="empty-state">
-                    Nenhum lançamento encontrado.
-                   </div>`;
+
+            return (
+                matchesSearch &&
+                matchesType &&
+                matchesCategory
+            );
+
+        });
+
+
+    if (!filtered.length) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                Nenhum lançamento encontrado.
+            </div>
+        `;
+
+        return;
+
     }
 
-    if (recent) {
 
-        const ultimos =
-            transactions
-                .map(normalizarTransaction)
-                .slice(0, 5);
+    container.innerHTML =
+        filtered.map(transactionHTML).join("");
 
-        recent.innerHTML =
-            ultimos.length
-                ? ultimos.map(transactionHTML).join("")
-                : `<div class="empty-state">
-                    Nenhum lançamento cadastrado.
-                   </div>`;
-    }
-
-    atualizarFiltroCategorias();
 }
+
+
+/* =========================================================
+   HTML TRANSAÇÃO
+========================================================= */
 
 function transactionHTML(item) {
 
-    const valor =
-        formatMoney(item.amount);
+    const income =
+        item.type === "income";
 
-    const sinal =
-        item.type === "income"
-            ? "+"
-            : "-";
 
-    const classe =
-        item.type === "income"
-            ? "income"
-            : "expense";
+    const sign =
+        income ? "+" : "-";
+
+
+    const icon =
+        income ? "↗" : "↘";
+
 
     return `
+
         <div class="transaction">
 
             <div class="transaction-icon">
-                ${item.type === "income" ? "↗" : "↘"}
+                ${icon}
             </div>
 
             <div class="transaction-info">
@@ -754,128 +1340,237 @@ function transactionHTML(item) {
 
                 <small>
                     ${escapeHTML(item.category)}
-                    • ${formatDate(item.date)}
+                    •
+                    ${formatDate(item.date)}
                 </small>
 
             </div>
 
-            <div class="transaction-value ${classe}">
-                ${sinal} ${valor}
+            <div class="transaction-value ${
+                income ? "income" : "expense"
+            }">
+
+                ${sign}
+                ${formatCurrency(item.amount)}
+
             </div>
 
             <button
                 class="transaction-delete"
-                onclick="excluirLancamento('${item.id}')"
+                type="button"
+                onclick="deleteTransaction('${item.id}')"
                 title="Excluir"
             >
                 ×
             </button>
 
         </div>
+
     `;
+
 }
 
-function atualizarFiltroCategorias() {
+
+/* =========================================================
+   CATEGORIAS
+========================================================= */
+
+function updateCategoryFilter() {
 
     const select =
-        document.getElementById("categoryFilter");
+        document.getElementById(
+            "categoryFilter"
+        );
+
 
     if (!select) return;
 
-    const atual = select.value;
 
-    const categorias = [
-        ...new Set(
+    const current =
+        select.value;
+
+
+    const categories =
+        [...new Set(
             transactions
-                .map(normalizarTransaction)
-                .map(item => item.category)
-        )
-    ].sort();
+                .map(t => t.category)
+                .filter(Boolean)
+        )]
+            .sort();
 
-    select.innerHTML =
-        `<option value="all">Todas categorias</option>` +
-        categorias
-            .map(
-                categoria =>
-                    `<option value="${escapeHTML(categoria)}">
-                        ${escapeHTML(categoria)}
-                     </option>`
-            )
-            .join("");
 
-    select.value =
-        categorias.includes(atual)
-            ? atual
-            : "all";
-}
+    select.innerHTML = `
+        <option value="all">
+            Todas categorias
+        </option>
+    `;
 
-/* =========================================================
-   DASHBOARD
-   ========================================================= */
 
-function atualizarDashboard() {
+    categories.forEach(category => {
 
-    const lista =
-        transactions.map(normalizarTransaction);
+        const option =
+            document.createElement("option");
 
-    let receitas = 0;
-    let despesas = 0;
+        option.value = category;
 
-    lista.forEach(item => {
+        option.textContent = category;
 
-        if (item.type === "income") {
-            receitas += item.amount;
-        } else {
-            despesas += item.amount;
-        }
+        select.appendChild(option);
+
     });
 
-    const saldo =
-        receitas - despesas;
 
-    const economia =
-        receitas > 0
-            ? ((saldo / receitas) * 100)
-            : 0;
+    if (
+        categories.includes(current)
+    ) {
 
-    setText(
-        "balanceValue",
-        formatMoney(saldo)
-    );
+        select.value = current;
 
-    setText(
-        "incomeValue",
-        formatMoney(receitas)
-    );
+    }
 
-    setText(
-        "expenseValue",
-        formatMoney(despesas)
-    );
-
-    setText(
-        "economyValue",
-        `${Math.max(0, economia).toFixed(1)}%`
-    );
-
-    setText(
-        "premiumEconomyValue",
-        `${Math.max(0, economia).toFixed(1)}%`
-    );
-
-    atualizarGraficoFinanceiro(receitas, despesas);
 }
 
-function atualizarGraficoFinanceiro(receitas, despesas) {
+
+/* =========================================================
+   RENDER CATEGORIAS
+========================================================= */
+
+function renderCategories() {
+
+    const container =
+        document.getElementById(
+            "categoryList"
+        );
+
+
+    if (!container) return;
+
+
+    const expenses =
+        transactions.filter(
+            t => t.type === "expense"
+        );
+
+
+    const totals = {};
+
+
+    expenses.forEach(item => {
+
+        if (!totals[item.category]) {
+            totals[item.category] = 0;
+        }
+
+        totals[item.category] += item.amount;
+
+    });
+
+
+    const entries =
+        Object.entries(totals)
+            .sort((a, b) => b[1] - a[1]);
+
+
+    if (!entries.length) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                Ainda não existem despesas para analisar.
+            </div>
+        `;
+
+        updateCategoryChart({});
+
+        return;
+
+    }
+
+
+    const total =
+        entries.reduce(
+            (sum, [, value]) => sum + value,
+            0
+        );
+
+
+    container.innerHTML =
+        entries.map(([category, value]) => {
+
+            const percentage =
+                total > 0
+                    ? (value / total) * 100
+                    : 0;
+
+
+            return `
+
+                <div class="category-summary-item">
+
+                    <div class="category-summary-left">
+
+                        <span class="category-dot"></span>
+
+                        <strong>
+                            ${escapeHTML(category)}
+                        </strong>
+
+                    </div>
+
+                    <span>
+                        ${formatCurrency(value)}
+                        ·
+                        ${percentage.toFixed(1)}%
+                    </span>
+
+                </div>
+
+            `;
+
+        }).join("");
+
+
+    updateCategoryChart(totals);
+
+}
+
+
+/* =========================================================
+   GRÁFICO FINANCEIRO
+========================================================= */
+
+function updateFinanceChart() {
 
     const canvas =
-        document.getElementById("financeChart");
+        document.getElementById(
+            "financeChart"
+        );
+
 
     if (!canvas || !window.Chart) return;
+
 
     if (financeChart) {
         financeChart.destroy();
     }
+
+
+    const income =
+        transactions
+            .filter(t => t.type === "income")
+            .reduce(
+                (sum, t) => sum + t.amount,
+                0
+            );
+
+
+    const expense =
+        transactions
+            .filter(t => t.type === "expense")
+            .reduce(
+                (sum, t) => sum + t.amount,
+                0
+            );
+
 
     financeChart =
         new Chart(canvas, {
@@ -890,13 +1585,16 @@ function atualizarGraficoFinanceiro(receitas, despesas) {
                 ],
 
                 datasets: [{
+
                     label: "Valor",
+
                     data: [
-                        receitas,
-                        despesas
-                    ],
-                    borderRadius: 10
+                        income,
+                        expense
+                    ]
+
                 }]
+
             },
 
             options: {
@@ -906,125 +1604,66 @@ function atualizarGraficoFinanceiro(receitas, despesas) {
                 maintainAspectRatio: false,
 
                 plugins: {
+
                     legend: {
                         display: false
                     }
-                },
 
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
                 }
+
             }
+
         });
+
 }
+
 
 /* =========================================================
-   CATEGORIAS
-   ========================================================= */
+   GRÁFICO CATEGORIAS
+========================================================= */
 
-function atualizarCategorias() {
-
-    const despesas =
-        transactions
-            .map(normalizarTransaction)
-            .filter(item => item.type === "expense");
-
-    const mapa = {};
-
-    despesas.forEach(item => {
-
-        mapa[item.category] =
-            (mapa[item.category] || 0) +
-            item.amount;
-    });
-
-    const categorias =
-        Object.entries(mapa)
-            .sort((a, b) => b[1] - a[1]);
-
-    const list =
-        document.getElementById("categoryList");
-
-    if (list) {
-
-        list.innerHTML =
-            categorias.length
-                ? categorias.map(([categoria, valor]) => {
-
-                    return `
-                        <div class="category-summary-item">
-
-                            <div class="category-summary-left">
-                                <span class="category-dot"></span>
-
-                                <strong>
-                                    ${escapeHTML(categoria)}
-                                </strong>
-                            </div>
-
-                            <span>
-                                ${formatMoney(valor)}
-                            </span>
-
-                        </div>
-                    `;
-
-                }).join("")
-                : `<div class="empty-state">
-                    Ainda não existem despesas.
-                   </div>`;
-    }
-
-    atualizarGraficoCategorias(
-        categorias,
-        "categoryChart"
-    );
-
-    atualizarGraficoCategorias(
-        categorias,
-        "reportCategoryChart"
-    );
-
-    atualizarAnaliseRelatorio(categorias);
-}
-
-function atualizarGraficoCategorias(categorias, canvasId) {
+function updateCategoryChart(totals) {
 
     const canvas =
-        document.getElementById(canvasId);
+        document.getElementById(
+            "categoryChart"
+        );
+
 
     if (!canvas || !window.Chart) return;
 
-    if (canvasId === "categoryChart" && categoryChart) {
+
+    if (categoryChart) {
         categoryChart.destroy();
     }
 
-    if (
-        canvasId === "reportCategoryChart" &&
-        reportCategoryChart
-    ) {
-        reportCategoryChart.destroy();
-    }
 
-    const chart =
+    const labels =
+        Object.keys(totals);
+
+
+    const values =
+        Object.values(totals);
+
+
+    if (!labels.length) return;
+
+
+    categoryChart =
         new Chart(canvas, {
 
             type: "doughnut",
 
             data: {
 
-                labels:
-                    categorias.map(item => item[0]),
+                labels,
 
                 datasets: [{
 
-                    data:
-                        categorias.map(item => item[1]),
+                    data: values
 
-                    borderWidth: 2
                 }]
+
             },
 
             options: {
@@ -1034,172 +1673,339 @@ function atualizarGraficoCategorias(categorias, canvasId) {
                 maintainAspectRatio: false,
 
                 plugins: {
+
                     legend: {
                         position: "bottom"
                     }
+
                 }
+
             }
+
         });
 
-    if (canvasId === "categoryChart") {
-        categoryChart = chart;
-    } else {
-        reportCategoryChart = chart;
-    }
 }
 
-function atualizarAnaliseRelatorio(categorias) {
 
-    const container =
-        document.getElementById("reportAnalysis");
+/* =========================================================
+   RELATÓRIOS
+========================================================= */
 
-    if (!container) return;
+function renderReports() {
 
-    if (!categorias.length) {
-
-        container.innerHTML =
-            `<div class="empty-state">
-                Cadastre despesas para gerar sua análise.
-             </div>`;
-
-        return;
-    }
-
-    const total =
-        categorias.reduce(
-            (sum, item) => sum + item[1],
-            0
+    const analysis =
+        document.getElementById(
+            "reportAnalysis"
         );
 
-    const maior =
-        categorias[0];
 
-    const percentual =
-        total > 0
-            ? (maior[1] / total) * 100
+    const canvas =
+        document.getElementById(
+            "reportCategoryChart"
+        );
+
+
+    if (!analysis && !canvas) return;
+
+
+    const income =
+        transactions
+            .filter(t => t.type === "income")
+            .reduce(
+                (sum, t) => sum + t.amount,
+                0
+            );
+
+
+    const expense =
+        transactions
+            .filter(t => t.type === "expense")
+            .reduce(
+                (sum, t) => sum + t.amount,
+                0
+            );
+
+
+    const balance =
+        income - expense;
+
+
+    const economy =
+        income > 0
+            ? (balance / income) * 100
             : 0;
 
-    container.innerHTML = `
-        <p>
-            Sua maior categoria de gastos é
-            <strong>${escapeHTML(maior[0])}</strong>,
-            representando
-            <strong>${percentual.toFixed(1)}%</strong>
-            das suas despesas.
-        </p>
 
-        <p style="margin-top:10px;">
-            Total de despesas:
-            <strong>${formatMoney(total)}</strong>
-        </p>
-    `;
+    if (analysis) {
+
+        analysis.innerHTML = `
+
+            <div class="category-summary-item">
+                <strong>Total de receitas</strong>
+                <span>${formatCurrency(income)}</span>
+            </div>
+
+            <div class="category-summary-item">
+                <strong>Total de despesas</strong>
+                <span>${formatCurrency(expense)}</span>
+            </div>
+
+            <div class="category-summary-item">
+                <strong>Saldo</strong>
+                <span>${formatCurrency(balance)}</span>
+            </div>
+
+            <div class="category-summary-item">
+                <strong>Economia</strong>
+                <span>${Math.max(0, economy).toFixed(1)}%</span>
+            </div>
+
+        `;
+
+    }
+
+
+    if (canvas && window.Chart) {
+
+        if (reportCategoryChart) {
+            reportCategoryChart.destroy();
+        }
+
+
+        const totals = {};
+
+
+        transactions
+            .filter(t => t.type === "expense")
+            .forEach(t => {
+
+                totals[t.category] =
+                    (totals[t.category] || 0)
+                    + t.amount;
+
+            });
+
+
+        const labels =
+            Object.keys(totals);
+
+
+        const values =
+            Object.values(totals);
+
+
+        if (labels.length) {
+
+            reportCategoryChart =
+                new Chart(canvas, {
+
+                    type: "doughnut",
+
+                    data: {
+
+                        labels,
+
+                        datasets: [{
+
+                            data: values
+
+                        }]
+
+                    },
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        plugins: {
+
+                            legend: {
+                                position: "bottom"
+                            }
+
+                        }
+
+                    }
+
+                });
+
+        }
+
+    }
+
 }
+
 
 /* =========================================================
    METAS
-   ========================================================= */
+========================================================= */
 
-async function carregarGoals() {
+async function loadGoals() {
 
-    if (!currentUser) return;
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("goals")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .order("created_at", {
+            ascending: false
+        });
 
-    const { data, error } =
-        await supabaseClient
-            .from("goals")
-            .select("*")
-            .eq("user_id", currentUser.id)
-            .order("created_at", {
-                ascending: false
-            });
 
     if (error) {
-        console.warn("Goals:", error.message);
+
+        console.error(
+            "Erro carregando metas:",
+            error
+        );
+
         goals = [];
+
         return;
+
     }
 
+
     goals = data || [];
+
 }
 
-function abrirModalMeta() {
 
-    document
-        .getElementById("goalModal")
-        ?.classList.remove("hidden");
+/* =========================================================
+   ABRIR META
+========================================================= */
+
+function openGoalModal() {
+
+    const modal =
+        document.getElementById("goalModal");
+
+
+    if (modal) {
+        modal.classList.remove("hidden");
+    }
+
 }
 
-function fecharModalMeta() {
 
-    document
-        .getElementById("goalModal")
-        ?.classList.add("hidden");
-}
+/* =========================================================
+   SALVAR META
+========================================================= */
 
-async function salvarMeta(event) {
+async function saveGoal(event) {
 
     event.preventDefault();
 
+
+    if (!currentUser) return;
+
+
     const name =
-        document.getElementById("goalName").value.trim();
+        document.getElementById(
+            "goalName"
+        ).value.trim();
+
 
     const target =
-        Number(document.getElementById("goalTarget").value);
+        Number(
+            document.getElementById(
+                "goalTarget"
+            ).value
+        );
+
 
     const saved =
-        Number(document.getElementById("goalSaved").value || 0);
+        Number(
+            document.getElementById(
+                "goalSaved"
+            ).value || 0
+        );
 
-    if (!name || target <= 0) {
+
+    if (!name || !target) {
+
         alert("Preencha os dados da meta.");
+
         return;
+
     }
 
-    const { error } =
-        await supabaseClient
-            .from("goals")
-            .insert({
-                user_id: currentUser.id,
-                name,
-                target,
-                saved
-            });
+
+    const {
+        error
+    } = await supabaseClient
+        .from("goals")
+        .insert({
+
+            user_id: currentUser.id,
+
+            name,
+
+            target,
+
+            saved
+
+        });
+
 
     if (error) {
 
         alert(
-            "Erro ao criar meta:\n\n" +
+            "Erro ao criar meta: " +
             error.message
         );
 
         return;
+
     }
 
-    fecharModalMeta();
 
     document
         .getElementById("goalForm")
         .reset();
 
-    await carregarGoals();
 
-    renderGoals();
+    document
+        .getElementById("goalModal")
+        .classList.add("hidden");
+
+
+    await loadUserData();
+
 }
+
+
+/* =========================================================
+   RENDER METAS
+========================================================= */
 
 function renderGoals() {
 
     const container =
-        document.getElementById("goalsList");
+        document.getElementById(
+            "goalsList"
+        );
+
 
     if (!container) return;
 
+
     if (!goals.length) {
 
-        container.innerHTML =
-            `<div class="empty-state">
+        container.innerHTML = `
+            <div class="empty-state">
                 Você ainda não criou nenhuma meta.
-             </div>`;
+            </div>
+        `;
 
         return;
+
     }
+
 
     container.innerHTML =
         goals.map(goal => {
@@ -1207,10 +2013,12 @@ function renderGoals() {
             const target =
                 Number(goal.target || 0);
 
+
             const saved =
                 Number(goal.saved || 0);
 
-            const percentual =
+
+            const percentage =
                 target > 0
                     ? Math.min(
                         100,
@@ -1218,947 +2026,286 @@ function renderGoals() {
                     )
                     : 0;
 
+
             return `
-                <div class="forecast-card">
 
-                    <strong>
-                        ${escapeHTML(goal.name)}
-                    </strong>
+                <div class="category-summary-item">
 
-                    <small>
-                        ${formatMoney(saved)}
-                        de
-                        ${formatMoney(target)}
-                    </small>
+                    <div>
 
-                    <div style="
-                        height:8px;
-                        background:var(--border);
-                        border-radius:10px;
-                        margin-top:12px;
-                        overflow:hidden;
-                    ">
-                        <div style="
-                            width:${percentual}%;
-                            height:100%;
-                            background:var(--orange);
-                        "></div>
+                        <strong>
+                            ${escapeHTML(goal.name)}
+                        </strong>
+
+                        <small>
+                            ${formatCurrency(saved)}
+                            de
+                            ${formatCurrency(target)}
+                        </small>
+
                     </div>
 
-                    <small>
-                        ${percentual.toFixed(0)}% concluído
-                    </small>
+                    <span>
+                        ${percentage.toFixed(0)}%
+                    </span>
 
                 </div>
+
             `;
 
         }).join("");
+
 }
+
 
 /* =========================================================
    ORÇAMENTOS
-   ========================================================= */
+========================================================= */
 
-async function carregarBudgets() {
+async function loadBudgets() {
 
-    if (!currentUser) return;
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("budgets")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .order("created_at", {
+            ascending: false
+        });
 
-    const { data, error } =
-        await supabaseClient
-            .from("budgets")
-            .select("*")
-            .eq("user_id", currentUser.id)
-            .order("created_at", {
-                ascending: false
-            });
 
     if (error) {
-        console.warn("Budgets:", error.message);
+
+        console.error(
+            "Erro carregando orçamentos:",
+            error
+        );
+
         budgets = [];
+
         return;
+
     }
 
+
     budgets = data || [];
+
 }
 
-function abrirModalOrcamento() {
 
-    document
-        .getElementById("budgetModal")
-        ?.classList.remove("hidden");
+/* =========================================================
+   ABRIR ORÇAMENTO
+========================================================= */
+
+function openBudgetModal() {
+
+    const modal =
+        document.getElementById(
+            "budgetModal"
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove("hidden");
+
+    }
+
 }
 
-function fecharModalOrcamento() {
 
-    document
-        .getElementById("budgetModal")
-        ?.classList.add("hidden");
-}
+/* =========================================================
+   SALVAR ORÇAMENTO
+========================================================= */
 
-async function salvarOrcamento(event) {
+async function saveBudget(event) {
 
     event.preventDefault();
 
+
+    if (!currentUser) return;
+
+
     const category =
-        document.getElementById("budgetCategory").value;
+        document.getElementById(
+            "budgetCategory"
+        ).value;
+
 
     const limit =
         Number(
-            document.getElementById("budgetLimit").value
+            document.getElementById(
+                "budgetLimit"
+            ).value
         );
 
-    if (!category || limit <= 0) {
 
-        alert("Informe um limite válido.");
+    if (!limit) {
+
+        alert("Informe o limite mensal.");
 
         return;
+
     }
 
-    const { error } =
-        await supabaseClient
-            .from("budgets")
-            .upsert(
-                {
-                    user_id: currentUser.id,
-                    category,
-                    limit_amount: limit
-                },
-                {
-                    onConflict: "user_id,category"
-                }
-            );
+
+    const {
+        error
+    } = await supabaseClient
+        .from("budgets")
+        .upsert({
+
+            user_id: currentUser.id,
+
+            category,
+
+            limit_amount: limit
+
+        }, {
+
+            onConflict: "user_id,category"
+
+        });
+
 
     if (error) {
 
         /*
-         * Caso a tabela não tenha UNIQUE em
-         * user_id + category, fazemos insert.
-         */
+         Se ainda não houver constraint
+         UNIQUE, tenta inserir normalmente.
+        */
 
-        const fallback =
+        const result =
             await supabaseClient
                 .from("budgets")
                 .insert({
+
                     user_id: currentUser.id,
+
                     category,
+
                     limit_amount: limit
+
                 });
 
-        if (fallback.error) {
+
+        if (result.error) {
 
             alert(
-                "Erro ao salvar orçamento:\n\n" +
-                fallback.error.message
+                "Erro ao salvar orçamento: " +
+                result.error.message
             );
 
             return;
+
         }
+
     }
 
-    fecharModalOrcamento();
 
     document
         .getElementById("budgetForm")
         .reset();
 
-    await carregarBudgets();
 
-    renderBudgets();
+    document
+        .getElementById("budgetModal")
+        .classList.add("hidden");
+
+
+    await loadUserData();
+
 }
+
+
+/* =========================================================
+   RENDER ORÇAMENTOS
+========================================================= */
 
 function renderBudgets() {
 
     const container =
-        document.getElementById("budgetsList");
+        document.getElementById(
+            "budgetsList"
+        );
+
 
     if (!container) return;
 
+
     if (!budgets.length) {
 
-        container.innerHTML =
-            `<div class="empty-state">
+        container.innerHTML = `
+            <div class="empty-state">
                 Nenhum orçamento definido.
-             </div>`;
+            </div>
+        `;
 
         return;
+
     }
 
-    const despesas =
-        transactions
-            .map(normalizarTransaction)
-            .filter(item => item.type === "expense");
 
     container.innerHTML =
         budgets.map(budget => {
 
-            const gasto =
-                despesas
-                    .filter(
-                        item =>
-                            item.category === budget.category
+            const spent =
+                transactions
+                    .filter(t =>
+                        t.type === "expense" &&
+                        t.category === budget.category
                     )
                     .reduce(
-                        (sum, item) =>
-                            sum + item.amount,
+                        (sum, t) =>
+                            sum + t.amount,
                         0
                     );
 
-            const limite =
-                Number(budget.limit_amount || 0);
 
-            const percentual =
-                limite > 0
-                    ? (gasto / limite) * 100
+            const limit =
+                Number(
+                    budget.limit_amount || 0
+                );
+
+
+            const percentage =
+                limit > 0
+                    ? (spent / limit) * 100
                     : 0;
 
+
             return `
-                <div class="forecast-card">
 
-                    <strong>
-                        ${escapeHTML(budget.category)}
-                    </strong>
+                <div class="category-summary-item">
 
-                    <small>
-                        ${formatMoney(gasto)}
-                        /
-                        ${formatMoney(limite)}
-                    </small>
+                    <div>
 
-                    <div style="
-                        height:8px;
-                        background:var(--border);
-                        border-radius:10px;
-                        margin-top:12px;
-                        overflow:hidden;
-                    ">
-                        <div style="
-                            width:${Math.min(percentual,100)}%;
-                            height:100%;
-                            background:
-                                ${percentual >= 100
-                                    ? "#dc2626"
-                                    : "var(--orange)"};
-                        "></div>
+                        <strong>
+                            ${escapeHTML(budget.category)}
+                        </strong>
+
+                        <small>
+                            ${formatCurrency(spent)}
+                            /
+                            ${formatCurrency(limit)}
+                        </small>
+
                     </div>
 
-                    <small>
-                        ${percentual.toFixed(0)}% utilizado
-                    </small>
+                    <span>
+                        ${percentage.toFixed(0)}%
+                    </span>
 
                 </div>
+
             `;
 
         }).join("");
+
 }
+
 
 /* =========================================================
-   PREMIUM
-   ========================================================= */
-
-async function verificarPremium() {
-
-    if (!currentUser) return;
-
-    const { data, error } =
-        await supabaseClient
-            .from("subscriptions")
-            .select("*")
-            .eq("user_id", currentUser.id)
-            .order("created_at", {
-                ascending: false
-            })
-            .limit(1)
-            .maybeSingle();
-
-    if (error) {
-
-        console.warn(
-            "Subscription:",
-            error.message
-        );
-
-        if (userPlan) {
-            userPlan.textContent =
-                "ControleS Grátis";
-        }
-
-        return;
-    }
-
-    const premium =
-        data &&
-        (
-            data.status === "active" ||
-            data.status === "trialing"
-        );
-
-    if (userPlan) {
-
-        userPlan.textContent =
-            premium
-                ? "ControleS Premium ⭐"
-                : "ControleS Grátis";
-    }
-}
-
-async function ativarPremium() {
-
-    if (!currentUser) return;
-
-    alert(
-        "A assinatura do Premium ainda precisa ser conectada ao sistema de pagamento.\n\n" +
-        "O cadastro da assinatura será preparado no Supabase."
-    );
-
-    const agora =
-        new Date();
-
-    const fimTeste =
-        new Date(
-            agora.getTime() +
-            7 * 24 * 60 * 60 * 1000
-        );
-
-    const { error } =
-        await supabaseClient
-            .from("subscriptions")
-            .insert({
-                user_id: currentUser.id,
-                plan: "premium",
-                status: "trialing",
-                trial_start_at: agora.toISOString(),
-                trial_end_at: fimTeste.toISOString(),
-                current_period_start: agora.toISOString(),
-                current_period_end: fimTeste.toISOString(),
-                price: 24.99
-            });
-
-    if (error) {
-
-        console.error(error);
-
-        alert(
-            "Não foi possível iniciar o Premium:\n\n" +
-            error.message
-        );
-
-        return;
-    }
-
-    await verificarPremium();
-
-    alert(
-        "Teste Premium iniciado com sucesso! ⭐"
-    );
-}
-
-/* =========================================================
-   PREMIUM — ANÁLISES
-   ========================================================= */
-
-function atualizarPremium() {
-
-    const lista =
-        transactions.map(normalizarTransaction);
-
-    const receitas =
-        lista
-            .filter(item => item.type === "income")
-            .reduce(
-                (sum, item) =>
-                    sum + item.amount,
-                0
-            );
-
-    const despesas =
-        lista
-            .filter(item => item.type === "expense")
-            .reduce(
-                (sum, item) =>
-                    sum + item.amount,
-                0
-            );
-
-    const saldo =
-        receitas - despesas;
-
-    const texto =
-        document.getElementById(
-            "premiumPerformanceText"
-        );
-
-    if (texto) {
-
-        if (!lista.length) {
-
-            texto.textContent =
-                "Cadastre seus lançamentos para acompanhar seu desempenho.";
-
-        } else if (saldo > 0) {
-
-            texto.textContent =
-                `Você está com saldo positivo de ${formatMoney(saldo)}. Continue acompanhando seus gastos.`;
-
-        } else {
-
-            texto.textContent =
-                `Suas despesas estão acima das receitas em ${formatMoney(Math.abs(saldo))}.`;
-        }
-    }
-
-    atualizarSaudeFinanceira(
-        receitas,
-        despesas
-    );
-
-    atualizarAlertas(
-        receitas,
-        despesas
-    );
-
-    atualizarComparacao(
-        receitas,
-        despesas
-    );
-
-    atualizarAnalisePremium(
-        receitas,
-        despesas
-    );
-}
-
-function atualizarSaudeFinanceira(
-    receitas,
-    despesas
-) {
-
-    const result =
-        document.getElementById("healthResult");
-
-    if (!result) return;
-
-    if (receitas === 0 && despesas === 0) {
-
-        result.innerHTML =
-            `<p>Cadastre movimentações para calcular sua saúde financeira.</p>`;
-
-        return;
-    }
-
-    if (despesas > receitas) {
-
-        result.innerHTML =
-            `<p>
-                🔴 <strong>Crítica:</strong>
-                seus gastos estão acima das receitas.
-             </p>`;
-
-    } else if (
-        receitas > 0 &&
-        despesas / receitas >= 0.8
-    ) {
-
-        result.innerHTML =
-            `<p>
-                🟡 <strong>Atenção:</strong>
-                seus gastos consomem grande parte da sua renda.
-             </p>`;
-
-    } else {
-
-        result.innerHTML =
-            `<p>
-                🟢 <strong>Saudável:</strong>
-                você possui uma boa margem financeira.
-             </p>`;
-    }
-}
-
-function atualizarAlertas(
-    receitas,
-    despesas
-) {
-
-    const container =
-        document.getElementById("smartAlerts");
-
-    if (!container) return;
-
-    const alertas = [];
-
-    if (despesas > receitas) {
-
-        alertas.push(
-            "🚨 Suas despesas estão acima das receitas."
-        );
-    }
-
-    if (
-        receitas > 0 &&
-        despesas / receitas >= 0.8
-    ) {
-
-        alertas.push(
-            "⚠️ Você já utilizou mais de 80% das suas receitas."
-        );
-    }
-
-    if (!alertas.length) {
-
-        alertas.push(
-            "✅ Nenhum alerta financeiro importante no momento."
-        );
-    }
-
-    container.innerHTML =
-        alertas
-            .map(
-                alerta =>
-                    `<div class="empty-state">
-                        ${alerta}
-                     </div>`
-            )
-            .join("");
-}
-
-function atualizarComparacao(
-    receitas,
-    despesas
-) {
-
-    const container =
-        document.getElementById(
-            "monthlyComparison"
-        );
-
-    if (!container) return;
-
-    const saldo =
-        receitas - despesas;
-
-    container.innerHTML = `
-        <p>
-            Receitas:
-            <strong>${formatMoney(receitas)}</strong>
-        </p>
-
-        <p>
-            Despesas:
-            <strong>${formatMoney(despesas)}</strong>
-        </p>
-
-        <p>
-            Resultado:
-            <strong class="${
-                saldo >= 0
-                    ? "forecast-positive"
-                    : "forecast-negative"
-            }">
-                ${formatMoney(saldo)}
-            </strong>
-        </p>
-    `;
-}
-
-function atualizarAnalisePremium(
-    receitas,
-    despesas
-) {
-
-    const container =
-        document.getElementById(
-            "premiumAnalysis"
-        );
-
-    if (!container) return;
-
-    if (!receitas && !despesas) {
-
-        container.innerHTML =
-            "Cadastre seus lançamentos para gerar uma análise financeira personalizada.";
-
-        return;
-    }
-
-    const percentual =
-        receitas > 0
-            ? (despesas / receitas) * 100
-            : 0;
-
-    let recomendacao;
-
-    if (percentual > 100) {
-
-        recomendacao =
-            "Seu principal objetivo agora deve ser reduzir despesas ou aumentar receitas.";
-
-    } else if (percentual > 80) {
-
-        recomendacao =
-            "Sua margem está apertada. Tente reduzir gastos não essenciais.";
-
-    } else {
-
-        recomendacao =
-            "Sua relação entre receitas e despesas está saudável. Continue mantendo uma reserva.";
-    }
-
-    container.innerHTML = `
-        <p>
-            Você recebeu
-            <strong>${formatMoney(receitas)}</strong>
-            e gastou
-            <strong>${formatMoney(despesas)}</strong>.
-        </p>
-
-        <p>
-            Seus gastos representam
-            <strong>${percentual.toFixed(1)}%</strong>
-            das receitas.
-        </p>
-
-        <p>
-            💡 ${recomendacao}
-        </p>
-    `;
-}
-
-/* =========================================================
-   SIMULADOR
-   ========================================================= */
-
-function simularDespesa() {
-
-    const input =
-        document.getElementById(
-            "simulationAmount"
-        );
-
-    const result =
-        document.getElementById(
-            "simulationResult"
-        );
-
-    if (!input || !result) return;
-
-    const valor =
-        Number(input.value);
-
-    if (!valor || valor <= 0) {
-
-        result.textContent =
-            "Digite um valor válido.";
-
-        return;
-    }
-
-    const lista =
-        transactions.map(normalizarTransaction);
-
-    const receitas =
-        lista
-            .filter(item => item.type === "income")
-            .reduce(
-                (sum, item) =>
-                    sum + item.amount,
-                0
-            );
-
-    const despesas =
-        lista
-            .filter(item => item.type === "expense")
-            .reduce(
-                (sum, item) =>
-                    sum + item.amount,
-                0
-            );
-
-    const novoSaldo =
-        receitas -
-        despesas -
-        valor;
-
-    result.innerHTML = `
-        Saldo atual:
-        <strong>${formatMoney(receitas - despesas)}</strong>
-        <br>
-        Após a nova despesa:
-        <strong class="${
-            novoSaldo >= 0
-                ? "forecast-positive"
-                : "forecast-negative"
-        }">
-            ${formatMoney(novoSaldo)}
-        </strong>
-    `;
-}
-
-/* =========================================================
-   NAVEGAÇÃO
-   ========================================================= */
-
-function mostrarSecao(sectionId) {
-
-    document
-        .querySelectorAll(".section")
-        .forEach(section => {
-
-            section.classList.add("hidden");
-        });
-
-    const section =
-        document.getElementById(sectionId);
-
-    if (section) {
-        section.classList.remove("hidden");
-    }
-
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.section === sectionId
-            );
-        });
-
-    const titulos = {
-
-        dashboard: "Tela principal",
-
-        transactions: "Lançamentos",
-
-        categories: "Gastos por categoria",
-
-        reports: "Relatórios",
-
-        premium: "Premium"
-    };
-
-    if (pageTitle) {
-
-        pageTitle.textContent =
-            titulos[sectionId] ||
-            "ControleS";
-    }
-
-    if (sectionId === "premium") {
-
-        atualizarPremium();
-        renderGoals();
-        renderBudgets();
-    }
-}
-
-/* =========================================================
-   MODAL LANÇAMENTO
-   ========================================================= */
-
-function abrirModalLancamento() {
-
-    const modal =
-        document.getElementById(
-            "transactionModal"
-        );
-
-    if (!modal) return;
-
-    modal.classList.remove("hidden");
-
-    configurarDataLancamento();
-}
-
-function fecharModalLancamento() {
-
-    document
-        .getElementById("transactionModal")
-        ?.classList.add("hidden");
-}
-
-function configurarDataLancamento() {
-
-    const input =
-        document.getElementById("dateInput");
-
-    if (!input) return;
-
-    if (!input.value) {
-
-        input.value =
-            new Date()
-                .toISOString()
-                .slice(0, 10);
-    }
-}
-
-/* =========================================================
-   TEMA
-   ========================================================= */
-
-function alternarTema() {
-
-    document.body.classList.toggle("dark");
-
-    const ativo =
-        document.body.classList.contains("dark");
-
-    localStorage.setItem(
-        "controles_theme",
-        ativo
-            ? "dark"
-            : "light"
-    );
-}
-
-(function carregarTema() {
-
-    const tema =
-        localStorage.getItem(
-            "controles_theme"
-        );
-
-    if (tema === "dark") {
-        document.body.classList.add("dark");
-    }
-
-})();
-
-/* =========================================================
-   EXPORTAR
-   ========================================================= */
-
-function exportarDados() {
-
-    const dados = {
-
-        profile: currentProfile,
-
-        transactions,
-
-        goals,
-
-        budgets
-    };
-
-    const blob =
-        new Blob(
-            [
-                JSON.stringify(
-                    dados,
-                    null,
-                    2
-                )
-            ],
-            {
-                type: "application/json"
-            }
-        );
-
-    const url =
-        URL.createObjectURL(blob);
-
-    const link =
-        document.createElement("a");
-
-    link.href = url;
-
-    link.download =
-        "controles-dados.json";
-
-    link.click();
-
-    URL.revokeObjectURL(url);
-}
-
-/* =========================================================
-   ATUALIZAÇÃO GERAL
-   ========================================================= */
-
-function atualizarTudo() {
-
-    atualizarDashboard();
-
-    renderTransactions();
-
-    atualizarCategorias();
-
-    atualizarPremium();
-
-    renderGoals();
-
-    renderBudgets();
-}
-
-/* =========================================================
-   DATA
-   ========================================================= */
-
-function configurarDataAtual() {
-
-    if (!currentDate) return;
-
-    const agora =
-        new Date();
-
-    currentDate.textContent =
-        agora.toLocaleDateString(
-            "pt-BR",
-            {
-                weekday: "long",
-                day: "2-digit",
-                month: "long",
-                year: "numeric"
-            }
-        );
-}
-
-/* =========================================================
-   UTILITÁRIOS
-   ========================================================= */
-
-function formatMoney(valor) {
-
-    return Number(valor || 0)
-        .toLocaleString(
-            "pt-BR",
-            {
-                style: "currency",
-                currency: "BRL"
-            }
-        );
-}
-
-function formatDate(data) {
-
-    if (!data) return "";
-
-    const partes =
-        String(data).split("-");
-
-    if (partes.length !== 3) {
-        return data;
-    }
-
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
-
-function setText(id, value) {
-
-    const element =
-        document.getElementById(id);
-
-    if (element) {
-        element.textContent = value;
-    }
-}
-
-function escapeHTML(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
+   SUB
