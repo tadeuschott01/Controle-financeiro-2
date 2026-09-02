@@ -1,4 +1,3 @@
-```javascript
 /* =========================================================
    CONTROLES — APP.JS
    Supabase + Login + Cadastro + Dashboard + Premium
@@ -29,28 +28,38 @@ let enteringApp = false;
 
 document.addEventListener("DOMContentLoaded", async function () {
 
-    console.log("ControleS iniciando...");
+    console.log("🚀 ControleS iniciando...");
+
+    /*
+       IMPORTANTE:
+       Os eventos são configurados ANTES do Supabase.
+       Assim, mesmo que o Supabase demore ou dê algum
+       problema, os botões continuam respondendo.
+    */
+    setupEvents();
+
+    setCurrentDate();
+    setDefaultDate();
+    loadTheme();
 
     try {
 
         await initializeSupabase();
 
-        setupEvents();
-
-        setCurrentDate();
-        setDefaultDate();
-        loadTheme();
+        console.log("✅ Supabase conectado.");
 
         await checkSession();
 
-        console.log("ControleS iniciado com sucesso.");
+        console.log("✅ ControleS iniciado com sucesso.");
 
     } catch (error) {
 
         console.error(
-            "Erro na inicialização:",
+            "❌ Erro na inicialização:",
             error
         );
+
+        currentUser = null;
 
         showLogin();
     }
@@ -63,27 +72,45 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 async function initializeSupabase() {
 
+    console.log("🔄 Inicializando Supabase...");
+
     if (!window.supabase) {
 
         throw new Error(
-            "Biblioteca do Supabase não foi carregada."
+            "A biblioteca do Supabase não foi carregada. Verifique o script do Supabase no HTML."
         );
     }
 
-    supabaseClient =
-        window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
+    try {
+
+        supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+    } catch (error) {
+
+        console.error(
+            "❌ Erro criando cliente Supabase:",
+            error
         );
+
+        throw new Error(
+            "Não foi possível conectar ao Supabase."
+        );
+    }
 
     if (!supabaseClient) {
 
         throw new Error(
-            "Não foi possível iniciar o Supabase."
+            "O cliente do Supabase não foi criado."
         );
     }
 
-    console.log("Supabase conectado.");
+    console.log("✅ Cliente Supabase criado.");
+
+    return supabaseClient;
 }
 
 
@@ -93,7 +120,7 @@ async function initializeSupabase() {
 
 function setupEvents() {
 
-    console.log("Configurando eventos...");
+    console.log("🔧 Configurando eventos...");
 
 
     /* LOGIN */
@@ -108,7 +135,13 @@ function setupEvents() {
             handleLogin
         );
 
-        console.log("Login conectado.");
+        console.log("✅ Login conectado.");
+
+    } else {
+
+        console.warn(
+            "⚠️ loginForm não encontrado."
+        );
     }
 
 
@@ -124,12 +157,14 @@ function setupEvents() {
             handleRegister
         );
 
-        console.log("Cadastro conectado.");
+        console.log(
+            "✅ Cadastro conectado."
+        );
 
     } else {
 
         console.warn(
-            "Botão registerBtn não encontrado no HTML."
+            "⚠️ registerBtn não encontrado."
         );
     }
 
@@ -187,7 +222,7 @@ function setupEvents() {
         });
 
 
-    /* BOTÕES COM DATA-SECTION */
+    /* BOTÕES DATA-SECTION */
 
     document.querySelectorAll("[data-section]")
         .forEach(function (button) {
@@ -243,7 +278,13 @@ function setupEvents() {
 
         overlay.addEventListener(
             "click",
-            function () {
+            function (event) {
+
+                if (
+                    event.target !== overlay
+                ) {
+                    return;
+                }
 
                 const modal =
                     overlay.closest(".modal");
@@ -259,7 +300,7 @@ function setupEvents() {
     });
 
 
-    /* TIPO DA TRANSAÇÃO */
+    /* TIPO TRANSAÇÃO */
 
     document.querySelectorAll(
         ".type-option"
@@ -354,9 +395,7 @@ function setupEvents() {
 
             document.getElementById(
                 "goalModal"
-            )?.classList.add(
-                "hidden"
-            );
+            )?.classList.add("hidden");
         }
     );
 
@@ -387,9 +426,7 @@ function setupEvents() {
 
             document.getElementById(
                 "budgetModal"
-            )?.classList.add(
-                "hidden"
-            );
+            )?.classList.add("hidden");
         }
     );
 
@@ -431,6 +468,8 @@ function setupEvents() {
             }
         }
     );
+
+    console.log("✅ Eventos configurados.");
 }
 
 
@@ -472,7 +511,7 @@ async function checkSession() {
         if (currentUser) {
 
             console.log(
-                "Sessão encontrada:",
+                "👤 Sessão encontrada:",
                 currentUser.email
             );
 
@@ -535,13 +574,15 @@ async function handleLogin(event) {
 
     event.preventDefault();
 
-    console.log("Botão Entrar acionado.");
+    console.log(
+        "🟢 BOTÃO ENTRAR ACIONADO!"
+    );
 
 
     if (!supabaseClient) {
 
         alert(
-            "O sistema ainda está carregando. Aguarde alguns segundos e tente novamente."
+            "⚠️ O ControleS ainda não conseguiu conectar ao servidor.\n\nRecarregue a página e tente novamente."
         );
 
         return;
@@ -562,7 +603,8 @@ async function handleLogin(event) {
 
 
     const password =
-        passwordInput?.value || "";
+        passwordInput?.value ||
+        "";
 
 
     if (!email) {
@@ -681,7 +723,7 @@ async function handleLogin(event) {
 
 
         console.log(
-            "Login realizado:",
+            "✅ Login realizado:",
             currentUser.email
         );
 
@@ -734,16 +776,15 @@ async function handleRegister(event) {
         event.preventDefault();
     }
 
-
     console.log(
-        "Botão Criar minha conta acionado."
+        "🟢 BOTÃO CRIAR MINHA CONTA ACIONADO!"
     );
 
 
     if (!supabaseClient) {
 
         alert(
-            "O sistema ainda está carregando. Aguarde alguns segundos e tente novamente."
+            "⚠️ O ControleS ainda não conseguiu conectar ao servidor.\n\nRecarregue a página e tente novamente."
         );
 
         return;
@@ -842,7 +883,7 @@ async function handleRegister(event) {
     try {
 
         console.log(
-            "Criando usuário no Supabase..."
+            "🔄 Criando usuário no Supabase..."
         );
 
 
@@ -884,6 +925,9 @@ async function handleRegister(event) {
                 ) ||
                 message.includes(
                     "user already registered"
+                ) ||
+                message.includes(
+                    "already been registered"
                 )
             ) {
 
@@ -903,7 +947,7 @@ async function handleRegister(event) {
 
 
         /*
-           CONFIRMAÇÃO DE E-MAIL ATIVADA
+           SE A CONFIRMAÇÃO DE E-MAIL ESTIVER ATIVADA
         */
 
         if (!result.data?.session) {
@@ -919,7 +963,7 @@ async function handleRegister(event) {
 
 
         /*
-           CONFIRMAÇÃO DESATIVADA
+           SE A CONFIRMAÇÃO ESTIVER DESATIVADA
         */
 
         if (!currentUser) {
@@ -973,7 +1017,7 @@ async function handleRegister(event) {
 
 async function createProfileIfNeeded(name) {
 
-    if (!currentUser) {
+    if (!currentUser || !supabaseClient) {
         return;
     }
 
@@ -1192,14 +1236,18 @@ async function loadUserData() {
 
 
     await Promise.all([
+
         loadTransactions(),
+
         loadGoals(),
+
         loadBudgets(),
+
         loadSubscription()
     ]);
 
 
-    updateUserInterface();
+    await updateUserInterface();
 
     updateDashboard();
 
@@ -1309,10 +1357,7 @@ function normalizeTransaction(item) {
             item.data_iso ||
             new Date()
                 .toISOString()
-                .slice(
-                    0,
-                    10
-                ),
+                .slice(0, 10),
 
         area:
             item.area ||
@@ -1652,10 +1697,7 @@ function renderRecentTransactions() {
 
 
     const list =
-        transactions.slice(
-            0,
-            5
-        );
+        transactions.slice(0, 5);
 
 
     if (!list.length) {
@@ -1672,9 +1714,7 @@ function renderRecentTransactions() {
 
     container.innerHTML =
         list
-            .map(
-                transactionHTML
-            )
+            .map(transactionHTML)
             .join("");
 }
 
@@ -1741,14 +1781,8 @@ function renderTransactions() {
 
                     (
                         !search ||
-
-                        description.includes(
-                            search
-                        ) ||
-
-                        itemCategory.includes(
-                            search
-                        )
+                        description.includes(search) ||
+                        itemCategory.includes(search)
                     )
 
                     &&
@@ -1783,9 +1817,7 @@ function renderTransactions() {
 
     container.innerHTML =
         filtered
-            .map(
-                transactionHTML
-            )
+            .map(transactionHTML)
             .join("");
 }
 
@@ -1800,6 +1832,11 @@ function transactionHTML(item) {
         item.type === "income";
 
 
+    const safeId =
+        String(item.id)
+            .replace(/'/g, "\\'");
+
+
     return `
         <div class="transaction">
 
@@ -1810,19 +1847,13 @@ function transactionHTML(item) {
             <div class="transaction-info">
 
                 <strong>
-                    ${escapeHTML(
-                        item.description
-                    )}
+                    ${escapeHTML(item.description)}
                 </strong>
 
                 <small>
-                    ${escapeHTML(
-                        item.category
-                    )}
+                    ${escapeHTML(item.category)}
                     •
-                    ${formatDate(
-                        item.date
-                    )}
+                    ${formatDate(item.date)}
                 </small>
 
             </div>
@@ -1835,16 +1866,14 @@ function transactionHTML(item) {
 
                 ${income ? "+" : "-"}
 
-                ${formatCurrency(
-                    item.amount
-                )}
+                ${formatCurrency(item.amount)}
 
             </div>
 
             <button
                 class="transaction-delete"
                 type="button"
-                onclick="deleteTransaction('${String(item.id).replace(/'/g, "\\'")}')"
+                onclick="deleteTransaction('${safeId}')"
                 title="Excluir"
             >
                 ×
@@ -1922,9 +1951,7 @@ function updateCategoryFilter() {
 
 
     if (
-        categories.includes(
-            current
-        )
+        categories.includes(current)
     ) {
 
         select.value =
@@ -1969,14 +1996,12 @@ function renderCategories() {
 
 
     const entries =
-        Object.entries(
-            totals
-        )
-        .sort(
-            function (a, b) {
-                return b[1] - a[1];
-            }
-        );
+        Object.entries(totals)
+            .sort(
+                function (a, b) {
+                    return b[1] - a[1];
+                }
+            );
 
 
     if (!entries.length) {
@@ -2028,21 +2053,15 @@ function renderCategories() {
                                 <span class="category-dot"></span>
 
                                 <strong>
-                                    ${escapeHTML(
-                                        category
-                                    )}
+                                    ${escapeHTML(category)}
                                 </strong>
 
                             </div>
 
                             <span>
-                                ${formatCurrency(
-                                    value
-                                )}
+                                ${formatCurrency(value)}
                                 ·
-                                ${percentage.toFixed(
-                                    1
-                                )}%
+                                ${percentage.toFixed(1)}%
                             </span>
 
                         </div>
@@ -2121,8 +2140,7 @@ function updateFinanceChart() {
             canvas,
             {
 
-                type:
-                    "bar",
+                type: "bar",
 
                 data: {
 
@@ -2134,8 +2152,7 @@ function updateFinanceChart() {
                     datasets: [
                         {
 
-                            label:
-                                "Valor",
+                            label: "Valor",
 
                             data: [
                                 income,
@@ -2147,18 +2164,15 @@ function updateFinanceChart() {
 
                 options: {
 
-                    responsive:
-                        true,
+                    responsive: true,
 
-                    maintainAspectRatio:
-                        false,
+                    maintainAspectRatio: false,
 
                     plugins: {
 
                         legend: {
 
-                            display:
-                                false
+                            display: false
                         }
                     }
                 }
@@ -2196,15 +2210,11 @@ function updateCategoryChart(totals) {
 
 
     const labels =
-        Object.keys(
-            totals
-        );
+        Object.keys(totals);
 
 
     const values =
-        Object.values(
-            totals
-        );
+        Object.values(totals);
 
 
     if (!labels.length) {
@@ -2217,8 +2227,7 @@ function updateCategoryChart(totals) {
             canvas,
             {
 
-                type:
-                    "doughnut",
+                type: "doughnut",
 
                 data: {
 
@@ -2227,26 +2236,22 @@ function updateCategoryChart(totals) {
                     datasets: [
                         {
 
-                            data:
-                                values
+                            data: values
                         }
                     ]
                 },
 
                 options: {
 
-                    responsive:
-                        true,
+                    responsive: true,
 
-                    maintainAspectRatio:
-                        false,
+                    maintainAspectRatio: false,
 
                     plugins: {
 
                         legend: {
 
-                            position:
-                                "bottom"
+                            position: "bottom"
                         }
                     }
                 }
@@ -2368,10 +2373,7 @@ function renderReports() {
                 </strong>
 
                 <span>
-                    ${Math.max(
-                        0,
-                        economy
-                    ).toFixed(1)}%
+                    ${Math.max(0, economy).toFixed(1)}%
                 </span>
 
             </div>
@@ -2415,15 +2417,11 @@ function renderReports() {
 
 
         const labels =
-            Object.keys(
-                totals
-            );
+            Object.keys(totals);
 
 
         const values =
-            Object.values(
-                totals
-            );
+            Object.values(totals);
 
 
         if (labels.length) {
@@ -2433,8 +2431,7 @@ function renderReports() {
                     canvas,
                     {
 
-                        type:
-                            "doughnut",
+                        type: "doughnut",
 
                         data: {
 
@@ -2443,26 +2440,22 @@ function renderReports() {
                             datasets: [
                                 {
 
-                                    data:
-                                        values
+                                    data: values
                                 }
                             ]
                         },
 
                         options: {
 
-                            responsive:
-                                true,
+                            responsive: true,
 
-                            maintainAspectRatio:
-                                false,
+                            maintainAspectRatio: false,
 
                             plugins: {
 
                                 legend: {
 
-                                    position:
-                                        "bottom"
+                                    position: "bottom"
                                 }
                             }
                         }
@@ -2682,9 +2675,7 @@ function renderGoals() {
                             <div>
 
                                 <strong>
-                                    ${escapeHTML(
-                                        goal.name
-                                    )}
+                                    ${escapeHTML(goal.name)}
                                 </strong>
 
                                 <small>
@@ -2916,11 +2907,8 @@ function renderBudgets() {
                                 function (t) {
 
                                     return (
-
                                         t.type === "expense" &&
-
-                                        t.category ===
-                                            budget.category
+                                        t.category === budget.category
                                     );
                                 }
                             )
@@ -2953,9 +2941,7 @@ function renderBudgets() {
                             <div>
 
                                 <strong>
-                                    ${escapeHTML(
-                                        budget.category
-                                    )}
+                                    ${escapeHTML(budget.category)}
                                 </strong>
 
                                 <small>
@@ -2992,40 +2978,58 @@ async function loadSubscription() {
     }
 
 
-    const result =
-        await supabaseClient
-            .from("subscriptions")
-            .select("*")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            )
-            .limit(1)
-            .maybeSingle();
+    try {
+
+        /*
+           IMPORTANTE:
+           A tabela subscriptions NÃO possui created_at.
+           Por isso usamos current_period_end.
+        */
+
+        const result =
+            await supabaseClient
+                .from("subscriptions")
+                .select("*")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .order(
+                    "current_period_end",
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(1)
+                .maybeSingle();
 
 
-    if (result.error) {
+        if (result.error) {
+
+            console.warn(
+                "Erro carregando assinatura:",
+                result.error
+            );
+
+            subscription = null;
+
+            return;
+        }
+
+
+        subscription =
+            result.data ||
+            null;
+
+    } catch (error) {
 
         console.warn(
-            "Erro carregando assinatura:",
-            result.error
+            "Erro carregando Premium:",
+            error
         );
 
         subscription = null;
-
-        return;
     }
-
-
-    subscription =
-        result.data ||
-        null;
 }
 
 
@@ -3131,7 +3135,7 @@ async function activatePremium() {
 
         await loadSubscription();
 
-        updateUserInterface();
+        await updateUserInterface();
 
 
         alert(
@@ -3323,9 +3327,7 @@ function renderMonthlyComparison() {
 
 
                 return (
-
                     d.getMonth() === month &&
-
                     d.getFullYear() === year
                 );
             }
@@ -4206,4 +4208,3 @@ function escapeHTML(value) {
             "&#039;"
         );
 }
-```
