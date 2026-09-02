@@ -1,720 +1,1169 @@
-<!DOCTYPE html><html lang="pt-BR"><head>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#123c2d"><title>ControleS — Controle Financeiro</title>
+    <meta name="theme-color" content="#123c2d">
 
-<link rel="stylesheet" href="app.css">
+    <title>ControleS — Controle Financeiro</title>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="app.css">
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-</head><body><!-- =====================================================
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<!-- =====================================================
      LOGIN
-===================================================== --><div id="loginScreen" class="login-screen"><div class="login-card">
+===================================================== -->
 
-    <div class="login-brand">
+<div id="loginScreen" class="login-screen">
 
-        <div class="login-logo">
-            <img src="logo.png" alt="ControleS">
+    <div class="login-card">
+
+        <div class="login-brand">
+
+            <div class="login-logo">
+                <img src="logo.png" alt="ControleS">
+            </div>
+
+            <h1>ControleS</h1>
+
+            <p>Seu dinheiro sob controle.</p>
+
         </div>
 
-        <h1>ControleS</h1>
 
-        <p>Seu dinheiro sob controle.</p>
+        <form id="loginForm">
 
-    </div>
+            <div class="input-group">
 
-    <form id="loginForm">
+                <label for="loginName">Nome</label>
 
-        <div class="input-group">
+                <input
+                    type="text"
+                    id="loginName"
+                    placeholder="Digite seu nome"
+                    autocomplete="name"
+                >
 
-            <label for="loginName">Nome</label>
+            </div>
 
-            <input
-                type="text"
-                id="loginName"
-                placeholder="Digite seu nome"
-                autocomplete="name"
-                required
+
+            <div class="input-group">
+
+                <label for="loginEmail">E-mail</label>
+
+                <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="seu@email.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="loginPassword">Senha</label>
+
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-primary login-submit"
             >
+                Entrar no ControleS
+            </button>
 
-        </div>
 
-        <div class="input-group">
-
-            <label for="loginEmail">E-mail</label>
-
-            <input
-                type="email"
-                id="loginEmail"
-                placeholder="seu@email.com"
-                autocomplete="email"
-                required
+            <!-- CADASTRO -->
+            <button
+                type="button"
+                id="registerBtn"
+                class="btn-secondary"
+                style="width:100%; margin-top:10px;"
             >
+                Criar minha conta
+            </button>
 
+        </form>
+
+
+        <div class="login-footer">
+            Controle financeiro simples, inteligente e seguro.
         </div>
 
-        <div class="input-group">
-
-            <label for="loginPassword">Senha</label>
-
-            <input
-                type="password"
-                id="loginPassword"
-                placeholder="Digite sua senha"
-                autocomplete="current-password"
-                required
-            >
-
-        </div>
-
-        <button
-            type="submit"
-            class="btn-primary login-submit"
-        >
-            Entrar no ControleS
-        </button>
-
-    </form>
-
-    <div class="login-footer">
-        Controle financeiro simples, inteligente e seguro.
     </div>
 
 </div>
 
-</div><!-- =====================================================
+
+<!-- =====================================================
      APLICATIVO
-===================================================== --><div id="app" class="app hidden"><!-- SIDEBAR -->
+===================================================== -->
 
-<aside id="sidebar" class="sidebar">
+<div id="app" class="app hidden">
 
-    <div class="sidebar-brand">
+    <!-- SIDEBAR -->
 
-        <div class="brand-logo">
-            <img src="logo.png" alt="ControleS">
-        </div>
+    <aside id="sidebar" class="sidebar">
 
-        <div class="brand-text">
+        <div class="sidebar-brand">
 
-            <strong>ControleS</strong>
+            <div class="brand-logo">
+                <img src="logo.png" alt="ControleS">
+            </div>
 
-            <span>
-                Controle financeiro
-            </span>
+            <div class="brand-text">
 
-        </div>
+                <strong>ControleS</strong>
 
-    </div>
-
-    <nav class="sidebar-nav">
-
-        <button
-            class="nav-item active"
-            data-section="dashboard"
-            type="button"
-        >
-            <span class="nav-icon">⌂</span>
-            <span>Tela principal</span>
-        </button>
-
-        <button
-            class="nav-item"
-            data-section="transactions"
-            type="button"
-        >
-            <span class="nav-icon">🧾</span>
-            <span>Lançamentos</span>
-        </button>
-
-        <button
-            class="nav-item"
-            data-section="categories"
-            type="button"
-        >
-            <span class="nav-icon">📊</span>
-            <span>Categorias</span>
-        </button>
-
-        <button
-            class="nav-item"
-            data-section="reports"
-            type="button"
-        >
-            <span class="nav-icon">📈</span>
-            <span>Relatórios</span>
-        </button>
-
-        <button
-            class="nav-item"
-            data-section="premium"
-            type="button"
-        >
-            <span class="nav-icon">⭐</span>
-            <span>Premium</span>
-        </button>
-
-    </nav>
-
-    <div class="sidebar-bottom">
-
-        <button
-            id="themeBtn"
-            class="sidebar-action"
-            type="button"
-        >
-            <span>🌙</span>
-            <span>Tema escuro</span>
-        </button>
-
-        <button
-            id="exportDataBtn"
-            class="sidebar-action"
-            type="button"
-        >
-            <span>💾</span>
-            <span>Exportar dados</span>
-        </button>
-
-        <button
-            id="logoutBtn"
-            class="sidebar-action"
-            type="button"
-        >
-            <span>↪</span>
-            <span>Sair</span>
-        </button>
-
-    </div>
-
-</aside>
-
-
-<!-- =================================================
-     CONTEÚDO PRINCIPAL
-================================================= -->
-
-<main class="main-content">
-
-    <header class="topbar">
-
-        <div class="topbar-left">
-
-            <button
-                id="mobileMenuBtn"
-                class="mobile-menu"
-                type="button"
-            >
-                ☰
-            </button>
-
-            <div>
-
-                <span class="topbar-small">
-                    CONTROLES
+                <span>
+                    Controle financeiro
                 </span>
 
-                <h1 id="pageTitle">
-                    Tela principal
-                </h1>
-
             </div>
 
         </div>
 
-        <div class="topbar-right">
+
+        <nav class="sidebar-nav">
 
             <button
-                id="openTransactionBtn"
-                class="btn-primary"
+                class="nav-item active"
+                data-section="dashboard"
                 type="button"
             >
-                + Novo lançamento
+                <span class="nav-icon">⌂</span>
+                <span>Tela principal</span>
             </button>
 
-            <div class="user-area">
 
-                <div
-                    id="userAvatar"
-                    class="user-avatar"
-                >
-                    U
-                </div>
+            <button
+                class="nav-item"
+                data-section="transactions"
+                type="button"
+            >
+                <span class="nav-icon">🧾</span>
+                <span>Lançamentos</span>
+            </button>
 
-                <div class="user-info">
 
-                    <strong id="userName">
-                        Usuário
-                    </strong>
+            <button
+                class="nav-item"
+                data-section="categories"
+                type="button"
+            >
+                <span class="nav-icon">📊</span>
+                <span>Categorias</span>
+            </button>
 
-                    <span id="userPlan">
-                        ControleS Grátis
-                    </span>
 
-                </div>
+            <button
+                class="nav-item"
+                data-section="reports"
+                type="button"
+            >
+                <span class="nav-icon">📈</span>
+                <span>Relatórios</span>
+            </button>
 
-            </div>
+
+            <button
+                class="nav-item"
+                data-section="premium"
+                type="button"
+            >
+                <span class="nav-icon">⭐</span>
+                <span>Premium</span>
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <button
+                id="themeBtn"
+                class="sidebar-action"
+                type="button"
+            >
+                <span>🌙</span>
+                <span>Tema escuro</span>
+            </button>
+
+
+            <button
+                id="exportDataBtn"
+                class="sidebar-action"
+                type="button"
+            >
+                <span>💾</span>
+                <span>Exportar dados</span>
+            </button>
+
+
+            <button
+                id="logoutBtn"
+                class="sidebar-action"
+                type="button"
+            >
+                <span>↪</span>
+                <span>Sair</span>
+            </button>
 
         </div>
 
-    </header>
+    </aside>
 
 
     <!-- =================================================
-         DASHBOARD
+         CONTEÚDO PRINCIPAL
     ================================================= -->
 
-    <section id="dashboard" class="section">
+    <main class="main-content">
 
-        <div class="welcome">
+        <header class="topbar">
 
-            <div>
+            <div class="topbar-left">
 
-                <span class="welcome-label">
-                    VISÃO GERAL
-                </span>
-
-                <h2>
-                    Olá,
-                    <span id="welcomeName">
-                        Usuário
-                    </span>
-                    👋
-                </h2>
-
-                <p>
-                    Aqui está um resumo das suas finanças.
-                </p>
-
-            </div>
-
-            <div
-                id="currentDate"
-                class="current-date"
-            ></div>
-
-        </div>
+                <button
+                    id="mobileMenuBtn"
+                    class="mobile-menu"
+                    type="button"
+                >
+                    ☰
+                </button>
 
 
-        <div class="stats-grid">
+                <div>
 
-            <div class="stat-card">
-
-                <div class="stat-top">
-
-                    <div class="stat-icon">
-                        💰
-                    </div>
-
-                    <span class="stat-label">
-                        Saldo atual
+                    <span class="topbar-small">
+                        CONTROLES
                     </span>
 
-                </div>
-
-                <strong id="balanceValue">
-                    R$ 0,00
-                </strong>
-
-                <small>
-                    Receitas menos despesas
-                </small>
-
-            </div>
-
-
-            <div class="stat-card income">
-
-                <div class="stat-top">
-
-                    <div class="stat-icon">
-                        ↗
-                    </div>
-
-                    <span class="stat-label">
-                        Receitas
-                    </span>
-
-                </div>
-
-                <strong id="incomeValue">
-                    R$ 0,00
-                </strong>
-
-                <small>
-                    Total recebido
-                </small>
-
-            </div>
-
-
-            <div class="stat-card expense">
-
-                <div class="stat-top">
-
-                    <div class="stat-icon">
-                        ↘
-                    </div>
-
-                    <span class="stat-label">
-                        Despesas
-                    </span>
-
-                </div>
-
-                <strong id="expenseValue">
-                    R$ 0,00
-                </strong>
-
-                <small>
-                    Total gasto
-                </small>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <div class="stat-top">
-
-                    <div class="stat-icon">
-                        💎
-                    </div>
-
-                    <span class="stat-label">
-                        Economia
-                    </span>
-
-                </div>
-
-                <strong id="economyValue">
-                    0%
-                </strong>
-
-                <small>
-                    Percentual economizado
-                </small>
-
-            </div>
-
-        </div>
-
-
-        <div class="dashboard-grid">
-
-            <div class="panel">
-
-                <div class="panel-header">
-
-                    <div>
-
-                        <span>
-                            VISÃO FINANCEIRA
-                        </span>
-
-                        <h3>
-                            Receitas x Despesas
-                        </h3>
-
-                    </div>
-
-                </div>
-
-                <div class="chart-container">
-
-                    <canvas id="financeChart"></canvas>
+                    <h1 id="pageTitle">
+                        Tela principal
+                    </h1>
 
                 </div>
 
             </div>
 
 
-            <div class="panel">
+            <div class="topbar-right">
 
-                <div class="panel-header">
+                <button
+                    id="openTransactionBtn"
+                    class="btn-primary"
+                    type="button"
+                >
+                    + Novo lançamento
+                </button>
 
-                    <div>
 
-                        <span>
-                            MOVIMENTAÇÕES
-                        </span>
+                <div class="user-area">
 
-                        <h3>
-                            Últimos lançamentos
-                        </h3>
-
-                    </div>
-
-                    <button
-                        class="text-button"
-                        data-section="transactions"
-                        type="button"
+                    <div
+                        id="userAvatar"
+                        class="user-avatar"
                     >
-                        Ver todos
-                    </button>
+                        U
+                    </div>
+
+
+                    <div class="user-info">
+
+                        <strong id="userName">
+                            Usuário
+                        </strong>
+
+                        <span id="userPlan">
+                            ControleS Grátis
+                        </span>
+
+                    </div>
 
                 </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             DASHBOARD
+        ================================================= -->
+
+        <section id="dashboard" class="section">
+
+            <div class="welcome">
+
+                <div>
+
+                    <span class="welcome-label">
+                        VISÃO GERAL
+                    </span>
+
+                    <h2>
+                        Olá,
+                        <span id="welcomeName">
+                            Usuário
+                        </span>
+                        👋
+                    </h2>
+
+                    <p>
+                        Aqui está um resumo das suas finanças.
+                    </p>
+
+                </div>
+
 
                 <div
-                    id="recentTransactions"
-                    class="transaction-list"
+                    id="currentDate"
+                    class="current-date"
                 ></div>
 
             </div>
 
-        </div>
 
-    </section>
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div class="stat-icon">
+                            💰
+                        </div>
+
+                        <span class="stat-label">
+                            Saldo atual
+                        </span>
+
+                    </div>
+
+                    <strong id="balanceValue">
+                        R$ 0,00
+                    </strong>
+
+                    <small>
+                        Receitas menos despesas
+                    </small>
+
+                </div>
 
 
-    <!-- =================================================
-         LANÇAMENTOS
-    ================================================= -->
+                <div class="stat-card income">
 
-    <section
-        id="transactions"
-        class="section hidden"
-    >
+                    <div class="stat-top">
 
-        <div class="section-heading">
+                        <div class="stat-icon">
+                            ↗
+                        </div>
 
-            <div>
+                        <span class="stat-label">
+                            Receitas
+                        </span>
 
-                <span>
-                    MOVIMENTAÇÕES
-                </span>
+                    </div>
 
-                <h2>
-                    Lançamentos
-                </h2>
+                    <strong id="incomeValue">
+                        R$ 0,00
+                    </strong>
 
-                <p>
-                    Consulte e organize suas movimentações.
-                </p>
+                    <small>
+                        Total recebido
+                    </small>
+
+                </div>
+
+
+                <div class="stat-card expense">
+
+                    <div class="stat-top">
+
+                        <div class="stat-icon">
+                            ↘
+                        </div>
+
+                        <span class="stat-label">
+                            Despesas
+                        </span>
+
+                    </div>
+
+                    <strong id="expenseValue">
+                        R$ 0,00
+                    </strong>
+
+                    <small>
+                        Total gasto
+                    </small>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div class="stat-icon">
+                            💎
+                        </div>
+
+                        <span class="stat-label">
+                            Economia
+                        </span>
+
+                    </div>
+
+                    <strong id="economyValue">
+                        0%
+                    </strong>
+
+                    <small>
+                        Percentual economizado
+                    </small>
+
+                </div>
 
             </div>
 
-            <button
-                id="newTransactionButton"
-                class="btn-primary"
-                type="button"
-            >
-                + Novo lançamento
-            </button>
 
-        </div>
+            <div class="dashboard-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>
+                                VISÃO FINANCEIRA
+                            </span>
+
+                            <h3>
+                                Receitas x Despesas
+                            </h3>
+
+                        </div>
+
+                    </div>
 
 
-        <div class="filters-panel">
+                    <div class="chart-container">
 
-            <div class="search-box">
+                        <canvas id="financeChart"></canvas>
 
-                <span>🔎</span>
+                    </div>
 
-                <input
-                    type="search"
-                    id="searchInput"
-                    placeholder="Pesquisar lançamento..."
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>
+                                MOVIMENTAÇÕES
+                            </span>
+
+                            <h3>
+                                Últimos lançamentos
+                            </h3>
+
+                        </div>
+
+
+                        <button
+                            class="text-button"
+                            data-section="transactions"
+                            type="button"
+                        >
+                            Ver todos
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="recentTransactions"
+                        class="transaction-list"
+                    ></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             LANÇAMENTOS
+        ================================================= -->
+
+        <section
+            id="transactions"
+            class="section hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span>
+                        MOVIMENTAÇÕES
+                    </span>
+
+                    <h2>
+                        Lançamentos
+                    </h2>
+
+                    <p>
+                        Consulte e organize suas movimentações.
+                    </p>
+
+                </div>
+
+
+                <button
+                    id="newTransactionButton"
+                    class="btn-primary"
+                    type="button"
+                >
+                    + Novo lançamento
+                </button>
+
+            </div>
+
+
+            <div class="filters-panel">
+
+                <div class="search-box">
+
+                    <span>🔎</span>
+
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Pesquisar lançamento..."
+                    >
+
+                </div>
+
+
+                <select id="typeFilter">
+
+                    <option value="all">
+                        Todos os tipos
+                    </option>
+
+                    <option value="income">
+                        Receitas
+                    </option>
+
+                    <option value="expense">
+                        Despesas
+                    </option>
+
+                </select>
+
+
+                <select id="categoryFilter">
+
+                    <option value="all">
+                        Todas categorias
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div
+                    id="allTransactions"
+                    class="all-transactions"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             CATEGORIAS
+        ================================================= -->
+
+        <section
+            id="categories"
+            class="section hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span>
+                        ORGANIZAÇÃO
+                    </span>
+
+                    <h2>
+                        Gastos por categoria
+                    </h2>
+
+                    <p>
+                        Descubra onde seu dinheiro está indo.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="category-layout">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>
+                                DISTRIBUIÇÃO
+                            </span>
+
+                            <h3>
+                                📊 Gráfico de distribuição
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="category-chart-container">
+
+                        <canvas id="categoryChart"></canvas>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>
+                                ANÁLISE
+                            </span>
+
+                            <h3>
+                                📄 Análise por categoria
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div id="categoryList"></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             RELATÓRIOS
+        ================================================= -->
+
+        <section
+            id="reports"
+            class="section hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span>
+                        INTELIGÊNCIA FINANCEIRA
+                    </span>
+
+                    <h2>
+                        Relatórios
+                    </h2>
+
+                    <p>
+                        Uma visão mais detalhada do seu dinheiro.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>
+                                DISTRIBUIÇÃO
+                            </span>
+
+                            <h3>
+                                Despesas por categoria
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="category-chart-container large">
+
+                        <canvas id="reportCategoryChart"></canvas>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span>
+                                RESUMO
+                            </span>
+
+                            <h3>
+                                📄 Análise financeira
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="reportAnalysis"
+                        class="category-list"
+                    ></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PREMIUM
+        ================================================= -->
+
+        <section
+            id="premium"
+            class="section hidden premium-section"
+        >
+
+            <div class="premium-hero">
+
+                <div class="premium-content">
+
+                    <span class="premium-tag">
+                        ⭐ CONTROLES PREMIUM
+                    </span>
+
+
+                    <h2>
+                        Sua inteligência financeira.
+                    </h2>
+
+
+                    <p>
+                        Transforme seus números em decisões melhores
+                        e tenha uma visão mais completa do seu dinheiro.
+                    </p>
+
+
+                    <button
+                        id="subscribePremiumBtn"
+                        class="btn-premium"
+                        type="button"
+                    >
+                        Quero ser Premium ⭐
+                    </button>
+
+                </div>
+
+
+                <div class="premium-logo">
+
+                    <img
+                        src="logo.png"
+                        alt="ControleS Premium"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="premium-performance">
+
+                <span class="premium-section-label">
+                    DESEMPENHO DO MÊS
+                </span>
+
+
+                <h2>
+                    Seu dinheiro está trabalhando a seu favor.
+                </h2>
+
+
+                <p id="premiumPerformanceText">
+                    Cadastre seus lançamentos para acompanhar
+                    seu desempenho.
+                </p>
+
+
+                <div class="premium-economy">
+
+                    Economia
+
+                    <strong id="premiumEconomyValue">
+                        0%
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="premium-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>
+                            INDICADOR
+                        </span>
+
+                        <h3>
+                            🩺 Saúde financeira
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <p class="premium-description">
+                    Veja rapidamente como está o equilíbrio
+                    das suas finanças.
+                </p>
+
+
+                <div class="health-status">
+
+                    <div class="health-item">
+
+                        <span class="health-dot health-red"></span>
+
+                        <strong>
+                            Crítica
+                        </strong>
+
+                        <small>
+                            Gastos acima das receitas.
+                        </small>
+
+                    </div>
+
+
+                    <div class="health-item">
+
+                        <span class="health-dot health-yellow"></span>
+
+                        <strong>
+                            Atenção
+                        </strong>
+
+                        <small>
+                            Pouca margem para economizar.
+                        </small>
+
+                    </div>
+
+
+                    <div class="health-item">
+
+                        <span class="health-dot health-green"></span>
+
+                        <strong>
+                            Saudável
+                        </strong>
+
+                        <small>
+                            Boa capacidade de economia.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="healthResult"
+                    class="health-result"
+                ></div>
+
+            </div>
+
+
+            <div class="premium-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>
+                            OBJETIVOS
+                        </span>
+
+                        <h3>
+                            🎯 Metas financeiras
+                        </h3>
+
+                    </div>
+
+
+                    <button
+                        id="newGoalBtn"
+                        class="premium-small-button"
+                        type="button"
+                    >
+                        + Nova meta
+                    </button>
+
+                </div>
+
+
+                <p class="premium-description">
+                    Crie objetivos e acompanhe seu progresso.
+                </p>
+
+
+                <div
+                    id="goalsList"
+                    class="premium-list"
                 >
 
+                    <div class="empty-state">
+                        Você ainda não criou nenhuma meta.
+                    </div>
+
+                </div>
+
             </div>
 
-            <select id="typeFilter">
 
-                <option value="all">
-                    Todos os tipos
-                </option>
+            <div class="premium-card">
 
-                <option value="income">
-                    Receitas
-                </option>
+                <div class="premium-card-header">
 
-                <option value="expense">
-                    Despesas
-                </option>
+                    <div>
 
-            </select>
+                        <span>
+                            ATENÇÃO
+                        </span>
 
+                        <h3>
+                            🚨 Alertas inteligentes
+                        </h3>
 
-            <select id="categoryFilter">
+                    </div>
 
-                <option value="all">
-                    Todas categorias
-                </option>
-
-            </select>
-
-        </div>
+                </div>
 
 
-        <div class="panel">
+                <div
+                    id="smartAlerts"
+                    class="premium-list"
+                ></div>
 
-            <div
-                id="allTransactions"
-                class="all-transactions"
-            ></div>
-
-        </div>
-
-    </section>
+            </div>
 
 
-    <!-- =================================================
-         CATEGORIAS
-    ================================================= -->
+            <div class="premium-card">
 
-    <section
-        id="categories"
-        class="section hidden"
-    >
+                <div class="premium-card-header">
 
-        <div class="section-heading">
+                    <div>
 
-            <div>
+                        <span>
+                            EVOLUÇÃO
+                        </span>
 
-                <span>
-                    ORGANIZAÇÃO
-                </span>
+                        <h3>
+                            📊 Comparação mensal
+                        </h3>
 
-                <h2>
-                    Gastos por categoria
-                </h2>
+                    </div>
 
-                <p>
-                    Descubra onde seu dinheiro está indo.
+                </div>
+
+
+                <div
+                    id="monthlyComparison"
+                    class="comparison-content"
+                ></div>
+
+            </div>
+
+
+            <div class="premium-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>
+                            PLANEJAMENTO
+                        </span>
+
+                        <h3>
+                            💰 Orçamento por categoria
+                        </h3>
+
+                    </div>
+
+
+                    <button
+                        id="newBudgetBtn"
+                        class="premium-small-button"
+                        type="button"
+                    >
+                        + Definir limite
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="budgetsList"
+                    class="premium-list"
+                ></div>
+
+            </div>
+
+
+            <div class="premium-card">
+
+                <div class="premium-card-header">
+
+                    <div>
+
+                        <span>
+                            SIMULAÇÃO
+                        </span>
+
+                        <h3>
+                            🔮 Simulador financeiro
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <p class="premium-description">
+                    Veja como uma nova despesa pode afetar seu saldo.
                 </p>
 
-            </div>
 
-        </div>
+                <div class="simulator">
 
+                    <div class="simulator-input">
 
-        <div class="category-layout">
+                        <label for="simulationAmount">
+                            Nova despesa
+                        </label>
 
-            <div class="panel">
-
-                <div class="panel-header">
-
-                    <div>
-
-                        <span>
-                            DISTRIBUIÇÃO
-                        </span>
-
-                        <h3>
-                            📊 Gráfico de distribuição
-                        </h3>
+                        <input
+                            type="number"
+                            id="simulationAmount"
+                            min="0"
+                            step="0.01"
+                            placeholder="0,00"
+                        >
 
                     </div>
 
+
+                    <button
+                        id="simulateBtn"
+                        class="btn-primary"
+                        type="button"
+                    >
+                        Simular
+                    </button>
+
                 </div>
 
-                <div class="category-chart-container">
 
-                    <canvas id="categoryChart"></canvas>
-
-                </div>
+                <div
+                    id="simulationResult"
+                    class="simulation-result"
+                ></div>
 
             </div>
 
 
-            <div class="panel">
+            <div class="premium-card">
 
-                <div class="panel-header">
+                <div class="premium-card-header">
 
                     <div>
 
                         <span>
-                            ANÁLISE
-                        </span>
-
-                        <h3>
-                            📄 Análise por categoria
-                        </h3>
-
-                    </div>
-
-                </div>
-
-                <div id="categoryList"></div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =================================================
-         RELATÓRIOS
-    ================================================= -->
-
-    <section
-        id="reports"
-        class="section hidden"
-    >
-
-        <div class="section-heading">
-
-            <div>
-
-                <span>
-                    INTELIGÊNCIA FINANCEIRA
-                </span>
-
-                <h2>
-                    Relatórios
-                </h2>
-
-                <p>
-                    Uma visão mais detalhada do seu dinheiro.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="dashboard-grid">
-
-            <div class="panel">
-
-                <div class="panel-header">
-
-                    <div>
-
-                        <span>
-                            DISTRIBUIÇÃO
-                        </span>
-
-                        <h3>
-                            Despesas por categoria
-                        </h3>
-
-                    </div>
-
-                </div>
-
-                <div class="category-chart-container large">
-
-                    <canvas id="reportCategoryChart"></canvas>
-
-                </div>
-
-            </div>
-
-
-            <div class="panel">
-
-                <div class="panel-header">
-
-                    <div>
-
-                        <span>
-                            RESUMO
+                            INTELIGÊNCIA
                         </span>
 
                         <h3>
@@ -725,478 +1174,275 @@
 
                 </div>
 
+
                 <div
-                    id="reportAnalysis"
-                    class="category-list"
+                    id="premiumAnalysis"
+                    class="premium-analysis"
                 ></div>
 
             </div>
 
-        </div>
+        </section>
 
-    </section>
+    </main>
+
+</div>
 
 
-    <!-- =================================================
-         PREMIUM
-    ================================================= -->
+<!-- =====================================================
+     MODAL LANÇAMENTO
+===================================================== -->
 
-    <section
-        id="premium"
-        class="section hidden premium-section"
-    >
+<div
+    id="transactionModal"
+    class="modal hidden"
+>
 
-        <div class="premium-hero">
+    <div class="modal-overlay"></div>
 
-            <div class="premium-content">
 
-                <span class="premium-tag">
-                    ⭐ CONTROLES PREMIUM
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span>
+                    NOVO LANÇAMENTO
                 </span>
 
                 <h2>
-                    Sua inteligência financeira.
+                    Adicionar movimentação
                 </h2>
 
-                <p>
-                    Transforme seus números em decisões melhores
-                    e tenha uma visão mais completa do seu dinheiro.
-                </p>
-
-                <button
-                    id="subscribePremiumBtn"
-                    class="btn-premium"
-                    type="button"
-                >
-                    Quero ser Premium ⭐
-                </button>
-
             </div>
 
 
-            <div class="premium-logo">
-
-                <img
-                    src="logo.png"
-                    alt="ControleS Premium"
-                >
-
-            </div>
-
-        </div>
-
-
-        <div class="premium-performance">
-
-            <span class="premium-section-label">
-                DESEMPENHO DO MÊS
-            </span>
-
-            <h2>
-                Seu dinheiro está trabalhando a seu favor.
-            </h2>
-
-            <p id="premiumPerformanceText">
-                Cadastre seus lançamentos para acompanhar
-                seu desempenho.
-            </p>
-
-            <div class="premium-economy">
-
-                Economia
-
-                <strong id="premiumEconomyValue">
-                    0%
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div class="premium-card">
-
-            <div class="premium-card-header">
-
-                <div>
-
-                    <span>
-                        INDICADOR
-                    </span>
-
-                    <h3>
-                        🩺 Saúde financeira
-                    </h3>
-
-                </div>
-
-            </div>
-
-            <p class="premium-description">
-                Veja rapidamente como está o equilíbrio
-                das suas finanças.
-            </p>
-
-            <div class="health-status">
-
-                <div class="health-item">
-
-                    <span class="health-dot health-red"></span>
-
-                    <strong>
-                        Crítica
-                    </strong>
-
-                    <small>
-                        Gastos acima das receitas.
-                    </small>
-
-                </div>
-
-
-                <div class="health-item">
-
-                    <span class="health-dot health-yellow"></span>
-
-                    <strong>
-                        Atenção
-                    </strong>
-
-                    <small>
-                        Pouca margem para economizar.
-                    </small>
-
-                </div>
-
-
-                <div class="health-item">
-
-                    <span class="health-dot health-green"></span>
-
-                    <strong>
-                        Saudável
-                    </strong>
-
-                    <small>
-                        Boa capacidade de economia.
-                    </small>
-
-                </div>
-
-            </div>
-
-            <div
-                id="healthResult"
-                class="health-result"
-            ></div>
-
-        </div>
-
-
-        <div class="premium-card">
-
-            <div class="premium-card-header">
-
-                <div>
-
-                    <span>
-                        OBJETIVOS
-                    </span>
-
-                    <h3>
-                        🎯 Metas financeiras
-                    </h3>
-
-                </div>
-
-                <button
-                    id="newGoalBtn"
-                    class="premium-small-button"
-                    type="button"
-                >
-                    + Nova meta
-                </button>
-
-            </div>
-
-            <p class="premium-description">
-                Crie objetivos e acompanhe seu progresso.
-            </p>
-
-            <div
-                id="goalsList"
-                class="premium-list"
+            <button
+                id="closeModal"
+                class="modal-close"
+                type="button"
             >
-
-                <div class="empty-state">
-                    Você ainda não criou nenhuma meta.
-                </div>
-
-            </div>
+                ×
+            </button>
 
         </div>
 
 
-        <div class="premium-card">
+        <form id="transactionForm">
 
-            <div class="premium-card-header">
-
-                <div>
-
-                    <span>
-                        ATENÇÃO
-                    </span>
-
-                    <h3>
-                        🚨 Alertas inteligentes
-                    </h3>
-
-                </div>
-
-            </div>
-
-            <div
-                id="smartAlerts"
-                class="premium-list"
-            ></div>
-
-        </div>
-
-
-        <div class="premium-card">
-
-            <div class="premium-card-header">
-
-                <div>
-
-                    <span>
-                        EVOLUÇÃO
-                    </span>
-
-                    <h3>
-                        📊 Comparação mensal
-                    </h3>
-
-                </div>
-
-            </div>
-
-            <div
-                id="monthlyComparison"
-                class="comparison-content"
-            ></div>
-
-        </div>
-
-
-        <div class="premium-card">
-
-            <div class="premium-card-header">
-
-                <div>
-
-                    <span>
-                        PLANEJAMENTO
-                    </span>
-
-                    <h3>
-                        💰 Orçamento por categoria
-                    </h3>
-
-                </div>
+            <div class="type-selector">
 
                 <button
-                    id="newBudgetBtn"
-                    class="premium-small-button"
                     type="button"
+                    class="type-option active"
+                    data-type="income"
                 >
-                    + Definir limite
+                    ↗ Receita
+                </button>
+
+
+                <button
+                    type="button"
+                    class="type-option"
+                    data-type="expense"
+                >
+                    ↘ Despesa
                 </button>
 
             </div>
 
-            <div
-                id="budgetsList"
-                class="premium-list"
-            ></div>
 
-        </div>
+            <div class="form-group">
 
+                <label for="descriptionInput">
+                    Descrição
+                </label>
 
-        <div class="premium-card">
-
-            <div class="premium-card-header">
-
-                <div>
-
-                    <span>
-                        SIMULAÇÃO
-                    </span>
-
-                    <h3>
-                        🔮 Simulador financeiro
-                    </h3>
-
-                </div>
+                <input
+                    type="text"
+                    id="descriptionInput"
+                    placeholder="Ex.: Salário, aluguel, mercado..."
+                    required
+                >
 
             </div>
 
-            <p class="premium-description">
-                Veja como uma nova despesa pode afetar seu saldo.
-            </p>
 
-            <div class="simulator">
+            <div class="form-row">
 
-                <div class="simulator-input">
+                <div class="form-group">
 
-                    <label for="simulationAmount">
-                        Nova despesa
+                    <label for="amountInput">
+                        Valor
                     </label>
 
                     <input
                         type="number"
-                        id="simulationAmount"
-                        min="0"
+                        id="amountInput"
+                        min="0.01"
                         step="0.01"
                         placeholder="0,00"
+                        required
                     >
 
                 </div>
 
-                <button
-                    id="simulateBtn"
-                    class="btn-primary"
-                    type="button"
-                >
-                    Simular
-                </button>
 
-            </div>
+                <div class="form-group">
 
-            <div
-                id="simulationResult"
-                class="simulation-result"
-            ></div>
+                    <label for="dateInput">
+                        Data
+                    </label>
 
-        </div>
-
-
-        <div class="premium-card">
-
-            <div class="premium-card-header">
-
-                <div>
-
-                    <span>
-                        INTELIGÊNCIA
-                    </span>
-
-                    <h3>
-                        📄 Análise financeira
-                    </h3>
+                    <input
+                        type="date"
+                        id="dateInput"
+                        required
+                    >
 
                 </div>
 
             </div>
 
-            <div
-                id="premiumAnalysis"
-                class="premium-analysis"
-            ></div>
-
-        </div>
-
-    </section>
-
-</main>
-
-</div><!-- =====================================================
-     MODAL LANÇAMENTO
-===================================================== --><div
-    id="transactionModal"
-    class="modal hidden"
-><div class="modal-overlay"></div>
-
-<div class="modal-box">
-
-    <div class="modal-header">
-
-        <div>
-
-            <span>
-                NOVO LANÇAMENTO
-            </span>
-
-            <h2>
-                Adicionar movimentação
-            </h2>
-
-        </div>
-
-        <button
-            id="closeModal"
-            class="modal-close"
-            type="button"
-        >
-            ×
-        </button>
-
-    </div>
-
-
-    <form id="transactionForm">
-
-        <div class="type-selector">
-
-            <button
-                type="button"
-                class="type-option active"
-                data-type="income"
-            >
-                ↗ Receita
-            </button>
-
-            <button
-                type="button"
-                class="type-option"
-                data-type="expense"
-            >
-                ↘ Despesa
-            </button>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="descriptionInput">
-                Descrição
-            </label>
-
-            <input
-                type="text"
-                id="descriptionInput"
-                placeholder="Ex.: Salário, aluguel, mercado..."
-                required
-            >
-
-        </div>
-
-
-        <div class="form-row">
 
             <div class="form-group">
 
-                <label for="amountInput">
-                    Valor
+                <label for="frequencyInput">
+                    Frequência
+                </label>
+
+                <select id="frequencyInput">
+
+                    <option value="once">
+                        Única
+                    </option>
+
+                    <option value="daily">
+                        Diária
+                    </option>
+
+                    <option value="weekly">
+                        Semanal
+                    </option>
+
+                    <option value="monthly">
+                        Mensal
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="transactionCategory">
+                    Categoria
+                </label>
+
+                <select id="transactionCategory">
+
+                    <option>Alimentação</option>
+                    <option>Moradia</option>
+                    <option>Transporte</option>
+                    <option>Lazer</option>
+                    <option>Saúde</option>
+                    <option>Educação</option>
+                    <option>Compras</option>
+                    <option>Contas</option>
+                    <option>Salário</option>
+                    <option>Investimentos</option>
+                    <option>Outros</option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-primary save-transaction"
+            >
+                Salvar lançamento
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL META
+===================================================== -->
+
+<div
+    id="goalModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay"></div>
+
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span>
+                    OBJETIVO PREMIUM
+                </span>
+
+                <h2>
+                    Nova meta financeira
+                </h2>
+
+            </div>
+
+
+            <button
+                id="closeGoalModal"
+                class="modal-close"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="goalForm">
+
+            <div class="form-group">
+
+                <label for="goalName">
+                    Nome da meta
+                </label>
+
+                <input
+                    type="text"
+                    id="goalName"
+                    placeholder="Ex.: Comprar uma moto"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="goalTarget">
+                    Valor da meta
                 </label>
 
                 <input
                     type="number"
-                    id="amountInput"
+                    id="goalTarget"
                     min="0.01"
                     step="0.01"
-                    placeholder="0,00"
                     required
                 >
 
@@ -1205,271 +1451,136 @@
 
             <div class="form-group">
 
-                <label for="dateInput">
-                    Data
+                <label for="goalSaved">
+                    Quanto já possui
                 </label>
 
                 <input
-                    type="date"
-                    id="dateInput"
+                    type="number"
+                    id="goalSaved"
+                    min="0"
+                    step="0.01"
+                    value="0"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-primary"
+            >
+                Criar meta
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODAL ORÇAMENTO
+===================================================== -->
+
+<div
+    id="budgetModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay"></div>
+
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span>
+                    PLANEJAMENTO PREMIUM
+                </span>
+
+                <h2>
+                    Definir orçamento
+                </h2>
+
+            </div>
+
+
+            <button
+                id="closeBudgetModal"
+                class="modal-close"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="budgetForm">
+
+            <div class="form-group">
+
+                <label for="budgetCategory">
+                    Categoria
+                </label>
+
+                <select id="budgetCategory">
+
+                    <option>Alimentação</option>
+                    <option>Moradia</option>
+                    <option>Transporte</option>
+                    <option>Lazer</option>
+                    <option>Saúde</option>
+                    <option>Educação</option>
+                    <option>Compras</option>
+                    <option>Contas</option>
+                    <option>Outros</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="budgetLimit">
+                    Limite mensal
+                </label>
+
+                <input
+                    type="number"
+                    id="budgetLimit"
+                    min="0.01"
+                    step="0.01"
                     required
                 >
 
             </div>
 
-        </div>
 
+            <button
+                type="submit"
+                class="btn-primary"
+            >
+                Salvar orçamento
+            </button>
 
-        <div class="form-group">
-
-            <label for="frequencyInput">
-                Frequência
-            </label>
-
-            <select id="frequencyInput">
-
-                <option value="once">
-                    Única
-                </option>
-
-                <option value="daily">
-                    Diária
-                </option>
-
-                <option value="weekly">
-                    Semanal
-                </option>
-
-                <option value="monthly">
-                    Mensal
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="transactionCategory">
-                Categoria
-            </label>
-
-            <select id="transactionCategory">
-
-                <option>Alimentação</option>
-                <option>Moradia</option>
-                <option>Transporte</option>
-                <option>Lazer</option>
-                <option>Saúde</option>
-                <option>Educação</option>
-                <option>Compras</option>
-                <option>Contas</option>
-                <option>Salário</option>
-                <option>Investimentos</option>
-                <option>Outros</option>
-
-            </select>
-
-        </div>
-
-
-        <button
-            type="submit"
-            class="btn-primary save-transaction"
-        >
-            Salvar lançamento
-        </button>
-
-    </form>
-
-</div>
-
-</div><!-- =====================================================
-     MODAL META
-===================================================== --><div
-    id="goalModal"
-    class="modal hidden"
-><div class="modal-overlay"></div>
-
-<div class="modal-box">
-
-    <div class="modal-header">
-
-        <div>
-
-            <span>
-                OBJETIVO PREMIUM
-            </span>
-
-            <h2>
-                Nova meta financeira
-            </h2>
-
-        </div>
-
-        <button
-            id="closeGoalModal"
-            class="modal-close"
-            type="button"
-        >
-            ×
-        </button>
+        </form>
 
     </div>
 
-
-    <form id="goalForm">
-
-        <div class="form-group">
-
-            <label for="goalName">
-                Nome da meta
-            </label>
-
-            <input
-                type="text"
-                id="goalName"
-                placeholder="Ex.: Comprar uma moto"
-                required
-            >
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="goalTarget">
-                Valor da meta
-            </label>
-
-            <input
-                type="number"
-                id="goalTarget"
-                min="0.01"
-                step="0.01"
-                required
-            >
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="goalSaved">
-                Quanto já possui
-            </label>
-
-            <input
-                type="number"
-                id="goalSaved"
-                min="0"
-                step="0.01"
-                value="0"
-            >
-
-        </div>
-
-
-        <button
-            type="submit"
-            class="btn-primary"
-        >
-            Criar meta
-        </button>
-
-    </form>
-
 </div>
 
-</div><!-- =====================================================
-     MODAL ORÇAMENTO
-===================================================== --><div
-    id="budgetModal"
-    class="modal hidden"
-><div class="modal-overlay"></div>
 
-<div class="modal-box">
-
-    <div class="modal-header">
-
-        <div>
-
-            <span>
-                PLANEJAMENTO PREMIUM
-            </span>
-
-            <h2>
-                Definir orçamento
-            </h2>
-
-        </div>
-
-        <button
-            id="closeBudgetModal"
-            class="modal-close"
-            type="button"
-        >
-            ×
-        </button>
-
-    </div>
-
-
-    <form id="budgetForm">
-
-        <div class="form-group">
-
-            <label for="budgetCategory">
-                Categoria
-            </label>
-
-            <select id="budgetCategory">
-
-                <option>Alimentação</option>
-                <option>Moradia</option>
-                <option>Transporte</option>
-                <option>Lazer</option>
-                <option>Saúde</option>
-                <option>Educação</option>
-                <option>Compras</option>
-                <option>Contas</option>
-                <option>Outros</option>
-
-            </select>
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label for="budgetLimit">
-                Limite mensal
-            </label>
-
-            <input
-                type="number"
-                id="budgetLimit"
-                min="0.01"
-                step="0.01"
-                required
-            >
-
-        </div>
-
-
-        <button
-            type="submit"
-            class="btn-primary"
-        >
-            Salvar orçamento
-        </button>
-
-    </form>
-
-</div>
-
-</div><!-- =====================================================
+<!-- =====================================================
      APP.JS
-===================================================== --><script src="app.js"></script></body>
+===================================================== -->
+
+<script src="app.js"></script>
+
+</body>
 </html>
