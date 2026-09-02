@@ -14,9 +14,9 @@
 
 <body>
 
-  <!-- =====================================================
-       TELA DE LOGIN / CADASTRO
-  ====================================================== -->
+  <!-- =========================================================
+       LOGIN / CADASTRO
+  ========================================================== -->
 
   <div id="loginScreen" class="login-screen">
 
@@ -70,7 +70,9 @@
               data-target="loginPassword"
               aria-label="Mostrar senha"
               onclick="togglePassword('loginPassword', this)"
-            >◉</button>
+            >
+              ◉
+            </button>
           </div>
         </div>
 
@@ -103,18 +105,24 @@
     <div id="registerView" class="auth-card login-card hidden">
 
       <div class="login-brand">
+
         <div class="login-logo">
           <img src="logo.png" alt="ControleS">
         </div>
 
         <h1>ControleS</h1>
         <p>Comece a organizar seu dinheiro.</p>
+
       </div>
 
       <div class="auth-heading">
+
         <span class="auth-kicker">NOVO POR AQUI?</span>
+
         <h2>Crie sua conta</h2>
+
         <p>Leva menos de um minuto para começar.</p>
+
       </div>
 
       <form id="registerForm">
@@ -148,6 +156,7 @@
           <label for="registerPassword">Senha</label>
 
           <div class="password-field">
+
             <input
               type="password"
               id="registerPassword"
@@ -163,7 +172,10 @@
               data-target="registerPassword"
               aria-label="Mostrar senha"
               onclick="togglePassword('registerPassword', this)"
-            >◉</button>
+            >
+              ◉
+            </button>
+
           </div>
         </div>
 
@@ -171,6 +183,7 @@
           <label for="registerPasswordConfirm">Confirmar senha</label>
 
           <div class="password-field">
+
             <input
               type="password"
               id="registerPasswordConfirm"
@@ -186,7 +199,10 @@
               data-target="registerPasswordConfirm"
               aria-label="Mostrar senha"
               onclick="togglePassword('registerPasswordConfirm', this)"
-            >◉</button>
+            >
+              ◉
+            </button>
+
           </div>
         </div>
 
@@ -224,13 +240,16 @@
   </div>
 
 
-  <!-- =====================================================
-       APLICAÇÃO
-  ====================================================== -->
+  <!-- =========================================================
+       APLICATIVO
+  ========================================================== -->
 
-  <div id="app" class="app-shell hidden">
+  <div id="app" class="app hidden">
 
-    <!-- SIDEBAR -->
+    <!-- =======================================================
+         SIDEBAR
+    ======================================================== -->
+
     <aside id="sidebar" class="sidebar">
 
       <div class="sidebar-brand">
@@ -322,13 +341,17 @@
     </aside>
 
 
-    <!-- CONTEÚDO PRINCIPAL -->
+    <!-- =======================================================
+         CONTEÚDO PRINCIPAL
+    ======================================================== -->
+
     <main class="main-content">
 
       <!-- TOPBAR -->
       <header class="topbar">
 
         <div class="mobile-menu-area">
+
           <button
             id="mobileMenuBtn"
             class="mobile-menu-btn"
@@ -337,7 +360,9 @@
           >
             ☰
           </button>
+
         </div>
+
 
         <div class="topbar-brand">
 
@@ -369,16 +394,16 @@
       </header>
 
 
-      <!-- =================================================
+      <!-- =====================================================
            DASHBOARD
-      ================================================== -->
+      ====================================================== -->
 
       <section
         id="dashboardSection"
         class="app-section active-section"
       >
 
-        <div class="section-header">
+        <div class="page-heading">
 
           <div>
             <span class="section-kicker">VISÃO GERAL</span>
@@ -388,61 +413,80 @@
             </h1>
 
             <p>
-              Veja como estão suas finanças hoje.
+              Veja como está sua vida financeira hoje.
             </p>
           </div>
 
           <button
             id="premiumBtn"
-            class="btn-primary"
+            class="premium-top-btn"
             type="button"
           >
-            ⭐ Conhecer Premium
+            ⭐ Conheça o Premium
           </button>
 
         </div>
 
 
-        <!-- CARDS -->
+        <!-- RESUMO -->
+
         <div class="summary-grid">
 
           <div class="summary-card">
 
-            <div class="summary-icon">
-              💰
-            </div>
+            <div class="summary-card-top">
 
-            <div>
-              <span>Saldo atual</span>
-              <strong id="balanceValue">R$ 0,00</strong>
-            </div>
+              <div>
+                <span>Saldo atual</span>
+                <strong id="balanceValue">
+                  R$ 0,00
+                </strong>
+              </div>
 
-          </div>
+              <div class="summary-icon">
+                💰
+              </div>
 
-
-          <div class="summary-card">
-
-            <div class="summary-icon">
-              📈
-            </div>
-
-            <div>
-              <span>Entradas</span>
-              <strong id="incomeValue">R$ 0,00</strong>
             </div>
 
           </div>
 
 
-          <div class="summary-card">
+          <div class="summary-card income-card">
 
-            <div class="summary-icon">
-              📉
+            <div class="summary-card-top">
+
+              <div>
+                <span>Entradas</span>
+                <strong id="incomeValue">
+                  R$ 0,00
+                </strong>
+              </div>
+
+              <div class="summary-icon">
+                ↗
+              </div>
+
             </div>
 
-            <div>
-              <span>Saídas</span>
-              <strong id="expenseValue">R$ 0,00</strong>
+          </div>
+
+
+          <div class="summary-card expense-card">
+
+            <div class="summary-card-top">
+
+              <div>
+                <span>Saídas</span>
+                <strong id="expenseValue">
+                  R$ 0,00
+                </strong>
+              </div>
+
+              <div class="summary-icon">
+                ↘
+              </div>
+
             </div>
 
           </div>
@@ -450,16 +494,22 @@
         </div>
 
 
-        <!-- GRÁFICO -->
+        <!-- GRÁFICO + RECENTES -->
+
         <div class="dashboard-grid">
 
-          <div class="panel chart-panel">
+          <div class="content-card">
 
-            <div class="panel-header">
+            <div class="card-heading">
 
               <div>
-                <span class="section-kicker">EVOLUÇÃO</span>
-                <h2>Movimentação financeira</h2>
+                <span class="section-kicker">
+                  MOVIMENTAÇÃO
+                </span>
+
+                <h2>
+                  Evolução financeira
+                </h2>
               </div>
 
             </div>
@@ -471,19 +521,23 @@
           </div>
 
 
-          <!-- TRANSAÇÕES RECENTES -->
-          <div class="panel">
+          <div class="content-card recent-card">
 
-            <div class="panel-header">
+            <div class="card-heading">
 
               <div>
-                <span class="section-kicker">ATIVIDADE</span>
-                <h2>Últimos lançamentos</h2>
+                <span class="section-kicker">
+                  ÚLTIMOS MOVIMENTOS
+                </span>
+
+                <h2>
+                  Lançamentos recentes
+                </h2>
               </div>
 
               <button
+                class="text-btn"
                 type="button"
-                class="text-button"
                 data-section-target="transactions"
               >
                 Ver todos
@@ -491,58 +545,100 @@
 
             </div>
 
-            <div
-              id="recentTransactions"
-              class="recent-transactions"
-            ></div>
+            <div id="recentTransactions"></div>
 
           </div>
 
         </div>
 
 
-        <!-- AÇÕES -->
-        <div class="panel quick-actions-panel">
+        <!-- AÇÕES RÁPIDAS -->
 
-          <div class="panel-header">
+        <div class="content-card">
+
+          <div class="card-heading">
 
             <div>
-              <span class="section-kicker">ATALHOS</span>
-              <h2>Ações rápidas</h2>
+              <span class="section-kicker">
+                ATALHOS
+              </span>
+
+              <h2>
+                Ações rápidas
+              </h2>
             </div>
 
           </div>
 
-          <div class="quick-actions">
+
+          <div class="dashboard-actions">
 
             <button
               id="addTransactionBtn"
-              class="quick-action"
+              class="action-card"
               type="button"
             >
-              <span>🧾</span>
-              <strong>Novo lançamento</strong>
-              <small>Adicionar entrada ou saída</small>
+
+              <span class="action-card-icon">
+                🧾
+              </span>
+
+              <span>
+                <strong>
+                  Novo lançamento
+                </strong>
+
+                <small>
+                  Registre uma entrada ou saída
+                </small>
+              </span>
+
             </button>
+
 
             <button
               id="addCategoryBtn"
-              class="quick-action"
+              class="action-card"
               type="button"
             >
-              <span>📊</span>
-              <strong>Nova categoria</strong>
-              <small>Organizar seus gastos</small>
+
+              <span class="action-card-icon">
+                📊
+              </span>
+
+              <span>
+                <strong>
+                  Nova categoria
+                </strong>
+
+                <small>
+                  Organize seus gastos
+                </small>
+              </span>
+
             </button>
+
 
             <button
               id="addGoalBtn"
-              class="quick-action"
+              class="action-card"
               type="button"
             >
-              <span>🎯</span>
-              <strong>Nova meta</strong>
-              <small>Planejar seu dinheiro</small>
+
+              <span class="action-card-icon">
+                🎯
+              </span>
+
+              <span>
+                <strong>
+                  Nova meta
+                </strong>
+
+                <small>
+                  Planeje seu próximo objetivo
+                </small>
+              </span>
+
             </button>
 
           </div>
@@ -552,22 +648,33 @@
       </section>
 
 
-      <!-- =================================================
+      <!-- =====================================================
            LANÇAMENTOS
-      ================================================== -->
+      ====================================================== -->
 
       <section
         id="transactionsSection"
         class="app-section hidden"
       >
 
-        <div class="section-header">
+        <div class="page-heading">
 
           <div>
-            <span class="section-kicker">FINANÇAS</span>
-            <h1>Lançamentos</h1>
-            <p>Controle todas as suas entradas e saídas.</p>
+
+            <span class="section-kicker">
+              MOVIMENTAÇÕES
+            </span>
+
+            <h1>
+              Lançamentos
+            </h1>
+
+            <p>
+              Controle todas as suas entradas e saídas.
+            </p>
+
           </div>
+
 
           <button
             id="addTransactionBtn2"
@@ -580,36 +687,46 @@
         </div>
 
 
-        <div class="panel">
-
-          <div
-            id="transactionsEmpty"
-            class="empty-state hidden"
-          >
-            <div class="empty-icon">🧾</div>
-            <h3>Nenhum lançamento ainda</h3>
-            <p>Adicione sua primeira entrada ou saída.</p>
-          </div>
-
+        <div class="content-card">
 
           <div class="table-wrapper">
 
             <table class="data-table">
 
               <thead>
+
                 <tr>
+                  <th>Data</th>
                   <th>Descrição</th>
                   <th>Categoria</th>
                   <th>Tipo</th>
-                  <th>Data</th>
                   <th>Valor</th>
                   <th>Ações</th>
                 </tr>
+
               </thead>
 
-              <tbody id="transactionsTableBody"></tbody>
+              <tbody id="transactionsTableBody">
+              </tbody>
 
             </table>
+
+          </div>
+
+
+          <div
+            id="transactionsEmpty"
+            class="empty-state hidden"
+          >
+            <span>🧾</span>
+
+            <h3>
+              Nenhum lançamento ainda
+            </h3>
+
+            <p>
+              Comece registrando sua primeira entrada ou saída.
+            </p>
 
           </div>
 
@@ -618,22 +735,33 @@
       </section>
 
 
-      <!-- =================================================
+      <!-- =====================================================
            CATEGORIAS
-      ================================================== -->
+      ====================================================== -->
 
       <section
         id="categoriesSection"
         class="app-section hidden"
       >
 
-        <div class="section-header">
+        <div class="page-heading">
 
           <div>
-            <span class="section-kicker">ORGANIZAÇÃO</span>
-            <h1>Categorias</h1>
-            <p>Organize seus lançamentos por categoria.</p>
+
+            <span class="section-kicker">
+              ORGANIZAÇÃO
+            </span>
+
+            <h1>
+              Categorias
+            </h1>
+
+            <p>
+              Organize seus lançamentos de forma simples.
+            </p>
+
           </div>
+
 
           <button
             id="addCategoryBtn2"
@@ -646,292 +774,440 @@
         </div>
 
 
-        <div
-          id="categoriesGrid"
-          class="categories-grid"
-        ></div>
+        <div class="content-card">
+
+          <div
+            id="categoriesGrid"
+            class="categories-grid"
+          >
+          </div>
+
+        </div>
 
       </section>
 
 
-      <!-- =================================================
+      <!-- =====================================================
            RELATÓRIOS
-      ================================================== -->
+      ====================================================== -->
 
       <section
         id="reportsSection"
         class="app-section hidden"
       >
 
-        <div class="section-header">
+        <div class="page-heading">
 
           <div>
-            <span class="section-kicker">ANÁLISE</span>
-            <h1>Relatórios</h1>
-            <p>Entenda melhor para onde seu dinheiro está indo.</p>
-          </div>
 
-        </div>
+            <span class="section-kicker">
+              ANÁLISE
+            </span>
 
-
-        <div class="summary-grid report-summary">
-
-          <div class="summary-card">
-
-            <div class="summary-icon">
-              📈
-            </div>
-
-            <div>
-              <span>Total de entradas</span>
-              <strong id="reportIncome">R$ 0,00</strong>
-            </div>
-
-          </div>
-
-
-          <div class="summary-card">
-
-            <div class="summary-icon">
-              📉
-            </div>
-
-            <div>
-              <span>Total de saídas</span>
-              <strong id="reportExpense">R$ 0,00</strong>
-            </div>
-
-          </div>
-
-
-          <div class="summary-card">
-
-            <div class="summary-icon">
-              💰
-            </div>
-
-            <div>
-              <span>Saldo</span>
-              <strong id="reportBalance">R$ 0,00</strong>
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="dashboard-grid">
-
-          <div class="panel">
-
-            <div class="panel-header">
-              <div>
-                <span class="section-kicker">DISTRIBUIÇÃO</span>
-                <h2>Gastos por categoria</h2>
-              </div>
-            </div>
-
-            <div class="chart-container">
-              <canvas id="categoryChart"></canvas>
-            </div>
-
-          </div>
-
-
-          <div class="panel">
-
-            <div class="panel-header">
-              <div>
-                <span class="section-kicker">ANÁLISE</span>
-                <h2>Análise por categoria</h2>
-              </div>
-            </div>
-
-            <div id="reportCategoryAnalysis">
-              <div class="empty-state">
-                <div class="empty-icon">📄</div>
-                <h3>Análise por categoria</h3>
-                <p>
-                  Cadastre lançamentos para visualizar sua análise.
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           PREMIUM
-      ================================================== -->
-
-      <section
-        id="premiumSection"
-        class="app-section hidden"
-      >
-
-        <div class="premium-heading">
-
-          <span class="section-kicker">
-            ⭐ CONTROLES PREMIUM
-          </span>
-
-          <h1>Tenha mais controle sobre seu dinheiro.</h1>
-
-          <p>
-            Recursos inteligentes para ajudar você a organizar,
-            analisar e melhorar sua vida financeira.
-          </p>
-
-        </div>
-
-
-        <div class="premium-card">
-
-          <div class="premium-card-header">
-
-            <div>
-              <span class="premium-badge">
-                ⭐ PREMIUM
-              </span>
-
-              <h2>ControleS Premium</h2>
-
-              <p>
-                Mais inteligência para suas finanças.
-              </p>
-            </div>
-
-            <div class="premium-price">
-              <strong>R$ 24,99</strong>
-              <span>/ mês</span>
-            </div>
-
-          </div>
-
-
-          <div class="premium-grid">
-
-            <div class="premium-feature">
-              <span>📑</span>
-              <div>
-                <strong>Gráfico de distribuição</strong>
-                <p>Visualize como seus gastos estão distribuídos.</p>
-              </div>
-            </div>
-
-
-            <div class="premium-feature">
-              <span>📄</span>
-              <div>
-                <strong>Análise por categoria</strong>
-                <p>Descubra onde seu dinheiro está sendo gasto.</p>
-              </div>
-            </div>
-
-
-            <div class="premium-feature">
-              <span>⏳</span>
-              <div>
-                <strong>Previsão do fim do mês</strong>
-                <p>Tenha uma estimativa do seu saldo futuro.</p>
-              </div>
-            </div>
-
-
-            <div class="premium-feature">
-              <span>🎯</span>
-              <div>
-                <strong>Metas financeiras</strong>
-                <p>Crie objetivos e acompanhe seu progresso.</p>
-              </div>
-            </div>
-
-
-            <div class="premium-feature">
-              <span>🚨</span>
-              <div>
-                <strong>Alertas inteligentes</strong>
-                <p>Receba avisos importantes sobre seus gastos.</p>
-              </div>
-            </div>
-
-
-            <div class="premium-feature">
-              <span>💡</span>
-              <div>
-                <strong>Desafios de economia</strong>
-                <p>Transforme economia em metas alcançáveis.</p>
-              </div>
-            </div>
-
-
-            <div class="premium-feature">
-              <span>🧠</span>
-              <div>
-                <strong>ControleS Inteligência</strong>
-                <p>Insights para ajudar nas suas decisões financeiras.</p>
-              </div>
-            </div>
-
-
-            <div class="premium-feature">
-              <span>🔐</span>
-              <div>
-                <strong>Área Premium protegida</strong>
-                <p>Recursos exclusivos para assinantes.</p>
-              </div>
-            </div>
-
-          </div>
-
-
-          <div class="premium-action">
-
-            <button
-              id="activatePremiumBtn"
-              class="btn-primary"
-              type="button"
-            >
-              ⭐ Testar Premium grátis por 7 dias
-            </button>
+            <h1>
+              Relatórios
+            </h1>
 
             <p>
-              Depois do período de teste, você poderá escolher seu plano.
+              Entenda melhor para onde seu dinheiro está indo.
             </p>
 
           </div>
 
         </div>
 
+
+        <!-- RESUMO DO RELATÓRIO -->
+
+        <div class="summary-grid">
+
+          <div class="summary-card">
+
+            <div class="summary-card-top">
+
+              <div>
+                <span>Entradas</span>
+
+                <strong id="reportIncome">
+                  R$ 0,00
+                </strong>
+              </div>
+
+              <div class="summary-icon">
+                ↗
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="summary-card expense-card">
+
+            <div class="summary-card-top">
+
+              <div>
+                <span>Saídas</span>
+
+                <strong id="reportExpense">
+                  R$ 0,00
+                </strong>
+              </div>
+
+              <div class="summary-icon">
+                ↘
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="summary-card">
+
+            <div class="summary-card-top">
+
+              <div>
+                <span>Saldo</span>
+
+                <strong id="reportBalance">
+                  R$ 0,00
+                </strong>
+              </div>
+
+              <div class="summary-icon">
+                💰
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="reports-grid">
+
+          <!-- DISTRIBUIÇÃO -->
+
+          <div class="content-card">
+
+            <div class="card-heading">
+
+              <div>
+
+                <span class="section-kicker">
+                  DISTRIBUIÇÃO
+                </span>
+
+                <h2>
+                  Gastos por categoria
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <div class="chart-container small-chart">
+
+              <canvas id="categoryChart"></canvas>
+
+            </div>
+
+          </div>
+
+
+          <!-- ANÁLISE -->
+
+          <div class="content-card">
+
+            <div class="card-heading">
+
+              <div>
+
+                <span class="section-kicker">
+                  ANÁLISE
+                </span>
+
+                <h2>
+                  Resumo financeiro
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <div class="report-list">
+
+              <div class="report-row">
+
+                <span>
+                  Total de entradas
+                </span>
+
+                <strong id="reportIncome">
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+
+              <div class="report-row">
+
+                <span>
+                  Total de saídas
+                </span>
+
+                <strong id="reportExpense">
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+
+              <div class="report-row report-total">
+
+                <span>
+                  Saldo final
+                </span>
+
+                <strong id="reportBalance">
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- GRÁFICO DE DISTRIBUIÇÃO PREMIUM -->
+
+        <div class="content-card">
+
+          <div class="card-heading">
+
+            <div>
+
+              <span class="section-kicker">
+                PREMIUM
+              </span>
+
+              <h2>
+                Análise detalhada por categoria
+              </h2>
+
+            </div>
+
+          </div>
+
+          <div
+            id="premiumReportContent"
+            class="report-list"
+          >
+
+            <div class="report-row">
+
+              <span>
+                📑 Gráfico de distribuição
+              </span>
+
+              <strong>
+                Premium
+              </strong>
+
+            </div>
+
+            <div class="report-row">
+
+              <span>
+                📄 Análise por categoria
+              </span>
+
+              <strong>
+                Premium
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </section>
+
+
+      <!-- =====================================================
+           PREMIUM
+      ====================================================== -->
+
+      <section
+        id="premiumSection"
+        class="app-section hidden"
+      >
+
+        <div class="page-heading">
+
+          <div>
+
+            <span class="section-kicker">
+              CONTROLES+
+            </span>
+
+            <h1>
+              ControleS Premium
+            </h1>
+
+            <p>
+              Tenha uma visão mais inteligente e completa das suas finanças.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="large-premium-card">
+
+          <div class="premium-content">
+
+            <span class="premium-badge">
+              ⭐ PREMIUM
+            </span>
+
+            <h2>
+              Seu dinheiro.
+              <br>
+              Mais inteligente.
+            </h2>
+
+            <p>
+              Desbloqueie ferramentas avançadas para entender,
+              planejar e melhorar sua vida financeira.
+            </p>
+
+
+            <div class="premium-features">
+
+              <div>
+                <span>📑</span>
+                <strong>
+                  Gráfico de distribuição
+                </strong>
+              </div>
+
+              <div>
+                <span>📄</span>
+                <strong>
+                  Análise por categoria
+                </strong>
+              </div>
+
+              <div>
+                <span>⏳</span>
+                <strong>
+                  Previsão do fim do mês
+                </strong>
+              </div>
+
+              <div>
+                <span>🎯</span>
+                <strong>
+                  Metas financeiras
+                </strong>
+              </div>
+
+              <div>
+                <span>🚨</span>
+                <strong>
+                  Alertas inteligentes
+                </strong>
+              </div>
+
+              <div>
+                <span>💡</span>
+                <strong>
+                  Desafios de economia
+                </strong>
+              </div>
+
+              <div>
+                <span>🧠</span>
+                <strong>
+                  ControleS Inteligência
+                </strong>
+              </div>
+
+            </div>
+
+
+            <div class="premium-price">
+
+              <span>
+                Por apenas
+              </span>
+
+              <strong>
+                R$ 24,99
+              </strong>
+
+              <span>
+                /mês
+              </span>
+
+            </div>
+
+
+            <button
+              id="activatePremiumBtn"
+              class="btn-primary"
+              type="button"
+            >
+              ⭐ Ativar Premium
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
 
     </main>
 
   </div>
 
 
-  <!-- =====================================================
+  <!-- =========================================================
        MODAL — LANÇAMENTO
-  ====================================================== -->
+  ========================================================== -->
 
   <div
     id="transactionModal"
     class="modal hidden"
   >
 
-    <div class="modal-overlay" data-close-modal="transactionModal"></div>
+    <div class="modal-overlay"></div>
 
     <div class="modal-card">
 
       <div class="modal-header">
 
         <div>
-          <span class="section-kicker">FINANÇAS</span>
-          <h2>Novo lançamento</h2>
+
+          <span class="section-kicker">
+            FINANÇAS
+          </span>
+
+          <h2>
+            Novo lançamento
+          </h2>
+
         </div>
 
         <button
@@ -965,41 +1241,45 @@
         </div>
 
 
-        <div class="input-group">
+        <div class="form-row">
 
-          <label for="transactionAmount">
-            Valor
-          </label>
+          <div class="input-group">
 
-          <input
-            type="number"
-            id="transactionAmount"
-            placeholder="0,00"
-            min="0"
-            step="0.01"
-            required
-          >
+            <label for="transactionAmount">
+              Valor
+            </label>
 
-        </div>
+            <input
+              type="number"
+              id="transactionAmount"
+              placeholder="0,00"
+              min="0"
+              step="0.01"
+              required
+            >
+
+          </div>
 
 
-        <div class="input-group">
+          <div class="input-group">
 
-          <label for="transactionType">
-            Tipo
-          </label>
+            <label for="transactionType">
+              Tipo
+            </label>
 
-          <select id="transactionType" required>
+            <select id="transactionType" required>
 
-            <option value="expense">
-              Saída
-            </option>
+              <option value="income">
+                Entrada
+              </option>
 
-            <option value="income">
-              Entrada
-            </option>
+              <option value="expense">
+                Saída
+              </option>
 
-          </select>
+            </select>
+
+          </div>
 
         </div>
 
@@ -1010,12 +1290,13 @@
             Categoria
           </label>
 
-          <input
-            type="text"
-            id="transactionCategory"
-            placeholder="Ex.: Alimentação"
-            maxlength="80"
-          >
+          <select id="transactionCategory" required>
+
+            <option value="">
+              Selecione uma categoria
+            </option>
+
+          </select>
 
         </div>
 
@@ -1038,7 +1319,6 @@
         <div
           id="transactionMessage"
           class="form-message hidden"
-          role="status"
         ></div>
 
 
@@ -1068,24 +1348,31 @@
   </div>
 
 
-  <!-- =====================================================
+  <!-- =========================================================
        MODAL — CATEGORIA
-  ====================================================== -->
+  ========================================================== -->
 
   <div
     id="categoryModal"
     class="modal hidden"
   >
 
-    <div class="modal-overlay" data-close-modal="categoryModal"></div>
+    <div class="modal-overlay"></div>
 
     <div class="modal-card">
 
       <div class="modal-header">
 
         <div>
-          <span class="section-kicker">ORGANIZAÇÃO</span>
-          <h2>Nova categoria</h2>
+
+          <span class="section-kicker">
+            ORGANIZAÇÃO
+          </span>
+
+          <h2>
+            Nova categoria
+          </h2>
+
         </div>
 
         <button
@@ -1112,7 +1399,7 @@
             type="text"
             id="categoryName"
             placeholder="Ex.: Alimentação"
-            maxlength="80"
+            maxlength="60"
             required
           >
 
@@ -1122,7 +1409,6 @@
         <div
           id="categoryMessage"
           class="form-message hidden"
-          role="status"
         ></div>
 
 
@@ -1140,7 +1426,7 @@
             type="submit"
             class="btn-primary"
           >
-            Salvar categoria
+            Criar categoria
           </button>
 
         </div>
@@ -1152,24 +1438,31 @@
   </div>
 
 
-  <!-- =====================================================
+  <!-- =========================================================
        MODAL — META
-  ====================================================== -->
+  ========================================================== -->
 
   <div
     id="goalModal"
     class="modal hidden"
   >
 
-    <div class="modal-overlay" data-close-modal="goalModal"></div>
+    <div class="modal-overlay"></div>
 
     <div class="modal-card">
 
       <div class="modal-header">
 
         <div>
-          <span class="section-kicker">PLANEJAMENTO</span>
-          <h2>Nova meta financeira</h2>
+
+          <span class="section-kicker">
+            PLANEJAMENTO
+          </span>
+
+          <h2>
+            Nova meta financeira
+          </h2>
+
         </div>
 
         <button
@@ -1224,7 +1517,6 @@
         <div
           id="goalMessage"
           class="form-message hidden"
-          role="status"
         ></div>
 
 
@@ -1254,30 +1546,34 @@
   </div>
 
 
-  <!-- =====================================================
+  <!-- =========================================================
        MODAL — PREMIUM
-  ====================================================== -->
+  ========================================================== -->
 
   <div
     id="premiumModal"
     class="modal hidden"
   >
 
-    <div class="modal-overlay" data-close-modal="premiumModal"></div>
+    <div class="modal-overlay"></div>
 
     <div
       id="premiumModalCard"
-      class="modal-card premium-modal-card"
+      class="modal-card premium-modal-content"
     >
 
       <div class="modal-header">
 
         <div>
+
           <span class="premium-badge">
             ⭐ PREMIUM
           </span>
 
-          <h2>ControleS Premium</h2>
+          <h2>
+            Ative seu Premium
+          </h2>
+
         </div>
 
         <button
@@ -1292,26 +1588,62 @@
       </div>
 
 
-      <div class="premium-modal-content">
+      <p>
+        Comece seu teste gratuito de 7 dias e tenha acesso
+        aos recursos Premium do ControleS.
+      </p>
 
-        <h3>Comece seu teste gratuito</h3>
 
-        <p>
-          Aproveite 7 dias do ControleS Premium gratuitamente
-          e tenha acesso aos recursos avançados.
-        </p>
+      <div class="premium-features">
 
-        <ul class="premium-modal-list">
+        <div>
+          <span>📑</span>
+          <strong>
+            Gráfico de distribuição
+          </strong>
+        </div>
 
-          <li>📑 Gráficos avançados</li>
-          <li>📄 Análise por categoria</li>
-          <li>⏳ Previsão do fim do mês</li>
-          <li>🎯 Metas financeiras</li>
-          <li>🚨 Alertas inteligentes</li>
-          <li>💡 Desafios de economia</li>
-          <li>🧠 ControleS Inteligência</li>
+        <div>
+          <span>📄</span>
+          <strong>
+            Análise por categoria
+          </strong>
+        </div>
 
-        </ul>
+        <div>
+          <span>⏳</span>
+          <strong>
+            Previsão do fim do mês
+          </strong>
+        </div>
+
+        <div>
+          <span>🎯</span>
+          <strong>
+            Metas financeiras
+          </strong>
+        </div>
+
+        <div>
+          <span>🚨</span>
+          <strong>
+            Alertas inteligentes
+          </strong>
+        </div>
+
+        <div>
+          <span>💡</span>
+          <strong>
+            Desafios de economia
+          </strong>
+        </div>
+
+        <div>
+          <span>🧠</span>
+          <strong>
+            ControleS Inteligência
+          </strong>
+        </div>
 
       </div>
 
@@ -1319,7 +1651,6 @@
       <div
         id="premiumMessage"
         class="form-message hidden"
-        role="status"
       ></div>
 
 
@@ -1334,11 +1665,11 @@
         </button>
 
         <button
-          id="confirmPremiumBtn"
           type="button"
+          id="confirmPremiumBtn"
           class="btn-primary"
         >
-          ⭐ Ativar teste grátis
+          Começar 7 dias grátis
         </button>
 
       </div>
@@ -1348,9 +1679,21 @@
   </div>
 
 
-  <!-- =====================================================
-       JAVASCRIPT
-  ====================================================== -->
+  <!-- =========================================================
+       TOAST
+  ========================================================== -->
+
+  <div
+    id="toast"
+    class="toast hidden"
+    role="status"
+    aria-live="polite"
+  ></div>
+
+
+  <!-- =========================================================
+       JAVASCRIPT DO APP
+  ========================================================== -->
 
   <script src="app.js"></script>
 
