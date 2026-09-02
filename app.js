@@ -1,12 +1,11 @@
 ```javascript
 /* =========================================================
    CONTROLES — APP.JS
-   Supabase + Login/Cadastro + Dashboard + Premium
+   Supabase + Login + Cadastro + Dashboard + Premium
 ========================================================= */
 
 const SUPABASE_URL = "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
 const SUPABASE_KEY = "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
-const SUPABASE_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
 let supabaseClient = null;
 let currentUser = null;
@@ -23,15 +22,18 @@ let reportCategoryChart = null;
 let selectedTransactionType = "income";
 let enteringApp = false;
 
+
 /* =========================================================
    INICIALIZAÇÃO
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", async function () {
+
+    console.log("ControleS iniciando...");
 
     try {
 
-        await loadSupabase();
+        await initializeSupabase();
 
         setupEvents();
 
@@ -40,6 +42,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadTheme();
 
         await checkSession();
+
+        console.log("ControleS iniciado com sucesso.");
 
     } catch (error) {
 
@@ -57,72 +61,29 @@ document.addEventListener("DOMContentLoaded", async () => {
    SUPABASE
 ========================================================= */
 
-function loadSupabase() {
+async function initializeSupabase() {
 
-    return new Promise((resolve, reject) => {
+    if (!window.supabase) {
 
-        if (window.supabase) {
+        throw new Error(
+            "Biblioteca do Supabase não foi carregada."
+        );
+    }
 
-            try {
+    supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
 
-                supabaseClient =
-                    window.supabase.createClient(
-                        SUPABASE_URL,
-                        SUPABASE_KEY
-                    );
+    if (!supabaseClient) {
 
-                resolve();
+        throw new Error(
+            "Não foi possível iniciar o Supabase."
+        );
+    }
 
-            } catch (error) {
-
-                reject(error);
-            }
-
-            return;
-        }
-
-        const script =
-            document.createElement("script");
-
-        script.src = SUPABASE_CDN;
-        script.async = true;
-
-        script.onload = () => {
-
-            try {
-
-                if (!window.supabase) {
-
-                    throw new Error(
-                        "Biblioteca do Supabase não carregou."
-                    );
-                }
-
-                supabaseClient =
-                    window.supabase.createClient(
-                        SUPABASE_URL,
-                        SUPABASE_KEY
-                    );
-
-                resolve();
-
-            } catch (error) {
-
-                reject(error);
-            }
-        };
-
-        script.onerror = () => {
-
-            reject(
-                new Error(
-                    "Não foi possível carregar o Supabase."
-                )
-            );
-        };
-
-        document.head.appendChild(script);
-    });
+    console.log("Supabase conectado.");
 }
 
 
@@ -131,6 +92,11 @@ function loadSupabase() {
 ========================================================= */
 
 function setupEvents() {
+
+    console.log("Configurando eventos...");
+
+
+    /* LOGIN */
 
     const loginForm =
         document.getElementById("loginForm");
@@ -141,15 +107,34 @@ function setupEvents() {
             "submit",
             handleLogin
         );
+
+        console.log("Login conectado.");
     }
 
-    /*
-       Cria automaticamente o botão
-       "Criar minha conta".
-    */
 
-    createRegisterButton();
+    /* CADASTRO */
 
+    const registerBtn =
+        document.getElementById("registerBtn");
+
+    if (registerBtn) {
+
+        registerBtn.addEventListener(
+            "click",
+            handleRegister
+        );
+
+        console.log("Cadastro conectado.");
+
+    } else {
+
+        console.warn(
+            "Botão registerBtn não encontrado no HTML."
+        );
+    }
+
+
+    /* LOGOUT */
 
     document.getElementById("logoutBtn")
         ?.addEventListener(
@@ -158,12 +143,16 @@ function setupEvents() {
         );
 
 
+    /* TEMA */
+
     document.getElementById("themeBtn")
         ?.addEventListener(
             "click",
             toggleTheme
         );
 
+
+    /* EXPORTAR */
 
     document.getElementById("exportDataBtn")
         ?.addEventListener(
@@ -172,6 +161,8 @@ function setupEvents() {
         );
 
 
+    /* MENU MOBILE */
+
     document.getElementById("mobileMenuBtn")
         ?.addEventListener(
             "click",
@@ -179,12 +170,14 @@ function setupEvents() {
         );
 
 
+    /* NAVEGAÇÃO */
+
     document.querySelectorAll(".nav-item")
-        .forEach(button => {
+        .forEach(function (button) {
 
             button.addEventListener(
                 "click",
-                () => {
+                function () {
 
                     showSection(
                         button.dataset.section
@@ -194,18 +187,18 @@ function setupEvents() {
         });
 
 
+    /* BOTÕES COM DATA-SECTION */
+
     document.querySelectorAll("[data-section]")
-        .forEach(button => {
+        .forEach(function (button) {
 
             if (
-                !button.classList.contains(
-                    "nav-item"
-                )
+                !button.classList.contains("nav-item")
             ) {
 
                 button.addEventListener(
                     "click",
-                    () => {
+                    function () {
 
                         showSection(
                             button.dataset.section
@@ -215,6 +208,8 @@ function setupEvents() {
             }
         });
 
+
+    /* NOVA TRANSAÇÃO */
 
     document.getElementById(
         "openTransactionBtn"
@@ -240,35 +235,43 @@ function setupEvents() {
     );
 
 
+    /* MODAIS */
+
     document.querySelectorAll(
         ".modal-overlay"
-    ).forEach(overlay => {
+    ).forEach(function (overlay) {
 
         overlay.addEventListener(
             "click",
-            () => {
+            function () {
 
-                overlay
-                    .closest(".modal")
-                    ?.classList.add(
+                const modal =
+                    overlay.closest(".modal");
+
+                if (modal) {
+
+                    modal.classList.add(
                         "hidden"
                     );
+                }
             }
         );
     });
 
 
+    /* TIPO DA TRANSAÇÃO */
+
     document.querySelectorAll(
         ".type-option"
-    ).forEach(button => {
+    ).forEach(function (button) {
 
         button.addEventListener(
             "click",
-            () => {
+            function () {
 
                 document.querySelectorAll(
                     ".type-option"
-                ).forEach(item => {
+                ).forEach(function (item) {
 
                     item.classList.remove(
                         "active"
@@ -287,6 +290,8 @@ function setupEvents() {
     });
 
 
+    /* TRANSAÇÃO */
+
     document.getElementById(
         "transactionForm"
     )?.addEventListener(
@@ -294,6 +299,8 @@ function setupEvents() {
         saveTransaction
     );
 
+
+    /* FILTROS */
 
     document.getElementById(
         "searchInput"
@@ -319,6 +326,8 @@ function setupEvents() {
     );
 
 
+    /* PREMIUM */
+
     document.getElementById(
         "subscribePremiumBtn"
     )?.addEventListener(
@@ -326,6 +335,8 @@ function setupEvents() {
         activatePremium
     );
 
+
+    /* METAS */
 
     document.getElementById(
         "newGoalBtn"
@@ -339,7 +350,7 @@ function setupEvents() {
         "closeGoalModal"
     )?.addEventListener(
         "click",
-        () => {
+        function () {
 
             document.getElementById(
                 "goalModal"
@@ -358,6 +369,8 @@ function setupEvents() {
     );
 
 
+    /* ORÇAMENTOS */
+
     document.getElementById(
         "newBudgetBtn"
     )?.addEventListener(
@@ -370,7 +383,7 @@ function setupEvents() {
         "closeBudgetModal"
     )?.addEventListener(
         "click",
-        () => {
+        function () {
 
             document.getElementById(
                 "budgetModal"
@@ -389,6 +402,8 @@ function setupEvents() {
     );
 
 
+    /* SIMULADOR */
+
     document.getElementById(
         "simulateBtn"
     )?.addEventListener(
@@ -397,15 +412,17 @@ function setupEvents() {
     );
 
 
+    /* ESC FECHA MODAIS */
+
     document.addEventListener(
         "keydown",
-        event => {
+        function (event) {
 
             if (event.key === "Escape") {
 
                 document.querySelectorAll(
                     ".modal"
-                ).forEach(modal => {
+                ).forEach(function (modal) {
 
                     modal.classList.add(
                         "hidden"
@@ -413,68 +430,6 @@ function setupEvents() {
                 });
             }
         }
-    );
-}
-
-
-/* =========================================================
-   BOTÃO CRIAR CONTA
-========================================================= */
-
-function createRegisterButton() {
-
-    const form =
-        document.getElementById(
-            "loginForm"
-        );
-
-    if (!form) return;
-
-    if (
-        document.getElementById(
-            "registerBtn"
-        )
-    ) {
-        return;
-    }
-
-    const loginButton =
-        form.querySelector(
-            "button[type='submit']"
-        );
-
-    if (!loginButton) return;
-
-    const registerButton =
-        document.createElement(
-            "button"
-        );
-
-    registerButton.type = "button";
-
-    registerButton.id =
-        "registerBtn";
-
-    registerButton.className =
-        "btn-secondary";
-
-    registerButton.textContent =
-        "Criar minha conta";
-
-    registerButton.style.width =
-        "100%";
-
-    registerButton.style.marginTop =
-        "10px";
-
-    registerButton.addEventListener(
-        "click",
-        handleRegister
-    );
-
-    loginButton.insertAdjacentElement(
-        "afterend",
-        registerButton
     );
 }
 
@@ -494,20 +449,14 @@ async function checkSession() {
 
     try {
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .auth
-                .getSession();
+        const result =
+            await supabaseClient.auth.getSession();
 
-
-        if (error) {
+        if (result.error) {
 
             console.error(
                 "Erro ao verificar sessão:",
-                error
+                result.error
             );
 
             showLogin();
@@ -515,16 +464,15 @@ async function checkSession() {
             return;
         }
 
-
         currentUser =
-            data?.session?.user ||
+            result.data?.session?.user ||
             null;
 
 
         if (currentUser) {
 
             console.log(
-                "Usuário autenticado:",
+                "Sessão encontrada:",
                 currentUser.email
             );
 
@@ -536,32 +484,34 @@ async function checkSession() {
         }
 
 
-        supabaseClient
-            .auth
-            .onAuthStateChange(
-                (_event, session) => {
+        supabaseClient.auth.onAuthStateChange(
+            async function (event, session) {
 
-                    currentUser =
-                        session?.user ||
-                        null;
+                console.log(
+                    "Auth:",
+                    event
+                );
 
-                    if (
-                        _event ===
-                        "SIGNED_OUT"
-                    ) {
+                currentUser =
+                    session?.user ||
+                    null;
 
-                        currentUser =
-                            null;
 
-                        transactions = [];
-                        goals = [];
-                        budgets = [];
-                        subscription = null;
+                if (
+                    event === "SIGNED_OUT"
+                ) {
 
-                        showLogin();
-                    }
+                    currentUser = null;
+
+                    transactions = [];
+                    goals = [];
+                    budgets = [];
+                    subscription = null;
+
+                    showLogin();
                 }
-            );
+            }
+        );
 
     } catch (error) {
 
@@ -585,35 +535,55 @@ async function handleLogin(event) {
 
     event.preventDefault();
 
+    console.log("Botão Entrar acionado.");
+
+
     if (!supabaseClient) {
 
         alert(
-            "Supabase ainda não carregou. Tente novamente."
+            "O sistema ainda está carregando. Aguarde alguns segundos e tente novamente."
         );
 
         return;
     }
 
 
+    const emailInput =
+        document.getElementById("loginEmail");
+
+    const passwordInput =
+        document.getElementById("loginPassword");
+
+
     const email =
-        document.getElementById(
-            "loginEmail"
-        )?.value
-            .trim()
+        emailInput?.value
+            ?.trim()
             .toLowerCase();
 
 
     const password =
-        document.getElementById(
-            "loginPassword"
-        )?.value;
+        passwordInput?.value || "";
 
 
-    if (!email || !password) {
+    if (!email) {
 
         alert(
-            "Informe seu e-mail e sua senha."
+            "Digite seu e-mail."
         );
+
+        emailInput?.focus();
+
+        return;
+    }
+
+
+    if (!password) {
+
+        alert(
+            "Digite sua senha."
+        );
+
+        passwordInput?.focus();
 
         return;
     }
@@ -646,44 +616,27 @@ async function handleLogin(event) {
 
     try {
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .auth
-                .signInWithPassword({
+        const result =
+            await supabaseClient.auth.signInWithPassword({
 
-                    email,
+                email: email,
 
-                    password
-                });
+                password: password
+            });
 
 
-        if (error) {
+        if (result.error) {
 
             console.error(
                 "Erro no login:",
-                error
+                result.error
             );
 
             const message =
                 (
-                    error.message ||
+                    result.error.message ||
                     ""
                 ).toLowerCase();
-
-
-            if (
-                message.includes(
-                    "email not confirmed"
-                )
-            ) {
-
-                throw new Error(
-                    "Seu e-mail ainda não foi confirmado. Confirme o e-mail recebido e tente novamente."
-                );
-            }
 
 
             if (
@@ -698,12 +651,24 @@ async function handleLogin(event) {
             }
 
 
-            throw error;
+            if (
+                message.includes(
+                    "email not confirmed"
+                )
+            ) {
+
+                throw new Error(
+                    "Seu e-mail ainda não foi confirmado. Confirme o e-mail recebido e tente novamente."
+                );
+            }
+
+
+            throw result.error;
         }
 
 
         currentUser =
-            data?.user ||
+            result.data?.user ||
             null;
 
 
@@ -715,20 +680,25 @@ async function handleLogin(event) {
         }
 
 
+        console.log(
+            "Login realizado:",
+            currentUser.email
+        );
+
+
         await createProfileIfNeeded(
-            currentUser
-                .user_metadata
-                ?.full_name ||
+            currentUser.user_metadata?.full_name ||
             "Usuário"
         );
 
 
         await enterApp();
 
+
     } catch (error) {
 
         console.error(
-            "Erro de autenticação:",
+            "Erro no login:",
             error
         );
 
@@ -739,6 +709,7 @@ async function handleLogin(event) {
                 "Erro desconhecido."
             )
         );
+
 
     } finally {
 
@@ -757,36 +728,52 @@ async function handleLogin(event) {
    CADASTRO
 ========================================================= */
 
-async function handleRegister() {
+async function handleRegister(event) {
+
+    if (event) {
+        event.preventDefault();
+    }
+
+
+    console.log(
+        "Botão Criar minha conta acionado."
+    );
+
 
     if (!supabaseClient) {
 
         alert(
-            "Supabase ainda não carregou. Tente novamente."
+            "O sistema ainda está carregando. Aguarde alguns segundos e tente novamente."
         );
 
         return;
     }
 
 
+    const nameInput =
+        document.getElementById("loginName");
+
+    const emailInput =
+        document.getElementById("loginEmail");
+
+    const passwordInput =
+        document.getElementById("loginPassword");
+
+
     const name =
-        document.getElementById(
-            "loginName"
-        )?.value.trim();
+        nameInput?.value
+            ?.trim();
 
 
     const email =
-        document.getElementById(
-            "loginEmail"
-        )?.value
-            .trim()
+        emailInput?.value
+            ?.trim()
             .toLowerCase();
 
 
     const password =
-        document.getElementById(
-            "loginPassword"
-        )?.value;
+        passwordInput?.value ||
+        "";
 
 
     if (!name) {
@@ -795,9 +782,7 @@ async function handleRegister() {
             "Digite seu nome."
         );
 
-        document.getElementById(
-            "loginName"
-        )?.focus();
+        nameInput?.focus();
 
         return;
     }
@@ -809,9 +794,7 @@ async function handleRegister() {
             "Digite seu e-mail."
         );
 
-        document.getElementById(
-            "loginEmail"
-        )?.focus();
+        emailInput?.focus();
 
         return;
     }
@@ -823,9 +806,7 @@ async function handleRegister() {
             "Digite uma senha."
         );
 
-        document.getElementById(
-            "loginPassword"
-        )?.focus();
+        passwordInput?.focus();
 
         return;
     }
@@ -836,6 +817,8 @@ async function handleRegister() {
         alert(
             "A senha precisa ter pelo menos 6 caracteres."
         );
+
+        passwordInput?.focus();
 
         return;
     }
@@ -858,39 +841,39 @@ async function handleRegister() {
 
     try {
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .auth
-                .signUp({
+        console.log(
+            "Criando usuário no Supabase..."
+        );
 
-                    email,
 
-                    password,
+        const result =
+            await supabaseClient.auth.signUp({
 
-                    options: {
+                email: email,
 
-                        data: {
+                password: password,
 
-                            full_name:
-                                name
-                        }
+                options: {
+
+                    data: {
+
+                        full_name:
+                            name
                     }
-                });
+                }
+            });
 
 
-        if (error) {
+        if (result.error) {
 
             console.error(
                 "Erro no cadastro:",
-                error
+                result.error
             );
 
             const message =
                 (
-                    error.message ||
+                    result.error.message ||
                     ""
                 ).toLowerCase();
 
@@ -910,37 +893,39 @@ async function handleRegister() {
             }
 
 
-            throw error;
+            throw result.error;
         }
 
 
         currentUser =
-            data?.user ||
+            result.data?.user ||
             null;
 
 
         /*
-           Quando a confirmação de e-mail
-           está ativada no Supabase,
-           session será null.
+           CONFIRMAÇÃO DE E-MAIL ATIVADA
         */
 
-        if (!data?.session) {
+        if (!result.data?.session) {
 
             alert(
                 "🎉 Conta criada com sucesso!\n\n" +
-                "Confira seu e-mail para confirmar sua conta. " +
-                "Depois volte ao ControleS e clique em Entrar."
+                "Enviamos um e-mail de confirmação para você.\n\n" +
+                "Confirme seu e-mail e depois volte ao ControleS para entrar."
             );
 
             return;
         }
 
 
+        /*
+           CONFIRMAÇÃO DESATIVADA
+        */
+
         if (!currentUser) {
 
             throw new Error(
-                "A conta foi criada, mas não foi possível iniciar a sessão."
+                "Conta criada, mas não foi possível iniciar a sessão."
             );
         }
 
@@ -951,6 +936,7 @@ async function handleRegister() {
 
 
         await enterApp();
+
 
     } catch (error) {
 
@@ -966,6 +952,7 @@ async function handleRegister() {
                 "Erro desconhecido."
             )
         );
+
 
     } finally {
 
@@ -986,14 +973,14 @@ async function handleRegister() {
 
 async function createProfileIfNeeded(name) {
 
-    if (!currentUser) return;
+    if (!currentUser) {
+        return;
+    }
+
 
     try {
 
-        const {
-            data,
-            error
-        } =
+        const result =
             await supabaseClient
                 .from("profiles")
                 .select("*")
@@ -1004,22 +991,20 @@ async function createProfileIfNeeded(name) {
                 .maybeSingle();
 
 
-        if (error) {
+        if (result.error) {
 
             console.warn(
-                "Erro consultando profile:",
-                error
+                "Erro consultando perfil:",
+                result.error
             );
 
             return;
         }
 
 
-        if (!data) {
+        if (!result.data) {
 
-            const {
-                error: insertError
-            } =
+            const insertResult =
                 await supabaseClient
                     .from("profiles")
                     .insert({
@@ -1029,9 +1014,7 @@ async function createProfileIfNeeded(name) {
 
                         full_name:
                             name ||
-                            currentUser
-                                .user_metadata
-                                ?.full_name ||
+                            currentUser.user_metadata?.full_name ||
                             "Usuário",
 
                         account_type:
@@ -1042,11 +1025,11 @@ async function createProfileIfNeeded(name) {
                     });
 
 
-            if (insertError) {
+            if (insertResult.error) {
 
                 console.warn(
-                    "Erro criando profile:",
-                    insertError
+                    "Erro criando perfil:",
+                    insertResult.error
                 );
             }
         }
@@ -1054,7 +1037,7 @@ async function createProfileIfNeeded(name) {
     } catch (error) {
 
         console.warn(
-            "Erro no profile:",
+            "Erro no perfil:",
             error
         );
     }
@@ -1067,9 +1050,15 @@ async function createProfileIfNeeded(name) {
 
 async function enterApp() {
 
-    if (!currentUser) return;
+    if (!currentUser) {
+        return;
+    }
 
-    if (enteringApp) return;
+
+    if (enteringApp) {
+        return;
+    }
+
 
     enteringApp = true;
 
@@ -1092,9 +1081,11 @@ async function enterApp() {
 
         await loadUserData();
 
+
         showSection(
             "dashboard"
         );
+
 
     } catch (error) {
 
@@ -1103,15 +1094,11 @@ async function enterApp() {
             error
         );
 
-        /*
-           Mesmo se alguma tabela estiver
-           com problema, o aplicativo continua
-           visível.
-        */
 
         showSection(
             "dashboard"
         );
+
 
     } finally {
 
@@ -1147,7 +1134,10 @@ function showLogin() {
 
 async function logout() {
 
-    if (!supabaseClient) return;
+    if (!supabaseClient) {
+        return;
+    }
+
 
     if (
         !confirm(
@@ -1158,19 +1148,15 @@ async function logout() {
     }
 
 
-    const {
-        error
-    } =
-        await supabaseClient
-            .auth
-            .signOut();
+    const result =
+        await supabaseClient.auth.signOut();
 
 
-    if (error) {
+    if (result.error) {
 
         alert(
             "Erro ao sair: " +
-            error.message
+            result.error.message
         );
 
         return;
@@ -1189,18 +1175,18 @@ async function logout() {
 
 
 /* =========================================================
-   CARREGAR DADOS DO USUÁRIO
+   CARREGAR DADOS
 ========================================================= */
 
 async function loadUserData() {
 
-    if (!currentUser) return;
+    if (!currentUser) {
+        return;
+    }
 
 
     await createProfileIfNeeded(
-        currentUser
-            .user_metadata
-            ?.full_name ||
+        currentUser.user_metadata?.full_name ||
         "Usuário"
     );
 
@@ -1243,13 +1229,12 @@ async function loadUserData() {
 
 async function loadTransactions() {
 
-    if (!currentUser) return;
+    if (!currentUser) {
+        return;
+    }
 
 
-    const {
-        data,
-        error
-    } =
+    const result =
         await supabaseClient
             .from("transactions")
             .select("*")
@@ -1265,11 +1250,11 @@ async function loadTransactions() {
             );
 
 
-    if (error) {
+    if (result.error) {
 
         console.error(
             "Erro carregando transações:",
-            error
+            result.error
         );
 
         transactions = [];
@@ -1279,12 +1264,10 @@ async function loadTransactions() {
 
 
     transactions =
-        (
-            data ||
-            []
-        ).map(
-            normalizeTransaction
-        );
+        (result.data || [])
+            .map(
+                normalizeTransaction
+            );
 }
 
 
@@ -1427,9 +1410,7 @@ async function saveTransaction(event) {
 
     try {
 
-        const {
-            error
-        } =
+        const result =
             await supabaseClient
                 .from("transactions")
                 .insert({
@@ -1452,18 +1433,14 @@ async function saveTransaction(event) {
                         "",
 
                     note:
-                        frequency !==
-                        "once"
-
+                        frequency !== "once"
                             ? `Frequência: ${frequency}`
-
                             : ""
                 });
 
 
-        if (error) {
-
-            throw error;
+        if (result.error) {
+            throw result.error;
         }
 
 
@@ -1479,7 +1456,7 @@ async function saveTransaction(event) {
         document.querySelectorAll(
             ".type-option"
         ).forEach(
-            (item, index) => {
+            function (item, index) {
 
                 item.classList.toggle(
                     "active",
@@ -1499,6 +1476,7 @@ async function saveTransaction(event) {
             "Lançamento salvo com sucesso!"
         );
 
+
     } catch (error) {
 
         console.error(
@@ -1510,6 +1488,7 @@ async function saveTransaction(event) {
             "Erro ao salvar lançamento:\n\n" +
             error.message
         );
+
 
     } finally {
 
@@ -1530,7 +1509,9 @@ async function saveTransaction(event) {
 
 async function deleteTransaction(id) {
 
-    if (!currentUser) return;
+    if (!currentUser) {
+        return;
+    }
 
 
     if (
@@ -1542,9 +1523,7 @@ async function deleteTransaction(id) {
     }
 
 
-    const {
-        error
-    } =
+    const result =
         await supabaseClient
             .from("transactions")
             .delete()
@@ -1558,11 +1537,11 @@ async function deleteTransaction(id) {
             );
 
 
-    if (error) {
+    if (result.error) {
 
         alert(
             "Erro ao excluir: " +
-            error.message
+            result.error.message
         );
 
         return;
@@ -1582,13 +1561,14 @@ function updateDashboard() {
     const income =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "income"
+                function (t) {
+                    return t.type === "income";
+                }
             )
             .reduce(
-                (sum, t) =>
-                    sum + t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
@@ -1596,70 +1576,55 @@ function updateDashboard() {
     const expense =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "expense"
+                function (t) {
+                    return t.type === "expense";
+                }
             )
             .reduce(
-                (sum, t) =>
-                    sum + t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
 
     const balance =
-        income -
-        expense;
+        income - expense;
 
 
     const economy =
         income > 0
-            ? (
-                balance /
-                income
-            ) * 100
+            ? (balance / income) * 100
             : 0;
 
 
     setText(
         "balanceValue",
-        formatCurrency(
-            balance
-        )
+        formatCurrency(balance)
     );
 
 
     setText(
         "incomeValue",
-        formatCurrency(
-            income
-        )
+        formatCurrency(income)
     );
 
 
     setText(
         "expenseValue",
-        formatCurrency(
-            expense
-        )
+        formatCurrency(expense)
     );
 
 
     setText(
         "economyValue",
-        `${Math.max(
-            0,
-            economy
-        ).toFixed(1)}%`
+        `${Math.max(0, economy).toFixed(1)}%`
     );
 
 
     setText(
         "premiumEconomyValue",
-        `${Math.max(
-            0,
-            economy
-        ).toFixed(1)}%`
+        `${Math.max(0, economy).toFixed(1)}%`
     );
 
 
@@ -1681,7 +1646,9 @@ function renderRecentTransactions() {
         );
 
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
 
     const list =
@@ -1713,7 +1680,7 @@ function renderRecentTransactions() {
 
 
 /* =========================================================
-   TODAS TRANSAÇÕES
+   TODAS AS TRANSAÇÕES
 ========================================================= */
 
 function renderTransactions() {
@@ -1724,14 +1691,16 @@ function renderTransactions() {
         );
 
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
 
     const search =
         document.getElementById(
             "searchInput"
         )?.value
-            .toLowerCase()
+            ?.toLowerCase()
             .trim() ||
         "";
 
@@ -1752,7 +1721,7 @@ function renderTransactions() {
 
     const filtered =
         transactions.filter(
-            item => {
+            function (item) {
 
                 const description =
                     String(
@@ -1773,35 +1742,27 @@ function renderTransactions() {
                     (
                         !search ||
 
-                        description
-                            .includes(
-                                search
-                            ) ||
+                        description.includes(
+                            search
+                        ) ||
 
-                        itemCategory
-                            .includes(
-                                search
-                            )
+                        itemCategory.includes(
+                            search
+                        )
                     )
 
                     &&
 
                     (
-                        type ===
-                            "all" ||
-
-                        item.type ===
-                            type
+                        type === "all" ||
+                        item.type === type
                     )
 
                     &&
 
                     (
-                        category ===
-                            "all" ||
-
-                        item.category ===
-                            category
+                        category === "all" ||
+                        item.category === category
                     )
                 );
             }
@@ -1836,8 +1797,7 @@ function renderTransactions() {
 function transactionHTML(item) {
 
     const income =
-        item.type ===
-        "income";
+        item.type === "income";
 
 
     return `
@@ -1884,7 +1844,7 @@ function transactionHTML(item) {
             <button
                 class="transaction-delete"
                 type="button"
-                onclick="deleteTransaction('${escapeHTML(item.id)}')"
+                onclick="deleteTransaction('${String(item.id).replace(/'/g, "\\'")}')"
                 title="Excluir"
             >
                 ×
@@ -1907,7 +1867,9 @@ function updateCategoryFilter() {
         );
 
 
-    if (!select) return;
+    if (!select) {
+        return;
+    }
 
 
     const current =
@@ -1919,12 +1881,11 @@ function updateCategoryFilter() {
             ...new Set(
                 transactions
                     .map(
-                        t =>
-                            t.category
+                        function (t) {
+                            return t.category;
+                        }
                     )
-                    .filter(
-                        Boolean
-                    )
+                    .filter(Boolean)
             )
         ].sort();
 
@@ -1937,7 +1898,7 @@ function updateCategoryFilter() {
 
 
     categories.forEach(
-        category => {
+        function (category) {
 
             const option =
                 document.createElement(
@@ -1980,7 +1941,9 @@ function renderCategories() {
         );
 
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
 
     const totals = {};
@@ -1988,20 +1951,16 @@ function renderCategories() {
 
     transactions
         .filter(
-            t =>
-                t.type ===
-                "expense"
+            function (t) {
+                return t.type === "expense";
+            }
         )
         .forEach(
-            item => {
+            function (item) {
 
-                totals[
-                    item.category
-                ] =
+                totals[item.category] =
                     (
-                        totals[
-                            item.category
-                        ] ||
+                        totals[item.category] ||
                         0
                     ) +
                     item.amount;
@@ -2014,9 +1973,9 @@ function renderCategories() {
             totals
         )
         .sort(
-            (a, b) =>
-                b[1] -
-                a[1]
+            function (a, b) {
+                return b[1] - a[1];
+            }
         );
 
 
@@ -2028,9 +1987,7 @@ function renderCategories() {
             </div>
         `;
 
-        updateCategoryChart(
-            {}
-        );
+        updateCategoryChart({});
 
         return;
     }
@@ -2038,12 +1995,9 @@ function renderCategories() {
 
     const total =
         entries.reduce(
-            (
-                sum,
-                [, value]
-            ) =>
-                sum +
-                value,
+            function (sum, entry) {
+                return sum + entry[1];
+            },
             0
         );
 
@@ -2051,19 +2005,18 @@ function renderCategories() {
     container.innerHTML =
         entries
             .map(
-                (
-                    [
-                        category,
-                        value
-                    ]
-                ) => {
+                function (entry) {
+
+                    const category =
+                        entry[0];
+
+                    const value =
+                        entry[1];
+
 
                     const percentage =
                         total > 0
-                            ? (
-                                value /
-                                total
-                            ) * 100
+                            ? (value / total) * 100
                             : 0;
 
 
@@ -2129,22 +2082,21 @@ function updateFinanceChart() {
 
         financeChart.destroy();
 
-        financeChart =
-            null;
+        financeChart = null;
     }
 
 
     const income =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "income"
+                function (t) {
+                    return t.type === "income";
+                }
             )
             .reduce(
-                (sum, t) =>
-                    sum +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
@@ -2152,14 +2104,14 @@ function updateFinanceChart() {
     const expense =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "expense"
+                function (t) {
+                    return t.type === "expense";
+                }
             )
             .reduce(
-                (sum, t) =>
-                    sum +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
@@ -2219,9 +2171,7 @@ function updateFinanceChart() {
    GRÁFICO CATEGORIAS
 ========================================================= */
 
-function updateCategoryChart(
-    totals
-) {
+function updateCategoryChart(totals) {
 
     const canvas =
         document.getElementById(
@@ -2241,8 +2191,7 @@ function updateCategoryChart(
 
         categoryChart.destroy();
 
-        categoryChart =
-            null;
+        categoryChart = null;
     }
 
 
@@ -2335,14 +2284,14 @@ function renderReports() {
     const income =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "income"
+                function (t) {
+                    return t.type === "income";
+                }
             )
             .reduce(
-                (sum, t) =>
-                    sum +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
@@ -2350,29 +2299,25 @@ function renderReports() {
     const expense =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "expense"
+                function (t) {
+                    return t.type === "expense";
+                }
             )
             .reduce(
-                (sum, t) =>
-                    sum +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
 
     const balance =
-        income -
-        expense;
+        income - expense;
 
 
     const economy =
         income > 0
-            ? (
-                balance /
-                income
-            ) * 100
+            ? (balance / income) * 100
             : 0;
 
 
@@ -2387,9 +2332,7 @@ function renderReports() {
                 </strong>
 
                 <span>
-                    ${formatCurrency(
-                        income
-                    )}
+                    ${formatCurrency(income)}
                 </span>
 
             </div>
@@ -2401,9 +2344,7 @@ function renderReports() {
                 </strong>
 
                 <span>
-                    ${formatCurrency(
-                        expense
-                    )}
+                    ${formatCurrency(expense)}
                 </span>
 
             </div>
@@ -2415,9 +2356,7 @@ function renderReports() {
                 </strong>
 
                 <span>
-                    ${formatCurrency(
-                        balance
-                    )}
+                    ${formatCurrency(balance)}
                 </span>
 
             </div>
@@ -2445,15 +2384,11 @@ function renderReports() {
         window.Chart
     ) {
 
-        if (
-            reportCategoryChart
-        ) {
+        if (reportCategoryChart) {
 
-            reportCategoryChart
-                .destroy();
+            reportCategoryChart.destroy();
 
-            reportCategoryChart =
-                null;
+            reportCategoryChart = null;
         }
 
 
@@ -2462,20 +2397,16 @@ function renderReports() {
 
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "expense"
+                function (t) {
+                    return t.type === "expense";
+                }
             )
             .forEach(
-                t => {
+                function (t) {
 
-                    totals[
-                        t.category
-                    ] =
+                    totals[t.category] =
                         (
-                            totals[
-                                t.category
-                            ] ||
+                            totals[t.category] ||
                             0
                         ) +
                         t.amount;
@@ -2495,9 +2426,7 @@ function renderReports() {
             );
 
 
-        if (
-            labels.length
-        ) {
+        if (labels.length) {
 
             reportCategoryChart =
                 new Chart(
@@ -2550,13 +2479,12 @@ function renderReports() {
 
 async function loadGoals() {
 
-    if (!currentUser) return;
+    if (!currentUser) {
+        return;
+    }
 
 
-    const {
-        data,
-        error
-    } =
+    const result =
         await supabaseClient
             .from("goals")
             .select("*")
@@ -2567,17 +2495,16 @@ async function loadGoals() {
             .order(
                 "created_at",
                 {
-                    ascending:
-                        false
+                    ascending: false
                 }
             );
 
 
-    if (error) {
+    if (result.error) {
 
         console.error(
             "Erro carregando metas:",
-            error
+            result.error
         );
 
         goals = [];
@@ -2587,8 +2514,7 @@ async function loadGoals() {
 
 
     goals =
-        data ||
-        [];
+        result.data || [];
 }
 
 
@@ -2654,9 +2580,7 @@ async function saveGoal(event) {
     }
 
 
-    const {
-        error
-    } =
+    const result =
         await supabaseClient
             .from("goals")
             .insert({
@@ -2672,11 +2596,11 @@ async function saveGoal(event) {
             });
 
 
-    if (error) {
+    if (result.error) {
 
         alert(
             "Erro ao criar meta: " +
-            error.message
+            result.error.message
         );
 
         return;
@@ -2707,7 +2631,9 @@ function renderGoals() {
         );
 
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
 
     if (!goals.length) {
@@ -2725,7 +2651,7 @@ function renderGoals() {
     container.innerHTML =
         goals
             .map(
-                goal => {
+                function (goal) {
 
                     const target =
                         Number(
@@ -2743,15 +2669,10 @@ function renderGoals() {
 
                     const percentage =
                         target > 0
-
                             ? Math.min(
                                 100,
-                                (
-                                    saved /
-                                    target
-                                ) * 100
+                                (saved / target) * 100
                             )
-
                             : 0;
 
 
@@ -2767,21 +2688,15 @@ function renderGoals() {
                                 </strong>
 
                                 <small>
-                                    ${formatCurrency(
-                                        saved
-                                    )}
+                                    ${formatCurrency(saved)}
                                     de
-                                    ${formatCurrency(
-                                        target
-                                    )}
+                                    ${formatCurrency(target)}
                                 </small>
 
                             </div>
 
                             <span>
-                                ${percentage.toFixed(
-                                    0
-                                )}%
+                                ${percentage.toFixed(0)}%
                             </span>
 
                         </div>
@@ -2798,13 +2713,12 @@ function renderGoals() {
 
 async function loadBudgets() {
 
-    if (!currentUser) return;
+    if (!currentUser) {
+        return;
+    }
 
 
-    const {
-        data,
-        error
-    } =
+    const result =
         await supabaseClient
             .from("budgets")
             .select("*")
@@ -2815,17 +2729,16 @@ async function loadBudgets() {
             .order(
                 "created_at",
                 {
-                    ascending:
-                        false
+                    ascending: false
                 }
             );
 
 
-    if (error) {
+    if (result.error) {
 
         console.error(
             "Erro carregando orçamentos:",
-            error
+            result.error
         );
 
         budgets = [];
@@ -2835,8 +2748,7 @@ async function loadBudgets() {
 
 
     budgets =
-        data ||
-        [];
+        result.data || [];
 }
 
 
@@ -2895,9 +2807,9 @@ async function saveBudget(event) {
 
     const existing =
         budgets.find(
-            b =>
-                b.category ===
-                category
+            function (b) {
+                return b.category === category;
+            }
         );
 
 
@@ -2976,7 +2888,9 @@ function renderBudgets() {
         );
 
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
 
     if (!budgets.length) {
@@ -2994,26 +2908,28 @@ function renderBudgets() {
     container.innerHTML =
         budgets
             .map(
-                budget => {
+                function (budget) {
 
                     const spent =
                         transactions
                             .filter(
-                                t =>
+                                function (t) {
 
-                                    t.type ===
-                                        "expense" &&
+                                    return (
 
-                                    t.category ===
-                                        budget.category
+                                        t.type === "expense" &&
+
+                                        t.category ===
+                                            budget.category
+                                    );
+                                }
                             )
                             .reduce(
-                                (
-                                    sum,
-                                    t
-                                ) =>
-                                    sum +
-                                    t.amount,
+                                function (sum, t) {
+
+                                    return sum +
+                                        t.amount;
+                                },
                                 0
                             );
 
@@ -3027,12 +2943,7 @@ function renderBudgets() {
 
                     const percentage =
                         limit > 0
-
-                            ? (
-                                spent /
-                                limit
-                            ) * 100
-
+                            ? (spent / limit) * 100
                             : 0;
 
 
@@ -3048,21 +2959,15 @@ function renderBudgets() {
                                 </strong>
 
                                 <small>
-                                    ${formatCurrency(
-                                        spent
-                                    )}
+                                    ${formatCurrency(spent)}
                                     /
-                                    ${formatCurrency(
-                                        limit
-                                    )}
+                                    ${formatCurrency(limit)}
                                 </small>
 
                             </div>
 
                             <span>
-                                ${percentage.toFixed(
-                                    0
-                                )}%
+                                ${percentage.toFixed(0)}%
                             </span>
 
                         </div>
@@ -3074,24 +2979,20 @@ function renderBudgets() {
 
 
 /* =========================================================
-   PREMIUM / ASSINATURA
+   PREMIUM
 ========================================================= */
 
 async function loadSubscription() {
 
     if (!currentUser) {
 
-        subscription =
-            null;
+        subscription = null;
 
         return;
     }
 
 
-    const {
-        data,
-        error
-    } =
+    const result =
         await supabaseClient
             .from("subscriptions")
             .select("*")
@@ -3102,36 +3003,34 @@ async function loadSubscription() {
             .order(
                 "created_at",
                 {
-                    ascending:
-                        false
+                    ascending: false
                 }
             )
             .limit(1)
             .maybeSingle();
 
 
-    if (error) {
+    if (result.error) {
 
         console.warn(
             "Erro carregando assinatura:",
-            error
+            result.error
         );
 
-        subscription =
-            null;
+        subscription = null;
 
         return;
     }
 
 
     subscription =
-        data ||
+        result.data ||
         null;
 }
 
 
 /* =========================================================
-   ATIVAR PREMIUM — TESTE GRATUITO 7 DIAS
+   ATIVAR PREMIUM
 ========================================================= */
 
 async function activatePremium() {
@@ -3146,19 +3045,11 @@ async function activatePremium() {
     }
 
 
-    /*
-       Se já estiver Premium,
-       não cria outro teste.
-    */
-
     if (
         subscription &&
         (
-            subscription.status ===
-                "active" ||
-
-            subscription.status ===
-                "trial"
+            subscription.status === "active" ||
+            subscription.status === "trial"
         )
     ) {
 
@@ -3194,19 +3085,15 @@ async function activatePremium() {
         const end =
             new Date(
                 now.getTime() +
-                (
-                    7 *
-                    24 *
-                    60 *
-                    60 *
-                    1000
-                )
+                7 *
+                24 *
+                60 *
+                60 *
+                1000
             );
 
 
-        const {
-            error
-        } =
+        const result =
             await supabaseClient
                 .from("subscriptions")
                 .insert({
@@ -3237,14 +3124,12 @@ async function activatePremium() {
                 });
 
 
-        if (error) {
-
-            throw error;
+        if (result.error) {
+            throw result.error;
         }
 
 
         await loadSubscription();
-
 
         updateUserInterface();
 
@@ -3253,6 +3138,7 @@ async function activatePremium() {
             "🎉 Premium ativado com sucesso!\n\n" +
             "Seu período de teste gratuito é de 7 dias."
         );
+
 
     } catch (error) {
 
@@ -3263,11 +3149,9 @@ async function activatePremium() {
 
         alert(
             "Erro ao ativar Premium:\n\n" +
-            (
-                error.message ||
-                "Erro desconhecido."
-            )
+            error.message
         );
+
 
     } finally {
 
@@ -3283,7 +3167,7 @@ async function activatePremium() {
 
 
 /* =========================================================
-   ALERTAS PREMIUM
+   ALERTAS
 ========================================================= */
 
 function renderAlerts() {
@@ -3294,20 +3178,22 @@ function renderAlerts() {
         );
 
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
 
     const income =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "income"
+                function (t) {
+                    return t.type === "income";
+                }
             )
             .reduce(
-                (sum, t) =>
-                    sum +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
@@ -3315,44 +3201,36 @@ function renderAlerts() {
     const expense =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "expense"
+                function (t) {
+                    return t.type === "expense";
+                }
             )
             .reduce(
-                (sum, t) =>
-                    sum +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
 
-    const alerts = [];
+    if (!transactions.length) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                Cadastre lançamentos para receber alertas inteligentes.
+            </div>
+        `;
+
+        return;
+    }
 
 
     if (
-        !transactions.length
+        expense > income &&
+        income > 0
     ) {
 
-        alerts.push(`
-
-            <div class="empty-state">
-
-                Cadastre lançamentos para receber alertas inteligentes.
-
-            </div>
-
-        `);
-
-    } else if (
-        expense >
-            income &&
-        income >
-            0
-    ) {
-
-        alerts.push(`
-
+        container.innerHTML = `
             <div class="category-summary-item">
 
                 <strong>
@@ -3364,18 +3242,14 @@ function renderAlerts() {
                 </span>
 
             </div>
-
-        `);
+        `;
 
     } else if (
-        income >
-            0 &&
-        expense >=
-            income * 0.8
+        income > 0 &&
+        expense >= income * 0.8
     ) {
 
-        alerts.push(`
-
+        container.innerHTML = `
             <div class="category-summary-item">
 
                 <strong>
@@ -3387,13 +3261,11 @@ function renderAlerts() {
                 </span>
 
             </div>
-
-        `);
+        `;
 
     } else {
 
-        alerts.push(`
-
+        container.innerHTML = `
             <div class="category-summary-item">
 
                 <strong>
@@ -3405,13 +3277,8 @@ function renderAlerts() {
                 </span>
 
             </div>
-
-        `);
+        `;
     }
-
-
-    container.innerHTML =
-        alerts.join("");
 }
 
 
@@ -3427,7 +3294,9 @@ function renderMonthlyComparison() {
         );
 
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
 
     const now =
@@ -3444,7 +3313,7 @@ function renderMonthlyComparison() {
 
     const current =
         transactions.filter(
-            t => {
+            function (t) {
 
                 const d =
                     new Date(
@@ -3455,11 +3324,9 @@ function renderMonthlyComparison() {
 
                 return (
 
-                    d.getMonth() ===
-                        month &&
+                    d.getMonth() === month &&
 
-                    d.getFullYear() ===
-                        year
+                    d.getFullYear() === year
                 );
             }
         );
@@ -3468,14 +3335,14 @@ function renderMonthlyComparison() {
     const income =
         current
             .filter(
-                t =>
-                    t.type ===
-                    "income"
+                function (t) {
+                    return t.type === "income";
+                }
             )
             .reduce(
-                (s, t) =>
-                    s +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
@@ -3483,21 +3350,20 @@ function renderMonthlyComparison() {
     const expense =
         current
             .filter(
-                t =>
-                    t.type ===
-                    "expense"
+                function (t) {
+                    return t.type === "expense";
+                }
             )
             .reduce(
-                (s, t) =>
-                    s +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
 
     const balance =
-        income -
-        expense;
+        income - expense;
 
 
     container.innerHTML = `
@@ -3509,9 +3375,7 @@ function renderMonthlyComparison() {
             </strong>
 
             <span>
-                ${formatCurrency(
-                    income
-                )}
+                ${formatCurrency(income)}
             </span>
 
         </div>
@@ -3523,9 +3387,7 @@ function renderMonthlyComparison() {
             </strong>
 
             <span>
-                ${formatCurrency(
-                    expense
-                )}
+                ${formatCurrency(expense)}
             </span>
 
         </div>
@@ -3537,9 +3399,7 @@ function renderMonthlyComparison() {
             </strong>
 
             <span>
-                ${formatCurrency(
-                    balance
-                )}
+                ${formatCurrency(balance)}
             </span>
 
         </div>
@@ -3559,20 +3419,22 @@ function renderPremiumAnalysis() {
         );
 
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
 
     const income =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "income"
+                function (t) {
+                    return t.type === "income";
+                }
             )
             .reduce(
-                (s, t) =>
-                    s +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
@@ -3580,30 +3442,24 @@ function renderPremiumAnalysis() {
     const expense =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "expense"
+                function (t) {
+                    return t.type === "expense";
+                }
             )
             .reduce(
-                (s, t) =>
-                    s +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
 
-    if (
-        !transactions.length
-    ) {
+    if (!transactions.length) {
 
         container.innerHTML = `
-
             <div class="empty-state">
-
                 Adicione seus lançamentos para receber uma análise financeira.
-
             </div>
-
         `;
 
         return;
@@ -3611,27 +3467,20 @@ function renderPremiumAnalysis() {
 
 
     const balance =
-        income -
-        expense;
+        income - expense;
 
 
     let message;
 
 
-    if (
-        balance <
-        0
-    ) {
+    if (balance < 0) {
 
         message =
             "Suas despesas estão acima das receitas. O ideal é revisar os maiores gastos e reduzir despesas não essenciais.";
 
     } else if (
-        income >
-            0 &&
-        expense >
-            income *
-            0.8
+        income > 0 &&
+        expense > income * 0.8
     ) {
 
         message =
@@ -3645,7 +3494,6 @@ function renderPremiumAnalysis() {
 
 
     container.innerHTML = `
-
         <div class="category-summary-item">
 
             <strong>
@@ -3653,9 +3501,7 @@ function renderPremiumAnalysis() {
             </strong>
 
             <span>
-                ${escapeHTML(
-                    message
-                )}
+                ${escapeHTML(message)}
             </span>
 
         </div>
@@ -3675,20 +3521,22 @@ function updateHealthStatus() {
         );
 
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
 
     const income =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "income"
+                function (t) {
+                    return t.type === "income";
+                }
             )
             .reduce(
-                (s, t) =>
-                    s +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
@@ -3696,22 +3544,19 @@ function updateHealthStatus() {
     const expense =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "expense"
+                function (t) {
+                    return t.type === "expense";
+                }
             )
             .reduce(
-                (s, t) =>
-                    s +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
 
-    if (
-        !income &&
-        !expense
-    ) {
+    if (!income && !expense) {
 
         container.innerHTML =
             "Cadastre lançamentos para calcular sua saúde financeira.";
@@ -3722,23 +3567,16 @@ function updateHealthStatus() {
 
     const ratio =
         income > 0
-            ? expense /
-                income
+            ? expense / income
             : 999;
 
 
-    if (
-        ratio >
-        1
-    ) {
+    if (ratio > 1) {
 
         container.innerHTML =
             "🔴 Situação crítica: os gastos estão acima das receitas.";
 
-    } else if (
-        ratio >
-        0.8
-    ) {
+    } else if (ratio > 0.8) {
 
         container.innerHTML =
             "🟡 Atenção: sua margem de economia está baixa.";
@@ -3771,13 +3609,14 @@ function simulateExpense() {
         );
 
 
-    if (!result) return;
+    if (!result) {
+        return;
+    }
 
 
     if (
         !amount ||
-        amount <=
-            0
+        amount <= 0
     ) {
 
         result.textContent =
@@ -3790,14 +3629,14 @@ function simulateExpense() {
     const income =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "income"
+                function (t) {
+                    return t.type === "income";
+                }
             )
             .reduce(
-                (s, t) =>
-                    s +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
@@ -3805,26 +3644,24 @@ function simulateExpense() {
     const expense =
         transactions
             .filter(
-                t =>
-                    t.type ===
-                    "expense"
+                function (t) {
+                    return t.type === "expense";
+                }
             )
             .reduce(
-                (s, t) =>
-                    s +
-                    t.amount,
+                function (sum, t) {
+                    return sum + t.amount;
+                },
                 0
             );
 
 
     const balance =
-        income -
-        expense;
+        income - expense;
 
 
     const newBalance =
-        balance -
-        amount;
+        balance - amount;
 
 
     result.innerHTML = `
@@ -3833,9 +3670,7 @@ function simulateExpense() {
             Saldo atual:
         </strong>
 
-        ${formatCurrency(
-            balance
-        )}
+        ${formatCurrency(balance)}
 
         <br><br>
 
@@ -3843,39 +3678,33 @@ function simulateExpense() {
             Após a nova despesa:
         </strong>
 
-        ${formatCurrency(
-            newBalance
-        )}
+        ${formatCurrency(newBalance)}
     `;
 }
 
 
 /* =========================================================
-   INTERFACE DO USUÁRIO
+   INTERFACE
 ========================================================= */
 
 async function updateUserInterface() {
 
-    if (!currentUser) return;
+    if (!currentUser) {
+        return;
+    }
 
 
     let name =
-        currentUser
-            .user_metadata
-            ?.full_name ||
+        currentUser.user_metadata?.full_name ||
         "Usuário";
 
 
     try {
 
-        const {
-            data
-        } =
+        const result =
             await supabaseClient
                 .from("profiles")
-                .select(
-                    "full_name"
-                )
+                .select("full_name")
                 .eq(
                     "id",
                     currentUser.id
@@ -3883,12 +3712,10 @@ async function updateUserInterface() {
                 .maybeSingle();
 
 
-        if (
-            data?.full_name
-        ) {
+        if (result.data?.full_name) {
 
             name =
-                data.full_name;
+                result.data.full_name;
         }
 
     } catch (error) {
@@ -3930,11 +3757,8 @@ async function updateUserInterface() {
     const isPremium =
         subscription &&
         (
-            subscription.status ===
-                "active" ||
-
-            subscription.status ===
-                "trial"
+            subscription.status === "active" ||
+            subscription.status === "trial"
         );
 
 
@@ -3955,17 +3779,17 @@ async function updateUserInterface() {
    NAVEGAÇÃO
 ========================================================= */
 
-function showSection(
-    section
-) {
+function showSection(section) {
 
     document.querySelectorAll(
         ".section"
     ).forEach(
-        item =>
+        function (item) {
+
             item.classList.add(
                 "hidden"
-            )
+            );
+        }
     );
 
 
@@ -3986,7 +3810,7 @@ function showSection(
     document.querySelectorAll(
         ".nav-item"
     ).forEach(
-        item => {
+        function (item) {
 
             item.classList.toggle(
                 "active",
@@ -4020,9 +3844,7 @@ function showSection(
     setText(
         "pageTitle",
 
-        titles[
-            section
-        ] ||
+        titles[section] ||
         "Dashboard"
     );
 
@@ -4035,8 +3857,7 @@ function showSection(
 
 
     if (
-        section ===
-        "premium"
+        section === "premium"
     ) {
 
         updateHealthStatus();
@@ -4089,10 +3910,7 @@ function loadTheme() {
         );
 
 
-    if (
-        theme ===
-        "dark"
-    ) {
+    if (theme === "dark") {
 
         document.body.classList.add(
             "dark-mode"
@@ -4113,7 +3931,9 @@ function openTransactionModal() {
         );
 
 
-    if (!modal) return;
+    if (!modal) {
+        return;
+    }
 
 
     modal.classList.remove(
@@ -4177,7 +3997,9 @@ function setCurrentDate() {
         );
 
 
-    if (!element) return;
+    if (!element) {
+        return;
+    }
 
 
     const date =
@@ -4206,14 +4028,12 @@ function setCurrentDate() {
 
 
 /* =========================================================
-   EXPORTAR DADOS
+   EXPORTAR
 ========================================================= */
 
 function exportData() {
 
-    if (
-        !transactions.length
-    ) {
+    if (!transactions.length) {
 
         alert(
             "Não existem lançamentos para exportar."
@@ -4226,8 +4046,7 @@ function exportData() {
     const data = {
 
         exported_at:
-            new Date()
-                .toISOString(),
+            new Date().toISOString(),
 
         user_id:
             currentUser?.id ||
@@ -4300,10 +4119,7 @@ function exportData() {
    UTILITÁRIOS
 ========================================================= */
 
-function setText(
-    id,
-    value
-) {
+function setText(id, value) {
 
     const element =
         document.getElementById(
@@ -4319,13 +4135,10 @@ function setText(
 }
 
 
-function formatCurrency(
-    value
-) {
+function formatCurrency(value) {
 
     return Number(
-        value ||
-        0
+        value || 0
     ).toLocaleString(
         "pt-BR",
         {
@@ -4340,24 +4153,19 @@ function formatCurrency(
 }
 
 
-function formatDate(
-    date
-) {
+function formatDate(date) {
 
-    if (!date) return "";
+    if (!date) {
+        return "";
+    }
 
 
     const parts =
-        String(
-            date
-        ).split(
-            "-"
-        );
+        String(date).split("-");
 
 
     if (
-        parts.length ===
-        3
+        parts.length === 3
     ) {
 
         return (
@@ -4372,13 +4180,10 @@ function formatDate(
 }
 
 
-function escapeHTML(
-    value
-) {
+function escapeHTML(value) {
 
     return String(
-        value ??
-        ""
+        value ?? ""
     )
         .replace(
             /&/g,
@@ -4401,11 +4206,4 @@ function escapeHTML(
             "&#039;"
         );
 }
-
-
-/* =========================================================
-   INICIAR TEMA
-========================================================= */
-
-loadTheme();
 ```
