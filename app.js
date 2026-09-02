@@ -1,5 +1,6 @@
+```javascript
 /* =========================================================
-   CONTROLES — APP.JS DEFINITIVO
+   CONTROLES — APP.JS
    Supabase + Login/Cadastro + Dashboard + Premium
 ========================================================= */
 
@@ -27,50 +28,73 @@ let enteringApp = false;
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", async () => {
+
     try {
+
         await loadSupabase();
+
         setupEvents();
+
         setCurrentDate();
         setDefaultDate();
+        loadTheme();
+
         await checkSession();
+
     } catch (error) {
-        console.error("Erro na inicialização:", error);
+
+        console.error(
+            "Erro na inicialização:",
+            error
+        );
+
         showLogin();
     }
 });
+
 
 /* =========================================================
    SUPABASE
 ========================================================= */
 
 function loadSupabase() {
+
     return new Promise((resolve, reject) => {
 
         if (window.supabase) {
+
             try {
-                supabaseClient = window.supabase.createClient(
-                    SUPABASE_URL,
-                    SUPABASE_KEY
-                );
+
+                supabaseClient =
+                    window.supabase.createClient(
+                        SUPABASE_URL,
+                        SUPABASE_KEY
+                    );
 
                 resolve();
+
             } catch (error) {
+
                 reject(error);
             }
 
             return;
         }
 
-        const script = document.createElement("script");
+        const script =
+            document.createElement("script");
 
         script.src = SUPABASE_CDN;
+        script.async = true;
 
         script.onload = () => {
+
             try {
 
                 if (!window.supabase) {
+
                     throw new Error(
-                        "Biblioteca do Supabase não foi encontrada."
+                        "Biblioteca do Supabase não carregou."
                     );
                 }
 
@@ -83,11 +107,13 @@ function loadSupabase() {
                 resolve();
 
             } catch (error) {
+
                 reject(error);
             }
         };
 
         script.onerror = () => {
+
             reject(
                 new Error(
                     "Não foi possível carregar o Supabase."
@@ -99,174 +125,359 @@ function loadSupabase() {
     });
 }
 
+
 /* =========================================================
    EVENTOS
 ========================================================= */
 
 function setupEvents() {
 
-    document.getElementById("loginForm")
-        ?.addEventListener("submit", handleLogin);
+    const loginForm =
+        document.getElementById("loginForm");
 
-    document.getElementById("logoutBtn")
-        ?.addEventListener("click", logout);
+    if (loginForm) {
 
-    document.getElementById("themeBtn")
-        ?.addEventListener("click", toggleTheme);
-
-    document.getElementById("exportDataBtn")
-        ?.addEventListener("click", exportData);
-
-    document.getElementById("mobileMenuBtn")
-        ?.addEventListener("click", toggleMobileMenu);
-
-    document.querySelectorAll(".nav-item").forEach(button => {
-
-        button.addEventListener("click", () => {
-            showSection(button.dataset.section);
-        });
-    });
-
-    document.querySelectorAll("[data-section]").forEach(button => {
-
-        if (!button.classList.contains("nav-item")) {
-
-            button.addEventListener("click", () => {
-                showSection(button.dataset.section);
-            });
-        }
-    });
-
-    document.getElementById("openTransactionBtn")
-        ?.addEventListener("click", openTransactionModal);
-
-    document.getElementById("newTransactionButton")
-        ?.addEventListener("click", openTransactionModal);
-
-    document.getElementById("closeModal")
-        ?.addEventListener("click", closeTransactionModal);
-
-    document.querySelectorAll(".modal-overlay").forEach(overlay => {
-
-        overlay.addEventListener("click", () => {
-
-            overlay.closest(".modal")
-                ?.classList.add("hidden");
-        });
-    });
-
-    document.querySelectorAll(".type-option").forEach(button => {
-
-        button.addEventListener("click", () => {
-
-            document.querySelectorAll(".type-option")
-                .forEach(item => {
-                    item.classList.remove("active");
-                });
-
-            button.classList.add("active");
-
-            selectedTransactionType =
-                button.dataset.type || "income";
-        });
-    });
-
-    document.getElementById("transactionForm")
-        ?.addEventListener("submit", saveTransaction);
-
-    document.getElementById("searchInput")
-        ?.addEventListener("input", renderTransactions);
-
-    document.getElementById("typeFilter")
-        ?.addEventListener("change", renderTransactions);
-
-    document.getElementById("categoryFilter")
-        ?.addEventListener("change", renderTransactions);
-
-    document.getElementById("subscribePremiumBtn")
-        ?.addEventListener("click", activatePremium);
-
-    document.getElementById("newGoalBtn")
-        ?.addEventListener("click", openGoalModal);
-
-    document.getElementById("closeGoalModal")
-        ?.addEventListener("click", () => {
-
-            document.getElementById("goalModal")
-                ?.classList.add("hidden");
-        });
-
-    document.getElementById("goalForm")
-        ?.addEventListener("submit", saveGoal);
-
-    document.getElementById("newBudgetBtn")
-        ?.addEventListener("click", openBudgetModal);
-
-    document.getElementById("closeBudgetModal")
-        ?.addEventListener("click", () => {
-
-            document.getElementById("budgetModal")
-                ?.classList.add("hidden");
-        });
-
-    document.getElementById("budgetForm")
-        ?.addEventListener("submit", saveBudget);
-
-    document.getElementById("simulateBtn")
-        ?.addEventListener("click", simulateExpense);
-
-    document.addEventListener("keydown", event => {
-
-        if (event.key === "Escape") {
-
-            document.querySelectorAll(".modal")
-                .forEach(modal => {
-                    modal.classList.add("hidden");
-                });
-        }
-    });
+        loginForm.addEventListener(
+            "submit",
+            handleLogin
+        );
+    }
 
     /*
-       Cria o botão de cadastro sem precisar
-       alterar o HTML atual.
+       Cria automaticamente o botão
+       "Criar minha conta".
     */
 
     createRegisterButton();
+
+
+    document.getElementById("logoutBtn")
+        ?.addEventListener(
+            "click",
+            logout
+        );
+
+
+    document.getElementById("themeBtn")
+        ?.addEventListener(
+            "click",
+            toggleTheme
+        );
+
+
+    document.getElementById("exportDataBtn")
+        ?.addEventListener(
+            "click",
+            exportData
+        );
+
+
+    document.getElementById("mobileMenuBtn")
+        ?.addEventListener(
+            "click",
+            toggleMobileMenu
+        );
+
+
+    document.querySelectorAll(".nav-item")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    showSection(
+                        button.dataset.section
+                    );
+                }
+            );
+        });
+
+
+    document.querySelectorAll("[data-section]")
+        .forEach(button => {
+
+            if (
+                !button.classList.contains(
+                    "nav-item"
+                )
+            ) {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        showSection(
+                            button.dataset.section
+                        );
+                    }
+                );
+            }
+        });
+
+
+    document.getElementById(
+        "openTransactionBtn"
+    )?.addEventListener(
+        "click",
+        openTransactionModal
+    );
+
+
+    document.getElementById(
+        "newTransactionButton"
+    )?.addEventListener(
+        "click",
+        openTransactionModal
+    );
+
+
+    document.getElementById(
+        "closeModal"
+    )?.addEventListener(
+        "click",
+        closeTransactionModal
+    );
+
+
+    document.querySelectorAll(
+        ".modal-overlay"
+    ).forEach(overlay => {
+
+        overlay.addEventListener(
+            "click",
+            () => {
+
+                overlay
+                    .closest(".modal")
+                    ?.classList.add(
+                        "hidden"
+                    );
+            }
+        );
+    });
+
+
+    document.querySelectorAll(
+        ".type-option"
+    ).forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                document.querySelectorAll(
+                    ".type-option"
+                ).forEach(item => {
+
+                    item.classList.remove(
+                        "active"
+                    );
+                });
+
+                button.classList.add(
+                    "active"
+                );
+
+                selectedTransactionType =
+                    button.dataset.type ||
+                    "income";
+            }
+        );
+    });
+
+
+    document.getElementById(
+        "transactionForm"
+    )?.addEventListener(
+        "submit",
+        saveTransaction
+    );
+
+
+    document.getElementById(
+        "searchInput"
+    )?.addEventListener(
+        "input",
+        renderTransactions
+    );
+
+
+    document.getElementById(
+        "typeFilter"
+    )?.addEventListener(
+        "change",
+        renderTransactions
+    );
+
+
+    document.getElementById(
+        "categoryFilter"
+    )?.addEventListener(
+        "change",
+        renderTransactions
+    );
+
+
+    document.getElementById(
+        "subscribePremiumBtn"
+    )?.addEventListener(
+        "click",
+        activatePremium
+    );
+
+
+    document.getElementById(
+        "newGoalBtn"
+    )?.addEventListener(
+        "click",
+        openGoalModal
+    );
+
+
+    document.getElementById(
+        "closeGoalModal"
+    )?.addEventListener(
+        "click",
+        () => {
+
+            document.getElementById(
+                "goalModal"
+            )?.classList.add(
+                "hidden"
+            );
+        }
+    );
+
+
+    document.getElementById(
+        "goalForm"
+    )?.addEventListener(
+        "submit",
+        saveGoal
+    );
+
+
+    document.getElementById(
+        "newBudgetBtn"
+    )?.addEventListener(
+        "click",
+        openBudgetModal
+    );
+
+
+    document.getElementById(
+        "closeBudgetModal"
+    )?.addEventListener(
+        "click",
+        () => {
+
+            document.getElementById(
+                "budgetModal"
+            )?.classList.add(
+                "hidden"
+            );
+        }
+    );
+
+
+    document.getElementById(
+        "budgetForm"
+    )?.addEventListener(
+        "submit",
+        saveBudget
+    );
+
+
+    document.getElementById(
+        "simulateBtn"
+    )?.addEventListener(
+        "click",
+        simulateExpense
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Escape") {
+
+                document.querySelectorAll(
+                    ".modal"
+                ).forEach(modal => {
+
+                    modal.classList.add(
+                        "hidden"
+                    );
+                });
+            }
+        }
+    );
 }
 
+
 /* =========================================================
-   BOTÃO DE CADASTRO
+   BOTÃO CRIAR CONTA
 ========================================================= */
 
 function createRegisterButton() {
 
-    const form = document.getElementById("loginForm");
+    const form =
+        document.getElementById(
+            "loginForm"
+        );
 
     if (!form) return;
 
-    if (document.getElementById("registerBtn")) {
+    if (
+        document.getElementById(
+            "registerBtn"
+        )
+    ) {
         return;
     }
 
-    const button = document.createElement("button");
+    const loginButton =
+        form.querySelector(
+            "button[type='submit']"
+        );
 
-    button.type = "button";
-    button.id = "registerBtn";
-    button.textContent = "Criar minha conta";
+    if (!loginButton) return;
 
-    button.style.width = "100%";
-    button.style.marginTop = "10px";
-    button.style.padding = "12px";
-    button.style.borderRadius = "10px";
-    button.style.cursor = "pointer";
-    button.style.background = "transparent";
-    button.style.border = "1px solid currentColor";
-    button.style.fontSize = "15px";
+    const registerButton =
+        document.createElement(
+            "button"
+        );
 
-    button.addEventListener("click", handleRegister);
+    registerButton.type = "button";
 
-    form.appendChild(button);
+    registerButton.id =
+        "registerBtn";
+
+    registerButton.className =
+        "btn-secondary";
+
+    registerButton.textContent =
+        "Criar minha conta";
+
+    registerButton.style.width =
+        "100%";
+
+    registerButton.style.marginTop =
+        "10px";
+
+    registerButton.addEventListener(
+        "click",
+        handleRegister
+    );
+
+    loginButton.insertAdjacentElement(
+        "afterend",
+        registerButton
+    );
 }
+
 
 /* =========================================================
    SESSÃO
@@ -275,14 +486,22 @@ function createRegisterButton() {
 async function checkSession() {
 
     if (!supabaseClient) {
+
         showLogin();
+
         return;
     }
 
     try {
 
-        const { data, error } =
-            await supabaseClient.auth.getSession();
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .auth
+                .getSession();
+
 
         if (error) {
 
@@ -292,11 +511,15 @@ async function checkSession() {
             );
 
             showLogin();
+
             return;
         }
 
+
         currentUser =
-            data?.session?.user || null;
+            data?.session?.user ||
+            null;
+
 
         if (currentUser) {
 
@@ -306,22 +529,39 @@ async function checkSession() {
             );
 
             await enterApp();
+
         } else {
 
             showLogin();
         }
 
-        supabaseClient.auth.onAuthStateChange(
-            (_event, session) => {
 
-                currentUser =
-                    session?.user || null;
+        supabaseClient
+            .auth
+            .onAuthStateChange(
+                (_event, session) => {
 
-                if (_event === "SIGNED_OUT") {
-                    showLogin();
+                    currentUser =
+                        session?.user ||
+                        null;
+
+                    if (
+                        _event ===
+                        "SIGNED_OUT"
+                    ) {
+
+                        currentUser =
+                            null;
+
+                        transactions = [];
+                        goals = [];
+                        budgets = [];
+                        subscription = null;
+
+                        showLogin();
+                    }
                 }
-            }
-        );
+            );
 
     } catch (error) {
 
@@ -335,6 +575,7 @@ async function checkSession() {
         showLogin();
     }
 }
+
 
 /* =========================================================
    LOGIN
@@ -353,15 +594,20 @@ async function handleLogin(event) {
         return;
     }
 
+
     const email =
-        document.getElementById("loginEmail")
-            ?.value
+        document.getElementById(
+            "loginEmail"
+        )?.value
             .trim()
             .toLowerCase();
 
+
     const password =
-        document.getElementById("loginPassword")
-            ?.value || "";
+        document.getElementById(
+            "loginPassword"
+        )?.value;
+
 
     if (!email || !password) {
 
@@ -372,6 +618,7 @@ async function handleLogin(event) {
         return;
     }
 
+
     if (password.length < 6) {
 
         alert(
@@ -381,16 +628,21 @@ async function handleLogin(event) {
         return;
     }
 
+
     const button =
         document.querySelector(
             "#loginForm button[type='submit']"
         );
 
+
     if (button) {
 
         button.disabled = true;
-        button.textContent = "Entrando...";
+
+        button.textContent =
+            "Entrando...";
     }
+
 
     try {
 
@@ -398,10 +650,15 @@ async function handleLogin(event) {
             data,
             error
         } =
-            await supabaseClient.auth.signInWithPassword({
-                email,
-                password
-            });
+            await supabaseClient
+                .auth
+                .signInWithPassword({
+
+                    email,
+
+                    password
+                });
+
 
         if (error) {
 
@@ -416,6 +673,7 @@ async function handleLogin(event) {
                     ""
                 ).toLowerCase();
 
+
             if (
                 message.includes(
                     "email not confirmed"
@@ -423,10 +681,10 @@ async function handleLogin(event) {
             ) {
 
                 throw new Error(
-                    "Seu e-mail ainda não foi confirmado. " +
-                    "Confirme o e-mail recebido e tente novamente."
+                    "Seu e-mail ainda não foi confirmado. Confirme o e-mail recebido e tente novamente."
                 );
             }
+
 
             if (
                 message.includes(
@@ -439,31 +697,31 @@ async function handleLogin(event) {
                 );
             }
 
+
             throw error;
         }
 
+
         currentUser =
-            data?.user || null;
+            data?.user ||
+            null;
+
 
         if (!currentUser) {
 
             throw new Error(
-                "Login realizado, mas a sessão não foi encontrada."
+                "Login realizado, mas o usuário não foi encontrado."
             );
         }
 
-        /*
-           Não usamos o nome digitado para autenticação.
-           O nome do perfil já existente é preservado.
-        */
 
         await createProfileIfNeeded(
-            currentUser.user_metadata?.full_name ||
-            document.getElementById("loginName")
-                ?.value
-                ?.trim() ||
+            currentUser
+                .user_metadata
+                ?.full_name ||
             "Usuário"
         );
+
 
         await enterApp();
 
@@ -487,11 +745,13 @@ async function handleLogin(event) {
         if (button) {
 
             button.disabled = false;
+
             button.textContent =
                 "Entrar no ControleS";
         }
     }
 }
+
 
 /* =========================================================
    CADASTRO
@@ -508,29 +768,68 @@ async function handleRegister() {
         return;
     }
 
+
     const name =
-        document.getElementById("loginName")
-            ?.value
-            .trim();
+        document.getElementById(
+            "loginName"
+        )?.value.trim();
+
 
     const email =
-        document.getElementById("loginEmail")
-            ?.value
+        document.getElementById(
+            "loginEmail"
+        )?.value
             .trim()
             .toLowerCase();
 
-    const password =
-        document.getElementById("loginPassword")
-            ?.value || "";
 
-    if (!name || !email || !password) {
+    const password =
+        document.getElementById(
+            "loginPassword"
+        )?.value;
+
+
+    if (!name) {
 
         alert(
-            "Para criar sua conta, preencha nome, e-mail e senha."
+            "Digite seu nome."
         );
+
+        document.getElementById(
+            "loginName"
+        )?.focus();
 
         return;
     }
+
+
+    if (!email) {
+
+        alert(
+            "Digite seu e-mail."
+        );
+
+        document.getElementById(
+            "loginEmail"
+        )?.focus();
+
+        return;
+    }
+
+
+    if (!password) {
+
+        alert(
+            "Digite uma senha."
+        );
+
+        document.getElementById(
+            "loginPassword"
+        )?.focus();
+
+        return;
+    }
+
 
     if (password.length < 6) {
 
@@ -541,15 +840,21 @@ async function handleRegister() {
         return;
     }
 
+
     const button =
-        document.getElementById("registerBtn");
+        document.getElementById(
+            "registerBtn"
+        );
+
 
     if (button) {
 
         button.disabled = true;
+
         button.textContent =
             "Criando conta...";
     }
+
 
     try {
 
@@ -557,24 +862,38 @@ async function handleRegister() {
             data,
             error
         } =
-            await supabaseClient.auth.signUp({
-                email,
-                password,
+            await supabaseClient
+                .auth
+                .signUp({
 
-                options: {
-                    data: {
-                        full_name: name
+                    email,
+
+                    password,
+
+                    options: {
+
+                        data: {
+
+                            full_name:
+                                name
+                        }
                     }
-                }
-            });
+                });
+
 
         if (error) {
+
+            console.error(
+                "Erro no cadastro:",
+                error
+            );
 
             const message =
                 (
                     error.message ||
                     ""
                 ).toLowerCase();
+
 
             if (
                 message.includes(
@@ -586,51 +905,62 @@ async function handleRegister() {
             ) {
 
                 throw new Error(
-                    "Esse e-mail já está cadastrado. Use o botão Entrar."
+                    "Esse e-mail já está cadastrado. Clique em Entrar e informe sua senha."
                 );
             }
+
 
             throw error;
         }
 
+
         currentUser =
-            data?.user || null;
+            data?.user ||
+            null;
+
 
         /*
-           Quando a confirmação de e-mail está ativada,
-           o Supabase normalmente não entrega uma sessão.
+           Quando a confirmação de e-mail
+           está ativada no Supabase,
+           session será null.
         */
 
         if (!data?.session) {
 
             alert(
                 "🎉 Conta criada com sucesso!\n\n" +
-                "Confirme seu e-mail e depois entre no ControleS."
+                "Confira seu e-mail para confirmar sua conta. " +
+                "Depois volte ao ControleS e clique em Entrar."
             );
 
             return;
         }
 
+
         if (!currentUser) {
 
             throw new Error(
-                "Conta criada, mas não foi possível iniciar a sessão."
+                "A conta foi criada, mas não foi possível iniciar a sessão."
             );
         }
 
-        await createProfileIfNeeded(name);
+
+        await createProfileIfNeeded(
+            name
+        );
+
 
         await enterApp();
 
     } catch (error) {
 
         console.error(
-            "Erro no cadastro:",
+            "Erro ao criar conta:",
             error
         );
 
         alert(
-            "Não foi possível criar a conta:\n\n" +
+            "Não foi possível criar sua conta:\n\n" +
             (
                 error.message ||
                 "Erro desconhecido."
@@ -642,11 +972,13 @@ async function handleRegister() {
         if (button) {
 
             button.disabled = false;
+
             button.textContent =
                 "Criar minha conta";
         }
     }
 }
+
 
 /* =========================================================
    PROFILE
@@ -654,9 +986,7 @@ async function handleRegister() {
 
 async function createProfileIfNeeded(name) {
 
-    if (!currentUser || !supabaseClient) {
-        return;
-    }
+    if (!currentUser) return;
 
     try {
 
@@ -673,6 +1003,7 @@ async function createProfileIfNeeded(name) {
                 )
                 .maybeSingle();
 
+
         if (error) {
 
             console.warn(
@@ -682,6 +1013,7 @@ async function createProfileIfNeeded(name) {
 
             return;
         }
+
 
         if (!data) {
 
@@ -697,7 +1029,8 @@ async function createProfileIfNeeded(name) {
 
                         full_name:
                             name ||
-                            currentUser.user_metadata
+                            currentUser
+                                .user_metadata
                                 ?.full_name ||
                             "Usuário",
 
@@ -707,6 +1040,7 @@ async function createProfileIfNeeded(name) {
                         company_name:
                             null
                     });
+
 
             if (insertError) {
 
@@ -720,11 +1054,12 @@ async function createProfileIfNeeded(name) {
     } catch (error) {
 
         console.warn(
-            "Erro no perfil:",
+            "Erro no profile:",
             error
         );
     }
 }
+
 
 /* =========================================================
    ENTRAR NO APP
@@ -734,39 +1069,48 @@ async function enterApp() {
 
     if (!currentUser) return;
 
-    /*
-       Evita duas cargas simultâneas do aplicativo.
-    */
-
     if (enteringApp) return;
 
     enteringApp = true;
 
+
     try {
 
-        document.getElementById("loginScreen")
-            ?.classList.add("hidden");
+        document.getElementById(
+            "loginScreen"
+        )?.classList.add(
+            "hidden"
+        );
 
-        document.getElementById("app")
-            ?.classList.remove("hidden");
+
+        document.getElementById(
+            "app"
+        )?.classList.remove(
+            "hidden"
+        );
+
 
         await loadUserData();
 
-        showSection("dashboard");
+        showSection(
+            "dashboard"
+        );
 
     } catch (error) {
 
         console.error(
-            "Erro entrando no aplicativo:",
+            "Erro entrando no app:",
             error
         );
 
-        alert(
-            "O login foi realizado, mas ocorreu um erro ao carregar seus dados.\n\n" +
-            (
-                error.message ||
-                "Tente atualizar a página."
-            )
+        /*
+           Mesmo se alguma tabela estiver
+           com problema, o aplicativo continua
+           visível.
+        */
+
+        showSection(
+            "dashboard"
         );
 
     } finally {
@@ -775,20 +1119,27 @@ async function enterApp() {
     }
 }
 
+
 /* =========================================================
    MOSTRAR LOGIN
 ========================================================= */
 
 function showLogin() {
 
-    document.getElementById("loginScreen")
-        ?.classList.remove("hidden");
+    document.getElementById(
+        "loginScreen"
+    )?.classList.remove(
+        "hidden"
+    );
 
-    document.getElementById("app")
-        ?.classList.add("hidden");
 
-    enteringApp = false;
+    document.getElementById(
+        "app"
+    )?.classList.add(
+        "hidden"
+    );
 }
+
 
 /* =========================================================
    LOGOUT
@@ -798,14 +1149,22 @@ async function logout() {
 
     if (!supabaseClient) return;
 
-    if (!confirm("Deseja realmente sair?")) {
+    if (
+        !confirm(
+            "Deseja realmente sair?"
+        )
+    ) {
         return;
     }
+
 
     const {
         error
     } =
-        await supabaseClient.auth.signOut();
+        await supabaseClient
+            .auth
+            .signOut();
+
 
     if (error) {
 
@@ -817,7 +1176,9 @@ async function logout() {
         return;
     }
 
+
     currentUser = null;
+
     transactions = [];
     goals = [];
     budgets = [];
@@ -826,19 +1187,23 @@ async function logout() {
     showLogin();
 }
 
+
 /* =========================================================
-   CARREGAR DADOS
+   CARREGAR DADOS DO USUÁRIO
 ========================================================= */
 
 async function loadUserData() {
 
     if (!currentUser) return;
 
+
     await createProfileIfNeeded(
-        currentUser.user_metadata
+        currentUser
+            .user_metadata
             ?.full_name ||
         "Usuário"
     );
+
 
     await Promise.all([
         loadTransactions(),
@@ -847,18 +1212,30 @@ async function loadUserData() {
         loadSubscription()
     ]);
 
+
     updateUserInterface();
+
     updateDashboard();
+
     renderTransactions();
+
     updateCategoryFilter();
+
     renderCategories();
+
     renderReports();
+
     renderGoals();
+
     renderBudgets();
+
     renderAlerts();
+
     renderMonthlyComparison();
+
     renderPremiumAnalysis();
 }
+
 
 /* =========================================================
    TRANSAÇÕES
@@ -867,6 +1244,7 @@ async function loadUserData() {
 async function loadTransactions() {
 
     if (!currentUser) return;
+
 
     const {
         data,
@@ -886,6 +1264,7 @@ async function loadTransactions() {
                 }
             );
 
+
     if (error) {
 
         console.error(
@@ -898,13 +1277,16 @@ async function loadTransactions() {
         return;
     }
 
+
     transactions =
         (
-            data || []
+            data ||
+            []
         ).map(
             normalizeTransaction
         );
 }
+
 
 function normalizeTransaction(item) {
 
@@ -959,6 +1341,7 @@ function normalizeTransaction(item) {
     };
 }
 
+
 /* =========================================================
    SALVAR TRANSAÇÃO
 ========================================================= */
@@ -966,6 +1349,7 @@ function normalizeTransaction(item) {
 async function saveTransaction(event) {
 
     event.preventDefault();
+
 
     if (!currentUser) {
 
@@ -976,10 +1360,12 @@ async function saveTransaction(event) {
         return;
     }
 
+
     const description =
         document.getElementById(
             "descriptionInput"
         )?.value.trim();
+
 
     const amount =
         Number(
@@ -988,10 +1374,12 @@ async function saveTransaction(event) {
             )?.value
         );
 
+
     const date =
         document.getElementById(
             "dateInput"
         )?.value;
+
 
     const category =
         document.getElementById(
@@ -999,11 +1387,13 @@ async function saveTransaction(event) {
         )?.value ||
         "Outros";
 
+
     const frequency =
         document.getElementById(
             "frequencyInput"
         )?.value ||
         "once";
+
 
     if (
         !description ||
@@ -1019,17 +1409,21 @@ async function saveTransaction(event) {
         return;
     }
 
+
     const button =
         document.querySelector(
             "#transactionForm .save-transaction"
         );
 
+
     if (button) {
 
         button.disabled = true;
+
         button.textContent =
             "Salvando...";
     }
+
 
     try {
 
@@ -1058,35 +1452,48 @@ async function saveTransaction(event) {
                         "",
 
                     note:
-                        frequency !== "once"
+                        frequency !==
+                        "once"
+
                             ? `Frequência: ${frequency}`
+
                             : ""
                 });
 
+
         if (error) {
+
             throw error;
         }
+
 
         document.getElementById(
             "transactionForm"
         )?.reset();
 
+
         selectedTransactionType =
             "income";
 
+
         document.querySelectorAll(
             ".type-option"
-        ).forEach((item, index) => {
+        ).forEach(
+            (item, index) => {
 
-            item.classList.toggle(
-                "active",
-                index === 0
-            );
-        });
+                item.classList.toggle(
+                    "active",
+                    index === 0
+                );
+            }
+        );
+
 
         closeTransactionModal();
 
+
         await loadUserData();
+
 
         alert(
             "Lançamento salvo com sucesso!"
@@ -1095,7 +1502,7 @@ async function saveTransaction(event) {
     } catch (error) {
 
         console.error(
-            "Erro salvando transação:",
+            "Erro salvando lançamento:",
             error
         );
 
@@ -1109,11 +1516,13 @@ async function saveTransaction(event) {
         if (button) {
 
             button.disabled = false;
+
             button.textContent =
                 "Salvar lançamento";
         }
     }
 }
+
 
 /* =========================================================
    EXCLUIR TRANSAÇÃO
@@ -1123,9 +1532,15 @@ async function deleteTransaction(id) {
 
     if (!currentUser) return;
 
-    if (!confirm("Excluir este lançamento?")) {
+
+    if (
+        !confirm(
+            "Excluir este lançamento?"
+        )
+    ) {
         return;
     }
+
 
     const {
         error
@@ -1142,6 +1557,7 @@ async function deleteTransaction(id) {
                 currentUser.id
             );
 
+
     if (error) {
 
         alert(
@@ -1152,8 +1568,10 @@ async function deleteTransaction(id) {
         return;
     }
 
+
     await loadUserData();
 }
+
 
 /* =========================================================
    DASHBOARD
@@ -1164,18 +1582,23 @@ function updateDashboard() {
     const income =
         transactions
             .filter(
-                t => t.type === "income"
+                t =>
+                    t.type ===
+                    "income"
             )
             .reduce(
                 (sum, t) =>
                     sum + t.amount,
                 0
             );
+
 
     const expense =
         transactions
             .filter(
-                t => t.type === "expense"
+                t =>
+                    t.type ===
+                    "expense"
             )
             .reduce(
                 (sum, t) =>
@@ -1183,28 +1606,44 @@ function updateDashboard() {
                 0
             );
 
+
     const balance =
-        income - expense;
+        income -
+        expense;
+
 
     const economy =
         income > 0
-            ? (balance / income) * 100
+            ? (
+                balance /
+                income
+            ) * 100
             : 0;
+
 
     setText(
         "balanceValue",
-        formatCurrency(balance)
+        formatCurrency(
+            balance
+        )
     );
+
 
     setText(
         "incomeValue",
-        formatCurrency(income)
+        formatCurrency(
+            income
+        )
     );
+
 
     setText(
         "expenseValue",
-        formatCurrency(expense)
+        formatCurrency(
+            expense
+        )
     );
+
 
     setText(
         "economyValue",
@@ -1214,6 +1653,7 @@ function updateDashboard() {
         ).toFixed(1)}%`
     );
 
+
     setText(
         "premiumEconomyValue",
         `${Math.max(
@@ -1222,9 +1662,12 @@ function updateDashboard() {
         ).toFixed(1)}%`
     );
 
+
     renderRecentTransactions();
+
     updateFinanceChart();
 }
+
 
 /* =========================================================
    TRANSAÇÕES RECENTES
@@ -1237,13 +1680,16 @@ function renderRecentTransactions() {
             "recentTransactions"
         );
 
+
     if (!container) return;
+
 
     const list =
         transactions.slice(
             0,
             5
         );
+
 
     if (!list.length) {
 
@@ -1256,6 +1702,7 @@ function renderRecentTransactions() {
         return;
     }
 
+
     container.innerHTML =
         list
             .map(
@@ -1264,8 +1711,9 @@ function renderRecentTransactions() {
             .join("");
 }
 
+
 /* =========================================================
-   TODAS AS TRANSAÇÕES
+   TODAS TRANSAÇÕES
 ========================================================= */
 
 function renderTransactions() {
@@ -1275,7 +1723,9 @@ function renderTransactions() {
             "allTransactions"
         );
 
+
     if (!container) return;
+
 
     const search =
         document.getElementById(
@@ -1285,11 +1735,13 @@ function renderTransactions() {
             .trim() ||
         "";
 
+
     const type =
         document.getElementById(
             "typeFilter"
         )?.value ||
         "all";
+
 
     const category =
         document.getElementById(
@@ -1297,46 +1749,64 @@ function renderTransactions() {
         )?.value ||
         "all";
 
+
     const filtered =
-        transactions.filter(item => {
+        transactions.filter(
+            item => {
 
-            const description =
-                String(
-                    item.description ||
-                    ""
-                ).toLowerCase();
+                const description =
+                    String(
+                        item.description ||
+                        ""
+                    ).toLowerCase();
 
-            const itemCategory =
-                String(
-                    item.category ||
-                    ""
-                ).toLowerCase();
 
-            return (
+                const itemCategory =
+                    String(
+                        item.category ||
+                        ""
+                    ).toLowerCase();
 
-                (
-                    !search ||
 
-                    description.includes(
-                        search
-                    ) ||
+                return (
 
-                    itemCategory.includes(
-                        search
+                    (
+                        !search ||
+
+                        description
+                            .includes(
+                                search
+                            ) ||
+
+                        itemCategory
+                            .includes(
+                                search
+                            )
                     )
-                ) &&
 
-                (
-                    type === "all" ||
-                    item.type === type
-                ) &&
+                    &&
 
-                (
-                    category === "all" ||
-                    item.category === category
-                )
-            );
-        });
+                    (
+                        type ===
+                            "all" ||
+
+                        item.type ===
+                            type
+                    )
+
+                    &&
+
+                    (
+                        category ===
+                            "all" ||
+
+                        item.category ===
+                            category
+                    )
+                );
+            }
+        );
+
 
     if (!filtered.length) {
 
@@ -1349,6 +1819,7 @@ function renderTransactions() {
         return;
     }
 
+
     container.innerHTML =
         filtered
             .map(
@@ -1357,14 +1828,17 @@ function renderTransactions() {
             .join("");
 }
 
+
 /* =========================================================
-   HTML DA TRANSAÇÃO
+   HTML TRANSAÇÃO
 ========================================================= */
 
 function transactionHTML(item) {
 
     const income =
-        item.type === "income";
+        item.type ===
+        "income";
+
 
     return `
         <div class="transaction">
@@ -1420,6 +1894,7 @@ function transactionHTML(item) {
     `;
 }
 
+
 /* =========================================================
    CATEGORIAS
 ========================================================= */
@@ -1431,21 +1906,28 @@ function updateCategoryFilter() {
             "categoryFilter"
         );
 
+
     if (!select) return;
+
 
     const current =
         select.value;
+
 
     const categories =
         [
             ...new Set(
                 transactions
                     .map(
-                        t => t.category
+                        t =>
+                            t.category
                     )
-                    .filter(Boolean)
+                    .filter(
+                        Boolean
+                    )
             )
         ].sort();
+
 
     select.innerHTML = `
         <option value="all">
@@ -1453,23 +1935,30 @@ function updateCategoryFilter() {
         </option>
     `;
 
-    categories.forEach(category => {
 
-        const option =
-            document.createElement(
-                "option"
+    categories.forEach(
+        category => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                category;
+
+
+            option.textContent =
+                category;
+
+
+            select.appendChild(
+                option
             );
+        }
+    );
 
-        option.value =
-            category;
-
-        option.textContent =
-            category;
-
-        select.appendChild(
-            option
-        );
-    });
 
     if (
         categories.includes(
@@ -1482,6 +1971,7 @@ function updateCategoryFilter() {
     }
 }
 
+
 function renderCategories() {
 
     const container =
@@ -1489,32 +1979,46 @@ function renderCategories() {
             "categoryList"
         );
 
+
     if (!container) return;
+
 
     const totals = {};
 
+
     transactions
         .filter(
-            t => t.type === "expense"
+            t =>
+                t.type ===
+                "expense"
         )
-        .forEach(item => {
+        .forEach(
+            item => {
 
-            totals[item.category] =
-                (
-                    totals[item.category] ||
-                    0
-                ) +
-                item.amount;
-        });
+                totals[
+                    item.category
+                ] =
+                    (
+                        totals[
+                            item.category
+                        ] ||
+                        0
+                    ) +
+                    item.amount;
+            }
+        );
+
 
     const entries =
         Object.entries(
             totals
-        ).sort(
+        )
+        .sort(
             (a, b) =>
                 b[1] -
                 a[1]
         );
+
 
     if (!entries.length) {
 
@@ -1524,31 +2028,44 @@ function renderCategories() {
             </div>
         `;
 
-        updateCategoryChart({});
+        updateCategoryChart(
+            {}
+        );
 
         return;
     }
 
+
     const total =
         entries.reduce(
-            (sum, [, value]) =>
-                sum + value,
+            (
+                sum,
+                [, value]
+            ) =>
+                sum +
+                value,
             0
         );
+
 
     container.innerHTML =
         entries
             .map(
-                ([category, value]) => {
+                (
+                    [
+                        category,
+                        value
+                    ]
+                ) => {
 
                     const percentage =
                         total > 0
                             ? (
                                 value /
                                 total
-                            ) *
-                            100
+                            ) * 100
                             : 0;
+
 
                     return `
                         <div class="category-summary-item">
@@ -1581,10 +2098,12 @@ function renderCategories() {
             )
             .join("");
 
+
     updateCategoryChart(
         totals
     );
 }
+
 
 /* =========================================================
    GRÁFICO FINANCEIRO
@@ -1597,6 +2116,7 @@ function updateFinanceChart() {
             "financeChart"
         );
 
+
     if (
         !canvas ||
         !window.Chart
@@ -1604,39 +2124,53 @@ function updateFinanceChart() {
         return;
     }
 
+
     if (financeChart) {
 
         financeChart.destroy();
-        financeChart = null;
+
+        financeChart =
+            null;
     }
+
 
     const income =
         transactions
             .filter(
-                t => t.type === "income"
+                t =>
+                    t.type ===
+                    "income"
             )
             .reduce(
                 (sum, t) =>
-                    sum + t.amount,
+                    sum +
+                    t.amount,
                 0
             );
+
 
     const expense =
         transactions
             .filter(
-                t => t.type === "expense"
+                t =>
+                    t.type ===
+                    "expense"
             )
             .reduce(
                 (sum, t) =>
-                    sum + t.amount,
+                    sum +
+                    t.amount,
                 0
             );
+
 
     financeChart =
         new Chart(
             canvas,
             {
-                type: "bar",
+
+                type:
+                    "bar",
 
                 data: {
 
@@ -1645,19 +2179,24 @@ function updateFinanceChart() {
                         "Despesas"
                     ],
 
-                    datasets: [{
-                        label: "Valor",
+                    datasets: [
+                        {
 
-                        data: [
-                            income,
-                            expense
-                        ]
-                    }]
+                            label:
+                                "Valor",
+
+                            data: [
+                                income,
+                                expense
+                            ]
+                        }
+                    ]
                 },
 
                 options: {
 
-                    responsive: true,
+                    responsive:
+                        true,
 
                     maintainAspectRatio:
                         false,
@@ -1665,7 +2204,9 @@ function updateFinanceChart() {
                     plugins: {
 
                         legend: {
-                            display: false
+
+                            display:
+                                false
                         }
                     }
                 }
@@ -1673,8 +2214,9 @@ function updateFinanceChart() {
         );
 }
 
+
 /* =========================================================
-   GRÁFICO DE CATEGORIAS
+   GRÁFICO CATEGORIAS
 ========================================================= */
 
 function updateCategoryChart(
@@ -1686,6 +2228,7 @@ function updateCategoryChart(
             "categoryChart"
         );
 
+
     if (
         !canvas ||
         !window.Chart
@@ -1693,44 +2236,58 @@ function updateCategoryChart(
         return;
     }
 
+
     if (categoryChart) {
 
         categoryChart.destroy();
-        categoryChart = null;
+
+        categoryChart =
+            null;
     }
+
 
     const labels =
         Object.keys(
             totals
         );
 
+
     const values =
         Object.values(
             totals
         );
 
+
     if (!labels.length) {
         return;
     }
+
 
     categoryChart =
         new Chart(
             canvas,
             {
-                type: "doughnut",
+
+                type:
+                    "doughnut",
 
                 data: {
 
                     labels,
 
-                    datasets: [{
-                        data: values
-                    }]
+                    datasets: [
+                        {
+
+                            data:
+                                values
+                        }
+                    ]
                 },
 
                 options: {
 
-                    responsive: true,
+                    responsive:
+                        true,
 
                     maintainAspectRatio:
                         false,
@@ -1738,13 +2295,16 @@ function updateCategoryChart(
                     plugins: {
 
                         legend: {
-                            position: "bottom"
+
+                            position:
+                                "bottom"
                         }
                     }
                 }
             }
         );
 }
+
 
 /* =========================================================
    RELATÓRIOS
@@ -1757,10 +2317,12 @@ function renderReports() {
             "reportAnalysis"
         );
 
+
     const canvas =
         document.getElementById(
             "reportCategoryChart"
         );
+
 
     if (
         !analysis &&
@@ -1769,40 +2331,50 @@ function renderReports() {
         return;
     }
 
+
     const income =
         transactions
             .filter(
-                t => t.type === "income"
+                t =>
+                    t.type ===
+                    "income"
             )
             .reduce(
                 (sum, t) =>
-                    sum + t.amount,
+                    sum +
+                    t.amount,
                 0
             );
+
 
     const expense =
         transactions
             .filter(
-                t => t.type === "expense"
+                t =>
+                    t.type ===
+                    "expense"
             )
             .reduce(
                 (sum, t) =>
-                    sum + t.amount,
+                    sum +
+                    t.amount,
                 0
             );
+
 
     const balance =
         income -
         expense;
+
 
     const economy =
         income > 0
             ? (
                 balance /
                 income
-            ) *
-            100
+            ) * 100
             : 0;
+
 
     if (analysis) {
 
@@ -1867,44 +2439,65 @@ function renderReports() {
         `;
     }
 
+
     if (
         canvas &&
         window.Chart
     ) {
 
-        if (reportCategoryChart) {
+        if (
+            reportCategoryChart
+        ) {
 
-            reportCategoryChart.destroy();
-            reportCategoryChart = null;
+            reportCategoryChart
+                .destroy();
+
+            reportCategoryChart =
+                null;
         }
+
 
         const totals = {};
 
+
         transactions
             .filter(
-                t => t.type === "expense"
+                t =>
+                    t.type ===
+                    "expense"
             )
-            .forEach(t => {
+            .forEach(
+                t => {
 
-                totals[t.category] =
-                    (
-                        totals[t.category] ||
-                        0
-                    ) +
-                    t.amount;
-            });
+                    totals[
+                        t.category
+                    ] =
+                        (
+                            totals[
+                                t.category
+                            ] ||
+                            0
+                        ) +
+                        t.amount;
+                }
+            );
+
 
         const labels =
             Object.keys(
                 totals
             );
 
+
         const values =
             Object.values(
                 totals
             );
 
-        if (labels.length) {
+
+        if (
+            labels.length
+        ) {
 
             reportCategoryChart =
                 new Chart(
@@ -1918,10 +2511,13 @@ function renderReports() {
 
                             labels,
 
-                            datasets: [{
-                                data:
-                                    values
-                            }]
+                            datasets: [
+                                {
+
+                                    data:
+                                        values
+                                }
+                            ]
                         },
 
                         options: {
@@ -1935,6 +2531,7 @@ function renderReports() {
                             plugins: {
 
                                 legend: {
+
                                     position:
                                         "bottom"
                                 }
@@ -1946,6 +2543,7 @@ function renderReports() {
     }
 }
 
+
 /* =========================================================
    METAS
 ========================================================= */
@@ -1953,6 +2551,7 @@ function renderReports() {
 async function loadGoals() {
 
     if (!currentUser) return;
+
 
     const {
         data,
@@ -1968,9 +2567,11 @@ async function loadGoals() {
             .order(
                 "created_at",
                 {
-                    ascending: false
+                    ascending:
+                        false
                 }
             );
+
 
     if (error) {
 
@@ -1984,9 +2585,12 @@ async function loadGoals() {
         return;
     }
 
+
     goals =
-        data || [];
+        data ||
+        [];
 }
+
 
 function openGoalModal() {
 
@@ -1997,16 +2601,27 @@ function openGoalModal() {
     );
 }
 
+
 async function saveGoal(event) {
 
     event.preventDefault();
 
-    if (!currentUser) return;
+
+    if (!currentUser) {
+
+        alert(
+            "Faça login primeiro."
+        );
+
+        return;
+    }
+
 
     const name =
         document.getElementById(
             "goalName"
         )?.value.trim();
+
 
     const target =
         Number(
@@ -2015,6 +2630,7 @@ async function saveGoal(event) {
             )?.value
         );
 
+
     const saved =
         Number(
             document.getElementById(
@@ -2022,6 +2638,7 @@ async function saveGoal(event) {
             )?.value ||
             0
         );
+
 
     if (
         !name ||
@@ -2035,6 +2652,7 @@ async function saveGoal(event) {
 
         return;
     }
+
 
     const {
         error
@@ -2053,6 +2671,7 @@ async function saveGoal(event) {
                 saved
             });
 
+
     if (error) {
 
         alert(
@@ -2063,9 +2682,11 @@ async function saveGoal(event) {
         return;
     }
 
+
     document.getElementById(
         "goalForm"
     )?.reset();
+
 
     document.getElementById(
         "goalModal"
@@ -2073,8 +2694,10 @@ async function saveGoal(event) {
         "hidden"
     );
 
+
     await loadUserData();
 }
+
 
 function renderGoals() {
 
@@ -2083,7 +2706,9 @@ function renderGoals() {
             "goalsList"
         );
 
+
     if (!container) return;
+
 
     if (!goals.length) {
 
@@ -2096,68 +2721,76 @@ function renderGoals() {
         return;
     }
 
+
     container.innerHTML =
         goals
-            .map(goal => {
+            .map(
+                goal => {
 
-                const target =
-                    Number(
-                        goal.target ||
-                        0
-                    );
+                    const target =
+                        Number(
+                            goal.target ||
+                            0
+                        );
 
-                const saved =
-                    Number(
-                        goal.saved ||
-                        0
-                    );
 
-                const percentage =
-                    target > 0
-                        ? Math.min(
-                            100,
-                            (
-                                saved /
-                                target
-                            ) *
-                            100
-                        )
-                        : 0;
+                    const saved =
+                        Number(
+                            goal.saved ||
+                            0
+                        );
 
-                return `
-                    <div class="category-summary-item">
 
-                        <div>
+                    const percentage =
+                        target > 0
 
-                            <strong>
-                                ${escapeHTML(
-                                    goal.name
-                                )}
-                            </strong>
-
-                            <small>
-                                ${formatCurrency(
-                                    saved
-                                )}
-                                de
-                                ${formatCurrency(
+                            ? Math.min(
+                                100,
+                                (
+                                    saved /
                                     target
-                                )}
-                            </small>
+                                ) * 100
+                            )
+
+                            : 0;
+
+
+                    return `
+                        <div class="category-summary-item">
+
+                            <div>
+
+                                <strong>
+                                    ${escapeHTML(
+                                        goal.name
+                                    )}
+                                </strong>
+
+                                <small>
+                                    ${formatCurrency(
+                                        saved
+                                    )}
+                                    de
+                                    ${formatCurrency(
+                                        target
+                                    )}
+                                </small>
+
+                            </div>
+
+                            <span>
+                                ${percentage.toFixed(
+                                    0
+                                )}%
+                            </span>
 
                         </div>
-
-                        <span>
-                            ${percentage.toFixed(
-                                0
-                            )}%
-                        </span>
-
-                    </div>
-                `;
-            })
+                    `;
+                }
+            )
             .join("");
 }
+
 
 /* =========================================================
    ORÇAMENTOS
@@ -2166,6 +2799,7 @@ function renderGoals() {
 async function loadBudgets() {
 
     if (!currentUser) return;
+
 
     const {
         data,
@@ -2181,9 +2815,11 @@ async function loadBudgets() {
             .order(
                 "created_at",
                 {
-                    ascending: false
+                    ascending:
+                        false
                 }
             );
+
 
     if (error) {
 
@@ -2197,9 +2833,12 @@ async function loadBudgets() {
         return;
     }
 
+
     budgets =
-        data || [];
+        data ||
+        [];
 }
+
 
 function openBudgetModal() {
 
@@ -2210,16 +2849,27 @@ function openBudgetModal() {
     );
 }
 
+
 async function saveBudget(event) {
 
     event.preventDefault();
 
-    if (!currentUser) return;
+
+    if (!currentUser) {
+
+        alert(
+            "Faça login primeiro."
+        );
+
+        return;
+    }
+
 
     const category =
         document.getElementById(
             "budgetCategory"
         )?.value;
+
 
     const limit =
         Number(
@@ -2227,6 +2877,7 @@ async function saveBudget(event) {
                 "budgetLimit"
             )?.value
         );
+
 
     if (
         !category ||
@@ -2241,6 +2892,7 @@ async function saveBudget(event) {
         return;
     }
 
+
     const existing =
         budgets.find(
             b =>
@@ -2248,7 +2900,9 @@ async function saveBudget(event) {
                 category
         );
 
+
     let result;
+
 
     if (existing) {
 
@@ -2256,6 +2910,7 @@ async function saveBudget(event) {
             await supabaseClient
                 .from("budgets")
                 .update({
+
                     limit_amount:
                         limit
                 })
@@ -2285,6 +2940,7 @@ async function saveBudget(event) {
                 });
     }
 
+
     if (result.error) {
 
         alert(
@@ -2295,9 +2951,11 @@ async function saveBudget(event) {
         return;
     }
 
+
     document.getElementById(
         "budgetForm"
     )?.reset();
+
 
     document.getElementById(
         "budgetModal"
@@ -2305,8 +2963,10 @@ async function saveBudget(event) {
         "hidden"
     );
 
+
     await loadUserData();
 }
+
 
 function renderBudgets() {
 
@@ -2315,7 +2975,9 @@ function renderBudgets() {
             "budgetsList"
         );
 
+
     if (!container) return;
+
 
     if (!budgets.length) {
 
@@ -2328,75 +2990,88 @@ function renderBudgets() {
         return;
     }
 
+
     container.innerHTML =
         budgets
-            .map(budget => {
+            .map(
+                budget => {
 
-                const spent =
-                    transactions
-                        .filter(t =>
-                            t.type ===
-                                "expense" &&
+                    const spent =
+                        transactions
+                            .filter(
+                                t =>
 
-                            t.category ===
-                                budget.category
-                        )
-                        .reduce(
-                            (sum, t) =>
-                                sum +
-                                t.amount,
+                                    t.type ===
+                                        "expense" &&
+
+                                    t.category ===
+                                        budget.category
+                            )
+                            .reduce(
+                                (
+                                    sum,
+                                    t
+                                ) =>
+                                    sum +
+                                    t.amount,
+                                0
+                            );
+
+
+                    const limit =
+                        Number(
+                            budget.limit_amount ||
                             0
                         );
 
-                const limit =
-                    Number(
-                        budget.limit_amount ||
-                        0
-                    );
 
-                const percentage =
-                    limit > 0
-                        ? (
-                            spent /
-                            limit
-                        ) *
-                        100
-                        : 0;
+                    const percentage =
+                        limit > 0
 
-                return `
-                    <div class="category-summary-item">
+                            ? (
+                                spent /
+                                limit
+                            ) * 100
 
-                        <div>
+                            : 0;
 
-                            <strong>
-                                ${escapeHTML(
-                                    budget.category
-                                )}
-                            </strong>
 
-                            <small>
-                                ${formatCurrency(
-                                    spent
-                                )}
-                                /
-                                ${formatCurrency(
-                                    limit
-                                )}
-                            </small>
+                    return `
+                        <div class="category-summary-item">
+
+                            <div>
+
+                                <strong>
+                                    ${escapeHTML(
+                                        budget.category
+                                    )}
+                                </strong>
+
+                                <small>
+                                    ${formatCurrency(
+                                        spent
+                                    )}
+                                    /
+                                    ${formatCurrency(
+                                        limit
+                                    )}
+                                </small>
+
+                            </div>
+
+                            <span>
+                                ${percentage.toFixed(
+                                    0
+                                )}%
+                            </span>
 
                         </div>
-
-                        <span>
-                            ${percentage.toFixed(
-                                0
-                            )}%
-                        </span>
-
-                    </div>
-                `;
-            })
+                    `;
+                }
+            )
             .join("");
 }
+
 
 /* =========================================================
    PREMIUM / ASSINATURA
@@ -2406,9 +3081,12 @@ async function loadSubscription() {
 
     if (!currentUser) {
 
-        subscription = null;
+        subscription =
+            null;
+
         return;
     }
+
 
     const {
         data,
@@ -2424,11 +3102,13 @@ async function loadSubscription() {
             .order(
                 "created_at",
                 {
-                    ascending: false
+                    ascending:
+                        false
                 }
             )
             .limit(1)
             .maybeSingle();
+
 
     if (error) {
 
@@ -2437,17 +3117,21 @@ async function loadSubscription() {
             error
         );
 
-        subscription = null;
+        subscription =
+            null;
 
         return;
     }
 
+
     subscription =
-        data || null;
+        data ||
+        null;
 }
 
+
 /* =========================================================
-   PREMIUM — TESTE GRATUITO 7 DIAS
+   ATIVAR PREMIUM — TESTE GRATUITO 7 DIAS
 ========================================================= */
 
 async function activatePremium() {
@@ -2461,16 +3145,20 @@ async function activatePremium() {
         return;
     }
 
+
     /*
-       Se já existe Premium válido,
-       não cria outra assinatura.
+       Se já estiver Premium,
+       não cria outro teste.
     */
 
     if (
         subscription &&
         (
-            subscription.status === "active" ||
-            subscription.status === "trial"
+            subscription.status ===
+                "active" ||
+
+            subscription.status ===
+                "trial"
         )
     ) {
 
@@ -2481,22 +3169,27 @@ async function activatePremium() {
         return;
     }
 
+
     const button =
         document.getElementById(
             "subscribePremiumBtn"
         );
 
+
     if (button) {
 
         button.disabled = true;
+
         button.textContent =
             "Ativando Premium...";
     }
+
 
     try {
 
         const now =
             new Date();
+
 
         const end =
             new Date(
@@ -2509,6 +3202,7 @@ async function activatePremium() {
                     1000
                 )
             );
+
 
         const {
             error
@@ -2542,13 +3236,18 @@ async function activatePremium() {
                         0
                 });
 
+
         if (error) {
+
             throw error;
         }
 
+
         await loadSubscription();
 
+
         updateUserInterface();
+
 
         alert(
             "🎉 Premium ativado com sucesso!\n\n" +
@@ -2575,11 +3274,13 @@ async function activatePremium() {
         if (button) {
 
             button.disabled = false;
+
             button.textContent =
                 "Quero ser Premium ⭐";
         }
     }
 }
+
 
 /* =========================================================
    ALERTAS PREMIUM
@@ -2592,46 +3293,66 @@ function renderAlerts() {
             "smartAlerts"
         );
 
+
     if (!container) return;
+
 
     const income =
         transactions
             .filter(
-                t => t.type === "income"
+                t =>
+                    t.type ===
+                    "income"
             )
             .reduce(
                 (sum, t) =>
-                    sum + t.amount,
+                    sum +
+                    t.amount,
                 0
             );
+
 
     const expense =
         transactions
             .filter(
-                t => t.type === "expense"
+                t =>
+                    t.type ===
+                    "expense"
             )
             .reduce(
                 (sum, t) =>
-                    sum + t.amount,
+                    sum +
+                    t.amount,
                 0
             );
 
+
     const alerts = [];
 
-    if (!transactions.length) {
 
-        alerts.push(`
-            <div class="empty-state">
-                Cadastre lançamentos para receber alertas inteligentes.
-            </div>
-        `);
-
-    } else if (
-        expense > income &&
-        income > 0
+    if (
+        !transactions.length
     ) {
 
         alerts.push(`
+
+            <div class="empty-state">
+
+                Cadastre lançamentos para receber alertas inteligentes.
+
+            </div>
+
+        `);
+
+    } else if (
+        expense >
+            income &&
+        income >
+            0
+    ) {
+
+        alerts.push(`
+
             <div class="category-summary-item">
 
                 <strong>
@@ -2643,14 +3364,18 @@ function renderAlerts() {
                 </span>
 
             </div>
+
         `);
 
     } else if (
-        income > 0 &&
-        expense >= income * 0.8
+        income >
+            0 &&
+        expense >=
+            income * 0.8
     ) {
 
         alerts.push(`
+
             <div class="category-summary-item">
 
                 <strong>
@@ -2662,11 +3387,13 @@ function renderAlerts() {
                 </span>
 
             </div>
+
         `);
 
     } else {
 
         alerts.push(`
+
             <div class="category-summary-item">
 
                 <strong>
@@ -2678,12 +3405,15 @@ function renderAlerts() {
                 </span>
 
             </div>
+
         `);
     }
+
 
     container.innerHTML =
         alerts.join("");
 }
+
 
 /* =========================================================
    COMPARAÇÃO MENSAL
@@ -2696,60 +3426,79 @@ function renderMonthlyComparison() {
             "monthlyComparison"
         );
 
+
     if (!container) return;
+
 
     const now =
         new Date();
 
+
     const month =
         now.getMonth();
+
 
     const year =
         now.getFullYear();
 
+
     const current =
-        transactions.filter(t => {
+        transactions.filter(
+            t => {
 
-            const d =
-                new Date(
-                    t.date +
-                    "T00:00:00"
+                const d =
+                    new Date(
+                        t.date +
+                        "T00:00:00"
+                    );
+
+
+                return (
+
+                    d.getMonth() ===
+                        month &&
+
+                    d.getFullYear() ===
+                        year
                 );
+            }
+        );
 
-            return (
-                d.getMonth() ===
-                    month &&
-
-                d.getFullYear() ===
-                    year
-            );
-        });
 
     const income =
         current
             .filter(
-                t => t.type === "income"
+                t =>
+                    t.type ===
+                    "income"
             )
             .reduce(
                 (s, t) =>
-                    s + t.amount,
+                    s +
+                    t.amount,
                 0
             );
+
 
     const expense =
         current
             .filter(
-                t => t.type === "expense"
+                t =>
+                    t.type ===
+                    "expense"
             )
             .reduce(
                 (s, t) =>
-                    s + t.amount,
+                    s +
+                    t.amount,
                 0
             );
+
 
     const balance =
         income -
         expense;
+
 
     container.innerHTML = `
 
@@ -2797,6 +3546,7 @@ function renderMonthlyComparison() {
     `;
 }
 
+
 /* =========================================================
    ANÁLISE PREMIUM
 ========================================================= */
@@ -2808,68 +3558,91 @@ function renderPremiumAnalysis() {
             "premiumAnalysis"
         );
 
+
     if (!container) return;
+
 
     const income =
         transactions
             .filter(
-                t => t.type === "income"
+                t =>
+                    t.type ===
+                    "income"
             )
             .reduce(
                 (s, t) =>
-                    s + t.amount,
+                    s +
+                    t.amount,
                 0
             );
+
 
     const expense =
         transactions
             .filter(
-                t => t.type === "expense"
+                t =>
+                    t.type ===
+                    "expense"
             )
             .reduce(
                 (s, t) =>
-                    s + t.amount,
+                    s +
+                    t.amount,
                 0
             );
 
-    if (!transactions.length) {
+
+    if (
+        !transactions.length
+    ) {
 
         container.innerHTML = `
+
             <div class="empty-state">
+
                 Adicione seus lançamentos para receber uma análise financeira.
+
             </div>
+
         `;
 
         return;
     }
 
+
     const balance =
         income -
         expense;
 
+
     let message;
 
-    if (balance < 0) {
 
-        message =
-            "Suas despesas estão acima das receitas. " +
-            "O ideal é revisar os maiores gastos e reduzir despesas não essenciais.";
-
-    } else if (
-        income > 0 &&
-        expense > income * 0.8
+    if (
+        balance <
+        0
     ) {
 
         message =
-            "Você está gastando uma parcela alta das suas receitas. " +
-            "Tente aumentar sua margem de economia.";
+            "Suas despesas estão acima das receitas. O ideal é revisar os maiores gastos e reduzir despesas não essenciais.";
+
+    } else if (
+        income >
+            0 &&
+        expense >
+            income *
+            0.8
+    ) {
+
+        message =
+            "Você está gastando uma parcela alta das suas receitas. Tente aumentar sua margem de economia.";
 
     } else {
 
         message =
-            "Suas finanças apresentam um bom equilíbrio. " +
-            "Continue acompanhando seus gastos e fortalecendo sua reserva.";
+            "Suas finanças apresentam um bom equilíbrio. Continue acompanhando seus gastos e fortalecendo sua reserva.";
     }
+
 
     container.innerHTML = `
 
@@ -2889,6 +3662,7 @@ function renderPremiumAnalysis() {
     `;
 }
 
+
 /* =========================================================
    SAÚDE FINANCEIRA
 ========================================================= */
@@ -2900,29 +3674,39 @@ function updateHealthStatus() {
             "healthResult"
         );
 
+
     if (!container) return;
+
 
     const income =
         transactions
             .filter(
-                t => t.type === "income"
+                t =>
+                    t.type ===
+                    "income"
             )
             .reduce(
                 (s, t) =>
-                    s + t.amount,
+                    s +
+                    t.amount,
                 0
             );
+
 
     const expense =
         transactions
             .filter(
-                t => t.type === "expense"
+                t =>
+                    t.type ===
+                    "expense"
             )
             .reduce(
                 (s, t) =>
-                    s + t.amount,
+                    s +
+                    t.amount,
                 0
             );
+
 
     if (
         !income &&
@@ -2935,18 +3719,26 @@ function updateHealthStatus() {
         return;
     }
 
+
     const ratio =
         income > 0
             ? expense /
                 income
             : 999;
 
-    if (ratio > 1) {
+
+    if (
+        ratio >
+        1
+    ) {
 
         container.innerHTML =
             "🔴 Situação crítica: os gastos estão acima das receitas.";
 
-    } else if (ratio > 0.8) {
+    } else if (
+        ratio >
+        0.8
+    ) {
 
         container.innerHTML =
             "🟡 Atenção: sua margem de economia está baixa.";
@@ -2957,6 +3749,7 @@ function updateHealthStatus() {
             "🟢 Saudável: você possui uma boa margem de economia.";
     }
 }
+
 
 /* =========================================================
    SIMULADOR
@@ -2971,16 +3764,20 @@ function simulateExpense() {
             )?.value
         );
 
+
     const result =
         document.getElementById(
             "simulationResult"
         );
 
+
     if (!result) return;
+
 
     if (
         !amount ||
-        amount <= 0
+        amount <=
+            0
     ) {
 
         result.textContent =
@@ -2989,35 +3786,46 @@ function simulateExpense() {
         return;
     }
 
+
     const income =
         transactions
             .filter(
-                t => t.type === "income"
+                t =>
+                    t.type ===
+                    "income"
             )
             .reduce(
                 (s, t) =>
-                    s + t.amount,
+                    s +
+                    t.amount,
                 0
             );
+
 
     const expense =
         transactions
             .filter(
-                t => t.type === "expense"
+                t =>
+                    t.type ===
+                    "expense"
             )
             .reduce(
                 (s, t) =>
-                    s + t.amount,
+                    s +
+                    t.amount,
                 0
             );
+
 
     const balance =
         income -
         expense;
 
+
     const newBalance =
         balance -
         amount;
+
 
     result.innerHTML = `
 
@@ -3041,18 +3849,22 @@ function simulateExpense() {
     `;
 }
 
+
 /* =========================================================
-   INTERFACE
+   INTERFACE DO USUÁRIO
 ========================================================= */
 
 async function updateUserInterface() {
 
     if (!currentUser) return;
 
+
     let name =
-        currentUser.user_metadata
+        currentUser
+            .user_metadata
             ?.full_name ||
         "Usuário";
+
 
     try {
 
@@ -3070,7 +3882,11 @@ async function updateUserInterface() {
                 )
                 .maybeSingle();
 
-        if (data?.full_name) {
+
+        if (
+            data?.full_name
+        ) {
+
             name =
                 data.full_name;
         }
@@ -3078,25 +3894,29 @@ async function updateUserInterface() {
     } catch (error) {
 
         console.warn(
-            "Erro carregando nome do perfil:",
+            "Erro carregando nome:",
             error
         );
     }
+
 
     setText(
         "userName",
         name
     );
 
+
     setText(
         "welcomeName",
         name
     );
 
+
     const avatar =
         document.getElementById(
             "userAvatar"
         );
+
 
     if (avatar) {
 
@@ -3105,6 +3925,7 @@ async function updateUserInterface() {
                 .charAt(0)
                 .toUpperCase();
     }
+
 
     const isPremium =
         subscription &&
@@ -3116,6 +3937,7 @@ async function updateUserInterface() {
                 "trial"
         );
 
+
     setText(
         "userPlan",
 
@@ -3124,28 +3946,34 @@ async function updateUserInterface() {
             : "ControleS Grátis"
     );
 
+
     updateHealthStatus();
 }
+
 
 /* =========================================================
    NAVEGAÇÃO
 ========================================================= */
 
-function showSection(section) {
+function showSection(
+    section
+) {
 
     document.querySelectorAll(
         ".section"
-    ).forEach(item => {
+    ).forEach(
+        item =>
+            item.classList.add(
+                "hidden"
+            )
+    );
 
-        item.classList.add(
-            "hidden"
-        );
-    });
 
     const target =
         document.getElementById(
             section
         );
+
 
     if (target) {
 
@@ -3154,17 +3982,21 @@ function showSection(section) {
         );
     }
 
+
     document.querySelectorAll(
         ".nav-item"
-    ).forEach(item => {
+    ).forEach(
+        item => {
 
-        item.classList.toggle(
-            "active",
+            item.classList.toggle(
+                "active",
 
-            item.dataset.section ===
-                section
-        );
-    });
+                item.dataset.section ===
+                    section
+            );
+        }
+    );
+
 
     const titles = {
 
@@ -3184,18 +4016,23 @@ function showSection(section) {
             "Premium"
     };
 
+
     setText(
         "pageTitle",
 
-        titles[section] ||
+        titles[
+            section
+        ] ||
         "Dashboard"
     );
+
 
     document.getElementById(
         "sidebar"
     )?.classList.remove(
         "open"
     );
+
 
     if (
         section ===
@@ -3206,6 +4043,7 @@ function showSection(section) {
     }
 }
 
+
 function toggleMobileMenu() {
 
     document.getElementById(
@@ -3214,6 +4052,7 @@ function toggleMobileMenu() {
         "open"
     );
 }
+
 
 /* =========================================================
    TEMA
@@ -3225,18 +4064,22 @@ function toggleTheme() {
         "dark-mode"
     );
 
+
     const dark =
         document.body.classList.contains(
             "dark-mode"
         );
 
+
     localStorage.setItem(
         "controles_theme",
+
         dark
             ? "dark"
             : "light"
     );
 }
+
 
 function loadTheme() {
 
@@ -3244,6 +4087,7 @@ function loadTheme() {
         localStorage.getItem(
             "controles_theme"
         );
+
 
     if (
         theme ===
@@ -3256,6 +4100,7 @@ function loadTheme() {
     }
 }
 
+
 /* =========================================================
    MODAL TRANSAÇÃO
 ========================================================= */
@@ -3267,14 +4112,18 @@ function openTransactionModal() {
             "transactionModal"
         );
 
+
     if (!modal) return;
+
 
     modal.classList.remove(
         "hidden"
     );
 
+
     setDefaultDate();
 }
+
 
 function closeTransactionModal() {
 
@@ -3284,6 +4133,7 @@ function closeTransactionModal() {
         "hidden"
     );
 }
+
 
 /* =========================================================
    DATA
@@ -3296,12 +4146,14 @@ function setDefaultDate() {
             "dateInput"
         );
 
+
     if (
         !input ||
         input.value
     ) {
         return;
     }
+
 
     const today =
         new Date()
@@ -3311,9 +4163,11 @@ function setDefaultDate() {
                 10
             );
 
+
     input.value =
         today;
 }
+
 
 function setCurrentDate() {
 
@@ -3322,15 +4176,19 @@ function setCurrentDate() {
             "currentDate"
         );
 
+
     if (!element) return;
+
 
     const date =
         new Date();
+
 
     element.textContent =
         date.toLocaleDateString(
             "pt-BR",
             {
+
                 weekday:
                     "long",
 
@@ -3346,13 +4204,16 @@ function setCurrentDate() {
         );
 }
 
+
 /* =========================================================
    EXPORTAR DADOS
 ========================================================= */
 
 function exportData() {
 
-    if (!transactions.length) {
+    if (
+        !transactions.length
+    ) {
 
         alert(
             "Não existem lançamentos para exportar."
@@ -3360,6 +4221,7 @@ function exportData() {
 
         return;
     }
+
 
     const data = {
 
@@ -3380,6 +4242,7 @@ function exportData() {
         subscription
     };
 
+
     const blob =
         new Blob(
             [
@@ -3395,34 +4258,43 @@ function exportData() {
             }
         );
 
+
     const url =
         URL.createObjectURL(
             blob
         );
+
 
     const link =
         document.createElement(
             "a"
         );
 
+
     link.href =
         url;
 
+
     link.download =
         "controles-dados.json";
+
 
     document.body.appendChild(
         link
     );
 
+
     link.click();
 
+
     link.remove();
+
 
     URL.revokeObjectURL(
         url
     );
 }
+
 
 /* =========================================================
    UTILITÁRIOS
@@ -3438,6 +4310,7 @@ function setText(
             id
         );
 
+
     if (element) {
 
         element.textContent =
@@ -3445,15 +4318,18 @@ function setText(
     }
 }
 
+
 function formatCurrency(
     value
 ) {
 
     return Number(
-        value || 0
+        value ||
+        0
     ).toLocaleString(
         "pt-BR",
         {
+
             style:
                 "currency",
 
@@ -3463,16 +4339,21 @@ function formatCurrency(
     );
 }
 
+
 function formatDate(
     date
 ) {
 
     if (!date) return "";
 
+
     const parts =
         String(
             date
-        ).split("-");
+        ).split(
+            "-"
+        );
+
 
     if (
         parts.length ===
@@ -3486,15 +4367,18 @@ function formatDate(
         );
     }
 
+
     return date;
 }
+
 
 function escapeHTML(
     value
 ) {
 
     return String(
-        value ?? ""
+        value ??
+        ""
     )
         .replace(
             /&/g,
@@ -3518,8 +4402,10 @@ function escapeHTML(
         );
 }
 
+
 /* =========================================================
    INICIAR TEMA
 ========================================================= */
 
 loadTheme();
+```
