@@ -1,67 +1,1756 @@
-/* =========================================================
-   CONTROLES — APP.JS
-   ========================================================= */
-
 const SUPABASE_URL = "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
-
-const SUPABASE_KEY =
-    "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
-
-
-/* =========================================================
-   SUPABASE
-   ========================================================= */
+const SUPABASE_KEY = "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
 
 let supabaseClient = null;
+let currentUser = null;
 
-if (
-    window.supabase &&
-    typeof window.supabase.createClient === "function"
+let transactions = [];
+let goals = [];
+let budgets = [];
+let subscription = null;
+
+let financeChart = null;
+let categoryChart = null;
+let reportCategoryChart = null;
+
+let selectedTransactionType = "income";
+let enteringApp = false;
+
+
+/* =====================================================
+   INICIALIZAÇÃO
+===================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+    setupEvents();
+    setCurrentDate();
+    setDefaultDate();
+    loadTheme();
+    initializeSupabase();
+    checkSession();
+});
+
+
+function initializeSupabase() {
+    try {
+        if (
+            typeof window.supabase === "undefined" ||
+            !window.supabase.createClient
+        ) {
+            console.error("Supabase não foi carregado.");
+            return;
+        }
+
+        supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+        console.log("✅ Supabase inicializado.");
+    } catch (error) {
+        console.error(
+            "Erro inicializando Supabase:",
+            error
+        );
+    }
+}
+
+
+/* =====================================================
+   EVENTOS
+===================================================== */
+
+function setupEvents() {
+    const loginForm =
+        document.getElementById("loginForm");
+
+    if (loginForm) {
+        loginForm.addEventListener(
+            "submit",
+            handleLogin
+        );
+    }
+
+
+    const registerForm =
+        document.getElementById("registerForm");
+
+    if (registerForm) {
+        registerForm.addEventListener(
+            "submit",
+            handleRegister
+        );
+    }
+
+
+    const transactionForm =
+        document.getElementById(
+            "transactionForm"
+        );
+
+    if (transactionForm) {
+        transactionForm.addEventListener(
+            "submit",
+            saveTransaction
+        );
+    }
+
+
+    const logoutButton =
+        document.getElementById("logoutBtn");
+
+    if (logoutButton) {
+        logoutButton.addEventListener(
+            "click",
+            logout
+        );
+    }
+
+
+    document
+        .querySelectorAll(".password-toggle")
+        .forEach(function (button) {
+            button.addEventListener(
+                "click",
+                function () {
+                    const target =
+                        button.dataset.target;
+
+                    if (target) {
+                        togglePassword(
+                            target,
+                            button
+                        );
+                    }
+                }
+            );
+        });
+
+
+    document
+        .querySelectorAll("[data-theme-toggle]")
+        .forEach(function (button) {
+            button.addEventListener(
+                "click",
+                toggleTheme
+            );
+        });
+}
+
+
+/* =====================================================
+   SENHA
+===================================================== */
+
+function togglePassword(
+    inputId,
+    button
 ) {
-    supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
+    const input =
+        document.getElementById(inputId);
+
+    if (!input) {
+        return;
+    }
+
+    if (input.type === "password") {
+        input.type = "text";
+
+        if (button) {
+            button.textContent = "◎";
+            button.setAttribute(
+                "aria-label",
+                "Ocultar senha"
+            );
+        }
+    } else {
+        input.type = "password";
+
+        if (button) {
+            button.textContent = "◉";
+            button.setAttribute(
+                "aria-label",
+                "Mostrar senha"
+            );
+        }
+    }
+}
+
+
+/* =====================================================
+   LOGIN / CADASTRO
+===================================================== */
+
+function showLogin() {
+    const loginScreen =
+        document.getElementById(
+            "loginScreen"
+        );
+
+    const app =
+        document.getElementById("app");
+
+    if (loginScreen) {
+        loginScreen.classList.remove(
+            "hidden"
+        );
+    }
+
+    if (app) {
+        app.classList.add("hidden");
+    }
+}
+
+
+function showRegister() {
+    const loginView =
+        document.getElementById(
+            "loginView"
+        );
+
+    const registerView =
+        document.getElementById(
+            "registerView"
+        );
+
+    if (loginView) {
+        loginView.classList.add("hidden");
+    }
+
+    if (registerView) {
+        registerView.classList.remove(
+            "hidden"
+        );
+    }
+}
+
+
+function showLoginForm() {
+    const loginView =
+        document.getElementById(
+            "loginView"
+        );
+
+    const registerView =
+        document.getElementById(
+            "registerView"
+        );
+
+    if (registerView) {
+        registerView.classList.add("hidden");
+    }
+
+    if (loginView) {
+        loginView.classList.remove(
+            "hidden"
+        );
+    }
+}
+
+
+/* =====================================================
+   SESSÃO
+===================================================== */
+
+async function checkSession() {
+    if (!supabaseClient) {
+        showLogin();
+        return;
+    }
+
+    try {
+        const result =
+            await supabaseClient.auth.getSession();
+
+        if (result.error) {
+            console.error(
+                "Erro verificando sessão:",
+                result.error
+            );
+
+            currentUser = null;
+            showLogin();
+            return;
+        }
+
+        currentUser =
+            result.data?.session?.user ||
+            null;
+
+        if (currentUser) {
+            console.log(
+                "👤 Sessão encontrada:",
+                currentUser.email
+            );
+
+            await enterApp();
+        } else {
+            showLogin();
+        }
+
+        supabaseClient.auth.onAuthStateChange(
+            async function (
+                event,
+                session
+            ) {
+                currentUser =
+                    session?.user ||
+                    null;
+
+                console.log(
+                    "🔐 Evento de autenticação:",
+                    event
+                );
+
+                if (
+                    event ===
+                    "SIGNED_OUT"
+                ) {
+                    currentUser = null;
+
+                    transactions = [];
+                    goals = [];
+                    budgets = [];
+                    subscription = null;
+
+                    showLogin();
+                }
+            }
+        );
+    } catch (error) {
+        console.error(
+            "Erro verificando sessão:",
+            error
+        );
+
+        currentUser = null;
+        showLogin();
+    }
+}
+
+
+async function handleLogin(event) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    if (!supabaseClient) {
+        alert(
+            "Supabase ainda não foi inicializado."
+        );
+        return;
+    }
+
+    const emailInput =
+        document.getElementById(
+            "loginEmail"
+        );
+
+    const passwordInput =
+        document.getElementById(
+            "loginPassword"
+        );
+
+    const email =
+        emailInput?.value
+            ?.trim()
+            .toLowerCase();
+
+    const password =
+        passwordInput?.value || "";
+
+    if (!email || !password) {
+        alert(
+            "Preencha seu e-mail e sua senha."
+        );
+        return;
+    }
+
+    try {
+        const result =
+            await supabaseClient.auth
+                .signInWithPassword({
+                    email,
+                    password
+                });
+
+        if (result.error) {
+            console.error(
+                "Erro no login:",
+                result.error
+            );
+
+            alert(
+                "Não foi possível entrar.\n\n" +
+                result.error.message
+            );
+
+            return;
+        }
+
+        currentUser =
+            result.data?.user ||
+            null;
+
+        if (!currentUser) {
+            alert(
+                "Não foi possível identificar o usuário."
+            );
+            return;
+        }
+
+        await createProfileIfNeeded();
+
+        await enterApp();
+    } catch (error) {
+        console.error(
+            "Erro no login:",
+            error
+        );
+
+        alert(
+            "Ocorreu um erro ao entrar."
+        );
+    }
+}
+
+
+async function handleRegister(event) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    if (!supabaseClient) {
+        alert(
+            "Supabase ainda não foi inicializado."
+        );
+        return;
+    }
+
+    const nameInput =
+        document.getElementById(
+            "registerName"
+        );
+
+    const emailInput =
+        document.getElementById(
+            "registerEmail"
+        );
+
+    const passwordInput =
+        document.getElementById(
+            "registerPassword"
+        );
+
+    const confirmPasswordInput =
+        document.getElementById(
+            "registerPasswordConfirm"
+        );
+
+    const name =
+        nameInput?.value?.trim() || "";
+
+    const email =
+        emailInput?.value
+            ?.trim()
+            .toLowerCase() || "";
+
+    const password =
+        passwordInput?.value || "";
+
+    const confirmPassword =
+        confirmPasswordInput?.value ||
+        "";
+
+    if (!name) {
+        alert(
+            "Digite seu nome."
+        );
+        return;
+    }
+
+    if (!email) {
+        alert(
+            "Digite seu e-mail."
+        );
+        return;
+    }
+
+    if (!password) {
+        alert(
+            "Digite uma senha."
+        );
+        return;
+    }
+
+    if (password.length < 6) {
+        alert(
+            "A senha precisa ter pelo menos 6 caracteres."
+        );
+        return;
+    }
+
+    if (
+        confirmPassword &&
+        password !== confirmPassword
+    ) {
+        alert(
+            "As senhas não são iguais."
+        );
+        return;
+    }
+
+    try {
+        const result =
+            await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        full_name:
+                            name
+                    }
+                }
+            });
+
+        if (result.error) {
+            console.error(
+                "Erro no cadastro:",
+                result.error
+            );
+
+            alert(
+                "Não foi possível criar sua conta.\n\n" +
+                result.error.message
+            );
+
+            return;
+        }
+
+        currentUser =
+            result.data?.user ||
+            null;
+
+        if (!result.data?.session) {
+            alert(
+                "🎉 Conta criada com sucesso!\n\n" +
+                "Enviamos um e-mail de confirmação para você.\n\n" +
+                "Confirme seu e-mail e depois volte ao ControleS para entrar."
+            );
+
+            return;
+        }
+
+        if (!currentUser) {
+            throw new Error(
+                "Conta criada, mas não foi possível iniciar a sessão."
+            );
+        }
+
+        await createProfileIfNeeded(
+            name
+        );
+
+        await enterApp();
+    } catch (error) {
+        console.error(
+            "Erro no cadastro:",
+            error
+        );
+
+        alert(
+            "Ocorreu um erro ao criar sua conta."
+        );
+    }
+}
+
+
+/* =====================================================
+   PERFIL
+===================================================== */
+
+async function createProfileIfNeeded(
+    name = ""
+) {
+    if (
+        !supabaseClient ||
+        !currentUser
+    ) {
+        return;
+    }
+
+    try {
+        const result =
+            await supabaseClient
+                .from("profiles")
+                .select("*")
+                .eq(
+                    "id",
+                    currentUser.id
+                )
+                .maybeSingle();
+
+        if (result.error) {
+            console.error(
+                "Erro buscando perfil:",
+                result.error
+            );
+            return;
+        }
+
+        if (!result.data) {
+            const profile =
+                await supabaseClient
+                    .from("profiles")
+                    .insert({
+                        id:
+                            currentUser.id,
+                        full_name:
+                            name ||
+                            currentUser.user_metadata
+                                ?.full_name ||
+                            "",
+                        email:
+                            currentUser.email ||
+                            ""
+                    });
+
+            if (profile.error) {
+                console.error(
+                    "Erro criando perfil:",
+                    profile.error
+                );
+            }
+        }
+    } catch (error) {
+        console.error(
+            "Erro no perfil:",
+            error
+        );
+    }
+}
+
+
+/* =====================================================
+   ENTRAR NO APP
+===================================================== */
+
+async function enterApp() {
+    if (!currentUser) {
+        return;
+    }
+
+    if (enteringApp) {
+        return;
+    }
+
+    enteringApp = true;
+
+    try {
+        const loginScreen =
+            document.getElementById(
+                "loginScreen"
+            );
+
+        const app =
+            document.getElementById(
+                "app"
+            );
+
+        if (loginScreen) {
+            loginScreen.classList.add(
+                "hidden"
+            );
+        }
+
+        if (app) {
+            app.classList.remove(
+                "hidden"
+            );
+        }
+
+        await loadUserData();
+
+        showSection(
+            "dashboard"
+        );
+    } catch (error) {
+        console.error(
+            "Erro entrando no app:",
+            error
+        );
+
+        showSection(
+            "dashboard"
+        );
+    } finally {
+        enteringApp = false;
+    }
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function logout() {
+    try {
+        if (supabaseClient) {
+            await supabaseClient.auth.signOut();
+        }
+    } catch (error) {
+        console.error(
+            "Erro fazendo logout:",
+            error
+        );
+    }
+
+    currentUser = null;
+
+    transactions = [];
+    goals = [];
+    budgets = [];
+    subscription = null;
+
+    showLogin();
+}
+/* =====================================================
+   CARREGAMENTO DOS DADOS DO USUÁRIO
+===================================================== */
+
+async function loadUserData() {
+    if (!supabaseClient || !currentUser) {
+        return;
+    }
+
+    try {
+        await createProfileIfNeeded();
+
+        await Promise.all([
+            loadTransactions(),
+            loadGoals(),
+            loadBudgets(),
+            loadSubscription()
+        ]);
+
+        updateDashboard();
+        updateTransactionsList();
+        updateGoalsList();
+        updateBudgetUI();
+        updateReports();
+        updateProfileUI();
+        updatePremiumUI();
+    } catch (error) {
+        console.error(
+            "Erro carregando dados:",
+            error
+        );
+    }
+}
+
+
+/* =====================================================
+   TRANSAÇÕES
+===================================================== */
+
+async function loadTransactions() {
+    if (
+        !supabaseClient ||
+        !currentUser
+    ) {
+        transactions = [];
+        return;
+    }
+
+    try {
+        const result =
+            await supabaseClient
+                .from("transactions")
+                .select("*")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .order(
+                    "date",
+                    {
+                        ascending: false
+                    }
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+        if (result.error) {
+            console.error(
+                "Erro carregando lançamentos:",
+                result.error
+            );
+
+            transactions = [];
+            return;
+        }
+
+        transactions =
+            result.data || [];
+    } catch (error) {
+        console.error(
+            "Erro carregando transações:",
+            error
+        );
+
+        transactions = [];
+    }
+}
+
+
+async function saveTransaction(event) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    if (
+        !supabaseClient ||
+        !currentUser
+    ) {
+        alert(
+            "Você precisa estar logado para salvar um lançamento."
+        );
+        return;
+    }
+
+    const descriptionInput =
+        document.getElementById(
+            "transactionDescription"
+        );
+
+    const amountInput =
+        document.getElementById(
+            "transactionAmount"
+        );
+
+    const categoryInput =
+        document.getElementById(
+            "transactionCategory"
+        );
+
+    const dateInput =
+        document.getElementById(
+            "transactionDate"
+        );
+
+    const description =
+        descriptionInput?.value
+            ?.trim() || "";
+
+    const amountValue =
+        amountInput?.value || "";
+
+    const category =
+        categoryInput?.value
+            ?.trim() || "";
+
+    const date =
+        dateInput?.value ||
+        new Date()
+            .toISOString()
+            .slice(0, 10);
+
+    const amount =
+        parseFloat(
+            String(amountValue)
+                .replace(",", ".")
+        );
+
+    if (!description) {
+        alert(
+            "Digite uma descrição para o lançamento."
+        );
+        return;
+    }
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+        alert(
+            "Digite um valor válido."
+        );
+        return;
+    }
+
+    try {
+        /*
+         * IMPORTANTE:
+         * A tabela transactions do Supabase possui:
+         *
+         * user_id
+         * description
+         * amount
+         * type
+         * category
+         * date
+         *
+         * Não enviar "area" ou "note",
+         * pois essas colunas não existem
+         * no banco atual.
+         */
+
+        const result =
+            await supabaseClient
+                .from("transactions")
+                .insert({
+                    user_id:
+                        currentUser.id,
+                    type:
+                        selectedTransactionType,
+                    description:
+                        description,
+                    amount:
+                        amount,
+                    category:
+                        category,
+                    date:
+                        date
+                });
+
+        if (result.error) {
+            console.error(
+                "Erro salvando lançamento:",
+                result.error
+            );
+
+            alert(
+                "Não foi possível salvar o lançamento.\n\n" +
+                result.error.message
+            );
+
+            return;
+        }
+
+        if (descriptionInput) {
+            descriptionInput.value =
+                "";
+        }
+
+        if (amountInput) {
+            amountInput.value =
+                "";
+        }
+
+        if (categoryInput) {
+            categoryInput.value =
+                "";
+        }
+
+        setDefaultDate();
+
+        selectedTransactionType =
+            "income";
+
+        updateTransactionTypeButtons();
+
+        closeModal(
+            "transactionModal"
+        );
+
+        await loadUserData();
+
+        alert(
+            "✅ Lançamento salvo com sucesso!"
+        );
+    } catch (error) {
+        console.error(
+            "Erro salvando lançamento:",
+            error
+        );
+
+        alert(
+            "Ocorreu um erro ao salvar o lançamento.\n\n" +
+            error.message
+        );
+    }
+}
+
+
+/* =====================================================
+   TIPO DE TRANSAÇÃO
+===================================================== */
+
+function selectTransactionType(
+    type
+) {
+    if (
+        type !== "income" &&
+        type !== "expense"
+    ) {
+        return;
+    }
+
+    selectedTransactionType =
+        type;
+
+    updateTransactionTypeButtons();
+}
+
+
+function updateTransactionTypeButtons() {
+    const incomeButton =
+        document.getElementById(
+            "incomeTypeBtn"
+        );
+
+    const expenseButton =
+        document.getElementById(
+            "expenseTypeBtn"
+        );
+
+    if (incomeButton) {
+        incomeButton.classList.toggle(
+            "active",
+            selectedTransactionType ===
+                "income"
+        );
+    }
+
+    if (expenseButton) {
+        expenseButton.classList.toggle(
+            "active",
+            selectedTransactionType ===
+                "expense"
+        );
+    }
+}
+
+
+/* =====================================================
+   EXCLUSÃO DE TRANSAÇÃO
+===================================================== */
+
+async function deleteTransaction(
+    id
+) {
+    if (
+        !supabaseClient ||
+        !currentUser ||
+        !id
+    ) {
+        return;
+    }
+
+    const confirmed =
+        window.confirm(
+            "Deseja realmente excluir este lançamento?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const result =
+            await supabaseClient
+                .from("transactions")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
+
+        if (result.error) {
+            console.error(
+                "Erro excluindo lançamento:",
+                result.error
+            );
+
+            alert(
+                "Não foi possível excluir o lançamento.\n\n" +
+                result.error.message
+            );
+
+            return;
+        }
+
+        await loadUserData();
+
+        alert(
+            "Lançamento excluído."
+        );
+    } catch (error) {
+        console.error(
+            "Erro excluindo transação:",
+            error
+        );
+
+        alert(
+            "Ocorreu um erro ao excluir o lançamento."
+        );
+    }
+}
+
+
+/* =====================================================
+   EDIÇÃO DE TRANSAÇÃO
+===================================================== */
+
+async function editTransaction(
+    id
+) {
+    const transaction =
+        transactions.find(
+            function (item) {
+                return item.id === id;
+            }
+        );
+
+    if (!transaction) {
+        return;
+    }
+
+    const descriptionInput =
+        document.getElementById(
+            "transactionDescription"
+        );
+
+    const amountInput =
+        document.getElementById(
+            "transactionAmount"
+        );
+
+    const categoryInput =
+        document.getElementById(
+            "transactionCategory"
+        );
+
+    const dateInput =
+        document.getElementById(
+            "transactionDate"
+        );
+
+    if (descriptionInput) {
+        descriptionInput.value =
+            transaction.description ||
+            "";
+    }
+
+    if (amountInput) {
+        amountInput.value =
+            transaction.amount || "";
+    }
+
+    if (categoryInput) {
+        categoryInput.value =
+            transaction.category ||
+            "";
+    }
+
+    if (dateInput) {
+        dateInput.value =
+            transaction.date ||
+            "";
+    }
+
+    selectedTransactionType =
+        transaction.type ||
+        "income";
+
+    updateTransactionTypeButtons();
+
+    openModal(
+        "transactionModal"
     );
-} else {
-    console.error(
-        "Supabase não foi carregado."
+
+    const form =
+        document.getElementById(
+            "transactionForm"
+        );
+
+    if (form) {
+        form.dataset.editingId =
+            id;
+    }
+}
+
+
+/* =====================================================
+   ATUALIZAÇÃO DA LISTA
+===================================================== */
+
+function updateTransactionsList() {
+    const container =
+        document.getElementById(
+            "transactionsList"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    if (!transactions.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">💰</div>
+                <h3>Nenhum lançamento</h3>
+                <p>
+                    Comece adicionando sua primeira
+                    receita ou despesa.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        transactions
+            .map(function (transaction) {
+                const isIncome =
+                    transaction.type ===
+                    "income";
+
+                const amount =
+                    formatCurrency(
+                        transaction.amount
+                    );
+
+                const date =
+                    formatDate(
+                        transaction.date
+                    );
+
+                return `
+                    <div class="transaction-item">
+                        <div class="transaction-icon ${
+                            isIncome
+                                ? "income"
+                                : "expense"
+                        }">
+                            ${
+                                isIncome
+                                    ? "↗"
+                                    : "↘"
+                            }
+                        </div>
+
+                        <div class="transaction-info">
+                            <strong>
+                                ${escapeHtml(
+                                    transaction.description ||
+                                        "Sem descrição"
+                                )}
+                            </strong>
+
+                            <span>
+                                ${
+                                    escapeHtml(
+                                        transaction.category ||
+                                            "Sem categoria"
+                                    )
+                                }
+                                •
+                                ${date}
+                            </span>
+                        </div>
+
+                        <div class="transaction-value ${
+                            isIncome
+                                ? "income"
+                                : "expense"
+                        }">
+                            ${
+                                isIncome
+                                    ? "+"
+                                    : "-"
+                            } ${amount}
+                        </div>
+
+                        <div class="transaction-actions">
+                            <button
+                                type="button"
+                                onclick="editTransaction('${transaction.id}')"
+                                title="Editar"
+                            >
+                                ✏️
+                            </button>
+
+                            <button
+                                type="button"
+                                onclick="deleteTransaction('${transaction.id}')"
+                                title="Excluir"
+                            >
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `;
+            })
+            .join("");
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function updateDashboard() {
+    const income =
+        transactions
+            .filter(function (item) {
+                return (
+                    item.type ===
+                    "income"
+                );
+            })
+            .reduce(
+                function (
+                    total,
+                    item
+                ) {
+                    return (
+                        total +
+                        Number(
+                            item.amount ||
+                                0
+                        )
+                    );
+                },
+                0
+            );
+
+    const expense =
+        transactions
+            .filter(function (item) {
+                return (
+                    item.type ===
+                    "expense"
+                );
+            })
+            .reduce(
+                function (
+                    total,
+                    item
+                ) {
+                    return (
+                        total +
+                        Number(
+                            item.amount ||
+                                0
+                        )
+                    );
+                },
+                0
+            );
+
+    const balance =
+        income - expense;
+
+    setText(
+        "totalIncome",
+        formatCurrency(income)
+    );
+
+    setText(
+        "totalExpense",
+        formatCurrency(expense)
+    );
+
+    setText(
+        "totalBalance",
+        formatCurrency(balance)
+    );
+
+    setText(
+        "dashboardIncome",
+        formatCurrency(income)
+    );
+
+    setText(
+        "dashboardExpense",
+        formatCurrency(expense)
+    );
+
+    setText(
+        "dashboardBalance",
+        formatCurrency(balance)
+    );
+
+    renderFinanceChart(
+        income,
+        expense
+    );
+
+    renderCategoryChart();
+}
+
+
+/* =====================================================
+   GRÁFICO FINANCEIRO
+===================================================== */
+
+function renderFinanceChart(
+    income,
+    expense
+) {
+    const canvas =
+        document.getElementById(
+            "financeChart"
+        );
+
+    if (
+        !canvas ||
+        typeof Chart ===
+            "undefined"
+    ) {
+        return;
+    }
+
+    if (financeChart) {
+        financeChart.destroy();
+    }
+
+    financeChart =
+        new Chart(
+            canvas,
+            {
+                type: "doughnut",
+                data: {
+                    labels: [
+                        "Receitas",
+                        "Despesas"
+                    ],
+                    datasets: [
+                        {
+                            data: [
+                                income,
+                                expense
+                            ]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio:
+                        false,
+                    plugins: {
+                        legend: {
+                            position:
+                                "bottom"
+                        }
+                    }
+                }
+            }
+        );
+}
+
+
+/* =====================================================
+   GRÁFICO POR CATEGORIA
+===================================================== */
+
+function renderCategoryChart() {
+    const canvas =
+        document.getElementById(
+            "categoryChart"
+        );
+
+    if (
+        !canvas ||
+        typeof Chart ===
+            "undefined"
+    ) {
+        return;
+    }
+
+    const categoryTotals = {};
+
+    transactions
+        .filter(function (item) {
+            return (
+                item.type ===
+                "expense"
+            );
+        })
+        .forEach(function (item) {
+            const category =
+                item.category ||
+                "Outros";
+
+            categoryTotals[
+                category
+            ] =
+                (
+                    categoryTotals[
+                        category
+                    ] || 0
+                ) +
+                Number(
+                    item.amount ||
+                        0
+                );
+        });
+
+    const labels =
+        Object.keys(
+            categoryTotals
+        );
+
+    const values =
+        labels.map(
+            function (label) {
+                return categoryTotals[
+                    label
+                ];
+            }
+        );
+
+    if (categoryChart) {
+        categoryChart.destroy();
+    }
+
+    categoryChart =
+        new Chart(
+            canvas,
+            {
+                type: "pie",
+                data: {
+                    labels:
+                        labels.length
+                            ? labels
+                            : [
+                                  "Sem dados"
+                              ],
+                    datasets: [
+                        {
+                            data:
+                                values.length
+                                    ? values
+                                    : [1]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio:
+                        false,
+                    plugins: {
+                        legend: {
+                            position:
+                                "bottom"
+                        }
+                    }
+                }
+            }
+        );
+}
+
+
+/* =====================================================
+   NAVEGAÇÃO
+===================================================== */
+
+function showSection(
+    sectionName
+) {
+    document
+        .querySelectorAll(
+            ".app-section"
+        )
+        .forEach(function (section) {
+            section.classList.add(
+                "hidden"
+            );
+        });
+
+    const target =
+        document.getElementById(
+            sectionName
+        );
+
+    if (target) {
+        target.classList.remove(
+            "hidden"
+        );
+    }
+
+    document
+        .querySelectorAll(
+            "[data-section]"
+        )
+        .forEach(function (button) {
+            button.classList.toggle(
+                "active",
+                button.dataset.section ===
+                    sectionName
+            );
+        });
+
+    if (
+        sectionName ===
+        "dashboard"
+    ) {
+        updateDashboard();
+    }
+
+    if (
+        sectionName ===
+        "transactions"
+    ) {
+        updateTransactionsList();
+    }
+
+    if (
+        sectionName ===
+        "reports"
+    ) {
+        updateReports();
+    }
+
+    if (
+        sectionName ===
+        "goals"
+    ) {
+        updateGoalsList();
+    }
+}
+
+
+/* =====================================================
+   MODAIS
+===================================================== */
+
+function openModal(
+    modalId
+) {
+    const modal =
+        document.getElementById(
+            modalId
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+    modal.classList.add(
+        "active"
     );
 }
 
 
-/* =========================================================
-   ESTADO DA APLICAÇÃO
-   ========================================================= */
+function closeModal(
+    modalId
+) {
+    const modal =
+        document.getElementById(
+            modalId
+        );
 
-let currentUser = null;
-let currentProfile = null;
+    if (!modal) {
+        return;
+    }
 
-let transactions = [];
-let categories = [];
-let goals = [];
+    modal.classList.remove(
+        "active"
+    );
 
-let currentSubscription = null;
-
-let financeChart = null;
-let categoryChart = null;
-
-let toastTimer = null;
-
-
-/* =========================================================
-   ELEMENTOS
-   ========================================================= */
-
-const $ = (id) => document.getElementById(id);
+    modal.classList.add(
+        "hidden"
+    );
+}
 
 
-/* =========================================================
-   UTILITÁRIOS
-   ========================================================= */
+function closeAllModals() {
+    document
+        .querySelectorAll(
+            ".modal"
+        )
+        .forEach(function (modal) {
+            modal.classList.remove(
+                "active"
+            );
 
-function formatCurrency(value) {
+            modal.classList.add(
+                "hidden"
+            );
+        });
+}
 
-    const number = Number(value) || 0;
+
+/* =====================================================
+   DATAS
+===================================================== */
+
+function setCurrentDate() {
+    const element =
+        document.getElementById(
+            "currentDate"
+        );
+
+    if (!element) {
+        return;
+    }
+
+    const now =
+        new Date();
+
+    element.textContent =
+        now.toLocaleDateString(
+            "pt-BR",
+            {
+                weekday:
+                    "long",
+                day:
+                    "2-digit",
+                month:
+                    "long",
+                year:
+                    "numeric"
+            }
+        );
+}
+
+
+function setDefaultDate() {
+    const input =
+        document.getElementById(
+            "transactionDate"
+        );
+
+    if (!input) {
+        return;
+    }
+
+    const today =
+        new Date()
+            .toISOString()
+            .slice(0, 10);
+
+    if (!input.value) {
+        input.value =
+            today;
+    }
+}
+
+
+/* =====================================================
+   FORMATAÇÃO
+===================================================== */
+
+function formatCurrency(
+    value
+) {
+    const number =
+        Number(value || 0);
 
     return number.toLocaleString(
         "pt-BR",
@@ -73,18 +1762,38 @@ function formatCurrency(value) {
 }
 
 
-function formatDate(dateValue) {
-
-    if (!dateValue) {
-        return "—";
+function formatDate(
+    value
+) {
+    if (!value) {
+        return "";
     }
 
-    const date = new Date(
-        `${dateValue}T00:00:00`
-    );
+    const parts =
+        String(value)
+            .split("-");
 
-    if (Number.isNaN(date.getTime())) {
-        return dateValue;
+    if (
+        parts.length === 3
+    ) {
+        return (
+            parts[2] +
+            "/" +
+            parts[1] +
+            "/" +
+            parts[0]
+        );
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return String(value);
     }
 
     return date.toLocaleDateString(
@@ -93,3931 +1802,1008 @@ function formatDate(dateValue) {
 }
 
 
-function escapeHTML(value) {
-
-    return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-}
-
-
-function getToday() {
-
-    const now = new Date();
-
-    const year = now.getFullYear();
-
-    const month = String(
-        now.getMonth() + 1
-    ).padStart(2, "0");
-
-    const day = String(
-        now.getDate()
-    ).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-}
-
-
-function normalizeName(name) {
-
-    if (!name) {
-        return "";
-    }
-
-    return String(name)
-        .trim()
-        .replace(/\s+/g, " ");
-}
-
-
-function getUserName() {
-
-    return (
-        normalizeName(
-            currentProfile?.full_name
-        ) ||
-        normalizeName(
-            currentUser?.user_metadata?.full_name
-        ) ||
-        "Usuário"
-    );
-}
-
-
-function showToast(message) {
-
-    const toast = $("toast");
-    const toastMessage = $("toastMessage");
-
-    if (!toast || !toastMessage) {
-        return;
-    }
-
-    toastMessage.textContent = message;
-
-    toast.classList.remove("hidden");
-
-    clearTimeout(toastTimer);
-
-    toastTimer = setTimeout(() => {
-
-        toast.classList.add("hidden");
-
-    }, 3500);
-}
-
-
-function setMessage(
-    elementId,
-    message,
-    show = true
+function setText(
+    id,
+    value
 ) {
+    const element =
+        document.getElementById(
+            id
+        );
 
-    const element = $(elementId);
-
-    if (!element) {
-        return;
+    if (element) {
+        element.textContent =
+            value;
     }
-
-    element.textContent = message;
-
-    element.classList.toggle(
-        "hidden",
-        !show
-    );
 }
 
 
-function clearMessage(elementId) {
-
-    setMessage(
-        elementId,
-        "",
-        false
-    );
-}
-
-
-/* =========================================================
-   SENHA
-   ========================================================= */
-
-function togglePassword(
-    inputId,
-    button
+function escapeHtml(
+    value
 ) {
-
-    const input = $(inputId);
-
-    if (!input || !button) {
-        return;
-    }
-
-    const isHidden =
-        input.type === "password";
-
-    if (isHidden) {
-
-        input.type = "text";
-
-        button.textContent = "◎";
-
-        button.setAttribute(
-            "aria-label",
-            "Ocultar senha"
-        );
-
-    } else {
-
-        input.type = "password";
-
-        button.textContent = "◉";
-
-        button.setAttribute(
-            "aria-label",
-            "Mostrar senha"
-        );
-    }
-}
-
-
-/* =========================================================
-   TELA DE LOGIN / CADASTRO
-   ========================================================= */
-
-function showRegister() {
-
-    const loginView = $("loginView");
-    const registerView = $("registerView");
-
-    if (!loginView || !registerView) {
-        return;
-    }
-
-    loginView.classList.add("hidden");
-
-    registerView.classList.remove(
-        "hidden"
-    );
-
-    clearMessage("registerMessage");
-
-    const nameInput = $("registerName");
-
-    if (nameInput) {
-        nameInput.focus();
-    }
-}
-
-
-function showLoginView() {
-
-    const loginView = $("loginView");
-    const registerView = $("registerView");
-
-    if (!loginView || !registerView) {
-        return;
-    }
-
-    registerView.classList.add("hidden");
-
-    loginView.classList.remove(
-        "hidden"
-    );
-
-    const email = localStorage.getItem(
-        "lastConfirmationEmail"
-    );
-
-    const loginEmail = $("loginEmail");
-
-    if (
-        loginEmail &&
-        email
-    ) {
-        loginEmail.value = email;
-    }
-
-    loginEmail?.focus();
-}
-
-
-function showApp() {
-
-    $("loginScreen")?.classList.add(
-        "hidden"
-    );
-
-    $("app")?.classList.remove(
-        "hidden"
-    );
-}
-
-
-function showLoginScreen() {
-
-    $("app")?.classList.add(
-        "hidden"
-    );
-
-    $("loginScreen")?.classList.remove(
-        "hidden"
-    );
-
-    showLoginView();
-}
-
-
-/* =========================================================
-   EVENTOS
-   ========================================================= */
-
-function setupEvents() {
-
-    const loginForm = $("loginForm");
-
-    if (loginForm) {
-
-        loginForm.addEventListener(
-            "submit",
-            handleLogin
-        );
-    }
-
-
-    const registerForm = $("registerForm");
-
-    if (registerForm) {
-
-        registerForm.addEventListener(
-            "submit",
-            handleRegister
-        );
-    }
-
-
-    $("registerBtn")?.addEventListener(
-        "click",
-        showRegister
-    );
-
-
-    $("backToLoginBtn")?.addEventListener(
-        "click",
-        showLoginView
-    );
-
-
-    $("logoutBtn")?.addEventListener(
-        "click",
-        handleLogout
-    );
-
-
-    $("themeBtn")?.addEventListener(
-        "click",
-        toggleTheme
-    );
-
-
-    $("premiumBtn")?.addEventListener(
-        "click",
-        () => {
-
-            openModal(
-                "premiumModal"
-            );
-
-        }
-    );
-
-
-    $("activatePremiumBtn")?.addEventListener(
-        "click",
-        () => {
-
-            openModal(
-                "premiumModal"
-            );
-
-        }
-    );
-
-
-    $("confirmPremiumBtn")?.addEventListener(
-        "click",
-        activatePremium
-    );
-
-
-    $("addTransactionBtn")?.addEventListener(
-        "click",
-        () => {
-
-            openTransactionModal();
-
-        }
-    );
-
-
-    $("addTransactionBtn2")?.addEventListener(
-        "click",
-        () => {
-
-            openTransactionModal();
-
-        }
-    );
-
-
-    $("addCategoryBtn")?.addEventListener(
-        "click",
-        () => {
-
-            openModal(
-                "categoryModal"
-            );
-
-        }
-    );
-
-
-    $("addCategoryBtn2")?.addEventListener(
-        "click",
-        () => {
-
-            openModal(
-                "categoryModal"
-            );
-
-        }
-    );
-
-
-    $("addGoalBtn")?.addEventListener(
-        "click",
-        () => {
-
-            openModal(
-                "goalModal"
-            );
-
-        }
-    );
-
-
-    $("transactionForm")?.addEventListener(
-        "submit",
-        handleTransaction
-    );
-
-
-    $("categoryForm")?.addEventListener(
-        "submit",
-        handleCategory
-    );
-
-
-    $("goalForm")?.addEventListener(
-        "submit",
-        handleGoal
-    );
-
-
-    document
-        .querySelectorAll(
-            "[data-close-modal]"
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
         )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    closeModal(
-                        button.dataset.closeModal
-                    );
-
-                }
-            );
-
-        });
-
-
-    document
-        .querySelectorAll(
-            ".modal-overlay"
+        .replace(
+            /</g,
+            "&lt;"
         )
-        .forEach(overlay => {
-
-            overlay.addEventListener(
-                "click",
-                () => {
-
-                    const modal =
-                        overlay.closest(".modal");
-
-                    if (modal) {
-                        closeModal(
-                            modal.id
-                        );
-                    }
-
-                }
-            );
-
-        });
-
-
-    document
-        .querySelectorAll(
-            ".nav-item"
+        .replace(
+            />/g,
+            "&gt;"
         )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const section =
-                        button.dataset.section;
-
-                    showSection(
-                        section
-                    );
-
-                    $("sidebar")
-                        ?.classList
-                        .remove(
-                            "mobile-open"
-                        );
-                }
-            );
-
-        });
-
-
-    document
-        .querySelectorAll(
-            "[data-section-target]"
+        .replace(
+            /"/g,
+            "&quot;"
         )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    showSection(
-                        button.dataset.sectionTarget
-                    );
-
-                }
-            );
-
-        });
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
 
 
-    $("mobileMenuBtn")?.addEventListener(
-        "click",
-        () => {
+/* =====================================================
+   TEMA
+===================================================== */
 
-            $("sidebar")
-                ?.classList
-                .toggle(
-                    "mobile-open"
-                );
+function toggleTheme() {
+    const html =
+        document.documentElement;
 
-        }
+    const current =
+        html.getAttribute(
+            "data-theme"
+        );
+
+    const next =
+        current === "dark"
+            ? "light"
+            : "dark";
+
+    html.setAttribute(
+        "data-theme",
+        next
     );
 
-
-    $("exportDataBtn")?.addEventListener(
-        "click",
-        exportData
-    );
-
-
-    document
-        .querySelectorAll(
-            ".password-toggle"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const target =
-                        button.dataset.target;
-
-                    togglePassword(
-                        target,
-                        button
-                    );
-
-                }
-            );
-
-        });
-}
-
-
-/* =========================================================
-   NAVEGAÇÃO
-   ========================================================= */
-
-function showSection(sectionName) {
-
-    const sections =
-        document.querySelectorAll(
-            ".app-section"
-        );
-
-    sections.forEach(section => {
-
-        section.classList.remove(
-            "active-section"
-        );
-
-    });
-
-
-    const target =
-        $(`${sectionName}Section`);
-
-    if (target) {
-
-        target.classList.add(
-            "active-section"
-        );
-    }
-
-
-    document
-        .querySelectorAll(
-            ".nav-item"
-        )
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.section ===
-                    sectionName
-            );
-
-        });
-
-
-    if (sectionName === "reports") {
-
-        renderReports();
-
-        renderCategoryChart();
-    }
-}
-
-
-/* =========================================================
-   LOGIN
-   ========================================================= */
-
-async function handleLogin(event) {
-
-    event.preventDefault();
-
-    if (!supabaseClient) {
-
-        showToast(
-            "Supabase não foi carregado."
-        );
-
-        return;
-    }
-
-
-    const email =
-        $("loginEmail")?.value
-            .trim()
-            .toLowerCase();
-
-    const password =
-        $("loginPassword")?.value || "";
-
-
-    if (!email || !password) {
-
-        showToast(
-            "Preencha e-mail e senha."
-        );
-
-        return;
-    }
-
-
-    const button =
-        event.submitter ||
-        document.querySelector(
-            "#loginForm button[type='submit']"
-        );
-
-
-    const originalText =
-        button?.textContent;
-
-
-    if (button) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Entrando...";
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.auth.signInWithPassword({
-                email,
-                password
-            });
-
-
-        if (error) {
-
-            console.error(
-                "Erro no login:",
-                error
-            );
-
-            showToast(
-                getAuthErrorMessage(
-                    error
-                )
-            );
-
-            return;
-        }
-
-
-        if (!data?.user) {
-
-            showToast(
-                "Não foi possível entrar na conta."
-            );
-
-            return;
-        }
-
-
-        currentUser = data.user;
-
-
-        if (
-            !currentUser.email_confirmed_at
-        ) {
-
-            showToast(
-                "Confirme seu e-mail antes de entrar."
-            );
-
-            await supabaseClient.auth.signOut();
-
-            return;
-        }
-
-
-        await loadProfile();
-
-        await loadAllData();
-
-        showApp();
-
-        updateUserInterface();
-
-        showSection(
-            "dashboard"
-        );
-
-        showToast(
-            "Login realizado com sucesso!"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Erro inesperado no login:",
-            error
-        );
-
-        showToast(
-            "Ocorreu um erro ao entrar."
-        );
-
-    } finally {
-
-        if (button) {
-
-            button.disabled = false;
-
-            button.textContent =
-                originalText ||
-                "Entrar no ControleS";
-        }
-    }
-}
-
-
-/* =========================================================
-   CADASTRO
-   ========================================================= */
-
-async function handleRegister(event) {
-
-    event.preventDefault();
-
-    if (!supabaseClient) {
-
-        showToast(
-            "Supabase não foi carregado."
-        );
-
-        return;
-    }
-
-
-    const name =
-        normalizeName(
-            $("registerName")?.value
-        );
-
-    const email =
-        $("registerEmail")?.value
-            .trim()
-            .toLowerCase();
-
-    const password =
-        $("registerPassword")?.value ||
-        "";
-
-    const passwordConfirm =
-        $("registerPasswordConfirm")?.value ||
-        "";
-
-
-    clearMessage(
-        "registerMessage"
-    );
-
-
-    if (!name) {
-
-        setMessage(
-            "registerMessage",
-            "Digite seu nome.",
-            true
-        );
-
-        return;
-    }
-
-
-    if (!email) {
-
-        setMessage(
-            "registerMessage",
-            "Digite um e-mail válido.",
-            true
-        );
-
-        return;
-    }
-
-
-    if (password.length < 6) {
-
-        setMessage(
-            "registerMessage",
-            "A senha precisa ter pelo menos 6 caracteres.",
-            true
-        );
-
-        return;
-    }
-
-
-    if (password !== passwordConfirm) {
-
-        setMessage(
-            "registerMessage",
-            "As senhas não são iguais.",
-            true
-        );
-
-        return;
-    }
-
-
-    const button =
-        event.submitter ||
-        $("createAccountBtn");
-
-
-    const originalText =
-        button?.textContent;
-
-
-    if (button) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Criando conta...";
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.auth.signUp({
-
-                email,
-
-                password,
-
-                options: {
-                    data: {
-                        full_name: name
-                    }
-                }
-
-            });
-
-
-        if (error) {
-
-            console.error(
-                "Erro no cadastro:",
-                error
-            );
-
-
-            const message =
-                getAuthErrorMessage(
-                    error
-                );
-
-
-            if (
-                message
-                    .toLowerCase()
-                    .includes("rate")
-            ) {
-
-                setMessage(
-                    "registerMessage",
-                    "Muitos cadastros ou e-mails enviados recentemente. Aguarde um pouco e tente novamente.",
-                    true
-                );
-
-            } else {
-
-                setMessage(
-                    "registerMessage",
-                    message,
-                    true
-                );
-            }
-
-
-            return;
-        }
-
-
-        localStorage.setItem(
-            "lastConfirmationEmail",
-            email
-        );
-
-
-        /*
-         * Quando a confirmação de e-mail está
-         * ativada, normalmente o Supabase
-         * não cria uma sessão imediatamente.
-         */
-
-        if (
-            data?.session &&
-            data?.user
-        ) {
-
-            currentUser =
-                data.user;
-
-
-            await createProfile(
-                name
-            );
-
-            await loadProfile();
-
-            await loadAllData();
-
-            showApp();
-
-            updateUserInterface();
-
-            showToast(
-                "Conta criada com sucesso!"
-            );
-
-        } else {
-
-            setMessage(
-                "registerMessage",
-                `Conta criada! Enviamos um e-mail de confirmação para ${email}. Confirme seu e-mail e depois volte para entrar.`,
-                true
-            );
-
-
-            showToast(
-                "E-mail de confirmação enviado!"
-            );
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Erro inesperado no cadastro:",
-            error
-        );
-
-        setMessage(
-            "registerMessage",
-            "Não foi possível criar a conta agora. Tente novamente.",
-            true
-        );
-
-    } finally {
-
-        if (button) {
-
-            button.disabled = false;
-
-            button.textContent =
-                originalText ||
-                "Criar minha conta";
-        }
-    }
-}
-
-
-/* =========================================================
-   MENSAGENS DO SUPABASE
-   ========================================================= */
-
-function getAuthErrorMessage(error) {
-
-    const raw =
-        String(
-            error?.message ||
-            error ||
-            ""
-        );
-
-    const text =
-        raw.toLowerCase();
-
-
-    if (
-        text.includes(
-            "invalid login credentials"
-        )
-    ) {
-
-        return "E-mail ou senha incorretos.";
-    }
-
-
-    if (
-        text.includes(
-            "email not confirmed"
-        )
-    ) {
-
-        return "Confirme seu e-mail antes de entrar.";
-    }
-
-
-    if (
-        text.includes(
-            "user already registered"
-        ) ||
-        text.includes(
-            "already registered"
-        )
-    ) {
-
-        return "Este e-mail já está cadastrado.";
-    }
-
-
-    if (
-        text.includes(
-            "password should be at least"
-        )
-    ) {
-
-        return "A senha precisa ter pelo menos 6 caracteres.";
-    }
-
-
-    if (
-        text.includes(
-            "rate limit"
-        ) ||
-        text.includes(
-            "too many requests"
-        )
-    ) {
-
-        return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
-    }
-
-
-    if (
-        text.includes(
-            "email provider"
-        )
-    ) {
-
-        return "Não foi possível enviar o e-mail de confirmação.";
-    }
-
-
-    return raw ||
-        "Ocorreu um erro. Tente novamente.";
-}
-
-
-/* =========================================================
-   PERFIL
-   ========================================================= */
-
-async function createProfile(name) {
-
-    if (
-        !supabaseClient ||
-        !currentUser
-    ) {
-        return;
-    }
-
-
-    const fullName =
-        normalizeName(name) ||
-        normalizeName(
-            currentUser.user_metadata?.full_name
-        ) ||
-        "Usuário";
-
-
-    const {
-        error
-    } =
-        await supabaseClient
-            .from("profiles")
-            .upsert(
-                {
-                    id: currentUser.id,
-
-                    full_name: fullName,
-
-                    email:
-                        currentUser.email || null,
-
-                    updated_at:
-                        new Date().toISOString()
-                },
-                {
-                    onConflict: "id"
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Erro ao criar perfil:",
-            error
-        );
-    }
-}
-
-
-async function loadProfile() {
-
-    if (
-        !supabaseClient ||
-        !currentUser
-    ) {
-        return;
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("profiles")
-            .select("*")
-            .eq(
-                "id",
-                currentUser.id
-            )
-            .maybeSingle();
-
-
-    if (error) {
-
-        console.error(
-            "Erro ao carregar perfil:",
-            error
-        );
-
-        currentProfile = null;
-
-        return;
-    }
-
-
-    if (!data) {
-
-        await createProfile(
-            currentUser.user_metadata?.full_name ||
-            "Usuário"
-        );
-
-
-        const retry =
-            await supabaseClient
-                .from("profiles")
-                .select("*")
-                .eq(
-                    "id",
-                    currentUser.id
-                )
-                .maybeSingle();
-
-
-        if (!retry.error) {
-
-            currentProfile =
-                retry.data || null;
-        }
-
-        return;
-    }
-
-
-    currentProfile = data;
-}
-
-
-/* =========================================================
-   INTERFACE DO USUÁRIO
-   ========================================================= */
-
-function updateUserInterface() {
-
-    if (!currentUser) {
-        return;
-    }
-
-
-    const name =
-        getUserName();
-
-
-    const email =
-        currentUser.email ||
-        currentProfile?.email ||
-        "";
-
-
-    const welcome =
-        $("welcomeMessage");
-
-    if (welcome) {
-
-        welcome.textContent =
-            `Olá, ${name}!`;
-    }
-
-
-    const topbarName =
-        $("topbarUserName");
-
-    if (topbarName) {
-
-        topbarName.textContent =
-            name;
-    }
-
-
-    const topbarEmail =
-        $("topbarUserEmail");
-
-    if (topbarEmail) {
-
-        topbarEmail.textContent =
-            email;
-    }
-
-
-    const avatar =
-        $("userAvatarLetter");
-
-    if (avatar) {
-
-        avatar.textContent =
-            name
-                .charAt(0)
-                .toUpperCase() ||
-            "U";
-    }
-}
-
-
-/* =========================================================
-   CARREGAMENTO GERAL
-   ========================================================= */
-
-async function loadAllData() {
-
-    if (!currentUser) {
-        return;
-    }
-
-
-    await Promise.all([
-        loadTransactions(),
-        loadCategories(),
-        loadGoals(),
-        loadSubscription()
-    ]);
-
-
-    updateDashboard();
-
-    renderTransactions();
-
-    renderCategories();
-
-    populateCategorySelect();
-
-    renderReports();
-
-    renderCategoryChart();
-
-    renderFinanceChart();
-}
-
-
-/* =========================================================
-   TRANSAÇÕES
-   ========================================================= */
-
-async function loadTransactions() {
-
-    if (
-        !supabaseClient ||
-        !currentUser
-    ) {
-        return;
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("transactions")
-            .select("*")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .order(
-                "date",
-                {
-                    ascending: false
-                }
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Erro ao carregar transações:",
-            error
-        );
-
-        transactions = [];
-
-        return;
-    }
-
-
-    transactions =
-        Array.isArray(data)
-            ? data
-            : [];
-}
-
-
-function openTransactionModal() {
-
-    const form =
-        $("transactionForm");
-
-    if (form) {
-        form.reset();
-    }
-
-
-    const dateInput =
-        $("transactionDate");
-
-    if (dateInput) {
-
-        dateInput.value =
-            getToday();
-    }
-
-
-    const typeInput =
-        $("transactionType");
-
-    if (typeInput) {
-
-        typeInput.value =
-            "expense";
-    }
-
-
-    populateCategorySelect();
-
-    clearMessage(
-        "transactionMessage"
-    );
-
-
-    openModal(
-        "transactionModal"
+    localStorage.setItem(
+        "controles-theme",
+        next
     );
 }
 
 
-async function handleTransaction(event) {
-
-    event.preventDefault();
-
-
-    if (
-        !supabaseClient ||
-        !currentUser
-    ) {
-
-        setMessage(
-            "transactionMessage",
-            "Você precisa estar conectado para salvar um lançamento.",
-            true
+function loadTheme() {
+    const saved =
+        localStorage.getItem(
+            "controles-theme"
         );
 
-        return;
-    }
-
-
-    const description =
-        $("transactionDescription")
-            ?.value
-            .trim();
-
-
-    const amount =
-        Number(
-            $("transactionAmount")
-                ?.value
-        );
-
-
-    const type =
-        $("transactionType")
-            ?.value;
-
-
-    const category =
-        $("transactionCategory")
-            ?.value
-            .trim() ||
-        null;
-
-
-    const date =
-        $("transactionDate")
-            ?.value;
-
-
-    if (!description) {
-
-        setMessage(
-            "transactionMessage",
-            "Digite uma descrição.",
-            true
-        );
-
-        return;
-    }
-
-
-    if (
-        !Number.isFinite(amount) ||
-        amount <= 0
-    ) {
-
-        setMessage(
-            "transactionMessage",
-            "Digite um valor maior que zero.",
-            true
-        );
-
-        return;
-    }
-
-
-    if (
-        type !== "income" &&
-        type !== "expense"
-    ) {
-
-        setMessage(
-            "transactionMessage",
-            "Selecione o tipo da movimentação.",
-            true
-        );
-
-        return;
-    }
-
-
-    if (!date) {
-
-        setMessage(
-            "transactionMessage",
-            "Informe a data.",
-            true
-        );
-
-        return;
-    }
-
-
-    const button =
-        event.submitter;
-
-
-    const originalText =
-        button?.textContent;
-
-
-    if (button) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Salvando...";
-    }
-
-
-    clearMessage(
-        "transactionMessage"
-    );
-
-
-    try {
-
-        const payload = {
-
-            user_id:
-                currentUser.id,
-
-            description,
-
-            amount:
-                Number(
-                    amount.toFixed(2)
-                ),
-
-            type,
-
-            category,
-
-            date
-        };
-
-
-        console.log(
-            "Salvando transação:",
-            payload
-        );
-
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("transactions")
-                .insert(payload)
-                .select()
-                .single();
-
-
-        if (error) {
-
-            console.error(
-                "Erro completo ao salvar transação:",
-                error
-            );
-
-
-            setMessage(
-                "transactionMessage",
-                `Não foi possível salvar: ${error.message || "erro desconhecido"}`,
-                true
-            );
-
-            return;
-        }
-
-
-        if (data) {
-
-            transactions.unshift(
-                data
-            );
-        }
-
-
-        closeModal(
-            "transactionModal"
-        );
-
-
-        updateDashboard();
-
-        renderTransactions();
-
-        renderFinanceChart();
-
-        renderReports();
-
-        renderCategoryChart();
-
-
-        showToast(
-            "Lançamento salvo com sucesso!"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Erro inesperado ao salvar transação:",
-            error
-        );
-
-
-        setMessage(
-            "transactionMessage",
-            "Ocorreu um erro ao salvar o lançamento.",
-            true
-        );
-
-    } finally {
-
-        if (button) {
-
-            button.disabled = false;
-
-            button.textContent =
-                originalText ||
-                "Salvar lançamento";
-        }
-    }
-}
-
-
-/* =========================================================
-   RENDERIZAÇÃO DAS TRANSAÇÕES
-   ========================================================= */
-
-function renderTransactions() {
-
-    const tbody =
-        $("transactionsTableBody");
-
-    const empty =
-        $("transactionsEmpty");
-
-    if (!tbody) {
-        return;
-    }
-
-
-    tbody.innerHTML = "";
-
-
-    if (
-        !transactions ||
-        transactions.length === 0
-    ) {
-
-        if (empty) {
-            empty.classList.remove(
-                "hidden"
-            );
-        }
-
-        renderRecentTransactions();
-
-        return;
-    }
-
-
-    if (empty) {
-
-        empty.classList.add(
-            "hidden"
-        );
-    }
-
-
-    transactions.forEach(transaction => {
-
-        const row =
-            document.createElement("tr");
-
-
-        const isIncome =
-            transaction.type ===
-            "income";
-
-
-        row.innerHTML = `
-
-            <td>
-                ${escapeHTML(
-                    formatDate(
-                        transaction.date
-                    )
-                )}
-            </td>
-
-            <td>
-                <strong>
-                    ${escapeHTML(
-                        transaction.description
-                    )}
-                </strong>
-            </td>
-
-            <td>
-                ${escapeHTML(
-                    transaction.category ||
-                    "Sem categoria"
-                )}
-            </td>
-
-            <td>
-                <span class="${
-                    isIncome
-                        ? "transaction-income"
-                        : "transaction-expense"
-                }">
-                    ${
-                        isIncome
-                            ? "Entrada"
-                            : "Saída"
-                    }
-                </span>
-            </td>
-
-            <td>
-                <span class="${
-                    isIncome
-                        ? "transaction-income"
-                        : "transaction-expense"
-                }">
-                    ${
-                        isIncome
-                            ? "+"
-                            : "-"
-                    }
-                    ${formatCurrency(
-                        transaction.amount
-                    )}
-                </span>
-            </td>
-        `;
-
-
-        tbody.appendChild(row);
-
-    });
-
-
-    renderRecentTransactions();
-}
-
-
-function renderRecentTransactions() {
-
-    const container =
-        $("recentTransactions");
-
-    if (!container) {
-        return;
-    }
-
-
-    if (
-        !transactions ||
-        transactions.length === 0
-    ) {
-
-        container.innerHTML = `
-            <div class="empty-state">
-                Nenhum lançamento ainda.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    const recent =
-        transactions
-            .slice()
-            .sort((a, b) => {
-
-                const dateA =
-                    new Date(
-                        `${a.date}T00:00:00`
-                    ).getTime();
-
-                const dateB =
-                    new Date(
-                        `${b.date}T00:00:00`
-                    ).getTime();
-
-                return dateB - dateA;
-            })
-            .slice(0, 5);
-
-
-    container.innerHTML =
-        recent
-            .map(transaction => {
-
-                const isIncome =
-                    transaction.type ===
-                    "income";
-
-
-                return `
-
-                    <div class="recent-item">
-
-                        <div class="recent-info">
-
-                            <strong>
-                                ${escapeHTML(
-                                    transaction.description
-                                )}
-                            </strong>
-
-                            <span>
-                                ${
-                                    escapeHTML(
-                                        transaction.category ||
-                                        "Sem categoria"
-                                    )
-                                }
-                                ·
-                                ${
-                                    formatDate(
-                                        transaction.date
-                                    )
-                                }
-                            </span>
-
-                        </div>
-
-
-                        <div class="
-                            recent-value
-                            ${
-                                isIncome
-                                    ? "transaction-income"
-                                    : "transaction-expense"
-                            }
-                        ">
-
-                            ${
-                                isIncome
-                                    ? "+"
-                                    : "-"
-                            }
-
-                            ${formatCurrency(
-                                transaction.amount
-                            )}
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            })
-            .join("");
-}
-
-
-/* =========================================================
-   DASHBOARD
-   ========================================================= */
-
-function calculateTotals() {
-
-    let income = 0;
-
-    let expense = 0;
-
-
-    transactions.forEach(transaction => {
-
-        const amount =
-            Number(
-                transaction.amount
-            ) || 0;
-
-
-        if (
-            transaction.type ===
-            "income"
-        ) {
-
-            income += amount;
-
-        } else {
-
-            expense += amount;
-        }
-
-    });
-
-
-    return {
-
-        income,
-
-        expense,
-
-        balance:
-            income - expense
-    };
-}
-
-
-function updateDashboard() {
-
-    const totals =
-        calculateTotals();
-
-
-    const balance =
-        $("balanceValue");
-
-    if (balance) {
-
-        balance.textContent =
-            formatCurrency(
-                totals.balance
-            );
-    }
-
-
-    const income =
-        $("incomeValue");
-
-    if (income) {
-
-        income.textContent =
-            formatCurrency(
-                totals.income
-            );
-    }
-
-
-    const expense =
-        $("expenseValue");
-
-    if (expense) {
-
-        expense.textContent =
-            formatCurrency(
-                totals.expense
-            );
-    }
-
-
-    const reportIncome =
-        $("reportIncome");
-
-    if (reportIncome) {
-
-        reportIncome.textContent =
-            formatCurrency(
-                totals.income
-            );
-    }
-
-
-    const reportExpense =
-        $("reportExpense");
-
-    if (reportExpense) {
-
-        reportExpense.textContent =
-            formatCurrency(
-                totals.expense
-            );
-    }
-
-
-    const reportBalance =
-        $("reportBalance");
-
-    if (reportBalance) {
-
-        reportBalance.textContent =
-            formatCurrency(
-                totals.balance
+    if (saved) {
+        document.documentElement
+            .setAttribute(
+                "data-theme",
+                saved
             );
     }
 }
-
-
-/* =========================================================
-   CATEGORIAS
-   ========================================================= */
-
-async function loadCategories() {
-
-    if (
-        !supabaseClient ||
-        !currentUser
-    ) {
-        return;
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("categories")
-            .select("*")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .order(
-                "name",
-                {
-                    ascending: true
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Erro ao carregar categorias:",
-            error
-        );
-
-        categories = [];
-
-        return;
-    }
-
-
-    categories =
-        Array.isArray(data)
-            ? data
-            : [];
-}
-
-
-async function handleCategory(event) {
-
-    event.preventDefault();
-
-
-    if (
-        !supabaseClient ||
-        !currentUser
-    ) {
-        return;
-    }
-
-
-    const name =
-        $("categoryName")
-            ?.value
-            .trim();
-
-
-    if (!name) {
-
-        setMessage(
-            "categoryMessage",
-            "Digite o nome da categoria.",
-            true
-        );
-
-        return;
-    }
-
-
-    const button =
-        event.submitter;
-
-
-    const originalText =
-        button?.textContent;
-
-
-    if (button) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Criando...";
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("categories")
-                .insert({
-
-                    user_id:
-                        currentUser.id,
-
-                    name
-
-                })
-                .select()
-                .single();
-
-
-        if (error) {
-
-            console.error(
-                "Erro ao criar categoria:",
-                error
-            );
-
-
-            setMessage(
-                "categoryMessage",
-                error.message ||
-                    "Não foi possível criar a categoria.",
-                true
-            );
-
-            return;
-        }
-
-
-        if (data) {
-
-            categories.push(
-                data
-            );
-
-            categories.sort(
-                (a, b) =>
-                    a.name.localeCompare(
-                        b.name,
-                        "pt-BR"
-                    )
-            );
-        }
-
-
-        $("categoryForm")?.reset();
-
-        closeModal(
-            "categoryModal"
-        );
-
-        renderCategories();
-
-        populateCategorySelect();
-
-        showToast(
-            "Categoria criada com sucesso!"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            error
-        );
-
-
-        setMessage(
-            "categoryMessage",
-            "Ocorreu um erro ao criar a categoria.",
-            true
-        );
-
-    } finally {
-
-        if (button) {
-
-            button.disabled = false;
-
-            button.textContent =
-                originalText ||
-                "Criar categoria";
-        }
-    }
-}
-
-
-function renderCategories() {
-
-    const grid =
-        $("categoriesGrid");
-
-    if (!grid) {
-        return;
-    }
-
-
-    if (
-        !categories ||
-        categories.length === 0
-    ) {
-
-        grid.innerHTML = `
-            <div class="content-card">
-                <div class="empty-state">
-                    Nenhuma categoria criada ainda.
-                </div>
-            </div>
-        `;
-
-        return;
-    }
-
-
-    grid.innerHTML =
-        categories
-            .map((category, index) => {
-
-                const firstLetter =
-                    category.name
-                        ?.charAt(0)
-                        ?.toUpperCase() ||
-                    "#";
-
-
-                return `
-
-                    <div class="category-card">
-
-                        <div class="category-card-icon">
-                            ${escapeHTML(
-                                firstLetter
-                            )}
-                        </div>
-
-                        <h3>
-                            ${escapeHTML(
-                                category.name
-                            )}
-                        </h3>
-
-                        <p>
-                            Categoria ${
-                                index + 1
-                            }
-                        </p>
-
-                    </div>
-
-                `;
-
-            })
-            .join("");
-}
-
-
-function populateCategorySelect() {
-
-    const select =
-        $("transactionCategory");
-
-    if (!select) {
-        return;
-    }
-
-
-    const currentValue =
-        select.value;
-
-
-    select.innerHTML = `
-        <option value="">
-            Sem categoria
-        </option>
-    `;
-
-
-    categories.forEach(category => {
-
-        const option =
-            document.createElement(
-                "option"
-            );
-
-
-        option.value =
-            category.name;
-
-
-        option.textContent =
-            category.name;
-
-
-        select.appendChild(
-            option
-        );
-
-    });
-
-
-    if (
-        currentValue &&
-        categories.some(
-            category =>
-                category.name ===
-                currentValue
-        )
-    ) {
-
-        select.value =
-            currentValue;
-    }
-}
-
-
-/* =========================================================
+/* =====================================================
    METAS
-   ========================================================= */
+===================================================== */
 
 async function loadGoals() {
-
     if (
         !supabaseClient ||
         !currentUser
     ) {
+        goals = [];
         return;
     }
 
+    try {
+        const result =
+            await supabaseClient
+                .from("goals")
+                .select("*")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
 
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("goals")
-            .select("*")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
+        if (result.error) {
+            console.error(
+                "Erro carregando metas:",
+                result.error
             );
 
+            goals = [];
+            return;
+        }
 
-    if (error) {
-
+        goals =
+            result.data || [];
+    } catch (error) {
         console.error(
-            "Erro ao carregar metas:",
+            "Erro carregando metas:",
             error
         );
 
         goals = [];
-
-        return;
     }
-
-
-    goals =
-        Array.isArray(data)
-            ? data
-            : [];
 }
 
 
-async function handleGoal(event) {
-
-    event.preventDefault();
-
+async function saveGoal(event) {
+    if (event) {
+        event.preventDefault();
+    }
 
     if (
         !supabaseClient ||
         !currentUser
     ) {
+        alert(
+            "Você precisa estar logado."
+        );
         return;
     }
 
+    const nameInput =
+        document.getElementById(
+            "goalName"
+        );
+
+    const targetInput =
+        document.getElementById(
+            "goalTarget"
+        );
 
     const name =
-        $("goalName")
-            ?.value
-            .trim();
+        nameInput?.value?.trim() ||
+        "";
 
-
-    const amount =
-        Number(
-            $("goalAmount")
-                ?.value
+    const target =
+        parseFloat(
+            String(
+                targetInput?.value ||
+                    ""
+            ).replace(
+                ",",
+                "."
+            )
         );
-
 
     if (!name) {
-
-        setMessage(
-            "goalMessage",
-            "Digite o nome da meta.",
-            true
+        alert(
+            "Digite o nome da meta."
         );
-
         return;
     }
-
 
     if (
-        !Number.isFinite(amount) ||
-        amount <= 0
+        !Number.isFinite(target) ||
+        target <= 0
     ) {
-
-        setMessage(
-            "goalMessage",
-            "Digite um valor maior que zero.",
-            true
+        alert(
+            "Digite um valor válido para a meta."
         );
-
         return;
     }
 
-
-    const button =
-        event.submitter;
-
-
-    const originalText =
-        button?.textContent;
-
-
-    if (button) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Criando...";
-    }
-
-
     try {
+        /*
+         * CORREÇÃO:
+         * A tabela goals utiliza:
+         * target_amount
+         * current_amount
+         */
 
-        const {
-            data,
-            error
-        } =
+        const result =
             await supabaseClient
                 .from("goals")
                 .insert({
-
                     user_id:
                         currentUser.id,
-
-                    name,
-
+                    name:
+                        name,
                     target_amount:
-                        Number(
-                            amount.toFixed(2)
-                        ),
-
+                        target,
                     current_amount:
                         0
+                });
 
-                })
-                .select()
-                .single();
-
-
-        if (error) {
-
+        if (result.error) {
             console.error(
-                "Erro ao criar meta:",
-                error
+                "Erro salvando meta:",
+                result.error
             );
 
-
-            setMessage(
-                "goalMessage",
-                error.message ||
-                    "Não foi possível criar a meta.",
-                true
+            alert(
+                "Não foi possível salvar a meta.\n\n" +
+                result.error.message
             );
 
             return;
         }
 
-
-        if (data) {
-
-            goals.unshift(
-                data
-            );
+        if (nameInput) {
+            nameInput.value = "";
         }
 
-
-        $("goalForm")?.reset();
+        if (targetInput) {
+            targetInput.value = "";
+        }
 
         closeModal(
             "goalModal"
         );
 
+        await loadUserData();
 
-        showToast(
-            "Meta criada com sucesso!"
+        alert(
+            "✅ Meta criada com sucesso!"
         );
-
-
     } catch (error) {
-
         console.error(
+            "Erro salvando meta:",
             error
         );
 
-
-        setMessage(
-            "goalMessage",
-            "Ocorreu um erro ao criar a meta.",
-            true
+        alert(
+            "Ocorreu um erro ao salvar a meta."
         );
-
-    } finally {
-
-        if (button) {
-
-            button.disabled = false;
-
-            button.textContent =
-                originalText ||
-                "Criar meta";
-        }
     }
 }
 
 
-/* =========================================================
-   PREMIUM
-   ========================================================= */
+function updateGoalsList() {
+    const container =
+        document.getElementById(
+            "goalsList"
+        );
 
-async function loadSubscription() {
+    if (!container) {
+        return;
+    }
 
+    if (!goals.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🎯</div>
+                <h3>Nenhuma meta cadastrada</h3>
+                <p>
+                    Crie uma meta para acompanhar
+                    seu progresso financeiro.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        goals
+            .map(function (goal) {
+                const target =
+                    Number(
+                        goal.target_amount ||
+                            0
+                    );
+
+                const current =
+                    Number(
+                        goal.current_amount ||
+                            0
+                    );
+
+                const percentage =
+                    target > 0
+                        ? Math.min(
+                              100,
+                              (
+                                  current /
+                                  target
+                              ) *
+                                  100
+                          )
+                        : 0;
+
+                return `
+                    <div class="goal-card">
+                        <div class="goal-header">
+                            <strong>
+                                ${escapeHtml(
+                                    goal.name ||
+                                        "Meta"
+                                )}
+                            </strong>
+
+                            <span>
+                                ${Math.round(
+                                    percentage
+                                )}%
+                            </span>
+                        </div>
+
+                        <div class="goal-progress">
+                            <div
+                                class="goal-progress-bar"
+                                style="width: ${percentage}%"
+                            ></div>
+                        </div>
+
+                        <div class="goal-values">
+                            <span>
+                                ${formatCurrency(
+                                    current
+                                )}
+                            </span>
+
+                            <span>
+                                ${formatCurrency(
+                                    target
+                                )}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            })
+            .join("");
+}
+
+
+/* =====================================================
+   EXCLUIR META
+===================================================== */
+
+async function deleteGoal(id) {
     if (
         !supabaseClient ||
-        !currentUser
+        !currentUser ||
+        !id
     ) {
         return;
     }
 
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("subscriptions")
-            .select("*")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            )
-            .limit(1)
-            .maybeSingle();
-
-
-    if (error) {
-
-        console.error(
-            "Erro ao carregar Premium:",
-            error
-        );
-
-        currentSubscription = null;
-
+    if (
+        !window.confirm(
+            "Deseja excluir esta meta?"
+        )
+    ) {
         return;
     }
 
+    try {
+        const result =
+            await supabaseClient
+                .from("goals")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
 
-    currentSubscription =
-        data || null;
+        if (result.error) {
+            console.error(
+                "Erro excluindo meta:",
+                result.error
+            );
+
+            alert(
+                "Não foi possível excluir a meta."
+            );
+
+            return;
+        }
+
+        await loadUserData();
+    } catch (error) {
+        console.error(
+            "Erro excluindo meta:",
+            error
+        );
+    }
+}
 
 
-    updatePremiumInterface();
+/* =====================================================
+   ORÇAMENTOS
+===================================================== */
+
+async function loadBudgets() {
+    /*
+     * A estrutura atual do banco não possui
+     * uma tabela específica de budgets.
+     *
+     * Mantemos o estado vazio para que
+     * o restante do aplicativo continue
+     * funcionando normalmente.
+     */
+
+    budgets = [];
+}
+
+
+function updateBudgetUI() {
+    const container =
+        document.getElementById(
+            "budgetList"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    if (!budgets.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📊</div>
+                <h3>Nenhum orçamento</h3>
+                <p>
+                    Você ainda não possui
+                    orçamentos cadastrados.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+}
+
+
+/* =====================================================
+   ASSINATURA / PREMIUM
+===================================================== */
+
+async function loadSubscription() {
+    if (
+        !supabaseClient ||
+        !currentUser
+    ) {
+        subscription = null;
+        return;
+    }
+
+    try {
+        const result =
+            await supabaseClient
+                .from(
+                    "subscriptions"
+                )
+                .select("*")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:
+                            false
+                    }
+                )
+                .limit(1)
+                .maybeSingle();
+
+        if (result.error) {
+            console.error(
+                "Erro carregando assinatura:",
+                result.error
+            );
+
+            subscription = null;
+            return;
+        }
+
+        subscription =
+            result.data || null;
+    } catch (error) {
+        console.error(
+            "Erro carregando assinatura:",
+            error
+        );
+
+        subscription = null;
+    }
+}
+
+
+function isPremium() {
+    if (!subscription) {
+        return false;
+    }
+
+    return (
+        subscription.status ===
+            "active" ||
+        subscription.status ===
+            "trialing"
+    );
+}
+
+
+function updatePremiumUI() {
+    const premium =
+        isPremium();
+
+    document
+        .querySelectorAll(
+            "[data-premium]"
+        )
+        .forEach(function (
+            element
+        ) {
+            element.classList.toggle(
+                "active",
+                premium
+            );
+        });
+
+    setText(
+        "premiumStatus",
+        premium
+            ? "Premium ativo"
+            : "Plano gratuito"
+    );
 }
 
 
 async function activatePremium() {
-
     if (
         !supabaseClient ||
         !currentUser
     ) {
-
-        showToast(
-            "Entre na sua conta primeiro."
+        alert(
+            "Faça login primeiro."
         );
-
         return;
     }
-
-
-    const button =
-        $("confirmPremiumBtn");
-
-
-    if (button) {
-
-        button.disabled = true;
-
-        button.textContent =
-            "Ativando...";
-    }
-
-
-    clearMessage(
-        "premiumMessage"
-    );
-
 
     try {
-
-        const trialEnd =
-            new Date(
-                Date.now() +
-                7 * 24 * 60 * 60 * 1000
-            );
-
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("subscriptions")
-                .insert({
-
-                    user_id:
-                        currentUser.id,
-
-                    plan:
-                        "premium",
-
-                    status:
-                        "trialing",
-
-                    price:
-                        0,
-
-                    trial_end_at:
-                        trialEnd.toISOString(),
-
-                    current_period_end:
-                        trialEnd.toISOString()
-
-                })
-                .select()
-                .single();
-
-
-        if (error) {
-
-            /*
-             * Se já existir uma assinatura,
-             * tentamos atualizar a existente.
-             */
-
-            console.error(
-                "Erro ao inserir Premium:",
-                error
-            );
-
-
-            if (
-                currentSubscription?.id
-            ) {
-
-                const update =
-                    await supabaseClient
-                        .from("subscriptions")
-                        .update({
-
-                            plan:
-                                "premium",
-
-                            status:
-                                "trialing",
-
-                            price:
-                                0,
-
-                            trial_end_at:
-                                trialEnd.toISOString(),
-
-                            current_period_end:
-                                trialEnd.toISOString(),
-
-                            updated_at:
-                                new Date().toISOString()
-
-                        })
-                        .eq(
-                            "id",
-                            currentSubscription.id
-                        )
-                        .eq(
-                            "user_id",
-                            currentUser.id
-                        )
-                        .select()
-                        .single();
-
-
-                if (update.error) {
-
-                    throw update.error;
-                }
-
-
-                currentSubscription =
-                    update.data;
-
-            } else {
-
-                throw error;
-            }
-
-        } else {
-
-            currentSubscription =
-                data;
-        }
-
-
-        closeModal(
-            "premiumModal"
-        );
-
-
-        updatePremiumInterface();
-
-
-        showToast(
-            "Premium ativado por 7 dias!"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao ativar Premium:",
-            error
-        );
-
-
-        setMessage(
-            "premiumMessage",
-            error.message ||
-                "Não foi possível ativar o Premium.",
-            true
-        );
-
-    } finally {
-
-        if (button) {
-
-            button.disabled = false;
-
-            button.textContent =
-                "Ativar Premium";
-        }
-    }
-}
-
-
-function isPremiumActive() {
-
-    if (!currentSubscription) {
-        return false;
-    }
-
-
-    const status =
-        String(
-            currentSubscription.status ||
-            ""
-        ).toLowerCase();
-
-
-    if (
-        status !== "active" &&
-        status !== "trialing"
-    ) {
-        return false;
-    }
-
-
-    const endDate =
-        currentSubscription.current_period_end ||
-        currentSubscription.trial_end_at;
-
-
-    if (!endDate) {
-        return true;
-    }
-
-
-    return (
-        new Date(endDate).getTime() >
-        Date.now()
-    );
-}
-
-
-function updatePremiumInterface() {
-
-    const buttons =
-        document.querySelectorAll(
-            ".premium-top-btn"
-        );
-
-
-    const active =
-        isPremiumActive();
-
-
-    buttons.forEach(button => {
-
-        button.textContent =
-            active
-                ? "⭐ Premium ativo"
-                : "⭐ Premium";
-
-    });
-
-
-    const activateButton =
-        $("activatePremiumBtn");
-
-
-    if (activateButton) {
-
-        activateButton.textContent =
-            active
-                ? "Premium ativo"
-                : "Ativar Premium";
-    }
-}
-
-
-/* =========================================================
-   GRÁFICO FINANCEIRO
-========================================================= */
-
-function renderFinanceChart() {
-
-    const canvas =
-        $("financeChart");
-
-    if (!canvas) {
-        return;
-    }
-
-
-    if (
-        typeof Chart ===
-        "undefined"
-    ) {
-
-        console.warn(
-            "Chart.js não carregado."
-        );
-
-        return;
-    }
-
-
-    const context =
-        canvas.getContext("2d");
-
-
-    if (financeChart) {
-
-        financeChart.destroy();
-
-        financeChart = null;
-    }
-
-
-    const grouped = {};
-
-
-    transactions.forEach(transaction => {
-
-        const date =
-            transaction.date;
-
-
-        if (!grouped[date]) {
-
-            grouped[date] = {
-                income: 0,
-                expense: 0
-            };
-        }
-
-
-        const amount =
-            Number(
-                transaction.amount
-            ) || 0;
-
-
-        if (
-            transaction.type ===
-            "income"
-        ) {
-
-            grouped[date].income +=
-                amount;
-
-        } else {
-
-            grouped[date].expense +=
-                amount;
-        }
-    });
-
-
-    let dates =
-        Object.keys(grouped)
-            .sort();
-
-
-    /*
-     * Se não houver movimentações,
-     * mostramos os últimos 7 dias.
-     */
-
-    if (dates.length === 0) {
-
         const now =
             new Date();
 
-
-        dates = [];
-
-
-        for (
-            let i = 6;
-            i >= 0;
-            i--
-        ) {
-
-            const date =
-                new Date(now);
-
-
-            date.setDate(
-                now.getDate() - i
+        const trialEnd =
+            new Date(
+                now.getTime() +
+                    7 *
+                        24 *
+                        60 *
+                        60 *
+                        1000
             );
 
-
-            const year =
-                date.getFullYear();
-
-
-            const month =
-                String(
-                    date.getMonth() + 1
-                ).padStart(
-                    2,
-                    "0"
-                );
-
-
-            const day =
-                String(
-                    date.getDate()
-                ).padStart(
-                    2,
-                    "0"
-                );
-
-
-            dates.push(
-                `${year}-${month}-${day}`
-            );
-        }
-    }
-
-
-    /*
-     * Mantemos no máximo os últimos
-     * 14 pontos para o gráfico.
-     */
-
-    dates =
-        dates.slice(-14);
-
-
-    const labels =
-        dates.map(
-            date =>
-                formatDate(date)
-        );
-
-
-    const incomeData =
-        dates.map(
-            date =>
-                Number(
-                    grouped[date]?.income ||
-                    0
+        const result =
+            await supabaseClient
+                .from(
+                    "subscriptions"
                 )
-        );
-
-
-    const expenseData =
-        dates.map(
-            date =>
-                Number(
-                    grouped[date]?.expense ||
-                    0
-                )
-        );
-
-
-    financeChart =
-        new Chart(
-            context,
-            {
-
-                type:
-                    "line",
-
-                data: {
-
-                    labels,
-
-                    datasets: [
-
-                        {
-                            label:
-                                "Entradas",
-
-                            data:
-                                incomeData,
-
-                            tension:
-                                0.35,
-
-                            borderWidth:
-                                2,
-
-                            pointRadius:
-                                3
-                        },
-
-                        {
-                            label:
-                                "Saídas",
-
-                            data:
-                                expenseData,
-
-                            tension:
-                                0.35,
-
-                            borderWidth:
-                                2,
-
-                            pointRadius:
-                                3
-                        }
-
-                    ]
-
-                },
-
-                options: {
-
-                    responsive:
-                        true,
-
-                    maintainAspectRatio:
-                        false,
-
-                    interaction: {
-
-                        intersect:
-                            false,
-
-                        mode:
-                            "index"
-
+                .upsert(
+                    {
+                        user_id:
+                            currentUser.id,
+                        plan:
+                            "premium",
+                        status:
+                            "active",
+                        price:
+                            0,
+                        trial_end_at:
+                            trialEnd.toISOString(),
+                        current_period_end:
+                            trialEnd.toISOString()
                     },
-
-                    plugins: {
-
-                        legend: {
-
-                            position:
-                                "bottom",
-
-                            labels: {
-
-                                usePointStyle:
-                                    true,
-
-                                boxWidth:
-                                    7
-
-                            }
-
-                        },
-
-                        tooltip: {
-
-                            callbacks: {
-
-                                label:
-                                    context => {
-
-                                        return `${
-                                            context.dataset.label
-                                        }: ${
-                                            formatCurrency(
-                                                context.parsed.y
-                                            )
-                                        }`;
-
-                                    }
-
-                            }
-
-                        }
-
-                    },
-
-                    scales: {
-
-                        y: {
-
-                            beginAtZero:
-                                true,
-
-                            ticks: {
-
-                                callback:
-                                    value =>
-                                        formatCurrency(
-                                            value
-                                        )
-
-                            }
-
-                        }
-
+                    {
+                        onConflict:
+                            "user_id"
                     }
+                );
 
-                }
+        if (result.error) {
+            console.error(
+                "Erro ativando Premium:",
+                result.error
+            );
 
-            }
+            alert(
+                "Não foi possível ativar o Premium.\n\n" +
+                result.error.message
+            );
+
+            return;
+        }
+
+        await loadSubscription();
+
+        updatePremiumUI();
+
+        alert(
+            "🎉 Premium ativado com sucesso!"
         );
+    } catch (error) {
+        console.error(
+            "Erro no Premium:",
+            error
+        );
+
+        alert(
+            "Ocorreu um erro ao ativar o Premium."
+        );
+    }
 }
 
 
-/* =========================================================
-   GRÁFICO POR CATEGORIA
-========================================================= */
+/* =====================================================
+   RELATÓRIOS
+===================================================== */
 
-function renderCategoryChart() {
+function updateReports() {
+    const income =
+        transactions
+            .filter(function (item) {
+                return (
+                    item.type ===
+                    "income"
+                );
+            })
+            .reduce(
+                function (
+                    total,
+                    item
+                ) {
+                    return (
+                        total +
+                        Number(
+                            item.amount ||
+                                0
+                        )
+                    );
+                },
+                0
+            );
 
+    const expense =
+        transactions
+            .filter(function (item) {
+                return (
+                    item.type ===
+                    "expense"
+                );
+            })
+            .reduce(
+                function (
+                    total,
+                    item
+                ) {
+                    return (
+                        total +
+                        Number(
+                            item.amount ||
+                                0
+                        )
+                    );
+                },
+                0
+            );
+
+    const balance =
+        income - expense;
+
+    setText(
+        "reportIncome",
+        formatCurrency(income)
+    );
+
+    setText(
+        "reportExpense",
+        formatCurrency(expense)
+    );
+
+    setText(
+        "reportBalance",
+        formatCurrency(balance)
+    );
+
+    renderReportCategoryChart();
+}
+
+
+function renderReportCategoryChart() {
     const canvas =
-        $("categoryChart");
-
-    if (!canvas) {
-        return;
-    }
-
+        document.getElementById(
+            "reportCategoryChart"
+        );
 
     if (
+        !canvas ||
         typeof Chart ===
-        "undefined"
+            "undefined"
     ) {
         return;
     }
 
-
     const totals = {};
 
-
     transactions
-        .filter(
-            transaction =>
-                transaction.type ===
+        .filter(function (item) {
+            return (
+                item.type ===
                 "expense"
-        )
-        .forEach(transaction => {
-
+            );
+        })
+        .forEach(function (item) {
             const category =
-                transaction.category ||
-                "Sem categoria";
-
+                item.category ||
+                "Outros";
 
             totals[category] =
                 (
                     totals[category] ||
                     0
                 ) +
-                (
-                    Number(
-                        transaction.amount
-                    ) || 0
+                Number(
+                    item.amount ||
+                        0
                 );
-
         });
-
 
     const labels =
         Object.keys(
             totals
         );
 
-
-    const data =
+    const values =
         labels.map(
-            label =>
-                totals[label]
+            function (label) {
+                return totals[
+                    label
+                ];
+            }
         );
 
-
-    if (categoryChart) {
-
-        categoryChart.destroy();
-
-        categoryChart = null;
+    if (reportCategoryChart) {
+        reportCategoryChart.destroy();
     }
 
-
-    if (labels.length === 0) {
-
-        return;
-    }
-
-
-    categoryChart =
+    reportCategoryChart =
         new Chart(
-            canvas.getContext("2d"),
+            canvas,
             {
-
-                type:
-                    "doughnut",
-
+                type: "bar",
                 data: {
-
-                    labels,
-
+                    labels:
+                        labels.length
+                            ? labels
+                            : [
+                                  "Sem dados"
+                              ],
                     datasets: [
                         {
-                            data
+                            label:
+                                "Despesas",
+                            data:
+                                values.length
+                                    ? values
+                                    : [0]
                         }
                     ]
-
                 },
-
                 options: {
-
-                    responsive:
-                        true,
-
+                    responsive: true,
                     maintainAspectRatio:
                         false,
-
-                    plugins: {
-
-                        legend: {
-
-                            position:
-                                "bottom",
-
-                            labels: {
-
-                                usePointStyle:
-                                    true,
-
-                                boxWidth:
-                                    8
-
-                            }
-
-                        },
-
-                        tooltip: {
-
-                            callbacks: {
-
-                                label:
-                                    context => {
-
-                                        return `${
-                                            context.label
-                                        }: ${
-                                            formatCurrency(
-                                                context.raw
-                                            )
-                                        }`;
-
-                                    }
-
-                            }
-
+                    scales: {
+                        y: {
+                            beginAtZero:
+                                true
                         }
-
                     }
-
                 }
-
             }
         );
 }
 
 
-/* =========================================================
-   RELATÓRIOS
-========================================================= */
+/* =====================================================
+   PERFIL NA INTERFACE
+===================================================== */
 
-function renderReports() {
-
-    const totals =
-        calculateTotals();
-
-
-    if ($("reportIncome")) {
-
-        $("reportIncome")
-            .textContent =
-            formatCurrency(
-                totals.income
-            );
-    }
-
-
-    if ($("reportExpense")) {
-
-        $("reportExpense")
-            .textContent =
-            formatCurrency(
-                totals.expense
-            );
-    }
-
-
-    if ($("reportBalance")) {
-
-        $("reportBalance")
-            .textContent =
-            formatCurrency(
-                totals.balance
-            );
-    }
-}
-
-
-/* =========================================================
-   MODAIS
-========================================================= */
-
-function openModal(modalId) {
-
-    const modal =
-        $(modalId);
-
-    if (!modal) {
+function updateProfileUI() {
+    if (!currentUser) {
         return;
     }
 
+    const name =
+        currentUser.user_metadata
+            ?.full_name ||
+        currentUser.email ||
+        "Usuário";
 
-    modal.classList.remove(
-        "hidden"
-    );
+    document
+        .querySelectorAll(
+            "[data-user-name]"
+        )
+        .forEach(function (
+            element
+        ) {
+            element.textContent =
+                name;
+        });
 
-
-    modal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-
-    document.body.style.overflow =
-        "hidden";
+    document
+        .querySelectorAll(
+            "[data-user-email]"
+        )
+        .forEach(function (
+            element
+        ) {
+            element.textContent =
+                currentUser.email ||
+                "";
+        });
 }
 
 
-function closeModal(modalId) {
-
-    const modal =
-        $(modalId);
-
-    if (!modal) {
-        return;
-    }
-
-
-    modal.classList.add(
-        "hidden"
-    );
-
-
-    modal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-
-    const anyOpenModal =
-        document.querySelector(
-            ".modal:not(.hidden)"
-        );
-
-
-    if (!anyOpenModal) {
-
-        document.body.style.overflow =
-            "";
-    }
-}
-
-
-/* =========================================================
-   TEMA
-========================================================= */
-
-function toggleTheme() {
-
-    document.body.classList.toggle(
-        "dark"
-    );
-
-
-    const dark =
-        document.body.classList.contains(
-            "dark"
-        );
-
-
-    localStorage.setItem(
-        "controlesTheme",
-        dark
-            ? "dark"
-            : "light"
-    );
-
-
-    updateThemeButton(
-        dark
-    );
-}
-
-
-function loadTheme() {
-
-    const saved =
-        localStorage.getItem(
-            "controlesTheme"
-        );
-
-
-    if (saved === "dark") {
-
-        document.body.classList.add(
-            "dark"
-        );
-
-        updateThemeButton(
-            true
-        );
-
-    } else {
-
-        updateThemeButton(
-            false
-        );
-    }
-}
-
-
-function updateThemeButton(
-    dark
-) {
-
-    const button =
-        $("themeBtn");
-
-    if (!button) {
-        return;
-    }
-
-
-    button.innerHTML =
-        dark
-            ? "<span>☀</span><span>Modo claro</span>"
-            : "<span>☾</span><span>Modo escuro</span>";
-}
-
-
-/* =========================================================
-   EXPORTAÇÃO
-========================================================= */
+/* =====================================================
+   EXPORTAR DADOS
+===================================================== */
 
 function exportData() {
-
     if (!currentUser) {
-
-        showToast(
-            "Entre na sua conta para exportar."
+        alert(
+            "Faça login para exportar seus dados."
         );
-
         return;
     }
 
-
-    const payload = {
-
+    const data = {
         exported_at:
             new Date().toISOString(),
 
         user: {
-
             id:
                 currentUser.id,
-
             email:
-                currentUser.email,
-
-            name:
-                getUserName()
-
+                currentUser.email
         },
 
-        transactions,
+        transactions:
+            transactions,
 
-        categories,
+        goals:
+            goals,
 
-        goals,
+        budgets:
+            budgets,
 
         subscription:
-            currentSubscription
-
+            subscription
     };
-
-
-    const json =
-        JSON.stringify(
-            payload,
-            null,
-            2
-        );
-
 
     const blob =
         new Blob(
-            [json],
+            [
+                JSON.stringify(
+                    data,
+                    null,
+                    2
+                )
+            ],
             {
                 type:
                     "application/json"
             }
         );
 
-
     const url =
         URL.createObjectURL(
             blob
         );
-
 
     const link =
         document.createElement(
             "a"
         );
 
-
-    link.href =
-        url;
-
+    link.href = url;
 
     link.download =
-        `controles-backup-${getToday()}.json`;
-
+        "controles-backup-" +
+        new Date()
+            .toISOString()
+            .slice(
+                0,
+                10
+            ) +
+        ".json";
 
     document.body.appendChild(
         link
     );
 
-
     link.click();
 
-
     link.remove();
-
 
     URL.revokeObjectURL(
         url
     );
-
-
-    showToast(
-        "Backup exportado com sucesso!"
-    );
 }
 
 
-/* =========================================================
-   LOGOUT
-========================================================= */
+/* =====================================================
+   TOAST
+===================================================== */
 
-async function handleLogout() {
-
-    if (!supabaseClient) {
-        return;
-    }
-
-
-    try {
-
-        await supabaseClient.auth.signOut();
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao sair:",
-            error
+function showToast(
+    message,
+    type = "success"
+) {
+    let container =
+        document.getElementById(
+            "toastContainer"
         );
 
-    }
-
-
-    currentUser = null;
-
-    currentProfile = null;
-
-    transactions = [];
-
-    categories = [];
-
-    goals = [];
-
-    currentSubscription = null;
-
-
-    showLoginScreen();
-
-
-    showToast(
-        "Você saiu da conta."
-    );
-}
-
-
-/* =========================================================
-   SESSÃO
-========================================================= */
-
-async function checkSession() {
-
-    if (!supabaseClient) {
-
-        showLoginScreen();
-
-        return;
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.auth.getSession();
-
-
-        if (error) {
-
-            console.error(
-                "Erro ao verificar sessão:",
-                error
+    if (!container) {
+        container =
+            document.createElement(
+                "div"
             );
 
-            showLoginScreen();
+        container.id =
+            "toastContainer";
 
-            return;
-        }
+        container.className =
+            "toast-container";
 
+        document.body.appendChild(
+            container
+        );
+    }
 
-        const session =
-            data?.session;
+    const toast =
+        document.createElement(
+            "div"
+        );
 
+    toast.className =
+        "toast toast-" +
+        type;
 
-        if (
-            session?.user
-        ) {
+    toast.textContent =
+        message;
 
-            currentUser =
-                session.user;
+    container.appendChild(
+        toast
+    );
 
-
-            await loadProfile();
-
-            await loadAllData();
-
-            showApp();
-
-            updateUserInterface();
-
-            showSection(
-                "dashboard"
+    setTimeout(
+        function () {
+            toast.classList.add(
+                "hide"
             );
 
-        } else {
-
-            showLoginScreen();
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao verificar sessão:",
-            error
-        );
-
-        showLoginScreen();
-    }
-}
-
-
-/* =========================================================
-   ALTERAÇÃO DE ESTADO DA AUTENTICAÇÃO
-========================================================= */
-
-function setupAuthListener() {
-
-    if (!supabaseClient) {
-        return;
-    }
-
-
-    supabaseClient.auth.onAuthStateChange(
-        async (
-            event,
-            session
-        ) => {
-
-            console.log(
-                "Auth:",
-                event
+            setTimeout(
+                function () {
+                    toast.remove();
+                },
+                300
             );
-
-
-            if (
-                event ===
-                "SIGNED_IN"
-            ) {
-
-                if (
-                    session?.user
-                ) {
-
-                    currentUser =
-                        session.user;
-
-
-                    /*
-                     * Pequeno atraso para evitar
-                     * problemas de concorrência
-                     * durante o callback.
-                     */
-
-                    setTimeout(
-                        async () => {
-
-                            await loadProfile();
-
-                            await loadAllData();
-
-                            showApp();
-
-                            updateUserInterface();
-
-                        },
-                        0
-                    );
-                }
-            }
-
-
-            if (
-                event ===
-                "SIGNED_OUT"
-            ) {
-
-                currentUser = null;
-
-                currentProfile = null;
-
-                transactions = [];
-
-                categories = [];
-
-                goals = [];
-
-                currentSubscription = null;
-
-                showLoginScreen();
-            }
-
-        }
+        },
+        3000
     );
 }
-
-
-/* =========================================================
-   TECLADO / ESC
-========================================================= */
-
-function setupKeyboardEvents() {
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key !==
-                "Escape"
-            ) {
-                return;
-            }
-
-
-            const modal =
-                document.querySelector(
-                    ".modal:not(.hidden)"
-                );
-
-
-            if (modal) {
-
-                closeModal(
-                    modal.id
-                );
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   DATA PADRÃO
-========================================================= */
-
-function setupDefaultValues() {
-
-    const dateInput =
-        $("transactionDate");
-
-    if (
-        dateInput &&
-        !dateInput.value
-    ) {
-
-        dateInput.value =
-            getToday();
-    }
-}
-
-
-/* =========================================================
-   INICIALIZAÇÃO
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
-
-        console.log(
-            "ControleS iniciando..."
-        );
-
-
-        setupEvents();
-
-        setupKeyboardEvents();
-
-        setupAuthListener();
-
-        loadTheme();
-
-        setupDefaultValues();
-
-
-        await checkSession();
-
-
-        console.log(
-            "ControleS carregado."
-        );
-    }
-);
