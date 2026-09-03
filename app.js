@@ -3,6 +3,7 @@
    Login + Cadastro + Dashboard + Lançamentos
    + Categorias + Relatórios + Premium + Tema
    + Supabase
+   + Cofrinho Mensal + Resumo Mensal + Ranking
 ========================================================= */
 
 const SUPABASE_URL =
@@ -1672,6 +1673,8 @@ function updateDashboard() {
   renderRecentTransactions();
 
   renderFinanceChart();
+
+  updatePremiumDashboard();
 }
 
 function getTotals() {
@@ -1702,6 +1705,361 @@ function getTotals() {
     balance:
       income - expense
   };
+}
+
+/* =========================================================
+   PREMIUM — DASHBOARD
+   COFRINHO + RESUMO MENSAL + RANKING
+========================================================= */
+
+function updatePremiumDashboard() {
+  const container =
+    $("premiumDashboardContent");
+
+  if (!container) {
+    return;
+  }
+
+  const premium =
+    isPremiumActive();
+
+  container.classList.toggle(
+    "hidden",
+    !premium
+  );
+
+  if (!premium) {
+    return;
+  }
+
+  const monthly =
+    getCurrentMonthSummary();
+
+  /* -------------------------------------------------------
+     COFRINHO
+  ------------------------------------------------------- */
+
+  if ($("monthlySavingsValue")) {
+    $("monthlySavingsValue").textContent =
+      formatMoney(
+        monthly.balance
+      );
+  }
+
+  if ($("monthlySavingsText")) {
+    if (monthly.balance > 0) {
+      $("monthlySavingsText").textContent =
+        `Você tem ${formatMoney(
+          monthly.balance
+        )} de sobra neste mês.`;
+
+    } else if (monthly.balance < 0) {
+      $("monthlySavingsText").textContent =
+        `Suas despesas ultrapassaram as receitas em ${formatMoney(
+          Math.abs(monthly.balance)
+        )}.`;
+
+    } else {
+      $("monthlySavingsText").textContent =
+        "Receitas e despesas estão equilibradas.";
+    }
+  }
+
+  /* -------------------------------------------------------
+     RESUMO MENSAL
+  ------------------------------------------------------- */
+
+  if ($("monthlyIncomeValue")) {
+    $("monthlyIncomeValue").textContent =
+      formatMoney(
+        monthly.income
+      );
+  }
+
+  if ($("monthlyExpenseValue")) {
+    $("monthlyExpenseValue").textContent =
+      formatMoney(
+        monthly.expense
+      );
+  }
+
+  if ($("monthlyBalanceValue")) {
+    $("monthlyBalanceValue").textContent =
+      formatMoney(
+        monthly.balance
+      );
+
+    $("monthlyBalanceValue").classList.toggle(
+      "positive",
+      monthly.balance >= 0
+    );
+
+    $("monthlyBalanceValue").classList.toggle(
+      "negative",
+      monthly.balance < 0
+    );
+  }
+
+  /* -------------------------------------------------------
+     RANKING
+  ------------------------------------------------------- */
+
+  const ranking =
+    getMonthlyExpenseRanking();
+
+  const rankingContainer =
+    $("expenseRanking");
+
+  if (rankingContainer) {
+    rankingContainer.innerHTML = "";
+
+    if (!ranking.length) {
+      rankingContainer.innerHTML = `
+        <div class="empty-state">
+          <div>◎</div>
+
+          <h3>
+            Nenhuma despesa neste mês
+          </h3>
+
+          <p>
+            Adicione uma despesa para aparecer no ranking.
+          </p>
+        </div>
+      `;
+    } else {
+      ranking.forEach(
+        (item, index) => {
+          const row =
+            document.createElement(
+              "div"
+            );
+
+          row.className =
+            "expense-ranking-item";
+
+          const percentage =
+            monthly.expense > 0
+              ? (
+                  item.amount /
+                  monthly.expense
+                ) *
+                100
+              : 0;
+
+          row.innerHTML = `
+            <div class="ranking-position">
+              ${index + 1}
+            </div>
+
+            <div class="ranking-info">
+
+              <div class="ranking-top">
+
+                <strong>
+                  ${escapeHTML(
+                    item.category
+                  )}
+                </strong>
+
+                <strong>
+                  ${formatMoney(
+                    item.amount
+                  )}
+                </strong>
+
+              </div>
+
+              <div class="ranking-bar">
+
+                <div
+                  class="ranking-bar-fill"
+                  style="width: ${Math.min(
+                    percentage,
+                    100
+                  )}%"
+                ></div>
+
+              </div>
+
+              <small>
+                ${percentage.toFixed(
+                  1
+                )}% das despesas do mês
+              </small>
+
+            </div>
+          `;
+
+          rankingContainer.appendChild(
+            row
+          );
+        }
+      );
+    }
+  }
+
+  /* -------------------------------------------------------
+     MAIOR GASTO
+  ------------------------------------------------------- */
+
+  const top =
+    ranking[0];
+
+  if ($("topCategoryValue")) {
+    $("topCategoryValue").textContent =
+      top
+        ? formatMoney(
+            top.amount
+          )
+        : "—";
+  }
+
+  if ($("topCategoryText")) {
+    $("topCategoryText").textContent =
+      top
+        ? top.category
+        : "Nenhuma despesa registrada";
+  }
+}
+
+/* =========================================================
+   RESUMO DO MÊS ATUAL
+========================================================= */
+
+function getCurrentMonthSummary() {
+  const now =
+    new Date();
+
+  let income = 0;
+  let expense = 0;
+
+  transactions.forEach(
+    transaction => {
+      if (
+        !isDateInCurrentMonth(
+          transaction.date,
+          now
+        )
+      ) {
+        return;
+      }
+
+      const amount =
+        Number(
+          transaction.amount
+        ) || 0;
+
+      const type =
+        normalizeTransactionType(
+          transaction.type
+        );
+
+      if (
+        type === "expense"
+      ) {
+        expense += amount;
+      } else {
+        income += amount;
+      }
+    }
+  );
+
+  return {
+    income,
+    expense,
+    balance:
+      income - expense
+  };
+}
+
+/* =========================================================
+   RANKING DE GASTOS DO MÊS
+========================================================= */
+
+function getMonthlyExpenseRanking() {
+  const now =
+    new Date();
+
+  const totals = {};
+
+  transactions.forEach(
+    transaction => {
+      if (
+        !isDateInCurrentMonth(
+          transaction.date,
+          now
+        )
+      ) {
+        return;
+      }
+
+      if (
+        normalizeTransactionType(
+          transaction.type
+        ) !== "expense"
+      ) {
+        return;
+      }
+
+      const category =
+        String(
+          transaction.category ||
+            "Outros"
+        ).trim() ||
+        "Outros";
+
+      const amount =
+        Number(
+          transaction.amount
+        ) || 0;
+
+      totals[category] =
+        (
+          totals[category] ||
+          0
+        ) + amount;
+    }
+  );
+
+  return Object.entries(
+    totals
+  )
+    .map(
+      ([category, amount]) => ({
+        category,
+        amount
+      })
+    )
+    .sort(
+      (a, b) =>
+        b.amount -
+        a.amount
+    )
+    .slice(0, 5);
+}
+
+/* =========================================================
+   VERIFICAR MÊS ATUAL
+========================================================= */
+
+function isDateInCurrentMonth(
+  value,
+  referenceDate = new Date()
+) {
+  const date =
+    parseDate(value);
+
+  if (!date) {
+    return false;
+  }
+
+  return (
+    date.getFullYear() ===
+      referenceDate.getFullYear() &&
+    date.getMonth() ===
+      referenceDate.getMonth()
+  );
 }
 
 /* =========================================================
@@ -2059,6 +2417,8 @@ function updateReports() {
 
     categoryChart = null;
   }
+
+  updatePremiumDashboard();
 }
 
 /* =========================================================
@@ -2210,6 +2570,8 @@ function updatePremiumUI() {
   }
 
   updateReports();
+
+  updatePremiumDashboard();
 }
 
 function isPremiumActive() {
@@ -2648,6 +3010,13 @@ function showSection(
     "premium"
   ) {
     updatePremiumUI();
+  }
+
+  if (
+    section ===
+    "dashboard"
+  ) {
+    updatePremiumDashboard();
   }
 
   $("sidebar")
@@ -3196,11 +3565,16 @@ function parseDate(
 ) {
   if (!value) return null;
 
+  const normalized =
+    normalizeDate(value);
+
+  if (!normalized) {
+    return null;
+  }
+
   const date =
     new Date(
-      `${normalizeDate(
-        value
-      )}T12:00:00`
+      `${normalized}T12:00:00`
     );
 
   return Number.isNaN(
