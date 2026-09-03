@@ -12,20 +12,35 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
   <link rel="stylesheet" href="app.css">
 </head>
 
 <body>
-  <!-- LOGIN -->
+
+  <!-- =====================================================
+       LOGIN
+  ====================================================== -->
+
   <div id="loginView" class="auth-page">
+
     <div class="auth-card">
+
       <div class="brand-block">
+
         <div class="brand-logo">
-          <img src="logo.png" alt="ControleS" onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')">
+          <img
+            src="logo.png"
+            alt="ControleS"
+            onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
+          >
+
           <span class="logo-fallback-mark">C↗</span>
         </div>
+
         <h1>ControleS</h1>
         <p>Seu dinheiro sob controle.</p>
+
       </div>
 
       <div class="auth-heading">
@@ -35,349 +50,1887 @@
       </div>
 
       <form id="loginForm" novalidate>
-        <label for="loginEmail">E-mail</label>
-        <input id="loginEmail" type="email" autocomplete="email" placeholder="seu@email.com" required>
 
-        <label for="loginPassword">Senha</label>
+        <label for="loginEmail">
+          E-mail
+        </label>
+
+        <input
+          id="loginEmail"
+          type="email"
+          autocomplete="email"
+          placeholder="seu@email.com"
+          required
+        >
+
+        <label for="loginPassword">
+          Senha
+        </label>
+
         <div class="password-wrap">
-          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Digite sua senha" required>
-          <button type="button" class="password-toggle" data-password-toggle="loginPassword" aria-label="Mostrar senha">◉</button>
+
+          <input
+            id="loginPassword"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Digite sua senha"
+            required
+          >
+
+          <button
+            type="button"
+            class="password-toggle"
+            data-password-toggle="loginPassword"
+            aria-label="Mostrar senha"
+          >
+            ◉
+          </button>
+
         </div>
 
-        <div id="loginMessage" class="form-message" role="alert"></div>
+        <div
+          id="loginMessage"
+          class="form-message"
+          role="alert"
+        ></div>
 
-        <button id="loginSubmitBtn" class="btn btn-primary btn-large" type="submit">Entrar no ControleS</button>
-        <button id="registerBtn" class="btn btn-secondary btn-large" type="button">Criar minha conta</button>
+        <button
+          id="loginSubmitBtn"
+          class="btn btn-primary btn-large"
+          type="submit"
+        >
+          Entrar no ControleS
+        </button>
+
+        <button
+          id="registerBtn"
+          class="btn btn-secondary btn-large"
+          type="button"
+        >
+          Criar minha conta
+        </button>
+
       </form>
 
       <div class="security-note">
         <span>✓</span>
         Controle financeiro simples, inteligente e seguro.
       </div>
+
     </div>
+
   </div>
 
-  <!-- CADASTRO -->
+
+  <!-- =====================================================
+       CADASTRO
+  ====================================================== -->
+
   <div id="registerView" class="auth-page hidden">
+
     <div class="auth-card">
+
       <div class="brand-block">
+
         <div class="brand-logo">
-          <img src="logo.png" alt="ControleS" onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')">
+
+          <img
+            src="logo.png"
+            alt="ControleS"
+            onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
+          >
+
           <span class="logo-fallback-mark">C↗</span>
+
         </div>
+
         <h1>ControleS</h1>
-        <p>Seu dinheiro sob controle.</p>
+
+        <p>
+          Seu dinheiro sob controle.
+        </p>
+
       </div>
 
       <div class="auth-heading">
+
         <span>COMECE AGORA</span>
-        <h2>Crie sua conta</h2>
-        <p>Organize seu dinheiro de um jeito simples.</p>
+
+        <h2>
+          Crie sua conta
+        </h2>
+
+        <p>
+          Organize seu dinheiro de um jeito simples.
+        </p>
+
       </div>
 
       <form id="registerForm" novalidate>
-        <label for="registerName">Nome</label>
-        <input id="registerName" type="text" autocomplete="name" placeholder="Seu nome" required>
 
-        <label for="registerEmail">E-mail</label>
-        <input id="registerEmail" type="email" autocomplete="email" placeholder="seu@email.com" required>
+        <label for="registerName">
+          Nome
+        </label>
 
-        <label for="registerPassword">Senha</label>
+        <input
+          id="registerName"
+          type="text"
+          autocomplete="name"
+          placeholder="Seu nome"
+          required
+        >
+
+        <label for="registerEmail">
+          E-mail
+        </label>
+
+        <input
+          id="registerEmail"
+          type="email"
+          autocomplete="email"
+          placeholder="seu@email.com"
+          required
+        >
+
+        <label for="registerPassword">
+          Senha
+        </label>
+
         <div class="password-wrap">
-          <input id="registerPassword" type="password" autocomplete="new-password" placeholder="Crie uma senha" minlength="6" required>
-          <button type="button" class="password-toggle" data-password-toggle="registerPassword" aria-label="Mostrar senha">◉</button>
+
+          <input
+            id="registerPassword"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Crie uma senha"
+            minlength="6"
+            required
+          >
+
+          <button
+            type="button"
+            class="password-toggle"
+            data-password-toggle="registerPassword"
+            aria-label="Mostrar senha"
+          >
+            ◉
+          </button>
+
         </div>
 
-        <label for="registerPasswordConfirm">Confirmar senha</label>
+        <label for="registerPasswordConfirm">
+          Confirmar senha
+        </label>
+
         <div class="password-wrap">
-          <input id="registerPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repita sua senha" minlength="6" required>
-          <button type="button" class="password-toggle" data-password-toggle="registerPasswordConfirm" aria-label="Mostrar senha">◉</button>
+
+          <input
+            id="registerPasswordConfirm"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Repita sua senha"
+            minlength="6"
+            required
+          >
+
+          <button
+            type="button"
+            class="password-toggle"
+            data-password-toggle="registerPasswordConfirm"
+            aria-label="Mostrar senha"
+          >
+            ◉
+          </button>
+
         </div>
 
-        <div id="registerMessage" class="form-message" role="alert"></div>
+        <div
+          id="registerMessage"
+          class="form-message"
+          role="alert"
+        ></div>
 
-        <button id="createAccountBtn" class="btn btn-primary btn-large" type="submit">Criar minha conta</button>
-        <button id="backToLoginBtn" class="btn btn-secondary btn-large" type="button">Já tenho uma conta</button>
+        <button
+          id="createAccountBtn"
+          class="btn btn-primary btn-large"
+          type="submit"
+        >
+          Criar minha conta
+        </button>
+
+        <button
+          id="backToLoginBtn"
+          class="btn btn-secondary btn-large"
+          type="button"
+        >
+          Já tenho uma conta
+        </button>
+
       </form>
 
       <div class="security-note">
         <span>✓</span>
         Seus dados ficam associados somente à sua conta.
       </div>
+
     </div>
+
   </div>
 
-  <!-- APP -->
+
+  <!-- =====================================================
+       APP
+  ====================================================== -->
+
   <div id="appView" class="app-shell hidden">
+
+    <!-- SIDEBAR -->
+
     <aside id="sidebar" class="sidebar">
+
       <div class="sidebar-brand">
-        <div class="mini-logo"><img src="logo.png" alt="ControleS"></div>
-        <div>
-          <strong>ControleS</strong>
-          <small>Finanças pessoais</small>
+
+        <div class="mini-logo">
+          <img
+            src="logo.png"
+            alt="ControleS"
+          >
         </div>
+
+        <div>
+
+          <strong>
+            ControleS
+          </strong>
+
+          <small>
+            Finanças pessoais
+          </small>
+
+        </div>
+
       </div>
 
       <nav class="sidebar-nav">
-        <button class="nav-item active" data-section="dashboard"><span>⌂</span>Início</button>
-        <button class="nav-item" data-section="transactions"><span>↔</span>Lançamentos</button>
-        <button class="nav-item" data-section="categories"><span>◈</span>Categorias</button>
-        <button class="nav-item" data-section="reports"><span>▥</span>Relatórios</button>
-        <button class="nav-item" data-section="premium"><span>★</span>Premium</button>
+
+        <button
+          class="nav-item active"
+          data-section="dashboard"
+        >
+          <span>⌂</span>
+          Início
+        </button>
+
+        <button
+          class="nav-item"
+          data-section="transactions"
+        >
+          <span>↔</span>
+          Lançamentos
+        </button>
+
+        <button
+          class="nav-item"
+          data-section="categories"
+        >
+          <span>◈</span>
+          Categorias
+        </button>
+
+        <button
+          class="nav-item"
+          data-section="reports"
+        >
+          <span>▥</span>
+          Relatórios
+        </button>
+
+        <button
+          class="nav-item"
+          data-section="premium"
+        >
+          <span>★</span>
+          Premium
+        </button>
+
       </nav>
 
       <div class="sidebar-bottom">
-        <button id="themeBtn" class="side-action" type="button"><span>☾</span>Tema</button>
-        <button id="logoutBtn" class="side-action danger" type="button"><span>↪</span>Sair</button>
+
+        <button
+          id="themeBtn"
+          class="side-action"
+          type="button"
+        >
+          <span>☾</span>
+          Tema
+        </button>
+
+        <button
+          id="logoutBtn"
+          class="side-action danger"
+          type="button"
+        >
+          <span>↪</span>
+          Sair
+        </button>
+
       </div>
+
     </aside>
 
+
+    <!-- MAIN -->
+
     <main class="main-content">
+
+      <!-- TOPBAR -->
+
       <header class="topbar">
-        <button id="mobileMenuBtn" class="mobile-menu-btn" type="button">☰</button>
+
+        <button
+          id="mobileMenuBtn"
+          class="mobile-menu-btn"
+          type="button"
+        >
+          ☰
+        </button>
+
         <div>
-          <span id="currentDate" class="current-date"></span>
-          <h1 id="pageTitle">Início</h1>
+
+          <span
+            id="currentDate"
+            class="current-date"
+          ></span>
+
+          <h1 id="pageTitle">
+            Início
+          </h1>
+
         </div>
+
         <div class="topbar-user">
-          <div id="userAvatar" class="avatar">C</div>
-          <div>
-            <strong id="userName">Usuário</strong>
-            <small id="userEmail"></small>
+
+          <div
+            id="userAvatar"
+            class="avatar"
+          >
+            C
           </div>
+
+          <div>
+
+            <strong id="userName">
+              Usuário
+            </strong>
+
+            <small id="userEmail"></small>
+
+          </div>
+
         </div>
+
       </header>
 
-      <section id="dashboardSection" class="content-section active">
+
+      <!-- =================================================
+           DASHBOARD
+      ================================================== -->
+
+      <section
+        id="dashboardSection"
+        class="content-section active"
+      >
+
         <div class="welcome-row">
+
           <div>
-            <span class="eyebrow">VISÃO GERAL</span>
-            <h2 id="welcomeMessage">Olá! 👋</h2>
-            <p>Veja como estão suas finanças hoje.</p>
+
+            <span class="eyebrow">
+              VISÃO GERAL
+            </span>
+
+            <h2 id="welcomeMessage">
+              Olá! 👋
+            </h2>
+
+            <p>
+              Veja como estão suas finanças hoje.
+            </p>
+
           </div>
-          <button id="addTransactionBtn" class="btn btn-primary" type="button">+ Novo lançamento</button>
+
+          <button
+            id="addTransactionBtn"
+            class="btn btn-primary"
+            type="button"
+          >
+            + Novo lançamento
+          </button>
+
         </div>
+
+
+        <!-- RESUMO -->
 
         <div class="summary-grid">
+
           <article class="summary-card balance-card">
-            <span>Saldo atual</span>
-            <strong id="balanceValue">R$ 0,00</strong>
-            <small>Receitas menos despesas</small>
+
+            <span>
+              Saldo atual
+            </span>
+
+            <strong id="balanceValue">
+              R$ 0,00
+            </strong>
+
+            <small>
+              Receitas menos despesas
+            </small>
+
           </article>
+
+
           <article class="summary-card">
-            <span>Receitas</span>
-            <strong id="incomeValue" class="positive">R$ 0,00</strong>
-            <small>Total recebido</small>
+
+            <span>
+              Receitas
+            </span>
+
+            <strong
+              id="incomeValue"
+              class="positive"
+            >
+              R$ 0,00
+            </strong>
+
+            <small>
+              Total recebido
+            </small>
+
           </article>
+
+
           <article class="summary-card">
-            <span>Despesas</span>
-            <strong id="expenseValue" class="negative">R$ 0,00</strong>
-            <small>Total gasto</small>
+
+            <span>
+              Despesas
+            </span>
+
+            <strong
+              id="expenseValue"
+              class="negative"
+            >
+              R$ 0,00
+            </strong>
+
+            <small>
+              Total gasto
+            </small>
+
           </article>
+
         </div>
+
+
+        <!-- =================================================
+             PREMIUM DASHBOARD EXTRAS
+        ================================================== -->
+
+        <div
+          id="premiumDashboardExtras"
+          class="premium-dashboard-extras hidden"
+        >
+
+          <!-- CATEGORIA QUE MAIS GASTOU -->
+
+          <article class="panel premium-dashboard-card">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  🏆 Categoria que mais gastou
+                </h3>
+
+                <p>
+                  Seu maior gasto neste mês
+                </p>
+
+              </div>
+
+              <span class="premium-mini-badge">
+                PREMIUM
+              </span>
+
+            </div>
+
+            <div
+              id="topCategoryDashboard"
+              class="premium-dashboard-value"
+            >
+              Nenhuma despesa este mês.
+            </div>
+
+          </article>
+
+
+          <!-- COFRINHO -->
+
+          <article class="panel premium-dashboard-card">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  🐷 Meu Cofrinho
+                </h3>
+
+                <p>
+                  Quanto você está juntando este mês
+                </p>
+
+              </div>
+
+              <span class="premium-mini-badge">
+                PREMIUM
+              </span>
+
+            </div>
+
+            <div
+              id="dashboardPiggyBank"
+              class="piggy-dashboard"
+            >
+
+              <strong>
+                R$ 0,00
+              </strong>
+
+              <small>
+                Meta mensal: R$ 0,00
+              </small>
+
+            </div>
+
+          </article>
+
+        </div>
+
+
+        <!-- AÇÕES RÁPIDAS -->
 
         <div class="quick-actions">
-          <button class="quick-action" data-action="add-income" type="button"><span>＋</span>Adicionar receita</button>
-          <button class="quick-action" data-action="add-expense" type="button"><span>−</span>Adicionar despesa</button>
-          <button id="addCategoryBtn" class="quick-action" type="button"><span>◈</span>Nova categoria</button>
-          <button id="addGoalBtn" class="quick-action" type="button"><span>◎</span>Nova meta</button>
+
+          <button
+            class="quick-action"
+            data-action="add-income"
+            type="button"
+          >
+            <span>＋</span>
+            Adicionar receita
+          </button>
+
+          <button
+            class="quick-action"
+            data-action="add-expense"
+            type="button"
+          >
+            <span>−</span>
+            Adicionar despesa
+          </button>
+
+          <button
+            id="addCategoryBtn"
+            class="quick-action"
+            type="button"
+          >
+            <span>◈</span>
+            Nova categoria
+          </button>
+
+          <button
+            id="addGoalBtn"
+            class="quick-action"
+            type="button"
+          >
+            <span>◎</span>
+            Nova meta
+          </button>
+
         </div>
+
+
+        <!-- DASHBOARD GRID -->
 
         <div class="dashboard-grid">
-          <article class="panel">
-            <div class="panel-header">
-              <div><h3>Movimentação financeira</h3><p>Receitas e despesas dos últimos meses</p></div>
-            </div>
-            <div class="chart-box"><canvas id="financeChart"></canvas></div>
-          </article>
+
+          <!-- GRÁFICO -->
 
           <article class="panel">
+
             <div class="panel-header">
-              <div><h3>Últimos lançamentos</h3><p>Suas movimentações recentes</p></div>
-              <button class="text-button" data-section="transactions" type="button">Ver todos</button>
+
+              <div>
+
+                <h3>
+                  Movimentação financeira
+                </h3>
+
+                <p>
+                  Receitas e despesas dos últimos meses
+                </p>
+
+              </div>
+
             </div>
-            <div id="recentTransactions" class="recent-list"></div>
+
+            <div class="chart-box">
+              <canvas id="financeChart"></canvas>
+            </div>
+
           </article>
+
+
+          <!-- ÚLTIMOS LANÇAMENTOS -->
+
+          <article class="panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  Últimos lançamentos
+                </h3>
+
+                <p>
+                  Suas movimentações recentes
+                </p>
+
+              </div>
+
+              <button
+                class="text-button"
+                data-section="transactions"
+                type="button"
+              >
+                Ver todos
+              </button>
+
+            </div>
+
+            <div
+              id="recentTransactions"
+              class="recent-list"
+            ></div>
+
+          </article>
+
         </div>
+
       </section>
 
-      <section id="transactionsSection" class="content-section">
+
+      <!-- =================================================
+           LANÇAMENTOS
+      ================================================== -->
+
+      <section
+        id="transactionsSection"
+        class="content-section"
+      >
+
         <div class="section-heading">
-          <div><span class="eyebrow">MOVIMENTAÇÕES</span><h2>Lançamentos</h2><p>Controle tudo que entra e sai.</p></div>
-          <button id="addTransactionBtn2" class="btn btn-primary" type="button">+ Novo lançamento</button>
+
+          <div>
+
+            <span class="eyebrow">
+              MOVIMENTAÇÕES
+            </span>
+
+            <h2>
+              Lançamentos
+            </h2>
+
+            <p>
+              Controle tudo que entra e sai.
+            </p>
+
+          </div>
+
+          <button
+            id="addTransactionBtn2"
+            class="btn btn-primary"
+            type="button"
+          >
+            + Novo lançamento
+          </button>
+
         </div>
+
 
         <div class="filters">
-          <input id="transactionSearch" type="search" placeholder="Buscar lançamento...">
+
+          <input
+            id="transactionSearch"
+            type="search"
+            placeholder="Buscar lançamento..."
+          >
+
           <select id="transactionFilter">
-            <option value="all">Todos os tipos</option>
-            <option value="income">Receitas</option>
-            <option value="expense">Despesas</option>
+
+            <option value="all">
+              Todos os tipos
+            </option>
+
+            <option value="income">
+              Receitas
+            </option>
+
+            <option value="expense">
+              Despesas
+            </option>
+
           </select>
+
+
           <select id="typeFilter">
-            <option value="all">Todos</option>
-            <option value="income">Receita</option>
-            <option value="expense">Despesa</option>
+
+            <option value="all">
+              Todos
+            </option>
+
+            <option value="income">
+              Receita
+            </option>
+
+            <option value="expense">
+              Despesa
+            </option>
+
           </select>
-          <select id="categoryFilter"><option value="all">Todas as categorias</option></select>
+
+
+          <select id="categoryFilter">
+
+            <option value="all">
+              Todas as categorias
+            </option>
+
+          </select>
+
         </div>
+
 
         <div class="panel table-panel">
+
           <div class="table-wrap">
+
             <table>
+
               <thead>
-                <tr><th>Descrição</th><th>Categoria</th><th>Data</th><th>Tipo</th><th>Valor</th><th></th></tr>
+
+                <tr>
+                  <th>Descrição</th>
+                  <th>Categoria</th>
+                  <th>Data</th>
+                  <th>Tipo</th>
+                  <th>Valor</th>
+                  <th></th>
+                </tr>
+
               </thead>
-              <tbody id="transactionsTableBody"></tbody>
+
+              <tbody
+                id="transactionsTableBody"
+              ></tbody>
+
             </table>
+
           </div>
-          <div id="transactionsEmpty" class="empty-state hidden">
-            <div>◎</div><h3>Nenhum lançamento encontrado</h3><p>Adicione sua primeira receita ou despesa.</p>
+
+
+          <div
+            id="transactionsEmpty"
+            class="empty-state hidden"
+          >
+
+            <div>◎</div>
+
+            <h3>
+              Nenhum lançamento encontrado
+            </h3>
+
+            <p>
+              Adicione sua primeira receita ou despesa.
+            </p>
+
           </div>
+
         </div>
+
       </section>
 
-      <section id="categoriesSection" class="content-section">
+
+      <!-- =================================================
+           CATEGORIAS
+      ================================================== -->
+
+      <section
+        id="categoriesSection"
+        class="content-section"
+      >
+
         <div class="section-heading">
-          <div><span class="eyebrow">ORGANIZAÇÃO</span><h2>Categorias</h2><p>Organize seus lançamentos por categoria.</p></div>
-          <button id="addCategoryBtn2" class="btn btn-primary" type="button">+ Nova categoria</button>
+
+          <div>
+
+            <span class="eyebrow">
+              ORGANIZAÇÃO
+            </span>
+
+            <h2>
+              Categorias
+            </h2>
+
+            <p>
+              Organize seus lançamentos por categoria.
+            </p>
+
+          </div>
+
+          <button
+            id="addCategoryBtn2"
+            class="btn btn-primary"
+            type="button"
+          >
+            + Nova categoria
+          </button>
+
         </div>
-        <div id="categoriesGrid" class="categories-grid"></div>
+
+        <div
+          id="categoriesGrid"
+          class="categories-grid"
+        ></div>
+
       </section>
 
-      <section id="reportsSection" class="content-section">
+
+      <!-- =================================================
+           RELATÓRIOS
+      ================================================== -->
+
+      <section
+        id="reportsSection"
+        class="content-section"
+      >
+
         <div class="section-heading">
-          <div><span class="eyebrow">ANÁLISE</span><h2>Relatórios</h2><p>Entenda melhor para onde seu dinheiro está indo.</p></div>
+
+          <div>
+
+            <span class="eyebrow">
+              ANÁLISE
+            </span>
+
+            <h2>
+              Relatórios
+            </h2>
+
+            <p>
+              Entenda melhor para onde seu dinheiro está indo.
+            </p>
+
+          </div>
+
         </div>
 
-        <div id="premiumReportContent" class="premium-report-gate hidden">
-          <div class="premium-lock">★</div>
-          <h3>Relatórios Premium</h3>
-          <p>Ative o Premium para liberar análises avançadas.</p>
-          <button class="btn btn-primary" data-section="premium" type="button">Conhecer Premium</button>
+
+        <!-- BLOQUEIO PREMIUM -->
+
+        <div
+          id="premiumReportContent"
+          class="premium-report-gate hidden"
+        >
+
+          <div class="premium-lock">
+            ★
+          </div>
+
+          <h3>
+            Relatórios Premium
+          </h3>
+
+          <p>
+            Ative o Premium para liberar análises avançadas.
+          </p>
+
+          <button
+            class="btn btn-primary"
+            data-section="premium"
+            type="button"
+          >
+            Conhecer Premium
+          </button>
+
         </div>
+
+
+        <!-- RELATÓRIO NORMAL/PREMIUM -->
 
         <div id="normalReportContent">
+
           <div class="report-cards">
-            <article class="report-card"><span>Receitas</span><strong id="reportIncomeCard">R$ 0,00</strong></article>
-            <article class="report-card"><span>Despesas</span><strong id="reportExpenseCard">R$ 0,00</strong></article>
-            <article class="report-card"><span>Saldo</span><strong id="reportBalanceCard">R$ 0,00</strong></article>
+
+            <article class="report-card">
+
+              <span>
+                Receitas
+              </span>
+
+              <strong id="reportIncomeCard">
+                R$ 0,00
+              </strong>
+
+            </article>
+
+
+            <article class="report-card">
+
+              <span>
+                Despesas
+              </span>
+
+              <strong id="reportExpenseCard">
+                R$ 0,00
+              </strong>
+
+            </article>
+
+
+            <article class="report-card">
+
+              <span>
+                Saldo
+              </span>
+
+              <strong id="reportBalanceCard">
+                R$ 0,00
+              </strong>
+
+            </article>
+
           </div>
+
+
           <div class="reports-grid">
+
             <article class="panel">
-              <div class="panel-header"><div><h3>Por categoria</h3><p>Distribuição das despesas</p></div></div>
-              <div class="chart-box doughnut-box"><canvas id="categoryChart"></canvas></div>
+
+              <div class="panel-header">
+
+                <div>
+
+                  <h3>
+                    Por categoria
+                  </h3>
+
+                  <p>
+                    Distribuição das despesas
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div class="chart-box doughnut-box">
+
+                <canvas
+                  id="categoryChart"
+                ></canvas>
+
+              </div>
+
             </article>
+
+
             <article class="panel report-values">
-              <div class="panel-header"><div><h3>Resumo</h3><p>Valores atuais</p></div></div>
-              <div class="report-line"><span>Receitas</span><strong id="reportIncome">R$ 0,00</strong></div>
-              <div class="report-line"><span>Despesas</span><strong id="reportExpense">R$ 0,00</strong></div>
-              <div class="report-line total"><span>Saldo</span><strong id="reportBalance">R$ 0,00</strong></div>
+
+              <div class="panel-header">
+
+                <div>
+
+                  <h3>
+                    Resumo
+                  </h3>
+
+                  <p>
+                    Valores atuais
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="report-line">
+
+                <span>
+                  Receitas
+                </span>
+
+                <strong id="reportIncome">
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+
+              <div class="report-line">
+
+                <span>
+                  Despesas
+                </span>
+
+                <strong id="reportExpense">
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+
+              <div class="report-line total">
+
+                <span>
+                  Saldo
+                </span>
+
+                <strong id="reportBalance">
+                  R$ 0,00
+                </strong>
+
+              </div>
+
             </article>
+
           </div>
+
         </div>
+
       </section>
 
-      <section id="premiumSection" class="content-section">
+
+      <!-- =================================================
+           PREMIUM
+      ================================================== -->
+
+      <section
+        id="premiumSection"
+        class="content-section"
+      >
+
         <div class="premium-hero">
-          <div class="premium-badge">★ PREMIUM</div>
-          <h2>Tenha mais controle sobre seu dinheiro.</h2>
-          <p>Desbloqueie recursos avançados do ControleS e acompanhe suas finanças com ainda mais detalhes.</p>
-          <div class="premium-price"><strong>R$ 24,99</strong><span>/ mês</span></div>
-          <button id="activatePremiumBtn" class="btn btn-premium btn-large" type="button">Ativar Premium</button>
-          <small id="premiumStatusText">Free</small>
+
+          <div class="premium-badge">
+            ★ PREMIUM
+          </div>
+
+          <h2>
+            Tenha mais controle sobre seu dinheiro.
+          </h2>
+
+          <p>
+            Desbloqueie recursos avançados do ControleS e acompanhe suas finanças com ainda mais detalhes.
+          </p>
+
+          <div class="premium-price">
+
+            <strong>
+              R$ 24,99
+            </strong>
+
+            <span>
+              / mês
+            </span>
+
+          </div>
+
+          <button
+            id="activatePremiumBtn"
+            class="btn btn-premium btn-large"
+            type="button"
+          >
+            Ativar Premium
+          </button>
+
+          <small id="premiumStatusText">
+            Free
+          </small>
+
         </div>
+
+
+        <!-- RECURSOS PREMIUM -->
 
         <div class="premium-features">
-          <article><span>✓</span><div><strong>Relatórios avançados</strong><p>Veja análises detalhadas das suas movimentações.</p></div></article>
-          <article><span>✓</span><div><strong>Metas financeiras</strong><p>Crie e acompanhe objetivos para seu dinheiro.</p></div></article>
-          <article><span>✓</span><div><strong>Controle completo</strong><p>Tenha sua vida financeira organizada em um só lugar.</p></div></article>
+
+          <article>
+
+            <span>✓</span>
+
+            <div>
+
+              <strong>
+                Relatórios avançados
+              </strong>
+
+              <p>
+                Veja análises detalhadas das suas movimentações.
+              </p>
+
+            </div>
+
+          </article>
+
+
+          <article>
+
+            <span>✓</span>
+
+            <div>
+
+              <strong>
+                Metas financeiras
+              </strong>
+
+              <p>
+                Crie e acompanhe objetivos para seu dinheiro.
+              </p>
+
+            </div>
+
+          </article>
+
+
+          <article>
+
+            <span>✓</span>
+
+            <div>
+
+              <strong>
+                🐷 Cofrinho mensal
+              </strong>
+
+              <p>
+                Defina quanto quer juntar por mês e acompanhe seu progresso.
+              </p>
+
+            </div>
+
+          </article>
+
+
+          <article>
+
+            <span>✓</span>
+
+            <div>
+
+              <strong>
+                📅 Resumo mensal
+              </strong>
+
+              <p>
+                Veja rapidamente quanto entrou, saiu e quanto sobrou.
+              </p>
+
+            </div>
+
+          </article>
+
+
+          <article>
+
+            <span>✓</span>
+
+            <div>
+
+              <strong>
+                🏆 Ranking de gastos
+              </strong>
+
+              <p>
+                Descubra quais categorias mais consomem seu dinheiro.
+              </p>
+
+            </div>
+
+          </article>
+
+
+          <article>
+
+            <span>✓</span>
+
+            <div>
+
+              <strong>
+                Controle completo
+              </strong>
+
+              <p>
+                Tenha sua vida financeira organizada em um só lugar.
+              </p>
+
+            </div>
+
+          </article>
+
         </div>
+
+
+        <!-- =================================================
+             PREMIUM EXTRAS
+        ================================================== -->
+
+        <div
+          id="premiumExtras"
+          class="premium-extras hidden"
+        >
+
+          <!-- COFRINHO -->
+
+          <article class="panel premium-extra-panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  🐷 Cofrinho mensal
+                </h3>
+
+                <p id="piggyBankMonth">
+                  Seu cofrinho deste mês
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="piggy-bank-box">
+
+              <div class="piggy-values">
+
+                <div>
+
+                  <small>
+                    Já juntou
+                  </small>
+
+                  <strong id="piggySaved">
+                    R$ 0,00
+                  </strong>
+
+                </div>
+
+
+                <div>
+
+                  <small>
+                    Meta do mês
+                  </small>
+
+                  <strong id="piggyTarget">
+                    R$ 0,00
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <div class="piggy-progress">
+
+                <div
+                  id="piggyProgressBar"
+                ></div>
+
+              </div>
+
+
+              <div class="piggy-progress-info">
+
+                <span id="piggyProgressPercent">
+                  0%
+                </span>
+
+                <span id="piggyRemaining">
+                  Defina uma meta mensal
+                </span>
+
+              </div>
+
+
+              <div class="piggy-form">
+
+                <div>
+
+                  <label for="piggyTargetInput">
+                    Quanto quer juntar?
+                  </label>
+
+                  <input
+                    id="piggyTargetInput"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="Ex.: 1000"
+                  >
+
+                </div>
+
+
+                <div>
+
+                  <label for="piggySavedInput">
+                    Quanto já juntou?
+                  </label>
+
+                  <input
+                    id="piggySavedInput"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="Ex.: 250"
+                  >
+
+                </div>
+
+
+                <button
+                  id="savePiggyBankBtn"
+                  class="btn btn-primary"
+                  type="button"
+                >
+                  Salvar cofrinho
+                </button>
+
+              </div>
+
+
+              <div
+                id="piggyMessage"
+                class="form-message"
+              ></div>
+
+            </div>
+
+          </article>
+
+
+          <!-- RESUMO MENSAL -->
+
+          <article class="panel premium-extra-panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  📅 Resumo deste mês
+                </h3>
+
+                <p>
+                  Visão rápida da sua situação financeira
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="premium-summary-grid">
+
+              <div>
+
+                <small>
+                  Receitas
+                </small>
+
+                <strong id="monthlyIncome">
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <small>
+                  Despesas
+                </small>
+
+                <strong id="monthlyExpense">
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <small>
+                  Saldo
+                </small>
+
+                <strong id="monthlyBalance">
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+            </div>
+
+          </article>
+
+
+          <!-- RANKING -->
+
+          <article class="panel premium-extra-panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  🏆 Ranking de gastos
+                </h3>
+
+                <p>
+                  Onde você mais gastou neste mês
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div
+              id="expenseRanking"
+              class="expense-ranking"
+            ></div>
+
+          </article>
+
+        </div>
+
       </section>
+
     </main>
+
   </div>
 
-  <!-- TRANSACTION MODAL -->
-  <div id="transactionModal" class="modal hidden">
+
+  <!-- =====================================================
+       TRANSACTION MODAL
+  ====================================================== -->
+
+  <div
+    id="transactionModal"
+    class="modal hidden"
+  >
+
     <div class="modal-card">
-      <button class="modal-close" data-close-modal type="button">×</button>
-      <h2 id="transactionModalTitle">Novo lançamento</h2>
-      <p>Preencha os dados da movimentação.</p>
+
+      <button
+        class="modal-close"
+        data-close-modal
+        type="button"
+      >
+        ×
+      </button>
+
+      <h2 id="transactionModalTitle">
+        Novo lançamento
+      </h2>
+
+      <p>
+        Preencha os dados da movimentação.
+      </p>
+
       <form id="transactionForm">
-        <input id="transactionId" type="hidden">
+
+        <input
+          id="transactionId"
+          type="hidden"
+        >
+
+
         <div class="type-buttons">
-          <button type="button" class="type-button active income" data-transaction-type="income">Receita</button>
-          <button type="button" class="type-button expense" data-transaction-type="expense">Despesa</button>
+
+          <button
+            type="button"
+            class="type-button active income"
+            data-transaction-type="income"
+          >
+            Receita
+          </button>
+
+          <button
+            type="button"
+            class="type-button expense"
+            data-transaction-type="expense"
+          >
+            Despesa
+          </button>
+
         </div>
-        <input id="transactionType" type="hidden" value="income">
-        <label for="transactionDescription">Descrição</label>
-        <input id="transactionDescription" type="text" placeholder="Ex.: Salário" required>
-        <label for="transactionAmount">Valor</label>
-        <input id="transactionAmount" type="number" step="0.01" min="0.01" placeholder="0,00" required>
-        <label for="transactionDate">Data</label>
-        <input id="transactionDate" type="date" required>
-        <label for="transactionCategory">Categoria</label>
-        <select id="transactionCategory" required></select>
-        <label for="transactionNotes">Observações</label>
-        <textarea id="transactionNotes" rows="3" placeholder="Opcional"></textarea>
-        <div id="transactionMessage" class="form-message"></div>
-        <button id="saveTransactionBtn" class="btn btn-primary btn-large" type="submit">Salvar lançamento</button>
+
+
+        <input
+          id="transactionType"
+          type="hidden"
+          value="income"
+        >
+
+
+        <label for="transactionDescription">
+          Descrição
+        </label>
+
+        <input
+          id="transactionDescription"
+          type="text"
+          placeholder="Ex.: Salário"
+          required
+        >
+
+
+        <label for="transactionAmount">
+          Valor
+        </label>
+
+        <input
+          id="transactionAmount"
+          type="number"
+          step="0.01"
+          min="0.01"
+          placeholder="0,00"
+          required
+        >
+
+
+        <label for="transactionDate">
+          Data
+        </label>
+
+        <input
+          id="transactionDate"
+          type="date"
+          required
+        >
+
+
+        <label for="transactionCategory">
+          Categoria
+        </label>
+
+        <select
+          id="transactionCategory"
+          required
+        ></select>
+
+
+        <label for="transactionNotes">
+          Observações
+        </label>
+
+        <textarea
+          id="transactionNotes"
+          rows="3"
+          placeholder="Opcional"
+        ></textarea>
+
+
+        <div
+          id="transactionMessage"
+          class="form-message"
+        ></div>
+
+
+        <button
+          id="saveTransactionBtn"
+          class="btn btn-primary btn-large"
+          type="submit"
+        >
+          Salvar lançamento
+        </button>
+
       </form>
+
     </div>
+
   </div>
 
-  <!-- CATEGORY MODAL -->
-  <div id="categoryModal" class="modal hidden">
+
+  <!-- =====================================================
+       CATEGORY MODAL
+  ====================================================== -->
+
+  <div
+    id="categoryModal"
+    class="modal hidden"
+  >
+
     <div class="modal-card">
-      <button class="modal-close" data-close-modal type="button">×</button>
-      <h2>Nova categoria</h2>
-      <p>Crie uma categoria personalizada.</p>
+
+      <button
+        class="modal-close"
+        data-close-modal
+        type="button"
+      >
+        ×
+      </button>
+
+      <h2>
+        Nova categoria
+      </h2>
+
+      <p>
+        Crie uma categoria personalizada.
+      </p>
+
       <form id="categoryForm">
-        <label for="categoryName">Nome</label>
-        <input id="categoryName" type="text" placeholder="Ex.: Viagem" required>
-        <label for="categoryType">Tipo</label>
-        <select id="categoryType"><option value="expense">Despesa</option><option value="income">Receita</option></select>
-        <div id="categoryMessage" class="form-message"></div>
-        <button class="btn btn-primary btn-large" type="submit">Salvar categoria</button>
+
+        <label for="categoryName">
+          Nome
+        </label>
+
+        <input
+          id="categoryName"
+          type="text"
+          placeholder="Ex.: Viagem"
+          required
+        >
+
+
+        <label for="categoryType">
+          Tipo
+        </label>
+
+        <select id="categoryType">
+
+          <option value="expense">
+            Despesa
+          </option>
+
+          <option value="income">
+            Receita
+          </option>
+
+        </select>
+
+
+        <div
+          id="categoryMessage"
+          class="form-message"
+        ></div>
+
+
+        <button
+          class="btn btn-primary btn-large"
+          type="submit"
+        >
+          Salvar categoria
+        </button>
+
       </form>
+
     </div>
+
   </div>
 
-  <!-- GOAL MODAL -->
-  <div id="goalModal" class="modal hidden">
+
+  <!-- =====================================================
+       GOAL MODAL
+  ====================================================== -->
+
+  <div
+    id="goalModal"
+    class="modal hidden"
+  >
+
     <div class="modal-card">
-      <button class="modal-close" data-close-modal type="button">×</button>
-      <h2>Nova meta</h2>
-      <p>Defina um objetivo financeiro.</p>
+
+      <button
+        class="modal-close"
+        data-close-modal
+        type="button"
+      >
+        ×
+      </button>
+
+      <h2>
+        Nova meta
+      </h2>
+
+      <p>
+        Defina um objetivo financeiro.
+      </p>
+
       <form id="goalForm">
-        <label for="goalName">Nome da meta</label>
-        <input id="goalName" type="text" placeholder="Ex.: Viagem" required>
-        <label for="goalTarget">Valor da meta</label>
-        <input id="goalTarget" type="number" step="0.01" min="0.01" placeholder="0,00" required>
-        <label for="goalCurrent">Valor já guardado</label>
-        <input id="goalCurrent" type="number" step="0.01" min="0" value="0" placeholder="0,00">
-        <label for="goalDeadline">Prazo</label>
-        <input id="goalDeadline" type="date">
-        <div id="goalMessage" class="form-message"></div>
-        <button class="btn btn-primary btn-large" type="submit">Criar meta</button>
+
+        <label for="goalName">
+          Nome da meta
+        </label>
+
+        <input
+          id="goalName"
+          type="text"
+          placeholder="Ex.: Viagem"
+          required
+        >
+
+
+        <label for="goalTarget">
+          Valor da meta
+        </label>
+
+        <input
+          id="goalTarget"
+          type="number"
+          step="0.01"
+          min="0.01"
+          placeholder="0,00"
+          required
+        >
+
+
+        <label for="goalCurrent">
+          Valor já guardado
+        </label>
+
+        <input
+          id="goalCurrent"
+          type="number"
+          step="0.01"
+          min="0"
+          value="0"
+          placeholder="0,00"
+        >
+
+
+        <label for="goalDeadline">
+          Prazo
+        </label>
+
+        <input
+          id="goalDeadline"
+          type="date"
+        >
+
+
+        <div
+          id="goalMessage"
+          class="form-message"
+        ></div>
+
+
+        <button
+          class="btn btn-primary btn-large"
+          type="submit"
+        >
+          Criar meta
+        </button>
+
       </form>
+
     </div>
+
   </div>
 
-  <!-- PREMIUM MODAL -->
-  <div id="premiumModal" class="modal hidden">
+
+  <!-- =====================================================
+       PREMIUM MODAL
+  ====================================================== -->
+
+  <div
+    id="premiumModal"
+    class="modal hidden"
+  >
+
     <div class="modal-card premium-modal">
-      <button class="modal-close" data-close-modal type="button">×</button>
-      <div class="premium-icon">★</div>
-      <h2>Ativar Premium</h2>
-      <p>Durante os testes, o Premium será ativado por 7 dias. A cobrança real será integrada posteriormente.</p>
-      <div class="trial-box"><strong>7 dias</strong><span>de período de teste</span></div>
-      <div id="premiumMessage" class="form-message"></div>
-      <button id="confirmPremiumBtn" class="btn btn-premium btn-large" type="button">Confirmar ativação</button>
+
+      <button
+        class="modal-close"
+        data-close-modal
+        type="button"
+      >
+        ×
+      </button>
+
+      <div class="premium-icon">
+        ★
+      </div>
+
+      <h2>
+        Ativar Premium
+      </h2>
+
+      <p>
+        Durante os testes, o Premium será ativado por 7 dias. A cobrança real será integrada posteriormente.
+      </p>
+
+      <div class="trial-box">
+
+        <strong>
+          7 dias
+        </strong>
+
+        <span>
+          de período de teste
+        </span>
+
+      </div>
+
+
+      <div
+        id="premiumMessage"
+        class="form-message"
+      ></div>
+
+
+      <button
+        id="confirmPremiumBtn"
+        class="btn btn-premium btn-large"
+        type="button"
+      >
+        Confirmar ativação
+      </button>
+
     </div>
+
   </div>
 
-  <div id="toast" class="toast" role="status"></div>
+
+  <!-- TOAST -->
+
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+  ></div>
+
+
   <script src="app.js"></script>
+
 </body>
 </html>
