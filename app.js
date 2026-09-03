@@ -83,6 +83,59 @@ const valueOf = id =>
 
 
 /* =========================================================
+   NORMALIZAR TIPO DO LANÇAMENTO
+========================================================= */
+
+/*
+  O banco de dados usa:
+
+  receita
+  despesa
+
+  O aplicativo usa internamente:
+
+  income
+  expense
+
+  Esta função faz a conversão para que
+  os dois lados funcionem corretamente.
+*/
+
+function normalizeTransactionType(type) {
+
+  const value =
+    String(type || "")
+      .toLowerCase()
+      .trim();
+
+
+  if (
+    value === "despesa" ||
+    value === "expense"
+  ) {
+
+    return "expense";
+  }
+
+
+  return "income";
+}
+
+
+/* =========================================================
+   CONVERTER TIPO PARA O SUPABASE
+========================================================= */
+
+function databaseTransactionType(type) {
+
+  return normalizeTransactionType(type) ===
+    "expense"
+      ? "despesa"
+      : "receita";
+}
+
+
+/* =========================================================
    INICIALIZAÇÃO
 ========================================================= */
 
@@ -884,7 +937,22 @@ async function loadTransactions() {
 
 
     transactions =
-      data || [];
+      (data || []).map(
+        transaction => ({
+          ...transaction,
+
+          /*
+            Normaliza o valor vindo do banco.
+
+            receita -> income
+            despesa -> expense
+          */
+          type:
+            normalizeTransactionType(
+              transaction.type
+            )
+        })
+      );
 
 
   } catch (error) {
@@ -1121,8 +1189,24 @@ async function saveTransaction(event) {
 
   /*
     IMPORTANTE:
-    A tabela "transactions" não possui a coluna "notes".
-    Por isso, não enviamos "notes" para o Supabase.
+
+    A tabela "transactions" NÃO possui
+    a coluna "notes".
+
+    Portanto, não enviamos "notes".
+
+    O banco também exige:
+
+    receita
+    despesa
+
+    O aplicativo trabalha internamente
+    com:
+
+    income
+    expense
+
+    A conversão é feita abaixo.
   */
 
   const payload = {
@@ -1131,7 +1215,9 @@ async function saveTransaction(event) {
       currentUser.id,
 
     type:
-      selectedTransactionType,
+      databaseTransactionType(
+        selectedTransactionType
+      ),
 
     description,
 
@@ -1239,9 +1325,9 @@ function openTransactionModal(
 ) {
 
   selectedTransactionType =
-    type === "expense"
-      ? "expense"
-      : "income";
+    normalizeTransactionType(
+      type
+    );
 
 
   editingTransactionId =
@@ -1454,9 +1540,9 @@ function renderTransactions() {
   list.forEach(t => {
 
     const type =
-      t.type === "expense"
-        ? "expense"
-        : "income";
+      normalizeTransactionType(
+        t.type
+      );
 
 
     const tr =
@@ -1608,6 +1694,12 @@ function applyTransactionFilters() {
           .toLowerCase();
 
 
+      const transactionType =
+        normalizeTransactionType(
+          t.type
+        );
+
+
       return (
         (!search ||
           haystack.includes(
@@ -1616,7 +1708,10 @@ function applyTransactionFilters() {
 
         (
           type === "all" ||
-          t.type === type
+          transactionType ===
+            normalizeTransactionType(
+              type
+            )
         ) &&
 
         (
@@ -2108,8 +2203,9 @@ function getTotals() {
 
 
       if (
-        t.type ===
-        "expense"
+        normalizeTransactionType(
+          t.type
+        ) === "expense"
       ) {
 
         expense += amount;
@@ -2194,9 +2290,9 @@ function renderRecentTransactions() {
     t => {
 
       const type =
-        t.type === "expense"
-          ? "expense"
-          : "income";
+        normalizeTransactionType(
+          t.type
+        );
 
 
       const item =
@@ -2448,7 +2544,12 @@ function sumByMonth(
     (sum, t) => {
 
       if (
-        t.type !== type
+        normalizeTransactionType(
+          t.type
+        ) !==
+        normalizeTransactionType(
+          type
+        )
       ) {
 
         return sum;
@@ -2572,8 +2673,9 @@ function renderCategoryChart() {
   transactions
     .filter(
       t =>
-        t.type ===
-        "expense"
+        normalizeTransactionType(
+          t.type
+        ) === "expense"
     )
     .forEach(
       t => {
@@ -3539,7 +3641,9 @@ function setupEvents() {
         if (transaction) {
 
           openTransactionModal(
-            transaction.type,
+            normalizeTransactionType(
+              transaction.type
+            ),
             transaction
           );
         }
