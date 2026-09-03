@@ -1,7 +1,9 @@
 /* =========================================================
    CONTROLES 1.0 — APP.JS
    Login + Cadastro + Dashboard + Lançamentos
-   + Categorias + Relatórios + Premium + Tema
+   + Categorias + Relatórios + Premium
+   + Metas + Cofrinho + Resumo mensal
+   + Ranking de gastos + Tema
    + Supabase
 ========================================================= */
 
@@ -9,7 +11,7 @@ const SUPABASE_URL =
   "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
+  "sb_publishable_IJbB2nttwg70Ah1KG77A9Q_5HdR25f8";
 
 /* =========================================================
    ESTADO DA APLICAÇÃO
@@ -38,6 +40,18 @@ let toastTimer = null;
 let authInitialized = false;
 let enteringApp = false;
 
+
+/* =========================================================
+   COFRINHO
+========================================================= */
+
+let piggyBank = {
+  month: "",
+  target: 0,
+  saved: 0
+};
+
+
 /* =========================================================
    CATEGORIAS PADRÃO
 ========================================================= */
@@ -56,6 +70,7 @@ const DEFAULT_CATEGORIES = [
   "Outros"
 ];
 
+
 /* =========================================================
    TÍTULOS DAS SEÇÕES
 ========================================================= */
@@ -68,6 +83,7 @@ const SECTION_TITLES = {
   premium: "Premium"
 };
 
+
 /* =========================================================
    ATALHOS
 ========================================================= */
@@ -78,11 +94,13 @@ const $ = id =>
 const valueOf = id =>
   $(id)?.value ?? "";
 
+
 /* =========================================================
    NORMALIZAR TIPO DO LANÇAMENTO
 ========================================================= */
 
 function normalizeTransactionType(type) {
+
   const value =
     String(type || "")
       .toLowerCase()
@@ -105,16 +123,19 @@ function normalizeTransactionType(type) {
   return "income";
 }
 
+
 /* =========================================================
    CONVERTER TIPO PARA O SUPABASE
 ========================================================= */
 
 function databaseTransactionType(type) {
+
   return normalizeTransactionType(type) ===
     "expense"
     ? "despesa"
     : "receita";
 }
+
 
 /* =========================================================
    INICIALIZAÇÃO
@@ -123,6 +144,7 @@ function databaseTransactionType(type) {
 document.addEventListener(
   "DOMContentLoaded",
   async () => {
+
     setupEvents();
 
     setCurrentDate();
@@ -136,15 +158,19 @@ document.addEventListener(
     initializeSupabase();
 
     await checkSession();
+
   }
 );
+
 
 /* =========================================================
    SUPABASE
 ========================================================= */
 
 function initializeSupabase() {
+
   if (!window.supabase?.createClient) {
+
     showMessage(
       "loginMessage",
       "Não foi possível carregar o sistema. Atualize a página."
@@ -154,6 +180,7 @@ function initializeSupabase() {
   }
 
   try {
+
     supabaseClient =
       window.supabase.createClient(
         SUPABASE_URL,
@@ -166,51 +193,55 @@ function initializeSupabase() {
           }
         }
       );
+
   } catch (error) {
+
     console.error(error);
 
     showMessage(
       "loginMessage",
       "Erro ao conectar ao banco de dados."
     );
+
   }
+
 }
 
+
 /* =========================================================
-   VERIFICAÇÃO DE SESSÃO
+   SESSÃO
 ========================================================= */
 
 async function checkSession() {
-  if (!supabaseClient) {
-    return;
-  }
+
+  if (!supabaseClient) return;
 
   try {
-    const {
-      data,
-      error
-    } =
+
+    const { data, error } =
       await supabaseClient.auth.getSession();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     if (data.session?.user) {
+
       await enterApp(
         data.session.user
       );
+
     } else {
+
       showLoginView();
+
     }
 
     if (!authInitialized) {
+
       supabaseClient.auth.onAuthStateChange(
         (event, session) => {
-          if (
-            event ===
-            "SIGNED_OUT"
-          ) {
+
+          if (event === "SIGNED_OUT") {
+
             currentUser = null;
             currentProfile = null;
             subscription = null;
@@ -219,33 +250,48 @@ async function checkSession() {
             goals = [];
             budgets = [];
 
+            piggyBank = {
+              month: "",
+              target: 0,
+              saved: 0
+            };
+
             destroyCharts();
 
             showLoginView();
+
           }
+
         }
       );
 
       authInitialized = true;
     }
+
   } catch (error) {
+
     console.error(
       "checkSession:",
       error
     );
 
     showLoginView();
+
   }
+
 }
+
 
 /* =========================================================
    LOGIN
 ========================================================= */
 
 async function loginUser(event) {
+
   event.preventDefault();
 
   if (!supabaseClient) {
+
     showMessage(
       "loginMessage",
       "O sistema ainda não terminou de carregar."
@@ -267,6 +313,7 @@ async function loginUser(event) {
   );
 
   if (!email || !password) {
+
     showMessage(
       "loginMessage",
       "Preencha o e-mail e a senha."
@@ -276,6 +323,7 @@ async function loginUser(event) {
   }
 
   if (!isValidEmail(email)) {
+
     showMessage(
       "loginMessage",
       "Digite um e-mail válido."
@@ -294,19 +342,14 @@ async function loginUser(event) {
   );
 
   try {
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth
-        .signInWithPassword({
-          email,
-          password
-        });
 
-    if (error) {
-      throw error;
-    }
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if (error) throw error;
 
     if (!data.user) {
       throw new Error(
@@ -317,7 +360,9 @@ async function loginUser(event) {
     await enterApp(
       data.user
     );
+
   } catch (error) {
+
     console.error(
       "login:",
       error
@@ -327,23 +372,30 @@ async function loginUser(event) {
       "loginMessage",
       friendlyAuthError(error)
     );
+
   } finally {
+
     setButtonLoading(
       button,
       false,
       "Entrar no ControleS"
     );
+
   }
+
 }
+
 
 /* =========================================================
    CADASTRO
 ========================================================= */
 
 async function registerUser(event) {
+
   event.preventDefault();
 
   if (!supabaseClient) {
+
     showMessage(
       "registerMessage",
       "O sistema ainda não terminou de carregar."
@@ -365,9 +417,7 @@ async function registerUser(event) {
     valueOf("registerPassword");
 
   const confirm =
-    valueOf(
-      "registerPasswordConfirm"
-    );
+    valueOf("registerPasswordConfirm");
 
   clearMessage(
     "registerMessage"
@@ -379,6 +429,7 @@ async function registerUser(event) {
     !password ||
     !confirm
   ) {
+
     showMessage(
       "registerMessage",
       "Preencha todos os campos."
@@ -388,6 +439,7 @@ async function registerUser(event) {
   }
 
   if (!isValidEmail(email)) {
+
     showMessage(
       "registerMessage",
       "Digite um e-mail válido."
@@ -397,6 +449,7 @@ async function registerUser(event) {
   }
 
   if (password.length < 6) {
+
     showMessage(
       "registerMessage",
       "A senha precisa ter pelo menos 6 caracteres."
@@ -406,6 +459,7 @@ async function registerUser(event) {
   }
 
   if (password !== confirm) {
+
     showMessage(
       "registerMessage",
       "As senhas não são iguais."
@@ -424,30 +478,30 @@ async function registerUser(event) {
   );
 
   try {
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth
-        .signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: name,
-              name: name
-            }
-          }
-        });
 
-    if (error) {
-      throw error;
-    }
+    const { data, error } =
+      await supabaseClient.auth.signUp({
+
+        email,
+
+        password,
+
+        options: {
+          data: {
+            full_name: name,
+            name: name
+          }
+        }
+
+      });
+
+    if (error) throw error;
 
     if (
       data.user &&
       data.session
     ) {
+
       await createProfileIfNeeded(
         data.user,
         name
@@ -462,7 +516,9 @@ async function registerUser(event) {
       await enterApp(
         data.user
       );
+
     } else {
+
       showMessage(
         "registerMessage",
         "Conta criada! Verifique seu e-mail para confirmar a conta e depois faça login.",
@@ -473,8 +529,11 @@ async function registerUser(event) {
         showLoginView,
         2500
       );
+
     }
+
   } catch (error) {
+
     console.error(
       "register:",
       error
@@ -484,23 +543,29 @@ async function registerUser(event) {
       "registerMessage",
       friendlyAuthError(error)
     );
+
   } finally {
+
     setButtonLoading(
       button,
       false,
       "Criar minha conta"
     );
+
   }
+
 }
 
+
 /* =========================================================
-   CRIAÇÃO DO PERFIL
+   PERFIL
 ========================================================= */
 
 async function createProfileIfNeeded(
   user,
   name = ""
 ) {
+
   if (
     !supabaseClient ||
     !user?.id
@@ -516,10 +581,8 @@ async function createProfileIfNeeded(
     "Usuário";
 
   try {
-    const {
-      data,
-      error
-    } =
+
+    const { data, error } =
       await supabaseClient
         .from("profiles")
         .select("*")
@@ -527,6 +590,7 @@ async function createProfileIfNeeded(
         .maybeSingle();
 
     if (error) {
+
       console.warn(
         "profiles select:",
         error
@@ -536,32 +600,37 @@ async function createProfileIfNeeded(
     }
 
     if (!data) {
+
       const result =
         await supabaseClient
           .from("profiles")
           .insert({
             id: user.id,
-            full_name:
-              profileName
+            full_name: profileName
           });
 
       if (result.error) {
+
         console.warn(
           "profiles insert:",
           result.error
         );
+
       }
+
     }
+
   } catch (error) {
+
     console.warn(error);
+
   }
+
 }
 
-/* =========================================================
-   CARREGAR PERFIL
-========================================================= */
 
 async function loadProfile() {
+
   currentProfile = null;
 
   if (
@@ -572,38 +641,33 @@ async function loadProfile() {
   }
 
   try {
-    const {
-      data,
-      error
-    } =
+
+    const { data, error } =
       await supabaseClient
         .from("profiles")
         .select("*")
-        .eq(
-          "id",
-          currentUser.id
-        )
+        .eq("id", currentUser.id)
         .maybeSingle();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     currentProfile =
       data || null;
+
   } catch (error) {
+
     console.warn(
       "loadProfile:",
       error
     );
+
   }
+
 }
 
-/* =========================================================
-   NOME DO USUÁRIO
-========================================================= */
 
 function getUserFullName() {
+
   return (
     currentProfile?.full_name ||
     currentProfile?.name ||
@@ -612,22 +676,24 @@ function getUserFullName() {
     currentUser?.email?.split("@")[0] ||
     "Usuário"
   );
+
 }
 
+
 function getFirstName() {
+
   return (
     getUserFullName()
       .trim()
       .split(/\s+/)[0] ||
     "Usuário"
   );
+
 }
 
-/* =========================================================
-   ATUALIZAR INTERFACE DO PERFIL
-========================================================= */
 
 function updateProfileUI() {
+
   const name =
     getUserFullName();
 
@@ -638,28 +704,28 @@ function updateProfileUI() {
 
   if ($("userEmail")) {
     $("userEmail").textContent =
-      currentUser?.email ||
-      "";
+      currentUser?.email || "";
   }
 
   if ($("userAvatar")) {
     $("userAvatar").textContent =
-      name
-        .charAt(0)
-        .toUpperCase();
+      name.charAt(0).toUpperCase();
   }
 
   if ($("welcomeMessage")) {
     $("welcomeMessage").textContent =
       `Olá, ${getFirstName()}! 👋`;
   }
+
 }
+
 
 /* =========================================================
    ENTRAR NO APP
 ========================================================= */
 
 async function enterApp(user) {
+
   if (
     !user ||
     enteringApp
@@ -670,6 +736,7 @@ async function enterApp(user) {
   enteringApp = true;
 
   try {
+
     currentUser = user;
 
     showAppView();
@@ -693,7 +760,9 @@ async function enterApp(user) {
     renderTransactions();
 
     updatePremiumUI();
+
   } catch (error) {
+
     console.error(
       "enterApp:",
       error
@@ -702,22 +771,32 @@ async function enterApp(user) {
     showToast(
       "A conta entrou, mas alguns dados não puderam ser carregados."
     );
+
   } finally {
+
     enteringApp = false;
+
   }
+
 }
+
 
 /* =========================================================
    LOGOUT
 ========================================================= */
 
 async function logout() {
+
   try {
+
     if (supabaseClient) {
       await supabaseClient.auth.signOut();
     }
+
   } catch (error) {
+
     console.error(error);
+
   }
 
   currentUser = null;
@@ -728,19 +807,26 @@ async function logout() {
   goals = [];
   budgets = [];
 
+  piggyBank = {
+    month: "",
+    target: 0,
+    saved: 0
+  };
+
   destroyCharts();
 
   showLoginView();
+
 }
 
+
 /* =========================================================
-   CARREGAR DADOS DO USUÁRIO
+   CARREGAR DADOS
 ========================================================= */
 
 async function loadUserData() {
-  if (!currentUser) {
-    return;
-  }
+
+  if (!currentUser) return;
 
   await Promise.all([
     loadTransactions(),
@@ -748,20 +834,23 @@ async function loadUserData() {
     loadBudgets(),
     loadSubscription()
   ]);
+
+  loadPiggyBank();
+
 }
 
+
 /* =========================================================
-   LANÇAMENTOS
+   TRANSAÇÕES
 ========================================================= */
 
 async function loadTransactions() {
+
   transactions = [];
 
   try {
-    const {
-      data,
-      error
-    } =
+
+    const { data, error } =
       await supabaseClient
         .from("transactions")
         .select("*")
@@ -776,9 +865,7 @@ async function loadTransactions() {
           }
         );
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     transactions =
       (data || []).map(
@@ -791,19 +878,25 @@ async function loadTransactions() {
             )
         })
       );
+
   } catch (error) {
+
     console.warn(
       "loadTransactions:",
       error
     );
+
   }
+
 }
+
 
 /* =========================================================
    METAS
 ========================================================= */
 
 async function loadGoals() {
+
   goals = [];
 
   if (
@@ -814,10 +907,8 @@ async function loadGoals() {
   }
 
   try {
-    const {
-      data,
-      error
-    } =
+
+    const { data, error } =
       await supabaseClient
         .from("goals")
         .select("*")
@@ -832,25 +923,7 @@ async function loadGoals() {
           }
         );
 
-    if (error) {
-      throw error;
-    }
-
-    /*
-      ESTRUTURA REAL DA TABELA goals:
-
-      id
-      user_id
-      name
-      target
-      saved
-      created_at
-
-      Não usamos:
-      target_amount
-      current_amount
-      deadline
-    */
+    if (error) throw error;
 
     goals =
       (data || []).map(
@@ -858,36 +931,36 @@ async function loadGoals() {
           ...goal,
 
           target:
-            Number(
-              goal.target
-            ) || 0,
+            Number(goal.target) || 0,
 
           saved:
-            Number(
-              goal.saved
-            ) || 0
+            Number(goal.saved) || 0
         })
       );
+
   } catch (error) {
+
     console.warn(
       "loadGoals:",
       error
     );
+
   }
+
 }
+
 
 /* =========================================================
    ORÇAMENTOS
 ========================================================= */
 
 async function loadBudgets() {
+
   budgets = [];
 
   try {
-    const {
-      data,
-      error
-    } =
+
+    const { data, error } =
       await supabaseClient
         .from("budgets")
         .select("*")
@@ -896,32 +969,34 @@ async function loadBudgets() {
           currentUser.id
         );
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     budgets =
       data || [];
+
   } catch (error) {
+
     console.warn(
       "loadBudgets:",
       error
     );
+
   }
+
 }
 
+
 /* =========================================================
-   ASSINATURA PREMIUM
+   ASSINATURA
 ========================================================= */
 
 async function loadSubscription() {
+
   subscription = null;
 
   try {
-    const {
-      data,
-      error
-    } =
+
+    const { data, error } =
       await supabaseClient
         .from("subscriptions")
         .select("*")
@@ -938,28 +1013,33 @@ async function loadSubscription() {
         .limit(1)
         .maybeSingle();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     subscription =
       data || null;
+
   } catch (error) {
+
     console.warn(
       "loadSubscription:",
       error
     );
+
   }
+
 }
 
+
 /* =========================================================
-   SALVAR LANÇAMENTO
+   SALVAR TRANSAÇÃO
 ========================================================= */
 
 async function saveTransaction(event) {
+
   event.preventDefault();
 
   if (!currentUser) {
+
     showMessage(
       "transactionMessage",
       "Faça login novamente."
@@ -996,13 +1076,12 @@ async function saveTransaction(event) {
 
   if (
     !description ||
-    !Number.isFinite(
-      amount
-    ) ||
+    !Number.isFinite(amount) ||
     amount <= 0 ||
     !date ||
     !category
   ) {
+
     showMessage(
       "transactionMessage",
       "Preencha os campos obrigatórios."
@@ -1020,19 +1099,8 @@ async function saveTransaction(event) {
     "Salvando..."
   );
 
-  /*
-    A tabela transactions aceita:
-
-    receita
-    despesa
-
-    O app trabalha internamente com:
-
-    income
-    expense
-  */
-
   const payload = {
+
     user_id:
       currentUser.id,
 
@@ -1048,12 +1116,15 @@ async function saveTransaction(event) {
     date,
 
     category
+
   };
 
   try {
+
     let result;
 
     if (editingTransactionId) {
+
       result =
         await supabaseClient
           .from("transactions")
@@ -1066,13 +1137,14 @@ async function saveTransaction(event) {
             "user_id",
             currentUser.id
           );
+
     } else {
+
       result =
         await supabaseClient
           .from("transactions")
-          .insert(
-            payload
-          );
+          .insert(payload);
+
     }
 
     if (result.error) {
@@ -1083,8 +1155,7 @@ async function saveTransaction(event) {
       "transactionModal"
     );
 
-    editingTransactionId =
-      null;
+    editingTransactionId = null;
 
     showToast(
       "Lançamento salvo!"
@@ -1097,7 +1168,9 @@ async function saveTransaction(event) {
     updateReports();
 
     renderTransactions();
+
   } catch (error) {
+
     console.error(error);
 
     showMessage(
@@ -1107,23 +1180,29 @@ async function saveTransaction(event) {
         "Não foi possível salvar o lançamento."
       )
     );
+
   } finally {
+
     setButtonLoading(
       button,
       false,
       "Salvar lançamento"
     );
+
   }
+
 }
 
+
 /* =========================================================
-   ABRIR MODAL DE LANÇAMENTO
+   ABRIR TRANSAÇÃO
 ========================================================= */
 
 function openTransactionModal(
   type = "income",
   transaction = null
 ) {
+
   selectedTransactionType =
     normalizeTransactionType(
       type
@@ -1133,85 +1212,102 @@ function openTransactionModal(
     transaction?.id || null;
 
   if ($("transactionModalTitle")) {
+
     $("transactionModalTitle")
       .textContent =
       transaction
         ? "Editar lançamento"
         : "Novo lançamento";
+
   }
 
   if ($("transactionId")) {
+
     $("transactionId").value =
       transaction?.id || "";
+
   }
 
   if ($("transactionDescription")) {
+
     $("transactionDescription").value =
-      transaction?.description ||
-      "";
+      transaction?.description || "";
+
   }
 
   if ($("transactionAmount")) {
+
     $("transactionAmount").value =
-      transaction?.amount ??
-      "";
+      transaction?.amount ?? "";
+
   }
 
   if ($("transactionDate")) {
+
     $("transactionDate").value =
       normalizeDate(
         transaction?.date
       ) ||
       todayISO();
+
   }
 
   if ($("transactionNotes")) {
+
     $("transactionNotes").value =
-      transaction?.notes ||
-      "";
+      transaction?.notes || "";
+
   }
 
   setTransactionTypeButtons();
 
   populateTransactionCategories(
-    transaction?.category ||
-      ""
+    transaction?.category || ""
   );
 
   openModal(
     "transactionModal"
   );
+
 }
 
+
 /* =========================================================
-   BOTÕES DE TIPO
+   BOTÕES TIPO TRANSAÇÃO
 ========================================================= */
 
 function setTransactionTypeButtons() {
+
   document
     .querySelectorAll(
       "[data-transaction-type]"
     )
     .forEach(button => {
+
       button.classList.toggle(
         "active",
-        button.dataset
-          .transactionType ===
+        button.dataset.transactionType ===
           selectedTransactionType
       );
+
     });
 
   if ($("transactionType")) {
+
     $("transactionType").value =
       selectedTransactionType;
+
   }
+
 }
 
+
 /* =========================================================
-   EXCLUIR LANÇAMENTO
+   EXCLUIR TRANSAÇÃO
 ========================================================= */
 
 async function deleteTransaction(id) {
+
   if (
     !currentUser ||
     !id
@@ -1228,9 +1324,8 @@ async function deleteTransaction(id) {
   }
 
   try {
-    const {
-      error
-    } =
+
+    const { error } =
       await supabaseClient
         .from("transactions")
         .delete()
@@ -1243,12 +1338,10 @@ async function deleteTransaction(id) {
           currentUser.id
         );
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     showToast(
-      "Lançamento excluído."
+      "Lançamento excluído!"
     );
 
     await loadTransactions();
@@ -1258,29 +1351,33 @@ async function deleteTransaction(id) {
     updateReports();
 
     renderTransactions();
+
   } catch (error) {
+
     console.error(error);
 
     showToast(
       "Não foi possível excluir o lançamento."
     );
+
   }
+
 }
 
+
 /* =========================================================
-   RENDERIZAR LANÇAMENTOS
+   RENDERIZAR TRANSAÇÕES
 ========================================================= */
 
 function renderTransactions() {
+
   const body =
     $("transactionsTableBody");
 
   const empty =
     $("transactionsEmpty");
 
-  if (!body) {
-    return;
-  }
+  if (!body) return;
 
   const list =
     applyTransactionFilters();
@@ -1288,6 +1385,7 @@ function renderTransactions() {
   body.innerHTML = "";
 
   if (!list.length) {
+
     empty?.classList.remove(
       "hidden"
     );
@@ -1300,6 +1398,7 @@ function renderTransactions() {
   );
 
   list.forEach(t => {
+
     const type =
       normalizeTransactionType(
         t.type
@@ -1311,6 +1410,7 @@ function renderTransactions() {
       );
 
     tr.innerHTML = `
+
       <td>
         <strong>
           ${escapeHTML(
@@ -1334,6 +1434,7 @@ function renderTransactions() {
       </td>
 
       <td>
+
         <span
           class="type-pill ${type}"
         >
@@ -1343,6 +1444,7 @@ function renderTransactions() {
               : "Despesa"
           }
         </span>
+
       </td>
 
       <td
@@ -1352,6 +1454,7 @@ function renderTransactions() {
             : "negative"
         }"
       >
+
         <strong>
           ${
             type === "expense"
@@ -1361,9 +1464,11 @@ function renderTransactions() {
             t.amount
           )}
         </strong>
+
       </td>
 
       <td>
+
         <div class="row-actions">
 
           <button
@@ -1387,20 +1492,26 @@ function renderTransactions() {
           </button>
 
         </div>
+
       </td>
+
     `;
 
     body.appendChild(
       tr
     );
+
   });
+
 }
+
 
 /* =========================================================
    FILTROS
 ========================================================= */
 
 function applyTransactionFilters() {
+
   const search =
     valueOf(
       "transactionSearch"
@@ -1411,17 +1522,20 @@ function applyTransactionFilters() {
   const filterA =
     valueOf(
       "transactionFilter"
-    ) || "all";
+    ) ||
+    "all";
 
   const filterB =
     valueOf(
       "typeFilter"
-    ) || "all";
+    ) ||
+    "all";
 
   const category =
     valueOf(
       "categoryFilter"
-    ) || "all";
+    ) ||
+    "all";
 
   const type =
     filterB !== "all"
@@ -1430,6 +1544,7 @@ function applyTransactionFilters() {
 
   return transactions.filter(
     t => {
+
       const haystack =
         `${t.description || ""} ${
           t.category || ""
@@ -1443,6 +1558,7 @@ function applyTransactionFilters() {
         );
 
       return (
+
         (!search ||
           haystack.includes(
             search
@@ -1461,16 +1577,21 @@ function applyTransactionFilters() {
           t.category ===
             category
         )
+
       );
+
     }
   );
+
 }
+
 
 /* =========================================================
    CATEGORIAS
 ========================================================= */
 
 async function saveCategory(event) {
+
   event.preventDefault();
 
   const name =
@@ -1481,9 +1602,11 @@ async function saveCategory(event) {
   const type =
     valueOf(
       "categoryType"
-    ) || "expense";
+    ) ||
+    "expense";
 
   if (!name) {
+
     showMessage(
       "categoryMessage",
       "Digite o nome da categoria."
@@ -1501,6 +1624,7 @@ async function saveCategory(event) {
       );
 
   if (exists) {
+
     showMessage(
       "categoryMessage",
       "Essa categoria já existe."
@@ -1529,13 +1653,12 @@ async function saveCategory(event) {
   showToast(
     "Categoria criada!"
   );
+
 }
 
-/* =========================================================
-   TODAS AS CATEGORIAS
-========================================================= */
 
 function getAllCategories() {
+
   const customNames =
     customCategories.map(
       c =>
@@ -1550,14 +1673,14 @@ function getAllCategories() {
       ...customNames
     ])
   ];
+
 }
 
-/* =========================================================
-   CATEGORIAS LOCAIS
-========================================================= */
 
 function loadLocalCategories() {
+
   try {
+
     const raw =
       localStorage.getItem(
         "controles_custom_categories"
@@ -1575,42 +1698,49 @@ function loadLocalCategories() {
     ) {
       customCategories = [];
     }
+
   } catch {
+
     customCategories = [];
+
   }
+
 }
 
+
 function saveLocalCategories() {
+
   localStorage.setItem(
     "controles_custom_categories",
     JSON.stringify(
       customCategories
     )
   );
+
 }
 
+
 /* =========================================================
-   CATEGORIAS DO LANÇAMENTO
+   CATEGORIAS DE TRANSAÇÃO
 ========================================================= */
 
 function populateTransactionCategories(
   selected = ""
 ) {
+
   const select =
     $("transactionCategory");
 
-  if (!select) {
-    return;
-  }
+  if (!select) return;
 
   const currentType =
     selectedTransactionType;
 
   const items = [
+
     ...DEFAULT_CATEGORIES.map(
       name => ({
         name,
-
         type:
           categoryDefaultType(
             name
@@ -1619,6 +1749,7 @@ function populateTransactionCategories(
     ),
 
     ...customCategories
+
   ];
 
   const filtered =
@@ -1633,6 +1764,7 @@ function populateTransactionCategories(
 
   filtered.forEach(
     item => {
+
       const option =
         document.createElement(
           "option"
@@ -1645,8 +1777,7 @@ function populateTransactionCategories(
         item.name;
 
       if (
-        item.name ===
-        selected
+        item.name === selected
       ) {
         option.selected =
           true;
@@ -1655,6 +1786,7 @@ function populateTransactionCategories(
       select.appendChild(
         option
       );
+
     }
   );
 
@@ -1662,10 +1794,10 @@ function populateTransactionCategories(
     selected &&
     !filtered.some(
       i =>
-        i.name ===
-        selected
+        i.name === selected
     )
   ) {
+
     const option =
       document.createElement(
         "option"
@@ -1683,38 +1815,40 @@ function populateTransactionCategories(
     select.appendChild(
       option
     );
+
   }
+
 }
 
-/* =========================================================
-   TIPO DAS CATEGORIAS PADRÃO
-========================================================= */
 
 function categoryDefaultType(
   name
 ) {
+
   return [
     "Salário",
     "Investimentos"
   ].includes(name)
     ? "income"
     : "expense";
+
 }
+
 
 /* =========================================================
    FILTRO DE CATEGORIAS
 ========================================================= */
 
 function populateCategoryFilter() {
+
   const select =
     $("categoryFilter");
 
-  if (!select) {
-    return;
-  }
+  if (!select) return;
 
   const current =
-    select.value || "all";
+    select.value ||
+    "all";
 
   select.innerHTML = "";
 
@@ -1734,176 +1868,203 @@ function populateCategoryFilter() {
   );
 
   getAllCategories()
-    .forEach(name => {
-      const option =
-        document.createElement(
-          "option"
+    .forEach(
+      name => {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          name;
+
+        option.textContent =
+          name;
+
+        select.appendChild(
+          option
         );
 
-      option.value =
-        name;
-
-      option.textContent =
-        name;
-
-      select.appendChild(
-        option
-      );
-    });
+      }
+    );
 
   select.value =
-    getAllCategories().includes(
-      current
-    )
+    getAllCategories()
+      .includes(current)
       ? current
       : "all";
+
 }
+
 
 /* =========================================================
    RENDERIZAR CATEGORIAS
 ========================================================= */
 
 function renderCategories() {
+
   const grid =
     $("categoriesGrid");
 
-  if (!grid) {
-    return;
-  }
+  if (!grid) return;
 
   grid.innerHTML = "";
 
   getAllCategories()
-    .forEach(name => {
-      const count =
-        transactions.filter(
-          t =>
-            t.category ===
-            name
-        ).length;
+    .forEach(
+      name => {
 
-      const card =
-        document.createElement(
-          "article"
+        const count =
+          transactions.filter(
+            t =>
+              t.category ===
+              name
+          ).length;
+
+        const card =
+          document.createElement(
+            "article"
+          );
+
+        card.className =
+          "category-card";
+
+        card.innerHTML = `
+
+          <div class="category-icon">
+            ◈
+          </div>
+
+          <strong>
+            ${escapeHTML(
+              name
+            )}
+          </strong>
+
+          <small>
+
+            ${count}
+
+            ${
+              count === 1
+                ? "lançamento"
+                : "lançamentos"
+            }
+
+          </small>
+
+        `;
+
+        grid.appendChild(
+          card
         );
 
-      card.className =
-        "category-card";
-
-      card.innerHTML = `
-        <div class="category-icon">
-          ◈
-        </div>
-
-        <strong>
-          ${escapeHTML(
-            name
-          )}
-        </strong>
-
-        <small>
-          ${count}
-          ${
-            count === 1
-              ? "lançamento"
-              : "lançamentos"
-          }
-        </small>
-      `;
-
-      grid.appendChild(
-        card
-      );
-    });
+      }
+    );
 
   populateCategoryFilter();
+
 }
+
 
 /* =========================================================
    DASHBOARD
 ========================================================= */
 
 function updateDashboard() {
+
   const totals =
     getTotals();
 
   if ($("balanceValue")) {
-    $("balanceValue")
-      .textContent =
+
+    $("balanceValue").textContent =
       formatMoney(
         totals.balance
       );
+
   }
 
   if ($("incomeValue")) {
-    $("incomeValue")
-      .textContent =
+
+    $("incomeValue").textContent =
       formatMoney(
         totals.income
       );
+
   }
 
   if ($("expenseValue")) {
-    $("expenseValue")
-      .textContent =
+
+    $("expenseValue").textContent =
       formatMoney(
         totals.expense
       );
+
   }
 
   renderRecentTransactions();
 
   renderFinanceChart();
+
+  updatePremiumExtras();
+
 }
 
-/* =========================================================
-   TOTAIS
-========================================================= */
 
 function getTotals() {
-  let income = 0;
 
+  let income = 0;
   let expense = 0;
 
   transactions.forEach(
     t => {
+
       const amount =
-        Number(t.amount) ||
-        0;
+        Number(t.amount) || 0;
 
       if (
         normalizeTransactionType(
           t.type
         ) === "expense"
       ) {
-        expense +=
-          amount;
+
+        expense += amount;
+
       } else {
-        income +=
-          amount;
+
+        income += amount;
+
       }
+
     }
   );
 
   return {
+
     income,
+
     expense,
+
     balance:
       income - expense
+
   };
+
 }
 
+
 /* =========================================================
-   LANÇAMENTOS RECENTES
+   TRANSAÇÕES RECENTES
 ========================================================= */
 
 function renderRecentTransactions() {
+
   const container =
     $("recentTransactions");
 
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
   container.innerHTML = "";
 
@@ -1919,10 +2080,15 @@ function renderRecentTransactions() {
             )
           )
       )
-      .slice(0, 6);
+      .slice(
+        0,
+        6
+      );
 
   if (!recent.length) {
+
     container.innerHTML = `
+
       <div class="empty-state">
 
         <div>
@@ -1938,80 +2104,94 @@ function renderRecentTransactions() {
         </p>
 
       </div>
+
     `;
 
     return;
   }
 
-  recent.forEach(t => {
-    const type =
-      normalizeTransactionType(
-        t.type
+  recent.forEach(
+    t => {
+
+      const type =
+        normalizeTransactionType(
+          t.type
+        );
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "recent-item";
+
+      item.innerHTML = `
+
+        <div class="recent-left">
+
+          <strong>
+            ${escapeHTML(
+              t.description ||
+              "Sem descrição"
+            )}
+          </strong>
+
+          <small>
+
+            ${escapeHTML(
+              t.category ||
+              "Outros"
+            )}
+
+            •
+
+            ${formatDate(
+              t.date
+            )}
+
+          </small>
+
+        </div>
+
+        <div
+          class="recent-right ${
+            type === "income"
+              ? "positive"
+              : "negative"
+          }"
+        >
+
+          ${
+            type === "expense"
+              ? "- "
+              : "+ "
+          }
+
+          ${formatMoney(
+            t.amount
+          )}
+
+        </div>
+
+      `;
+
+      container.appendChild(
+        item
       );
 
-    const item =
-      document.createElement(
-        "div"
-      );
+    }
+  );
 
-    item.className =
-      "recent-item";
-
-    item.innerHTML = `
-      <div class="recent-left">
-
-        <strong>
-          ${escapeHTML(
-            t.description ||
-            "Sem descrição"
-          )}
-        </strong>
-
-        <small>
-          ${escapeHTML(
-            t.category ||
-            "Outros"
-          )}
-          •
-          ${formatDate(
-            t.date
-          )}
-        </small>
-
-      </div>
-
-      <div
-        class="recent-right ${
-          type === "income"
-            ? "positive"
-            : "negative"
-        }"
-      >
-
-        ${
-          type === "expense"
-            ? "- "
-            : "+ "
-        }
-
-        ${formatMoney(
-          t.amount
-        )}
-
-      </div>
-    `;
-
-    container.appendChild(
-      item
-    );
-  });
 }
+
 
 /* =========================================================
    GRÁFICO FINANCEIRO
 ========================================================= */
 
 function renderFinanceChart() {
+
   const canvas =
     $("financeChart");
 
@@ -2032,6 +2212,7 @@ function renderFinanceChart() {
     i >= 0;
     i--
   ) {
+
     const d =
       new Date(
         now.getFullYear(),
@@ -2040,6 +2221,7 @@ function renderFinanceChart() {
       );
 
     months.push({
+
       key:
         `${d.getFullYear()}-${String(
           d.getMonth() + 1
@@ -2055,7 +2237,9 @@ function renderFinanceChart() {
             month: "short"
           }
         )
+
     });
+
   }
 
   const incomeData =
@@ -2084,17 +2268,20 @@ function renderFinanceChart() {
     new Chart(
       canvas,
       {
+
         type: "bar",
 
         data: {
+
           labels:
             months.map(
-              m =>
-                m.label
+              m => m.label
             ),
 
           datasets: [
+
             {
+
               label:
                 "Receitas",
 
@@ -2103,9 +2290,11 @@ function renderFinanceChart() {
 
               borderWidth:
                 0
+
             },
 
             {
+
               label:
                 "Despesas",
 
@@ -2114,11 +2303,15 @@ function renderFinanceChart() {
 
               borderWidth:
                 0
+
             }
+
           ]
+
         },
 
         options: {
+
           responsive:
             true,
 
@@ -2126,41 +2319,56 @@ function renderFinanceChart() {
             false,
 
           plugins: {
+
             legend: {
+
               position:
                 "bottom"
+
             }
+
           },
 
           scales: {
+
             y: {
+
               beginAtZero:
                 true,
 
               ticks: {
+
                 callback:
                   value =>
                     formatCompactMoney(
                       value
                     )
+
               }
+
             }
+
           }
+
         }
+
       }
     );
+
 }
 
-/* =========================================================
-   SOMAR POR MÊS
-========================================================= */
 
 function sumByMonth(
   key,
   type
 ) {
+
   return transactions.reduce(
-    (sum, t) => {
+    (
+      sum,
+      t
+    ) => {
+
       if (
         normalizeTransactionType(
           t.type
@@ -2169,7 +2377,9 @@ function sumByMonth(
           type
         )
       ) {
+
         return sum;
+
       }
 
       return String(
@@ -2178,27 +2388,34 @@ function sumByMonth(
         0,
         7
       ) === key
+
         ? sum +
           (
             Number(
               t.amount
             ) || 0
           )
+
         : sum;
+
     },
     0
   );
+
 }
+
 
 /* =========================================================
    RELATÓRIOS
 ========================================================= */
 
 function updateReports() {
+
   const totals =
     getTotals();
 
   const ids = {
+
     reportIncomeCard:
       totals.income,
 
@@ -2216,35 +2433,28 @@ function updateReports() {
 
     reportBalance:
       totals.balance
+
   };
 
   Object.entries(
     ids
   ).forEach(
     ([id, value]) => {
+
       if ($(id)) {
+
         $(id).textContent =
           formatMoney(
             value
           );
+
       }
+
     }
   );
 
   const premium =
     isPremiumActive();
-
-  /*
-    CORREÇÃO:
-
-    Premium ativo:
-      mostra premium
-      esconde normal
-
-    Sem Premium:
-      esconde premium
-      mostra normal
-  */
 
   $("premiumReportContent")
     ?.classList.toggle(
@@ -2259,19 +2469,27 @@ function updateReports() {
     );
 
   if (premium) {
+
     renderCategoryChart();
+
   } else if (categoryChart) {
+
     categoryChart.destroy();
 
-    categoryChart = null;
+    categoryChart =
+      null;
+
   }
+
 }
+
 
 /* =========================================================
    GRÁFICO POR CATEGORIA
 ========================================================= */
 
 function renderCategoryChart() {
+
   const canvas =
     $("categoryChart");
 
@@ -2289,24 +2507,29 @@ function renderCategoryChart() {
       t =>
         normalizeTransactionType(
           t.type
-        ) === "expense"
+        ) ===
+        "expense"
     )
-    .forEach(t => {
-      const category =
-        t.category ||
-        "Outros";
+    .forEach(
+      t => {
 
-      totals[category] =
-        (
-          totals[category] ||
-          0
-        ) +
-        (
-          Number(
-            t.amount
-          ) || 0
-        );
-    });
+        const category =
+          t.category ||
+          "Outros";
+
+        totals[category] =
+          (
+            totals[category] ||
+            0
+          ) +
+          (
+            Number(
+              t.amount
+            ) || 0
+          );
+
+      }
+    );
 
   const labels =
     Object.keys(
@@ -2326,17 +2549,21 @@ function renderCategoryChart() {
     new Chart(
       canvas,
       {
+
         type:
           "doughnut",
 
         data: {
+
           labels:
             labels.length
               ? labels
               : ["Sem despesas"],
 
           datasets: [
+
             {
+
               data:
                 values.length
                   ? values
@@ -2344,11 +2571,15 @@ function renderCategoryChart() {
 
               borderWidth:
                 1
+
             }
+
           ]
+
         },
 
         options: {
+
           responsive:
             true,
 
@@ -2356,21 +2587,30 @@ function renderCategoryChart() {
             false,
 
           plugins: {
+
             legend: {
+
               position:
                 "bottom"
+
             }
+
           }
+
         }
+
       }
     );
+
 }
+
 
 /* =========================================================
    PREMIUM
 ========================================================= */
 
 function updatePremiumUI() {
+
   const active =
     isPremiumActive();
 
@@ -2381,44 +2621,57 @@ function updatePremiumUI() {
     $("activatePremiumBtn");
 
   if (active) {
+
     if (status) {
+
       status.textContent =
         `Premium ativo até ${formatDate(
           subscription?.current_period_end ||
           subscription?.expires_at
         )}.`;
+
     }
 
     if (button) {
+
       button.textContent =
         "Premium ativo";
 
       button.disabled =
         true;
+
     }
+
   } else {
+
     if (status) {
+
       status.textContent =
         "Modo de teste: ativação disponível para testes.";
+
     }
 
     if (button) {
+
       button.textContent =
         "Ativar Premium";
 
       button.disabled =
         false;
+
     }
+
   }
 
   updateReports();
+
+  updatePremiumExtras();
+
 }
 
-/* =========================================================
-   VERIFICAR PREMIUM
-========================================================= */
 
 function isPremiumActive() {
+
   if (!subscription) {
     return false;
   }
@@ -2456,16 +2709,16 @@ function isPremiumActive() {
     date.getTime() >
       Date.now()
   );
+
 }
 
-/* =========================================================
-   MODAL PREMIUM
-========================================================= */
 
 function openPremiumModal() {
+
   if (
     isPremiumActive()
   ) {
+
     showToast(
       "Seu Premium já está ativo."
     );
@@ -2480,14 +2733,18 @@ function openPremiumModal() {
   openModal(
     "premiumModal"
   );
+
 }
 
+
 /* =========================================================
-   ATIVAÇÃO PREMIUM — TESTE
+   ATIVAR PREMIUM — TESTE
 ========================================================= */
 
 async function activatePremium() {
+
   if (!currentUser) {
+
     showMessage(
       "premiumMessage",
       "Faça login novamente."
@@ -2506,6 +2763,7 @@ async function activatePremium() {
   );
 
   try {
+
     const start =
       new Date();
 
@@ -2519,36 +2777,8 @@ async function activatePremium() {
           1000
       );
 
-    /*
-      ======================================================
-      MODO DE TESTE
-
-      Libera Premium por 7 dias.
-
-      IMPORTANTE:
-
-      Isto NÃO valida pagamento.
-
-      Quando formos colocar a versão de produção,
-      esta função deverá ser substituída pela validação
-      real da assinatura/pagamento.
-
-      A tabela subscriptions aceita:
-
-      status:
-        active
-        expired
-        cancelled
-        past_due
-
-      plan:
-        trial
-        monthly
-        annual
-      ======================================================
-    */
-
     const payload = {
+
       user_id:
         currentUser.id,
 
@@ -2566,12 +2796,10 @@ async function activatePremium() {
 
       current_period_end:
         end.toISOString()
+
     };
 
-    const {
-      data,
-      error
-    } =
+    const { data, error } =
       await supabaseClient
         .from("subscriptions")
         .upsert(
@@ -2589,7 +2817,8 @@ async function activatePremium() {
     }
 
     subscription =
-      data || payload;
+      data ||
+      payload;
 
     closeModal(
       "premiumModal"
@@ -2600,7 +2829,9 @@ async function activatePremium() {
     showToast(
       "Premium ativado por 7 dias para teste!"
     );
+
   } catch (error) {
+
     console.error(
       "activatePremium:",
       error
@@ -2613,23 +2844,30 @@ async function activatePremium() {
         "Não foi possível ativar o Premium."
       )
     );
+
   } finally {
+
     setButtonLoading(
       button,
       false,
       "Confirmar ativação"
     );
+
   }
+
 }
+
 
 /* =========================================================
    METAS
 ========================================================= */
 
 async function saveGoal(event) {
+
   event.preventDefault();
 
   if (!currentUser) {
+
     showMessage(
       "goalMessage",
       "Faça login novamente."
@@ -2654,25 +2892,9 @@ async function saveGoal(event) {
     Number(
       valueOf(
         "goalCurrent"
-      ) || 0
+      ) ||
+      0
     );
-
-  /*
-    A tabela goals NÃO possui deadline.
-
-    O campo pode continuar existindo
-    no HTML por enquanto, mas NÃO será
-    enviado ao Supabase.
-
-    Estrutura real:
-
-    id
-    user_id
-    name
-    target
-    saved
-    created_at
-  */
 
   if (
     !name ||
@@ -2681,6 +2903,7 @@ async function saveGoal(event) {
     ) ||
     target <= 0
   ) {
+
     showMessage(
       "goalMessage",
       "Informe o nome e o valor da meta."
@@ -2695,6 +2918,7 @@ async function saveGoal(event) {
     ) ||
     current < 0
   ) {
+
     showMessage(
       "goalMessage",
       "O valor guardado é inválido."
@@ -2704,9 +2928,9 @@ async function saveGoal(event) {
   }
 
   if (
-    current >
-    target
+    current > target
   ) {
+
     showMessage(
       "goalMessage",
       "O valor guardado não pode ser maior que o valor da meta."
@@ -2716,47 +2940,22 @@ async function saveGoal(event) {
   }
 
   try {
-    /*
-      ======================================================
-      ESTRUTURA REAL DA TABELA goals
 
-      id
-      user_id
-      name
-      target
-      saved
-      created_at
-
-      Portanto:
-
-      target_amount  NÃO existe
-      current_amount NÃO existe
-      deadline       NÃO existe
-
-      Usamos somente:
-
-      target
-      saved
-      ======================================================
-    */
-
-    const {
-      data,
-      error
-    } =
+    const { data, error } =
       await supabaseClient
         .from("goals")
         .insert({
+
           user_id:
             currentUser.id,
 
           name,
 
-          target:
-            target,
+          target,
 
           saved:
             current
+
         })
         .select()
         .single();
@@ -2766,7 +2965,9 @@ async function saveGoal(event) {
     }
 
     if (data) {
+
       goals.unshift({
+
         ...data,
 
         target:
@@ -2778,7 +2979,9 @@ async function saveGoal(event) {
           Number(
             data.saved
           ) || 0
+
       });
+
     }
 
     closeModal(
@@ -2790,7 +2993,9 @@ async function saveGoal(event) {
     );
 
     await loadGoals();
+
   } catch (error) {
+
     console.error(
       "saveGoal:",
       error
@@ -2803,14 +3008,14 @@ async function saveGoal(event) {
         "Não foi possível criar a meta."
       )
     );
+
   }
+
 }
 
-/* =========================================================
-   ABRIR MODAL DE META
-========================================================= */
 
 function openGoalModal() {
+
   clearMessage(
     "goalMessage"
   );
@@ -2830,11 +3035,6 @@ function openGoalModal() {
       "0";
   }
 
-  /*
-    goalDeadline pode existir no HTML,
-    mas não é enviado ao Supabase.
-  */
-
   if ($("goalDeadline")) {
     $("goalDeadline").value =
       "";
@@ -2843,34 +3043,883 @@ function openGoalModal() {
   openModal(
     "goalModal"
   );
+
 }
 
+
 /* =========================================================
-   ABRIR MODAL DE CATEGORIA
+   COFRINHO PREMIUM
+========================================================= */
+
+function getCurrentMonthKey() {
+
+  const date =
+    new Date();
+
+  return `${date.getFullYear()}-${String(
+    date.getMonth() + 1
+  ).padStart(
+    2,
+    "0"
+  )}`;
+
+}
+
+
+function getCurrentMonthLabel() {
+
+  return new Date()
+    .toLocaleDateString(
+      "pt-BR",
+      {
+        month:
+          "long",
+
+        year:
+          "numeric"
+      }
+    );
+
+}
+
+
+function getPiggyBankStorageKey() {
+
+  return `controles_piggy_bank_${
+    currentUser?.id ||
+    "guest"
+  }`;
+
+}
+
+
+function loadPiggyBank() {
+
+  piggyBank = {
+
+    month:
+      getCurrentMonthKey(),
+
+    target:
+      0,
+
+    saved:
+      0
+
+  };
+
+  if (!currentUser) {
+    return;
+  }
+
+  try {
+
+    const raw =
+      localStorage.getItem(
+        getPiggyBankStorageKey()
+      );
+
+    if (!raw) {
+      return;
+    }
+
+    const data =
+      JSON.parse(
+        raw
+      );
+
+    if (
+      data &&
+      data.month ===
+        getCurrentMonthKey()
+    ) {
+
+      piggyBank = {
+
+        month:
+          data.month,
+
+        target:
+          Number(
+            data.target
+          ) || 0,
+
+        saved:
+          Number(
+            data.saved
+          ) || 0
+
+      };
+
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "loadPiggyBank:",
+      error
+    );
+
+  }
+
+}
+
+
+function savePiggyBank() {
+
+  if (!currentUser) {
+
+    showMessage(
+      "piggyMessage",
+      "Faça login novamente."
+    );
+
+    return;
+  }
+
+  const target =
+    Number(
+      valueOf(
+        "piggyTargetInput"
+      )
+    );
+
+  const saved =
+    Number(
+      valueOf(
+        "piggySavedInput"
+      )
+    );
+
+  clearMessage(
+    "piggyMessage"
+  );
+
+  if (
+    !Number.isFinite(
+      target
+    ) ||
+    target <= 0
+  ) {
+
+    showMessage(
+      "piggyMessage",
+      "Informe uma meta mensal válida."
+    );
+
+    return;
+  }
+
+  if (
+    !Number.isFinite(
+      saved
+    ) ||
+    saved < 0
+  ) {
+
+    showMessage(
+      "piggyMessage",
+      "Informe um valor guardado válido."
+    );
+
+    return;
+  }
+
+  if (
+    saved > target
+  ) {
+
+    showMessage(
+      "piggyMessage",
+      "O valor guardado não pode ser maior que a meta."
+    );
+
+    return;
+  }
+
+  piggyBank = {
+
+    month:
+      getCurrentMonthKey(),
+
+    target,
+
+    saved
+
+  };
+
+  try {
+
+    localStorage.setItem(
+      getPiggyBankStorageKey(),
+      JSON.stringify(
+        piggyBank
+      )
+    );
+
+    renderPiggyBank();
+
+    showToast(
+      "Cofrinho atualizado!"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "savePiggyBank:",
+      error
+    );
+
+    showMessage(
+      "piggyMessage",
+      "Não foi possível salvar o cofrinho."
+    );
+
+  }
+
+}
+
+
+function renderPiggyBank() {
+
+  const premium =
+    isPremiumActive();
+
+  $("premiumExtras")
+    ?.classList.toggle(
+      "hidden",
+      !premium
+    );
+
+  $("premiumDashboardExtras")
+    ?.classList.toggle(
+      "hidden",
+      !premium
+    );
+
+  if (!premium) {
+    return;
+  }
+
+  const target =
+    Number(
+      piggyBank.target
+    ) || 0;
+
+  const saved =
+    Number(
+      piggyBank.saved
+    ) || 0;
+
+  const percent =
+    target > 0
+      ? Math.min(
+          100,
+          Math.round(
+            (
+              saved /
+              target
+            ) *
+            100
+          )
+        )
+      : 0;
+
+  const remaining =
+    Math.max(
+      0,
+      target -
+        saved
+    );
+
+  if ($("piggyBankMonth")) {
+
+    $("piggyBankMonth")
+      .textContent =
+      `Cofrinho de ${getCurrentMonthLabel()}`;
+
+  }
+
+  if ($("piggySaved")) {
+
+    $("piggySaved")
+      .textContent =
+      formatMoney(
+        saved
+      );
+
+  }
+
+  if ($("piggyTarget")) {
+
+    $("piggyTarget")
+      .textContent =
+      formatMoney(
+        target
+      );
+
+  }
+
+  if ($("piggyProgressBar")) {
+
+    $("piggyProgressBar")
+      .style.width =
+      `${percent}%`;
+
+  }
+
+  if ($("piggyProgressPercent")) {
+
+    $("piggyProgressPercent")
+      .textContent =
+      `${percent}%`;
+
+  }
+
+  if ($("piggyRemaining")) {
+
+    $("piggyRemaining")
+      .textContent =
+      target > 0
+        ? `Faltam ${formatMoney(
+            remaining
+          )}`
+        : "Defina uma meta mensal";
+
+  }
+
+  if ($("piggyTargetInput")) {
+
+    $("piggyTargetInput")
+      .value =
+      target || "";
+
+  }
+
+  if ($("piggySavedInput")) {
+
+    $("piggySavedInput")
+      .value =
+      saved || "";
+
+  }
+
+  if ($("dashboardPiggyBank")) {
+
+    $("dashboardPiggyBank")
+      .innerHTML = `
+
+        <strong>
+          ${formatMoney(
+            saved
+          )}
+        </strong>
+
+        <small>
+          Meta mensal:
+          ${formatMoney(
+            target
+          )}
+        </small>
+
+        <div class="piggy-mini-progress">
+
+          <div
+            style="width:${percent}%"
+          ></div>
+
+        </div>
+
+        <span>
+          ${percent}% concluído
+        </span>
+
+      `;
+
+  }
+
+}
+
+
+/* =========================================================
+   RESUMO MENSAL
+========================================================= */
+
+function getMonthlyTotals() {
+
+  const month =
+    getCurrentMonthKey();
+
+  let income = 0;
+  let expense = 0;
+
+  transactions.forEach(
+    transaction => {
+
+      if (
+        String(
+          transaction.date ||
+          ""
+        ).slice(
+          0,
+          7
+        ) !== month
+      ) {
+
+        return;
+
+      }
+
+      const amount =
+        Number(
+          transaction.amount
+        ) || 0;
+
+      if (
+        normalizeTransactionType(
+          transaction.type
+        ) ===
+        "expense"
+      ) {
+
+        expense +=
+          amount;
+
+      } else {
+
+        income +=
+          amount;
+
+      }
+
+    }
+  );
+
+  return {
+
+    income,
+
+    expense,
+
+    balance:
+      income -
+      expense
+
+  };
+
+}
+
+
+function renderMonthlySummary() {
+
+  if (!isPremiumActive()) {
+    return;
+  }
+
+  const totals =
+    getMonthlyTotals();
+
+  if ($("monthlyIncome")) {
+
+    $("monthlyIncome")
+      .textContent =
+      formatMoney(
+        totals.income
+      );
+
+  }
+
+  if ($("monthlyExpense")) {
+
+    $("monthlyExpense")
+      .textContent =
+      formatMoney(
+        totals.expense
+      );
+
+  }
+
+  if ($("monthlyBalance")) {
+
+    $("monthlyBalance")
+      .textContent =
+      formatMoney(
+        totals.balance
+      );
+
+  }
+
+}
+
+
+/* =========================================================
+   RANKING DE GASTOS
+========================================================= */
+
+function getExpenseRanking() {
+
+  const month =
+    getCurrentMonthKey();
+
+  const ranking = {};
+
+  transactions.forEach(
+    transaction => {
+
+      if (
+        String(
+          transaction.date ||
+          ""
+        ).slice(
+          0,
+          7
+        ) !== month
+      ) {
+
+        return;
+
+      }
+
+      if (
+        normalizeTransactionType(
+          transaction.type
+        ) !==
+        "expense"
+      ) {
+
+        return;
+
+      }
+
+      const category =
+        transaction.category ||
+        "Outros";
+
+      ranking[category] =
+        (
+          ranking[category] ||
+          0
+        ) +
+        (
+          Number(
+            transaction.amount
+          ) || 0
+        );
+
+    }
+  );
+
+  return Object.entries(
+    ranking
+  ).sort(
+    (a, b) =>
+      b[1] -
+      a[1]
+  );
+
+}
+
+
+function renderExpenseRanking() {
+
+  if (!isPremiumActive()) {
+    return;
+  }
+
+  const container =
+    $("expenseRanking");
+
+  if (!container) {
+    return;
+  }
+
+  const ranking =
+    getExpenseRanking();
+
+  container.innerHTML =
+    "";
+
+  if (!ranking.length) {
+
+    container.innerHTML = `
+
+      <div class="empty-state">
+
+        <div>
+          ◎
+        </div>
+
+        <h3>
+          Nenhuma despesa neste mês
+        </h3>
+
+        <p>
+          Seus gastos aparecerão aqui.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+  const totalExpense =
+    ranking.reduce(
+      (
+        sum,
+        item
+      ) =>
+        sum +
+        item[1],
+      0
+    );
+
+  ranking.forEach(
+    (
+      [category, amount],
+      index
+    ) => {
+
+      const percent =
+        totalExpense > 0
+          ? Math.round(
+              (
+                amount /
+                totalExpense
+              ) *
+              100
+            )
+          : 0;
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "expense-ranking-item";
+
+      item.innerHTML = `
+
+        <div class="ranking-position">
+          ${index + 1}
+        </div>
+
+        <div class="ranking-info">
+
+          <div>
+
+            <strong>
+              ${escapeHTML(
+                category
+              )}
+            </strong>
+
+            <span>
+              ${percent}%
+            </span>
+
+          </div>
+
+          <div class="ranking-bar">
+
+            <div
+              style="width:${percent}%"
+            ></div>
+
+          </div>
+
+        </div>
+
+        <strong class="ranking-value">
+
+          ${formatMoney(
+            amount
+          )}
+
+        </strong>
+
+      `;
+
+      container.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   CATEGORIA QUE MAIS GASTOU
+========================================================= */
+
+function getTopExpenseCategory() {
+
+  const ranking =
+    getExpenseRanking();
+
+  return ranking.length
+    ? ranking[0]
+    : null;
+
+}
+
+
+function renderTopExpenseCategory() {
+
+  const container =
+    $("topCategoryDashboard");
+
+  if (!container) {
+    return;
+  }
+
+  if (!isPremiumActive()) {
+
+    container.innerHTML =
+      "";
+
+    return;
+  }
+
+  const top =
+    getTopExpenseCategory();
+
+  if (!top) {
+
+    container.innerHTML = `
+
+      <strong>
+        Nenhuma despesa este mês.
+      </strong>
+
+    `;
+
+    return;
+  }
+
+  const [
+    category,
+    amount
+  ] = top;
+
+  const total =
+    getMonthlyTotals()
+      .expense;
+
+  const percent =
+    total > 0
+      ? Math.round(
+          (
+            amount /
+            total
+          ) *
+          100
+        )
+      : 0;
+
+  container.innerHTML = `
+
+    <strong>
+      ${escapeHTML(
+        category
+      )}
+    </strong>
+
+    <span>
+      ${formatMoney(
+        amount
+      )}
+    </span>
+
+    <small>
+      ${percent}% das suas despesas deste mês
+    </small>
+
+  `;
+
+}
+
+
+/* =========================================================
+   ATUALIZAR EXTRAS PREMIUM
+========================================================= */
+
+function updatePremiumExtras() {
+
+  if (!isPremiumActive()) {
+
+    $("premiumExtras")
+      ?.classList.add(
+        "hidden"
+      );
+
+    $("premiumDashboardExtras")
+      ?.classList.add(
+        "hidden"
+      );
+
+    return;
+  }
+
+  loadPiggyBank();
+
+  $("premiumExtras")
+    ?.classList.remove(
+      "hidden"
+    );
+
+  $("premiumDashboardExtras")
+    ?.classList.remove(
+      "hidden"
+    );
+
+  renderPiggyBank();
+
+  renderMonthlySummary();
+
+  renderExpenseRanking();
+
+  renderTopExpenseCategory();
+
+}
+
+
+/* =========================================================
+   MODAIS
 ========================================================= */
 
 function openCategoryModal() {
+
   clearMessage(
     "categoryMessage"
   );
 
   if ($("categoryName")) {
+
     $("categoryName").value =
       "";
+
   }
 
   openModal(
     "categoryModal"
   );
+
 }
 
+
 /* =========================================================
-   NAVEGAÇÃO
+   SEÇÕES
 ========================================================= */
 
 function showSection(
   section
 ) {
+
   if (
     !SECTION_TITLES[
       section
@@ -2883,59 +3932,78 @@ function showSection(
     .querySelectorAll(
       ".content-section"
     )
-    .forEach(el => {
-      el.classList.toggle(
-        "active",
-        el.id ===
-          `${section}Section`
-      );
-    });
+    .forEach(
+      el => {
+
+        el.classList.toggle(
+          "active",
+          el.id ===
+            `${section}Section`
+        );
+
+      }
+    );
 
   document
     .querySelectorAll(
       ".nav-item"
     )
-    .forEach(el => {
-      el.classList.toggle(
-        "active",
-        el.dataset.section ===
-          section
-      );
-    });
+    .forEach(
+      el => {
+
+        el.classList.toggle(
+          "active",
+          el.dataset.section ===
+            section
+        );
+
+      }
+    );
 
   if ($("pageTitle")) {
-    $("pageTitle").textContent =
+
+    $("pageTitle")
+      .textContent =
       SECTION_TITLES[
         section
       ];
+
   }
 
   if (
     section ===
     "transactions"
   ) {
+
     renderTransactions();
+
   }
 
   if (
     section ===
     "categories"
   ) {
+
     renderCategories();
+
   }
 
   if (
     section ===
     "reports"
   ) {
+
     updateReports();
+
   }
 
   if (
     section ===
     "premium"
   ) {
+
     updatePremiumUI();
+
   }
 
   $("sidebar")
@@ -2944,25 +4012,28 @@ function showSection(
     );
 
   window.scrollTo({
+
     top: 0,
-    behavior: "smooth"
+
+    behavior:
+      "smooth"
+
   });
+
 }
+
 
 /* =========================================================
    EVENTOS
 ========================================================= */
 
 function setupEvents() {
-  /* LOGIN */
 
   $("loginForm")
     ?.addEventListener(
       "submit",
       loginUser
     );
-
-  /* CADASTRO */
 
   $("registerForm")
     ?.addEventListener(
@@ -2982,15 +4053,11 @@ function setupEvents() {
       showLoginView
     );
 
-  /* LANÇAMENTO */
-
   $("transactionForm")
     ?.addEventListener(
       "submit",
       saveTransaction
     );
-
-  /* CATEGORIA */
 
   $("categoryForm")
     ?.addEventListener(
@@ -2998,15 +4065,11 @@ function setupEvents() {
       saveCategory
     );
 
-  /* META */
-
   $("goalForm")
     ?.addEventListener(
       "submit",
       saveGoal
     );
-
-  /* PREMIUM */
 
   $("confirmPremiumBtn")
     ?.addEventListener(
@@ -3020,7 +4083,21 @@ function setupEvents() {
       openPremiumModal
     );
 
-  /* BOTÕES */
+
+  /* =======================================================
+     COFRINHO
+  ======================================================== */
+
+  $("savePiggyBankBtn")
+    ?.addEventListener(
+      "click",
+      savePiggyBank
+    );
+
+
+  /* =======================================================
+     NOVO LANÇAMENTO
+  ======================================================== */
 
   $("addTransactionBtn")
     ?.addEventListener(
@@ -3040,6 +4117,11 @@ function setupEvents() {
         )
     );
 
+
+  /* =======================================================
+     CATEGORIAS
+  ======================================================== */
+
   $("addCategoryBtn")
     ?.addEventListener(
       "click",
@@ -3052,11 +4134,21 @@ function setupEvents() {
       openCategoryModal
     );
 
+
+  /* =======================================================
+     METAS
+  ======================================================== */
+
   $("addGoalBtn")
     ?.addEventListener(
       "click",
       openGoalModal
     );
+
+
+  /* =======================================================
+     LOGOUT
+  ======================================================== */
 
   $("logoutBtn")
     ?.addEventListener(
@@ -3064,7 +4156,10 @@ function setupEvents() {
       logout
     );
 
-  /* TEMA */
+
+  /* =======================================================
+     TEMA
+  ======================================================== */
 
   $("themeBtn")
     ?.addEventListener(
@@ -3072,27 +4167,32 @@ function setupEvents() {
       toggleTheme
     );
 
-  /* MENU MOBILE */
+
+  /* =======================================================
+     MENU MOBILE
+  ======================================================== */
 
   $("mobileMenuBtn")
     ?.addEventListener(
       "click",
       () => {
+
         $("sidebar")
           ?.classList.toggle(
             "mobile-open"
           );
+
       }
     );
 
-  /* ======================================================
-     EVENTOS GERAIS DE CLIQUE
-  ====================================================== */
+
+  /* =======================================================
+     CLIQUES GERAIS
+  ======================================================== */
 
   document.addEventListener(
     "click",
     event => {
-      /* NAVEGAÇÃO */
 
       const nav =
         event.target.closest(
@@ -3105,6 +4205,7 @@ function setupEvents() {
           ".modal"
         )
       ) {
+
         event.preventDefault();
 
         showSection(
@@ -3112,9 +4213,9 @@ function setupEvents() {
         );
 
         return;
+
       }
 
-      /* AÇÕES */
 
       const action =
         event.target.closest(
@@ -3125,21 +4226,24 @@ function setupEvents() {
         action?.dataset.action ===
         "add-income"
       ) {
+
         openTransactionModal(
           "income"
         );
+
       }
 
       if (
         action?.dataset.action ===
         "add-expense"
       ) {
+
         openTransactionModal(
           "expense"
         );
+
       }
 
-      /* EDITAR */
 
       const edit =
         event.target.closest(
@@ -3147,6 +4251,7 @@ function setupEvents() {
         );
 
       if (edit) {
+
         const transaction =
           transactions.find(
             item =>
@@ -3160,16 +4265,18 @@ function setupEvents() {
           );
 
         if (transaction) {
+
           openTransactionModal(
             normalizeTransactionType(
               transaction.type
             ),
             transaction
           );
+
         }
+
       }
 
-      /* EXCLUIR */
 
       const del =
         event.target.closest(
@@ -3177,13 +4284,14 @@ function setupEvents() {
         );
 
       if (del) {
+
         deleteTransaction(
           del.dataset
             .deleteTransaction
         );
+
       }
 
-      /* FECHAR MODAL */
 
       const close =
         event.target.closest(
@@ -3191,18 +4299,22 @@ function setupEvents() {
         );
 
       if (close) {
+
         closeModal(
           close.closest(
             ".modal"
           )?.id
         );
+
       }
+
     }
   );
 
-  /* ======================================================
+
+  /* =======================================================
      TIPO DE TRANSAÇÃO
-  ====================================================== */
+  ======================================================== */
 
   document
     .querySelectorAll(
@@ -3210,34 +4322,39 @@ function setupEvents() {
     )
     .forEach(
       button => {
+
         button.addEventListener(
           "click",
           () => {
+
             const type =
               button.dataset
                 .transactionType;
 
             if (
-              type ===
-                "income" ||
-              type ===
-                "expense"
+              type === "income" ||
+              type === "expense"
             ) {
+
               selectedTransactionType =
                 type;
 
               setTransactionTypeButtons();
 
               populateTransactionCategories();
+
             }
+
           }
         );
+
       }
     );
 
-  /* ======================================================
-     MOSTRAR / OCULTAR SENHA
-  ====================================================== */
+
+  /* =======================================================
+     MOSTRAR/OCULTAR SENHA
+  ======================================================== */
 
   document
     .querySelectorAll(
@@ -3245,9 +4362,11 @@ function setupEvents() {
     )
     .forEach(
       button => {
+
         button.addEventListener(
           "click",
           () => {
+
             const input =
               $(
                 button.dataset
@@ -3271,37 +4390,45 @@ function setupEvents() {
                 ? "Mostrar senha"
                 : "Ocultar senha"
             );
+
           }
         );
+
       }
     );
 
-  /* ======================================================
+
+  /* =======================================================
      FILTROS
-  ====================================================== */
+  ======================================================== */
 
   [
     "transactionSearch",
     "transactionFilter",
     "typeFilter",
     "categoryFilter"
-  ].forEach(id => {
-    $(id)
-      ?.addEventListener(
-        "input",
-        renderTransactions
-      );
+  ].forEach(
+    id => {
 
-    $(id)
-      ?.addEventListener(
-        "change",
-        renderTransactions
-      );
-  });
+      $(id)
+        ?.addEventListener(
+          "input",
+          renderTransactions
+        );
 
-  /* ======================================================
-     FECHAR MODAL CLICANDO FORA
-  ====================================================== */
+      $(id)
+        ?.addEventListener(
+          "change",
+          renderTransactions
+        );
+
+    }
+  );
+
+
+  /* =======================================================
+     FECHAR MODAL
+  ======================================================== */
 
   document
     .querySelectorAll(
@@ -3309,33 +4436,42 @@ function setupEvents() {
     )
     .forEach(
       modal => {
+
         modal.addEventListener(
           "click",
           event => {
+
             if (
               event.target ===
               modal
             ) {
+
               closeModal(
                 modal.id
               );
+
             }
+
           }
         );
+
       }
     );
 
-  /* ======================================================
+
+  /* =======================================================
      ESC
-  ====================================================== */
+  ======================================================== */
 
   document.addEventListener(
     "keydown",
     event => {
+
       if (
         event.key ===
         "Escape"
       ) {
+
         document
           .querySelectorAll(
             ".modal:not(.hidden)"
@@ -3346,16 +4482,21 @@ function setupEvents() {
                 modal.id
               )
           );
+
       }
+
     }
   );
+
 }
 
+
 /* =========================================================
-   MOSTRAR LOGIN
+   TELAS
 ========================================================= */
 
 function showLoginView() {
+
   $("loginView")
     ?.classList.remove(
       "hidden"
@@ -3373,13 +4514,12 @@ function showLoginView() {
 
   $("loginEmail")
     ?.focus();
+
 }
 
-/* =========================================================
-   MOSTRAR CADASTRO
-========================================================= */
 
 function showRegisterView() {
+
   $("loginView")
     ?.classList.add(
       "hidden"
@@ -3401,13 +4541,12 @@ function showRegisterView() {
 
   $("registerName")
     ?.focus();
+
 }
 
-/* =========================================================
-   MOSTRAR APP
-========================================================= */
 
 function showAppView() {
+
   $("loginView")
     ?.classList.add(
       "hidden"
@@ -3426,20 +4565,26 @@ function showAppView() {
   showSection(
     "dashboard"
   );
+
 }
+
 
 /* =========================================================
    MODAIS
 ========================================================= */
 
 function openModal(id) {
+
   $(id)
     ?.classList.remove(
       "hidden"
     );
+
 }
 
+
 function closeModal(id) {
+
   if (!id) {
     return;
   }
@@ -3448,13 +4593,16 @@ function closeModal(id) {
     ?.classList.add(
       "hidden"
     );
+
 }
 
+
 /* =========================================================
-   DATA ATUAL
+   DATA
 ========================================================= */
 
 function setCurrentDate() {
+
   const el =
     $("currentDate");
 
@@ -3463,51 +4611,50 @@ function setCurrentDate() {
   }
 
   el.textContent =
-    new Date().toLocaleDateString(
-      "pt-BR",
-      {
-        weekday:
-          "long",
+    new Date()
+      .toLocaleDateString(
+        "pt-BR",
+        {
+          weekday:
+            "long",
 
-        day:
-          "2-digit",
+          day:
+            "2-digit",
 
-        month:
-          "long",
+          month:
+            "long",
 
-        year:
-          "numeric"
-      }
-    );
+          year:
+            "numeric"
+        }
+      );
+
 }
 
-/* =========================================================
-   DATA PADRÃO
-========================================================= */
 
 function setDefaultDate() {
-  if (
-    $("transactionDate")
-  ) {
+
+  if ($("transactionDate")) {
+
     $("transactionDate")
       .value =
       todayISO();
+
   }
+
 }
 
-/* =========================================================
-   DATA ISO LOCAL
-========================================================= */
 
 function todayISO() {
+
   const d =
     new Date();
 
   const local =
     new Date(
       d.getTime() -
-        d.getTimezoneOffset() *
-          60000
+      d.getTimezoneOffset() *
+        60000
     );
 
   return local
@@ -3516,15 +4663,14 @@ function todayISO() {
       0,
       10
     );
+
 }
 
-/* =========================================================
-   NORMALIZAR DATA
-========================================================= */
 
 function normalizeDate(
   value
 ) {
+
   if (!value) {
     return "";
   }
@@ -3532,22 +4678,20 @@ function normalizeDate(
   const text =
     String(value);
 
-  return text.length >=
-    10
+  return text.length >= 10
     ? text.slice(
         0,
         10
       )
     : "";
+
 }
 
-/* =========================================================
-   CONVERTER DATA
-========================================================= */
 
 function parseDate(
   value
 ) {
+
   if (!value) {
     return null;
   }
@@ -3564,15 +4708,14 @@ function parseDate(
   )
     ? null
     : date;
+
 }
 
-/* =========================================================
-   FORMATAR DATA
-========================================================= */
 
 function formatDate(
   value
 ) {
+
   const date =
     parseDate(
       value
@@ -3583,15 +4726,18 @@ function formatDate(
         "pt-BR"
       )
     : "—";
+
 }
 
+
 /* =========================================================
-   FORMATAR DINHEIRO
+   DINHEIRO
 ========================================================= */
 
 function formatMoney(
   value
 ) {
+
   return Number(
     value || 0
   ).toLocaleString(
@@ -3604,15 +4750,14 @@ function formatMoney(
         "BRL"
     }
   );
+
 }
 
-/* =========================================================
-   FORMATAR DINHEIRO COMPACTO
-========================================================= */
 
 function formatCompactMoney(
   value
 ) {
+
   const n =
     Number(
       value || 0
@@ -3622,37 +4767,50 @@ function formatCompactMoney(
     Math.abs(n) >=
     1000000
   ) {
+
     return `R$ ${
-      (n / 1000000)
-        .toFixed(1)
+      (
+        n /
+        1000000
+      ).toFixed(1)
     } mi`;
+
   }
 
   if (
     Math.abs(n) >=
     1000
   ) {
+
     return `R$ ${
-      (n / 1000)
-        .toFixed(1)
+      (
+        n /
+        1000
+      ).toFixed(1)
     } mil`;
+
   }
 
   return `R$ ${
     n.toFixed(0)
   }`;
+
 }
 
+
 /* =========================================================
-   VALIDAR E-MAIL
+   VALIDAÇÕES
 ========================================================= */
 
 function isValidEmail(
   email
 ) {
+
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     .test(email);
+
 }
+
 
 /* =========================================================
    ERROS DE AUTENTICAÇÃO
@@ -3661,6 +4819,7 @@ function isValidEmail(
 function friendlyAuthError(
   error
 ) {
+
   const message =
     String(
       error?.message ||
@@ -3672,9 +4831,9 @@ function friendlyAuthError(
       "invalid login credentials"
     )
   ) {
-    return (
-      "E-mail ou senha incorretos."
-    );
+
+    return "E-mail ou senha incorretos.";
+
   }
 
   if (
@@ -3682,9 +4841,9 @@ function friendlyAuthError(
       "user already registered"
     )
   ) {
-    return (
-      "Este e-mail já está cadastrado."
-    );
+
+    return "Este e-mail já está cadastrado.";
+
   }
 
   if (
@@ -3692,9 +4851,9 @@ function friendlyAuthError(
       "email not confirmed"
     )
   ) {
-    return (
-      "Confirme seu e-mail antes de entrar."
-    );
+
+    return "Confirme seu e-mail antes de entrar.";
+
   }
 
   if (
@@ -3702,9 +4861,9 @@ function friendlyAuthError(
       "password"
     )
   ) {
-    return (
-      "A senha informada não é válida."
-    );
+
+    return "A senha informada não é válida.";
+
   }
 
   if (
@@ -3712,16 +4871,18 @@ function friendlyAuthError(
       "rate limit"
     )
   ) {
-    return (
-      "Muitas tentativas. Aguarde um pouco e tente novamente."
-    );
+
+    return "Muitas tentativas. Aguarde um pouco e tente novamente.";
+
   }
 
   return (
     error?.message ||
     "Não foi possível concluir a operação."
   );
+
 }
+
 
 /* =========================================================
    ERROS DO BANCO
@@ -3731,28 +4892,32 @@ function databaseError(
   error,
   fallback
 ) {
+
   if (
     error?.code ===
     "23505"
   ) {
-    return (
-      "Este registro já existe."
-    );
+
+    return "Este registro já existe.";
+
   }
 
   return (
     error?.message ||
     fallback
   );
+
 }
 
+
 /* =========================================================
-   LIMPAR MENSAGEM
+   MENSAGENS
 ========================================================= */
 
 function clearMessage(
   id
 ) {
+
   const el =
     $(id);
 
@@ -3766,17 +4931,16 @@ function clearMessage(
   el.classList.remove(
     "success"
   );
+
 }
 
-/* =========================================================
-   MOSTRAR MENSAGEM
-========================================================= */
 
 function showMessage(
   id,
   message,
   success = false
 ) {
+
   const el =
     $(id);
 
@@ -3791,10 +4955,12 @@ function showMessage(
     "success",
     success
   );
+
 }
 
+
 /* =========================================================
-   LOADING DO BOTÃO
+   BOTÕES
 ========================================================= */
 
 function setButtonLoading(
@@ -3802,11 +4968,13 @@ function setButtonLoading(
   loading,
   text
 ) {
+
   if (!button) {
     return;
   }
 
   if (loading) {
+
     button.dataset
       .originalText =
       button.textContent;
@@ -3816,7 +4984,9 @@ function setButtonLoading(
 
     button.textContent =
       text;
+
   } else {
+
     button.disabled =
       false;
 
@@ -3825,8 +4995,11 @@ function setButtonLoading(
       button.dataset
         .originalText ||
       "Salvar";
+
   }
+
 }
+
 
 /* =========================================================
    TOAST
@@ -3835,6 +5008,7 @@ function setButtonLoading(
 function showToast(
   message
 ) {
+
   const toast =
     $("toast");
 
@@ -3861,7 +5035,9 @@ function showToast(
         ),
       3000
     );
+
 }
+
 
 /* =========================================================
    SEGURANÇA HTML
@@ -3870,6 +5046,7 @@ function showToast(
 function escapeHTML(
   value
 ) {
+
   return String(
     value ?? ""
   ).replace(
@@ -3890,43 +5067,57 @@ function escapeHTML(
 
         "'":
           "&#039;"
+
       }[char])
   );
+
 }
+
 
 function escapeAttribute(
   value
 ) {
+
   return escapeHTML(
     value
   );
+
 }
 
+
 /* =========================================================
-   DESTRUIR GRÁFICOS
+   GRÁFICOS
 ========================================================= */
 
 function destroyCharts() {
+
   if (financeChart) {
+
     financeChart.destroy();
 
     financeChart =
       null;
+
   }
 
   if (categoryChart) {
+
     categoryChart.destroy();
 
     categoryChart =
       null;
+
   }
+
 }
+
 
 /* =========================================================
    TEMA
 ========================================================= */
 
 function loadTheme() {
+
   const theme =
     localStorage.getItem(
       "controles_theme"
@@ -3936,23 +5127,35 @@ function loadTheme() {
     theme ===
     "dark"
   ) {
-    document.body.classList.add(
-      "dark"
-    );
+
+    document.body
+      .classList.add(
+        "dark"
+      );
+
   }
+
 }
 
+
 function toggleTheme() {
-  document.body.classList.toggle(
-    "dark"
-  );
+
+  document.body
+    .classList.toggle(
+      "dark"
+    );
 
   localStorage.setItem(
+
     "controles_theme",
-    document.body.classList.contains(
-      "dark"
-    )
+
+    document.body
+      .classList.contains(
+        "dark"
+      )
       ? "dark"
       : "light"
+
   );
+
 }
