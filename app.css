@@ -523,6 +523,24 @@ button {
   gap: 7px;
 }
 
+/* =========================================================
+   SUPORTE
+========================================================= */
+
+.support-action {
+  text-decoration: none;
+  color: #d8e6e0;
+}
+
+.support-action:visited {
+  color: #d8e6e0;
+}
+
+.support-action:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .side-action.danger {
   color: #ffc2c2;
 }
