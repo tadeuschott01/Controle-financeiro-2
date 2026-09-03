@@ -97,8 +97,8 @@ const valueOf = id =>
   income
   expense
 
-  Esta função faz a conversão para que
-  os dois lados funcionem corretamente.
+  Esta função converte qualquer um dos formatos
+  para o formato interno do aplicativo.
 */
 
 function normalizeTransactionType(type) {
@@ -118,6 +118,15 @@ function normalizeTransactionType(type) {
   }
 
 
+  if (
+    value === "receita" ||
+    value === "income"
+  ) {
+
+    return "income";
+  }
+
+
   return "income";
 }
 
@@ -125,6 +134,18 @@ function normalizeTransactionType(type) {
 /* =========================================================
    CONVERTER TIPO PARA O SUPABASE
 ========================================================= */
+
+/*
+  O banco aceita SOMENTE:
+
+  receita
+  despesa
+
+  Portanto:
+
+  income  -> receita
+  expense -> despesa
+*/
 
 function databaseTransactionType(type) {
 
@@ -936,17 +957,28 @@ async function loadTransactions() {
     }
 
 
+    /*
+      CORREÇÃO:
+
+      O Supabase retorna:
+
+      receita
+      despesa
+
+      O aplicativo usa:
+
+      income
+      expense
+
+      Aqui convertemos os valores do banco
+      para o padrão interno do aplicativo.
+    */
+
     transactions =
       (data || []).map(
         transaction => ({
           ...transaction,
 
-          /*
-            Normaliza o valor vindo do banco.
-
-            receita -> income
-            despesa -> expense
-          */
           type:
             normalizeTransactionType(
               transaction.type
@@ -1193,9 +1225,9 @@ async function saveTransaction(event) {
     A tabela "transactions" NÃO possui
     a coluna "notes".
 
-    Portanto, não enviamos "notes".
+    Portanto, NÃO enviamos "notes".
 
-    O banco também exige:
+    O banco aceita SOMENTE:
 
     receita
     despesa
@@ -1206,7 +1238,7 @@ async function saveTransaction(event) {
     income
     expense
 
-    A conversão é feita abaixo.
+    A conversão é feita no campo "type".
   */
 
   const payload = {
