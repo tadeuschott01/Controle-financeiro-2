@@ -3025,9 +3025,10 @@ async function activatePremium() {
       status:
         "trialing",
 
-      plan:
-        "premium",
-
+    
+       plan:
+       "trial",
+       
       price:
         24.99,
 
