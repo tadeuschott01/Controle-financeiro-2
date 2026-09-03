@@ -45,7 +45,6 @@ const DEFAULT_CATEGORIES = [
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", async () => {
-
   setupEvents();
 
   setCurrentDate();
@@ -60,7 +59,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   await checkSession();
-
 });
 
 
@@ -69,53 +67,38 @@ document.addEventListener("DOMContentLoaded", async () => {
 ========================================================= */
 
 function initializeSupabase() {
-
   try {
-
     if (
       !window.supabase ||
       typeof window.supabase.createClient !== "function"
     ) {
-      throw new Error(
-        "Biblioteca do Supabase não carregada."
-      );
+      throw new Error("Biblioteca do Supabase não carregada.");
     }
 
-    supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY,
-        {
-          auth: {
-            persistSession: true,
-            autoRefreshToken: true,
-            detectSessionInUrl: true
-          }
+    supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
         }
-      );
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao iniciar Supabase:",
-      error
+      }
     );
-
+  } catch (error) {
+    console.error("Erro ao iniciar Supabase:", error);
     supabaseClient = null;
   }
-
 }
 
 
 async function checkSession() {
-
   try {
-
     const {
       data,
       error
-    } =
-      await supabaseClient.auth.getSession();
+    } = await supabaseClient.auth.getSession();
 
     if (error) {
       throw error;
@@ -123,9 +106,7 @@ async function checkSession() {
 
     supabaseClient.auth.onAuthStateChange(
       async (event, session) => {
-
         if (event === "SIGNED_OUT") {
-
           currentUser = null;
           currentProfile = null;
 
@@ -135,7 +116,6 @@ async function checkSession() {
           subscription = null;
 
           showLogin();
-
           return;
         }
 
@@ -144,42 +124,26 @@ async function checkSession() {
           session?.user &&
           authInitialized
         ) {
-
-          currentUser =
-            session.user;
-
+          currentUser = session.user;
           await enterApp();
         }
-
       }
     );
 
     if (data?.session?.user) {
-
-      currentUser =
-        data.session.user;
-
+      currentUser = data.session.user;
       await enterApp();
-
     } else {
-
       showLogin();
     }
 
     authInitialized = true;
-
   } catch (error) {
-
-    console.error(
-      "Erro ao verificar sessão:",
-      error
-    );
+    console.error("Erro ao verificar sessão:", error);
 
     authInitialized = true;
-
     showLogin();
   }
-
 }
 
 
@@ -188,56 +152,34 @@ async function checkSession() {
 ========================================================= */
 
 function showLogin() {
-
-  /*
-    O HTML atual possui loginView/registerView.
-    O fallback para loginScreen mantém compatibilidade
-    caso exista esse elemento em alguma versão anterior.
-  */
-
-  const loginScreen =
-    document.getElementById("loginScreen") ||
-    document.getElementById("loginView");
-
-  const app =
-    document.getElementById("app");
+  const loginView = document.getElementById("loginView");
+  const registerView = document.getElementById("registerView");
+  const loginScreen = document.getElementById("loginScreen");
+  const app = document.getElementById("app");
 
   if (loginScreen) {
-
-    /*
-      Remove qualquer estado antigo de hidden
-      somente da tela de acesso.
-    */
-
     loginScreen.classList.remove("hidden");
   }
 
-  if (app) {
+  if (loginView) {
+    loginView.classList.remove("hidden");
+  }
 
+  if (registerView) {
+    registerView.classList.add("hidden");
+  }
+
+  if (app) {
     app.classList.add("hidden");
   }
 
-  /*
-    Garante que o aplicativo não fique aberto
-    por cima da tela de login.
-  */
-
-  document
-    .getElementById("app")
-    ?.classList.add("hidden");
-
   showLoginView();
-
 }
 
 
 function showLoginView() {
-
-  const login =
-    document.getElementById("loginView");
-
-  const register =
-    document.getElementById("registerView");
+  const login = document.getElementById("loginView");
+  const register = document.getElementById("registerView");
 
   if (login) {
     login.classList.remove("hidden");
@@ -249,12 +191,10 @@ function showLoginView() {
 
   clearMessage("loginMessage");
   clearMessage("registerMessage");
-
 }
 
 
 function showRegister() {
-
   document
     .getElementById("loginView")
     ?.classList.add("hidden");
@@ -268,14 +208,11 @@ function showRegister() {
   document
     .getElementById("registerName")
     ?.focus();
-
 }
 
 
 function showLoginForm() {
-
   showLoginView();
-
 }
 
 
@@ -284,43 +221,35 @@ function showLoginForm() {
 ========================================================= */
 
 async function handleLogin(event) {
-
   event.preventDefault();
 
   if (!supabaseClient) {
-
     showMessage(
       "loginMessage",
       "Não foi possível conectar ao servidor. Verifique sua internet.",
       "error"
     );
-
     return;
   }
 
-  const email =
-    valueOf("loginEmail")
-      .trim()
-      .toLowerCase();
+  const email = valueOf("loginEmail")
+    .trim()
+    .toLowerCase();
 
-  const password =
-    valueOf("loginPassword");
+  const password = valueOf("loginPassword");
 
   if (!email || !password) {
-
     showMessage(
       "loginMessage",
       "Preencha e-mail e senha.",
       "error"
     );
-
     return;
   }
 
-  const button =
-    document.querySelector(
-      "#loginForm button[type='submit']"
-    );
+  const button = document.querySelector(
+    "#loginForm button[type='submit']"
+  );
 
   setButtonLoading(
     button,
@@ -329,29 +258,25 @@ async function handleLogin(event) {
   );
 
   try {
-
     const {
       data,
       error
-    } =
-      await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
+    } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
 
     if (error) {
       throw error;
     }
 
     if (!data?.user) {
-
       throw new Error(
         "Não foi possível identificar o usuário."
       );
     }
 
-    currentUser =
-      data.user;
+    currentUser = data.user;
 
     await createProfileIfNeeded();
 
@@ -362,13 +287,8 @@ async function handleLogin(event) {
     );
 
     await enterApp();
-
   } catch (error) {
-
-    console.error(
-      "Login:",
-      error
-    );
+    console.error("Login:", error);
 
     let message =
       "Não foi possível entrar. Confira seu e-mail e senha.";
@@ -378,16 +298,13 @@ async function handleLogin(event) {
         error.message || ""
       )
     ) {
-
       message =
         "Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada.";
-
     } else if (
       /invalid login credentials/i.test(
         error.message || ""
       )
     ) {
-
       message =
         "E-mail ou senha incorretos.";
     }
@@ -397,16 +314,13 @@ async function handleLogin(event) {
       message,
       "error"
     );
-
   } finally {
-
     setButtonLoading(
       button,
       false,
       "Entrar no ControleS"
     );
   }
-
 }
 
 
@@ -415,73 +329,57 @@ async function handleLogin(event) {
 ========================================================= */
 
 async function handleRegister(event) {
-
   event.preventDefault();
 
   if (!supabaseClient) {
-
     showMessage(
       "registerMessage",
       "Não foi possível conectar ao servidor.",
       "error"
     );
-
     return;
   }
 
-  const name =
-    valueOf("registerName")
-      .trim()
-      .replace(/\s+/g, " ");
+  const name = valueOf("registerName")
+    .trim()
+    .replace(/\s+/g, " ");
 
-  const email =
-    valueOf("registerEmail")
-      .trim()
-      .toLowerCase();
+  const email = valueOf("registerEmail")
+    .trim()
+    .toLowerCase();
 
-  const password =
-    valueOf("registerPassword");
-
-  const confirm =
-    valueOf("registerPasswordConfirm");
+  const password = valueOf("registerPassword");
+  const confirm = valueOf("registerPasswordConfirm");
 
   if (name.length < 2) {
-
     showMessage(
       "registerMessage",
       "Digite seu nome completo.",
       "error"
     );
-
     return;
   }
 
   if (password.length < 6) {
-
     showMessage(
       "registerMessage",
       "A senha precisa ter pelo menos 6 caracteres.",
       "error"
     );
-
     return;
   }
 
   if (password !== confirm) {
-
     showMessage(
       "registerMessage",
       "As senhas não coincidem.",
       "error"
     );
-
     return;
   }
 
   const button =
-    document.getElementById(
-      "createAccountBtn"
-    );
+    document.getElementById("createAccountBtn");
 
   setButtonLoading(
     button,
@@ -490,34 +388,26 @@ async function handleRegister(event) {
   );
 
   try {
-
     const {
       data,
       error
-    } =
-      await supabaseClient.auth.signUp({
-        email,
-        password,
-
-        options: {
-          data: {
-            full_name: name,
-            name: name
-          }
+    } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          name: name
         }
-      });
+      }
+    });
 
     if (error) {
       throw error;
     }
 
-    if (
-      data?.user &&
-      data.session
-    ) {
-
-      currentUser =
-        data.user;
+    if (data?.user && data.session) {
+      currentUser = data.user;
 
       await createProfileIfNeeded();
 
@@ -528,7 +418,6 @@ async function handleRegister(event) {
       );
 
       await enterApp();
-
       return;
     }
 
@@ -539,14 +428,10 @@ async function handleRegister(event) {
     );
 
     const loginEmail =
-      document.getElementById(
-        "loginEmail"
-      );
+      document.getElementById("loginEmail");
 
     const loginPassword =
-      document.getElementById(
-        "loginPassword"
-      );
+      document.getElementById("loginPassword");
 
     if (loginEmail) {
       loginEmail.value = email;
@@ -556,19 +441,11 @@ async function handleRegister(event) {
       loginPassword.value = "";
     }
 
-    setTimeout(
-      () => {
-        showLoginView();
-      },
-      1600
-    );
-
+    setTimeout(() => {
+      showLoginView();
+    }, 1600);
   } catch (error) {
-
-    console.error(
-      "Cadastro:",
-      error
-    );
+    console.error("Cadastro:", error);
 
     let message =
       error.message ||
@@ -579,7 +456,6 @@ async function handleRegister(event) {
         message
       )
     ) {
-
       message =
         "Este e-mail já possui uma conta. Volte e faça login.";
     }
@@ -589,16 +465,13 @@ async function handleRegister(event) {
       message,
       "error"
     );
-
   } finally {
-
     setButtonLoading(
       button,
       false,
       "Criar minha conta"
     );
   }
-
 }
 
 
@@ -607,31 +480,21 @@ async function handleRegister(event) {
 ========================================================= */
 
 async function createProfileIfNeeded() {
-
-  if (
-    !supabaseClient ||
-    !currentUser
-  ) {
+  if (!supabaseClient || !currentUser) {
     return null;
   }
 
   try {
-
     const {
       data: existing,
       error: readError
-    } =
-      await supabaseClient
-        .from("profiles")
-        .select("*")
-        .eq(
-          "id",
-          currentUser.id
-        )
-        .maybeSingle();
+    } = await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id", currentUser.id)
+      .maybeSingle();
 
     if (readError) {
-
       console.warn(
         "Perfil não pôde ser consultado:",
         readError.message
@@ -641,10 +504,7 @@ async function createProfileIfNeeded() {
     }
 
     if (existing) {
-
-      currentProfile =
-        existing;
-
+      currentProfile = existing;
       return existing;
     }
 
@@ -658,30 +518,21 @@ async function createProfileIfNeeded() {
       "";
 
     const payload = {
-
-      id:
-        currentUser.id,
-
-      full_name:
-        name || null,
-
-      email:
-        currentUser.email || null
-
+      id: currentUser.id,
+      full_name: name || null,
+      email: currentUser.email || null
     };
 
     const {
       data: created,
       error: insertError
-    } =
-      await supabaseClient
-        .from("profiles")
-        .insert(payload)
-        .select()
-        .single();
+    } = await supabaseClient
+      .from("profiles")
+      .insert(payload)
+      .select()
+      .single();
 
     if (insertError) {
-
       console.warn(
         "Perfil não pôde ser criado:",
         insertError.message
@@ -690,13 +541,10 @@ async function createProfileIfNeeded() {
       return null;
     }
 
-    currentProfile =
-      created;
+    currentProfile = created;
 
     return created;
-
   } catch (error) {
-
     console.warn(
       "createProfileIfNeeded:",
       error
@@ -704,12 +552,10 @@ async function createProfileIfNeeded() {
 
     return null;
   }
-
 }
 
 
 async function loadProfile() {
-
   if (!currentUser) {
     return;
   }
@@ -718,17 +564,14 @@ async function loadProfile() {
     await createProfileIfNeeded();
 
   if (profile) {
-    currentProfile =
-      profile;
+    currentProfile = profile;
   }
 
   updateProfileUI();
-
 }
 
 
 function getUserFullName() {
-
   const metadata =
     currentUser?.user_metadata || {};
 
@@ -740,19 +583,15 @@ function getUserFullName() {
     metadata.display_name ||
     ""
   ).trim();
-
 }
 
 
 function getFirstName() {
-
   const fullName =
     getUserFullName();
 
   if (fullName) {
-
-    return fullName
-      .split(/\s+/)[0];
+    return fullName.split(/\s+/)[0];
   }
 
   const email =
@@ -766,12 +605,10 @@ function getFirstName() {
         .replace(/[._-]+/g, " ")
         .split(/\s+/)[0]
     : "Usuário";
-
 }
 
 
 function updateProfileUI() {
-
   const fullName =
     getUserFullName();
 
@@ -819,11 +656,9 @@ function updateProfileUI() {
   }
 
   if (welcome) {
-
     welcome.textContent =
       `Olá, ${firstName}! 👋`;
   }
-
 }
 
 
@@ -832,7 +667,6 @@ function updateProfileUI() {
 ========================================================= */
 
 async function enterApp() {
-
   if (
     !currentUser ||
     enteringApp
@@ -842,60 +676,31 @@ async function enterApp() {
 
   enteringApp = true;
 
-  /*
-    IMPORTANTE:
-    A versão anterior procurava somente #loginScreen,
-    mas o HTML atual trabalha com #loginView.
-    Agora os dois são tratados.
-  */
-
   const loginScreen =
-    document.getElementById(
-      "loginScreen"
-    ) ||
-    document.getElementById(
-      "loginView"
-    );
+    document.getElementById("loginScreen");
+
+  const loginView =
+    document.getElementById("loginView");
 
   const registerView =
-    document.getElementById(
-      "registerView"
-    );
+    document.getElementById("registerView");
 
   const app =
-    document.getElementById(
-      "app"
-    );
+    document.getElementById("app");
 
-  /*
-    Fecha completamente a área de acesso
-    antes de mostrar o aplicativo.
-  */
+  loginScreen?.classList.add("hidden");
+  loginView?.classList.add("hidden");
+  registerView?.classList.add("hidden");
 
-  loginScreen?.classList.add(
-    "hidden"
-  );
-
-  registerView?.classList.add(
-    "hidden"
-  );
-
-  app?.classList.remove(
-    "hidden"
-  );
+  app?.classList.remove("hidden");
 
   try {
-
     await loadUserData();
 
     updateProfileUI();
 
-    showSection(
-      "dashboard"
-    );
-
+    showSection("dashboard");
   } catch (error) {
-
     console.error(
       "Erro ao abrir o ControleS:",
       error
@@ -904,37 +709,26 @@ async function enterApp() {
     showToast(
       "Não foi possível carregar todos os dados. Tente novamente."
     );
-
   } finally {
-
     enteringApp = false;
   }
-
 }
 
 
 async function logout() {
-
   if (!supabaseClient) {
-
     showLogin();
-
     return;
   }
 
   try {
-
     await supabaseClient.auth.signOut();
-
   } catch (error) {
-
     console.error(
       "Logout:",
       error
     );
-
   } finally {
-
     currentUser = null;
     currentProfile = null;
 
@@ -943,13 +737,14 @@ async function logout() {
     budgets = [];
     subscription = null;
 
+    destroyCharts();
+
     showLogin();
 
     showToast(
       "Você saiu da sua conta."
     );
   }
-
 }
 
 
@@ -958,7 +753,6 @@ async function logout() {
 ========================================================= */
 
 async function loadUserData() {
-
   if (!currentUser) {
     return;
   }
@@ -975,14 +769,13 @@ async function loadUserData() {
   updateDashboard();
   renderTransactions();
   renderCategories();
+  renderGoals();
   renderReports();
   renderPremiumState();
-
 }
 
 
 async function loadTransactions() {
-
   if (
     !supabaseClient ||
     !currentUser
@@ -991,24 +784,22 @@ async function loadTransactions() {
   }
 
   try {
-
     const {
       data,
       error
-    } =
-      await supabaseClient
-        .from("transactions")
-        .select("*")
-        .eq(
-          "user_id",
-          currentUser.id
-        )
-        .order(
-          "date",
-          {
-            ascending: false
-          }
-        );
+    } = await supabaseClient
+      .from("transactions")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "date",
+        {
+          ascending: false
+        }
+      );
 
     if (error) {
       throw error;
@@ -1018,9 +809,7 @@ async function loadTransactions() {
       Array.isArray(data)
         ? data
         : [];
-
   } catch (error) {
-
     console.warn(
       "Lançamentos:",
       error.message
@@ -1028,12 +817,10 @@ async function loadTransactions() {
 
     transactions = [];
   }
-
 }
 
 
 async function loadGoals() {
-
   if (
     !supabaseClient ||
     !currentUser
@@ -1042,47 +829,43 @@ async function loadGoals() {
   }
 
   try {
-
     const {
       data,
       error
-    } =
-      await supabaseClient
-        .from("goals")
-        .select("*")
-        .eq(
-          "user_id",
-          currentUser.id
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
+    } = await supabaseClient
+      .from("goals")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
     if (error) {
-
-      goals = [];
-
-      return;
+      throw error;
     }
 
     goals =
       Array.isArray(data)
         ? data
         : [];
-
-  } catch {
+  } catch (error) {
+    console.warn(
+      "Metas:",
+      error.message
+    );
 
     goals = [];
   }
-
 }
 
 
 async function loadBudgets() {
-
   if (
     !supabaseClient ||
     !currentUser
@@ -1091,41 +874,37 @@ async function loadBudgets() {
   }
 
   try {
-
     const {
       data,
       error
-    } =
-      await supabaseClient
-        .from("budgets")
-        .select("*")
-        .eq(
-          "user_id",
-          currentUser.id
-        );
+    } = await supabaseClient
+      .from("budgets")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      );
 
     if (error) {
-
-      budgets = [];
-
-      return;
+      throw error;
     }
 
     budgets =
       Array.isArray(data)
         ? data
         : [];
-
-  } catch {
+  } catch (error) {
+    console.warn(
+      "Orçamentos:",
+      error.message
+    );
 
     budgets = [];
   }
-
 }
 
 
 async function loadSubscription() {
-
   if (
     !supabaseClient ||
     !currentUser
@@ -1134,42 +913,39 @@ async function loadSubscription() {
   }
 
   try {
-
     const {
       data,
       error
-    } =
-      await supabaseClient
-        .from("subscriptions")
-        .select("*")
-        .eq(
-          "user_id",
-          currentUser.id
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        )
-        .limit(1)
-        .maybeSingle();
+    } = await supabaseClient
+      .from("subscriptions")
+      .select("*")
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(1)
+      .maybeSingle();
 
     if (error) {
-
-      subscription = null;
-
-      return;
+      throw error;
     }
 
     subscription =
       data || null;
-
-  } catch {
+  } catch (error) {
+    console.warn(
+      "Premium:",
+      error.message
+    );
 
     subscription = null;
   }
-
 }
 
 
@@ -1178,7 +954,6 @@ async function loadSubscription() {
 ========================================================= */
 
 async function handleTransactionSubmit(event) {
-
   event.preventDefault();
 
   if (
@@ -1223,7 +998,6 @@ async function handleTransactionSubmit(event) {
     !category ||
     !date
   ) {
-
     showMessage(
       "transactionMessage",
       "Preencha todos os campos corretamente.",
@@ -1245,7 +1019,6 @@ async function handleTransactionSubmit(event) {
   );
 
   const payload = {
-
     user_id:
       currentUser.id,
 
@@ -1258,15 +1031,12 @@ async function handleTransactionSubmit(event) {
     category,
 
     date
-
   };
 
   try {
-
     let result;
 
     if (editingTransactionId) {
-
       result =
         await supabaseClient
           .from("transactions")
@@ -1281,9 +1051,7 @@ async function handleTransactionSubmit(event) {
           )
           .select()
           .single();
-
     } else {
-
       result =
         await supabaseClient
           .from("transactions")
@@ -1304,6 +1072,7 @@ async function handleTransactionSubmit(event) {
 
     updateDashboard();
     renderTransactions();
+    renderCategories();
     renderReports();
 
     showToast(
@@ -1313,9 +1082,7 @@ async function handleTransactionSubmit(event) {
     );
 
     editingTransactionId = null;
-
   } catch (error) {
-
     console.error(
       "Salvar lançamento:",
       error
@@ -1323,19 +1090,16 @@ async function handleTransactionSubmit(event) {
 
     showMessage(
       "transactionMessage",
-      "Não foi possível salvar. Verifique se a tabela transactions possui os campos user_id, type, description, amount, category e date.",
+      "Não foi possível salvar o lançamento. Verifique os campos da tabela transactions no Supabase.",
       "error"
     );
-
   } finally {
-
     setButtonLoading(
       submitButton,
       false,
       "Salvar lançamento"
     );
   }
-
 }
 
 
@@ -1346,7 +1110,6 @@ async function handleTransactionSubmit(event) {
 function openTransactionModal(
   type = "income"
 ) {
-
   editingTransactionId = null;
 
   selectedTransactionType =
@@ -1357,20 +1120,9 @@ function openTransactionModal(
       "transactionForm"
     );
 
-  /*
-    Reseta o formulário antes de preencher
-    os valores padrão.
-  */
-
   if (form) {
     form.reset();
   }
-
-  /*
-    CORREÇÃO:
-    O título precisa existir no HTML como
-    #transactionModalTitle.
-  */
 
   const title =
     document.getElementById(
@@ -1378,7 +1130,6 @@ function openTransactionModal(
     );
 
   if (title) {
-
     title.textContent =
       "Novo lançamento";
   }
@@ -1389,7 +1140,6 @@ function openTransactionModal(
     );
 
   if (typeInput) {
-
     typeInput.value =
       type;
   }
@@ -1400,7 +1150,6 @@ function openTransactionModal(
     );
 
   if (dateInput) {
-
     dateInput.value =
       todayISO();
   }
@@ -1414,12 +1163,10 @@ function openTransactionModal(
   openModal(
     "transactionModal"
   );
-
 }
 
 
 function openEditTransaction(id) {
-
   const transaction =
     transactions.find(
       item =>
@@ -1440,7 +1187,6 @@ function openEditTransaction(id) {
     );
 
   if (title) {
-
     title.textContent =
       "Editar lançamento";
   }
@@ -1451,7 +1197,6 @@ function openEditTransaction(id) {
     );
 
   if (description) {
-
     description.value =
       transaction.description || "";
   }
@@ -1462,7 +1207,6 @@ function openEditTransaction(id) {
     );
 
   if (amount) {
-
     amount.value =
       transaction.amount || "";
   }
@@ -1473,7 +1217,6 @@ function openEditTransaction(id) {
     );
 
   if (type) {
-
     type.value =
       transaction.type || "expense";
   }
@@ -1484,25 +1227,15 @@ function openEditTransaction(id) {
     );
 
   if (date) {
-
     date.value =
       normalizeDate(
         transaction.date
       );
   }
 
-  populateCategorySelect();
-
-  const category =
-    document.getElementById(
-      "transactionCategory"
-    );
-
-  if (category) {
-
-    category.value =
-      transaction.category || "";
-  }
+  populateCategorySelect(
+    transaction.category || ""
+  );
 
   clearMessage(
     "transactionMessage"
@@ -1511,12 +1244,10 @@ function openEditTransaction(id) {
   openModal(
     "transactionModal"
   );
-
 }
 
 
 async function deleteTransaction(id) {
-
   if (
     !currentUser ||
     !supabaseClient
@@ -1533,21 +1264,19 @@ async function deleteTransaction(id) {
   }
 
   try {
-
     const {
       error
-    } =
-      await supabaseClient
-        .from("transactions")
-        .delete()
-        .eq(
-          "id",
-          id
-        )
-        .eq(
-          "user_id",
-          currentUser.id
-        );
+    } = await supabaseClient
+      .from("transactions")
+      .delete()
+      .eq(
+        "id",
+        id
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      );
 
     if (error) {
       throw error;
@@ -1557,14 +1286,13 @@ async function deleteTransaction(id) {
 
     updateDashboard();
     renderTransactions();
+    renderCategories();
     renderReports();
 
     showToast(
       "Lançamento excluído."
     );
-
   } catch (error) {
-
     console.error(
       "Excluir:",
       error
@@ -1574,12 +1302,14 @@ async function deleteTransaction(id) {
       "Não foi possível excluir o lançamento."
     );
   }
-
 }
 
 
-function renderTransactions() {
+/* =========================================================
+   RENDERIZAÇÃO DE LANÇAMENTOS
+========================================================= */
 
+function renderTransactions() {
   const tbody =
     document.getElementById(
       "transactionsTableBody"
@@ -1590,25 +1320,41 @@ function renderTransactions() {
       "transactionsEmpty"
     );
 
-  if (
-    !tbody ||
-    !empty
-  ) {
-    return;
+  if (tbody) {
+    renderTransactionsTable(
+      tbody,
+      empty
+    );
   }
 
-  if (!transactions.length) {
+  const list =
+    document.getElementById(
+      "transactionsList"
+    );
 
+  if (list) {
+    renderTransactionsList(
+      list
+    );
+  }
+}
+
+
+function renderTransactionsTable(
+  tbody,
+  empty
+) {
+  if (!transactions.length) {
     tbody.innerHTML = "";
 
-    empty.classList.remove(
+    empty?.classList.remove(
       "hidden"
     );
 
     return;
   }
 
-  empty.classList.add(
+  empty?.classList.add(
     "hidden"
   );
 
@@ -1616,7 +1362,6 @@ function renderTransactions() {
     transactions
       .map(
         transaction => {
-
           const isIncome =
             transaction.type ===
             "income";
@@ -1661,13 +1406,11 @@ function renderTransactions() {
                   ? "transaction-income"
                   : "transaction-expense"
               }">
-
                 ${
                   isIncome
                     ? "Entrada"
                     : "Saída"
                 }
-
               </td>
 
               <td class="${
@@ -1675,14 +1418,10 @@ function renderTransactions() {
                   ? "transaction-income"
                   : "transaction-expense"
               }">
-
-                ${sign}
-                ${amount}
-
+                ${sign}${amount}
               </td>
 
               <td>
-
                 <button
                   class="table-action"
                   type="button"
@@ -1702,7 +1441,6 @@ function renderTransactions() {
                 >
                   Excluir
                 </button>
-
               </td>
 
             </tr>
@@ -1710,7 +1448,125 @@ function renderTransactions() {
         }
       )
       .join("");
+}
 
+
+function renderTransactionsList(
+  container
+) {
+  if (!transactions.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div>
+          <span>🧾</span>
+          <p>Nenhum lançamento encontrado.</p>
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    transactions
+      .map(
+        transaction => {
+          const isIncome =
+            transaction.type ===
+            "income";
+
+          return `
+            <div class="transaction-item">
+
+              <div class="transaction-main">
+
+                <div class="transaction-icon">
+                  ${
+                    isIncome
+                      ? "↗"
+                      : "↘"
+                  }
+                </div>
+
+                <div class="transaction-info">
+
+                  <strong>
+                    ${escapeHTML(
+                      transaction.description ||
+                      "Sem descrição"
+                    )}
+                  </strong>
+
+                  <span>
+                    ${escapeHTML(
+                      transaction.category ||
+                      "Outros"
+                    )}
+                    •
+                    ${escapeHTML(
+                      formatDate(
+                        transaction.date
+                      )
+                    )}
+                  </span>
+
+                </div>
+
+              </div>
+
+              <div class="transaction-right">
+
+                <div class="transaction-value ${
+                  isIncome
+                    ? "transaction-income"
+                    : "transaction-expense"
+                }">
+
+                  ${
+                    isIncome
+                      ? "+"
+                      : "-"
+                  }
+
+                  ${formatMoney(
+                    transaction.amount
+                  )}
+
+                </div>
+
+                <div class="transaction-actions">
+
+                  <button
+                    class="icon-button"
+                    type="button"
+                    title="Editar"
+                    onclick="openEditTransaction('${escapeAttribute(
+                      transaction.id
+                    )}')"
+                  >
+                    ✏️
+                  </button>
+
+                  <button
+                    class="icon-button"
+                    type="button"
+                    title="Excluir"
+                    onclick="deleteTransaction('${escapeAttribute(
+                      transaction.id
+                    )}')"
+                  >
+                    🗑️
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+          `;
+        }
+      )
+      .join("");
 }
 
 
@@ -1719,9 +1575,7 @@ function renderTransactions() {
 ========================================================= */
 
 function getCustomCategories() {
-
   try {
-
     const saved =
       JSON.parse(
         localStorage.getItem(
@@ -1732,17 +1586,13 @@ function getCustomCategories() {
     return Array.isArray(saved)
       ? saved
       : [];
-
   } catch {
-
     return [];
   }
-
 }
 
 
 function getAllCategories() {
-
   const fromTransactions =
     transactions
       .map(
@@ -1764,14 +1614,12 @@ function getAllCategories() {
         "pt-BR"
       )
   );
-
 }
 
 
 function populateCategorySelect(
   selected = ""
 ) {
-
   const select =
     document.getElementById(
       "transactionCategory"
@@ -1800,16 +1648,15 @@ function populateCategorySelect(
       .join("");
 
   if (selected) {
-
     select.value =
       selected;
   }
-
 }
 
 
-function handleCategorySubmit(event) {
-
+function handleCategorySubmit(
+  event
+) {
   event.preventDefault();
 
   const name =
@@ -1823,7 +1670,6 @@ function handleCategorySubmit(event) {
       );
 
   if (name.length < 2) {
-
     showMessage(
       "categoryMessage",
       "Digite um nome válido.",
@@ -1847,7 +1693,6 @@ function handleCategorySubmit(event) {
     );
 
   if (alreadyExists) {
-
     showMessage(
       "categoryMessage",
       "Essa categoria já existe.",
@@ -1885,12 +1730,10 @@ function handleCategorySubmit(event) {
   showToast(
     "Categoria criada."
   );
-
 }
 
 
 function renderCategories() {
-
   const grid =
     document.getElementById(
       "categoriesGrid"
@@ -1907,7 +1750,6 @@ function renderCategories() {
     categories
       .map(
         category => {
-
           const count =
             transactions.filter(
               item =>
@@ -1942,7 +1784,6 @@ function renderCategories() {
         }
       )
       .join("");
-
 }
 
 
@@ -1951,13 +1792,11 @@ function renderCategories() {
 ========================================================= */
 
 function getTotals() {
-
   return transactions.reduce(
     (
       totals,
       transaction
     ) => {
-
       const amount =
         Number(
           transaction.amount
@@ -1967,30 +1806,24 @@ function getTotals() {
         transaction.type ===
         "income"
       ) {
-
         totals.income +=
           amount;
-
       } else {
-
         totals.expense +=
           amount;
       }
 
       return totals;
-
     },
     {
       income: 0,
       expense: 0
     }
   );
-
 }
 
 
 function updateDashboard() {
-
   const {
     income,
     expense
@@ -2022,14 +1855,11 @@ function updateDashboard() {
   );
 
   renderFinanceChart();
-
   renderRecentTransactions();
-
 }
 
 
 function renderRecentTransactions() {
-
   const container =
     document.getElementById(
       "recentTransactions"
@@ -2043,10 +1873,10 @@ function renderRecentTransactions() {
     [...transactions]
       .sort(
         (a, b) =>
-          new Date(
+          parseDate(
             b.date
           ) -
-          new Date(
+          parseDate(
             a.date
           )
       )
@@ -2056,20 +1886,12 @@ function renderRecentTransactions() {
       );
 
   if (!recent.length) {
-
     container.innerHTML = `
       <div class="empty-state">
-
         <div>
-
           <span>🧾</span>
-
-          <p>
-            Nenhum lançamento recente.
-          </p>
-
+          <p>Nenhum lançamento recente.</p>
         </div>
-
       </div>
     `;
 
@@ -2080,7 +1902,6 @@ function renderRecentTransactions() {
     recent
       .map(
         item => {
-
           const isIncome =
             item.type ===
             "income";
@@ -2102,9 +1923,7 @@ function renderRecentTransactions() {
                     item.category ||
                     "Outros"
                   )}
-
                   •
-
                   ${escapeHTML(
                     formatDate(
                       item.date
@@ -2137,7 +1956,6 @@ function renderRecentTransactions() {
         }
       )
       .join("");
-
 }
 
 
@@ -2146,7 +1964,6 @@ function renderRecentTransactions() {
 ========================================================= */
 
 function renderFinanceChart() {
-
   const canvas =
     document.getElementById(
       "financeChart"
@@ -2164,7 +1981,6 @@ function renderFinanceChart() {
     getMonthlyData(6);
 
   if (financeChart) {
-
     financeChart.destroy();
   }
 
@@ -2172,17 +1988,13 @@ function renderFinanceChart() {
     new Chart(
       canvas.getContext("2d"),
       {
-
-        type:
-          "bar",
+        type: "bar",
 
         data: {
-
           labels:
             data.labels,
 
           datasets: [
-
             {
               label:
                 "Entradas",
@@ -2216,12 +2028,10 @@ function renderFinanceChart() {
               maxBarThickness:
                 28
             }
-
           ]
         },
 
         options: {
-
           responsive:
             true,
 
@@ -2229,33 +2039,26 @@ function renderFinanceChart() {
             false,
 
           interaction: {
-
             mode:
               "index",
 
             intersect:
               false
-
           },
 
           plugins: {
-
             legend: {
-
               position:
                 "bottom"
             }
           },
 
           scales: {
-
             y: {
-
               beginAtZero:
                 true,
 
               ticks: {
-
                 callback:
                   value =>
                     formatCompactMoney(
@@ -2267,14 +2070,12 @@ function renderFinanceChart() {
         }
       }
     );
-
 }
 
 
 function getMonthlyData(
   monthCount = 6
 ) {
-
   const now =
     new Date();
 
@@ -2285,12 +2086,9 @@ function getMonthlyData(
   for (
     let index =
       monthCount - 1;
-
     index >= 0;
-
     index--
   ) {
-
     const date =
       new Date(
         now.getFullYear(),
@@ -2328,7 +2126,6 @@ function getMonthlyData(
 
     transactions.forEach(
       transaction => {
-
         const transactionDate =
           parseDate(
             transaction.date
@@ -2340,7 +2137,6 @@ function getMonthlyData(
           transactionDate.getMonth() ===
             month
         ) {
-
           const amount =
             Number(
               transaction.amount
@@ -2350,12 +2146,9 @@ function getMonthlyData(
             transaction.type ===
             "income"
           ) {
-
             monthIncome +=
               amount;
-
           } else {
-
             monthExpense +=
               amount;
           }
@@ -2377,7 +2170,6 @@ function getMonthlyData(
     income,
     expense
   };
-
 }
 
 
@@ -2386,7 +2178,6 @@ function getMonthlyData(
 ========================================================= */
 
 function renderReports() {
-
   const {
     income,
     expense
@@ -2397,49 +2188,30 @@ function renderReports() {
     income - expense;
 
   const ids = [
-
     [
       "reportIncome",
-      formatMoney(
-        income
-      )
+      formatMoney(income)
     ],
-
     [
       "reportExpense",
-      formatMoney(
-        expense
-      )
+      formatMoney(expense)
     ],
-
     [
       "reportBalance",
-      formatMoney(
-        balance
-      )
+      formatMoney(balance)
     ],
-
     [
       "reportIncomeCard",
-      formatMoney(
-        income
-      )
+      formatMoney(income)
     ],
-
     [
       "reportExpenseCard",
-      formatMoney(
-        expense
-      )
+      formatMoney(expense)
     ],
-
     [
       "reportBalanceCard",
-      formatMoney(
-        balance
-      )
+      formatMoney(balance)
     ]
-
   ];
 
   ids.forEach(
@@ -2451,14 +2223,11 @@ function renderReports() {
   );
 
   renderCategoryChart();
-
   renderPremiumReport();
-
 }
 
 
 function renderCategoryChart() {
-
   const canvas =
     document.getElementById(
       "categoryChart"
@@ -2482,7 +2251,6 @@ function renderCategoryChart() {
     )
     .forEach(
       item => {
-
         const category =
           item.category ||
           "Outros";
@@ -2498,7 +2266,6 @@ function renderCategoryChart() {
               item.amount
             ) || 0
           );
-
       }
     );
 
@@ -2513,7 +2280,6 @@ function renderCategoryChart() {
     );
 
   if (categoryChart) {
-
     categoryChart.destroy();
   }
 
@@ -2521,19 +2287,16 @@ function renderCategoryChart() {
     new Chart(
       canvas.getContext("2d"),
       {
-
         type:
           "doughnut",
 
         data: {
-
           labels:
             labels.length
               ? labels
               : ["Sem despesas"],
 
           datasets: [
-
             {
               data:
                 values.length
@@ -2541,7 +2304,6 @@ function renderCategoryChart() {
                   : [1],
 
               backgroundColor: [
-
                 "#123c2b",
                 "#e88732",
                 "#26845a",
@@ -2553,18 +2315,15 @@ function renderCategoryChart() {
                 "#16a34a",
                 "#dc2626",
                 "#475569"
-
               ],
 
               borderWidth:
                 0
             }
-
           ]
         },
 
         options: {
-
           responsive:
             true,
 
@@ -2575,9 +2334,7 @@ function renderCategoryChart() {
             "66%",
 
           plugins: {
-
             legend: {
-
               position:
                 "bottom"
             }
@@ -2585,12 +2342,10 @@ function renderCategoryChart() {
         }
       }
     );
-
 }
 
 
 function renderPremiumReport() {
-
   const container =
     document.getElementById(
       "premiumReportContent"
@@ -2607,11 +2362,8 @@ function renderPremiumReport() {
     getTotals();
 
   if (!transactions.length) {
-
     container.innerHTML = `
-
       <div class="report-row">
-
         <span>
           📑 Gráfico de distribuição
         </span>
@@ -2619,11 +2371,9 @@ function renderPremiumReport() {
         <strong>
           Adicione lançamentos
         </strong>
-
       </div>
 
       <div class="report-row">
-
         <span>
           📄 Análise por categoria
         </span>
@@ -2631,9 +2381,7 @@ function renderPremiumReport() {
         <strong>
           Aguardando dados
         </strong>
-
       </div>
-
     `;
 
     return;
@@ -2657,9 +2405,7 @@ function renderPremiumReport() {
       )[0];
 
   container.innerHTML = `
-
     <div class="report-row">
-
       <span>
         📑 Total movimentado
       </span>
@@ -2669,11 +2415,9 @@ function renderPremiumReport() {
           income + expense
         )}
       </strong>
-
     </div>
 
     <div class="report-row">
-
       <span>
         📄 Maior despesa
       </span>
@@ -2688,11 +2432,9 @@ function renderPremiumReport() {
             : "—"
         }
       </strong>
-
     </div>
 
     <div class="report-row report-total">
-
       <span>
         💰 Saldo
       </span>
@@ -2702,11 +2444,8 @@ function renderPremiumReport() {
           income - expense
         )}
       </strong>
-
     </div>
-
   `;
-
 }
 
 
@@ -2715,7 +2454,6 @@ function renderPremiumReport() {
 ========================================================= */
 
 function isPremiumActive() {
-
   if (!subscription) {
     return false;
   }
@@ -2726,30 +2464,22 @@ function isPremiumActive() {
       ""
     ).toLowerCase();
 
-  const validStatus =
-    [
-      "active",
-      "trialing",
-      "premium"
-    ].includes(
-      status
-    );
+  const validStatus = [
+    "active",
+    "trialing",
+    "premium"
+  ].includes(
+    status
+  );
 
   if (!validStatus) {
     return false;
   }
 
-  /*
-    CORREÇÃO:
-    Se o período Premium terminou,
-    ele deixa de ser considerado ativo.
-  */
-
   const periodEnd =
     subscription.current_period_end;
 
   if (periodEnd) {
-
     const end =
       new Date(
         periodEnd
@@ -2762,18 +2492,15 @@ function isPremiumActive() {
       end.getTime() <=
         Date.now()
     ) {
-
       return false;
     }
   }
 
   return true;
-
 }
 
 
 function renderPremiumState() {
-
   const button =
     document.getElementById(
       "activatePremiumBtn"
@@ -2784,33 +2511,27 @@ function renderPremiumState() {
   }
 
   if (isPremiumActive()) {
-
     button.textContent =
       "⭐ Premium ativo";
 
     button.disabled =
       true;
-
   } else {
-
     button.textContent =
       "⭐ Ativar Premium";
 
     button.disabled =
       false;
   }
-
 }
 
 
 function openPremiumModal() {
-
   clearMessage(
     "premiumMessage"
   );
 
   if (isPremiumActive()) {
-
     showMessage(
       "premiumMessage",
       "Seu Premium já está ativo.",
@@ -2821,12 +2542,20 @@ function openPremiumModal() {
   openModal(
     "premiumModal"
   );
-
 }
 
 
-async function activatePremium() {
+/*
+  ATENÇÃO:
+  Esta função mantém a ativação automática
+  somente para TESTES.
 
+  Antes de publicar a versão final,
+  ela deve ser substituída por uma validação
+  de pagamento real.
+*/
+
+async function activatePremium() {
   if (
     !currentUser ||
     !supabaseClient
@@ -2846,21 +2575,17 @@ async function activatePremium() {
   );
 
   try {
-
     const start =
       new Date();
 
     const end =
-      new Date(
-        start
-      );
+      new Date(start);
 
     end.setDate(
       end.getDate() + 7
     );
 
     const payload = {
-
       user_id:
         currentUser.id,
 
@@ -2878,7 +2603,6 @@ async function activatePremium() {
 
       current_period_end:
         end.toISOString()
-
     };
 
     const {
@@ -2915,9 +2639,7 @@ async function activatePremium() {
     showToast(
       "Seu teste Premium de 7 dias foi ativado."
     );
-
   } catch (error) {
-
     console.error(
       "Premium:",
       error
@@ -2925,19 +2647,16 @@ async function activatePremium() {
 
     showMessage(
       "premiumMessage",
-      "Não foi possível ativar o Premium agora. Verifique a estrutura da tabela subscriptions no Supabase.",
+      "Não foi possível ativar o Premium agora. Verifique a tabela subscriptions no Supabase.",
       "error"
     );
-
   } finally {
-
     setButtonLoading(
       button,
       false,
       "Começar 7 dias grátis"
     );
   }
-
 }
 
 
@@ -2945,8 +2664,9 @@ async function activatePremium() {
    METAS
 ========================================================= */
 
-async function handleGoalSubmit(event) {
-
+async function handleGoalSubmit(
+  event
+) {
   event.preventDefault();
 
   if (
@@ -2961,11 +2681,23 @@ async function handleGoalSubmit(event) {
       "goalName"
     ).trim();
 
+  /*
+    Compatibilidade:
+    Algumas versões usam goalAmount.
+    A versão atual pode usar goalTarget.
+  */
+
+  const amountField =
+    document.getElementById(
+      "goalAmount"
+    ) ||
+    document.getElementById(
+      "goalTarget"
+    );
+
   const amount =
     Number(
-      valueOf(
-        "goalAmount"
-      )
+      amountField?.value || 0
     );
 
   if (
@@ -2973,7 +2705,6 @@ async function handleGoalSubmit(event) {
     !amount ||
     amount <= 0
   ) {
-
     showMessage(
       "goalMessage",
       "Preencha os dados da meta corretamente.",
@@ -2995,14 +2726,12 @@ async function handleGoalSubmit(event) {
   );
 
   try {
-
     const {
       error
     } =
       await supabaseClient
         .from("goals")
         .insert({
-
           user_id:
             currentUser.id,
 
@@ -3010,7 +2739,6 @@ async function handleGoalSubmit(event) {
 
           target_amount:
             amount
-
         });
 
     if (error) {
@@ -3029,12 +2757,12 @@ async function handleGoalSubmit(event) {
       "goalModal"
     );
 
+    renderGoals();
+
     showToast(
       "Meta criada."
     );
-
   } catch (error) {
-
     console.error(
       "Meta:",
       error
@@ -3045,16 +2773,120 @@ async function handleGoalSubmit(event) {
       "Não foi possível criar a meta. Verifique a tabela goals no Supabase.",
       "error"
     );
-
   } finally {
-
     setButtonLoading(
       button,
       false,
       "Criar meta"
     );
   }
+}
 
+
+function renderGoals() {
+  const container =
+    document.getElementById(
+      "goalsGrid"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  if (!goals.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div>
+          <span>🎯</span>
+          <p>Nenhuma meta cadastrada.</p>
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    goals
+      .map(
+        goal => {
+          const target =
+            Number(
+              goal.target_amount ??
+              goal.target ??
+              0
+            );
+
+          const current =
+            Number(
+              goal.current_amount ??
+              goal.current ??
+              0
+            );
+
+          const percentage =
+            target > 0
+              ? Math.min(
+                  100,
+                  Math.max(
+                    0,
+                    (current /
+                      target) *
+                      100
+                  )
+                )
+              : 0;
+
+          return `
+            <div class="goal-card">
+
+              <div class="goal-header">
+
+                <h3>
+                  ${escapeHTML(
+                    goal.name ||
+                    "Meta"
+                  )}
+                </h3>
+
+                <strong>
+                  ${percentage.toFixed(
+                    0
+                  )}%
+                </strong>
+
+              </div>
+
+              <div class="goal-progress">
+
+                <div
+                  class="goal-progress-bar"
+                  style="width:${percentage}%"
+                ></div>
+
+              </div>
+
+              <div class="goal-values">
+
+                <span>
+                  ${formatMoney(
+                    current
+                  )}
+                </span>
+
+                <span>
+                  ${formatMoney(
+                    target
+                  )}
+                </span>
+
+              </div>
+
+            </div>
+          `;
+        }
+      )
+      .join("");
 }
 
 
@@ -3065,10 +2897,16 @@ async function handleGoalSubmit(event) {
 function showSection(
   sectionName
 ) {
+  /*
+    Suporta tanto:
+    .app-section
+    quanto:
+    .content-section
+  */
 
   const sections =
     document.querySelectorAll(
-      ".app-section"
+      ".app-section, .content-section"
     );
 
   const navItems =
@@ -3078,7 +2916,6 @@ function showSection(
 
   sections.forEach(
     section => {
-
       const active =
         section.id ===
         `${sectionName}Section`;
@@ -3089,29 +2926,43 @@ function showSection(
       );
 
       section.classList.toggle(
-        "hidden",
-        !active
+        "active",
+        active
       );
 
+      /*
+        Só usa hidden quando a classe
+        realmente é necessária.
+      */
+
+      if (
+        section.classList.contains(
+          "app-section"
+        )
+      ) {
+        section.classList.toggle(
+          "hidden",
+          !active
+        );
+      }
     }
   );
 
   navItems.forEach(
     item => {
+      const itemSection =
+        item.dataset.section ||
+        item.getAttribute(
+          "data-section"
+        );
 
       item.classList.toggle(
         "active",
-        item.dataset.section ===
+        itemSection ===
           sectionName
       );
-
     }
   );
-
-  /*
-    Ao navegar pelo menu no celular,
-    fecha o menu lateral.
-  */
 
   document
     .getElementById(
@@ -3140,7 +2991,6 @@ function showSection(
     sectionName ===
     "reports"
   ) {
-
     renderReports();
   }
 
@@ -3148,10 +2998,60 @@ function showSection(
     sectionName ===
     "categories"
   ) {
-
     renderCategories();
   }
 
+  if (
+    sectionName ===
+    "dashboard"
+  ) {
+    updateDashboard();
+  }
+
+  if (
+    sectionName ===
+    "goals"
+  ) {
+    renderGoals();
+  }
+}
+
+
+/* =========================================================
+   MENU MOBILE
+========================================================= */
+
+function toggleMobileMenu() {
+  const sidebar =
+    document.getElementById(
+      "sidebar"
+    );
+
+  const button =
+    document.getElementById(
+      "mobileMenuBtn"
+    );
+
+  if (!sidebar) {
+    return;
+  }
+
+  const opened =
+    sidebar.classList.toggle(
+      "mobile-open"
+    );
+
+  button?.setAttribute(
+    "aria-expanded",
+    String(opened)
+  );
+
+  button?.setAttribute(
+    "aria-label",
+    opened
+      ? "Fechar menu"
+      : "Abrir menu"
+  );
 }
 
 
@@ -3160,7 +3060,6 @@ function showSection(
 ========================================================= */
 
 function setupEvents() {
-
   /*
     LOGIN
   */
@@ -3190,7 +3089,7 @@ function setupEvents() {
 
 
   /*
-    CRIAR CONTA
+    BOTÃO CRIAR CONTA
   */
 
   document
@@ -3200,10 +3099,488 @@ function setupEvents() {
     ?.addEventListener(
       "click",
       event => {
-
         event.preventDefault();
-
         showRegister();
-
       }
     );
+
+
+  /*
+    VOLTAR PARA LOGIN
+  */
+
+  document
+    .getElementById(
+      "backToLoginBtn"
+    )
+    ?.addEventListener(
+      "click",
+      event => {
+        event.preventDefault();
+        showLoginForm();
+      }
+    );
+
+
+  /*
+    LANÇAMENTOS
+  */
+
+  document
+    .getElementById(
+      "transactionForm"
+    )
+    ?.addEventListener(
+      "submit",
+      handleTransactionSubmit
+    );
+
+
+  /*
+    CATEGORIAS
+  */
+
+  document
+    .getElementById(
+      "categoryForm"
+    )
+    ?.addEventListener(
+      "submit",
+      handleCategorySubmit
+    );
+
+
+  /*
+    METAS
+  */
+
+  document
+    .getElementById(
+      "goalForm"
+    )
+    ?.addEventListener(
+      "submit",
+      handleGoalSubmit
+    );
+
+
+  /*
+    PREMIUM
+  */
+
+  document
+    .getElementById(
+      "confirmPremiumBtn"
+    )
+    ?.addEventListener(
+      "click",
+      activatePremium
+    );
+
+
+  /*
+    BOTÃO PREMIUM
+  */
+
+  document
+    .getElementById(
+      "activatePremiumBtn"
+    )
+    ?.addEventListener(
+      "click",
+      openPremiumModal
+    );
+
+
+  /*
+    BOTÃO NOVO LANÇAMENTO
+  */
+
+  document
+    .getElementById(
+      "addTransactionBtn"
+    )
+    ?.addEventListener(
+      "click",
+      () =>
+        openTransactionModal(
+          "income"
+        )
+    );
+
+
+  /*
+    BOTÃO ADICIONAR CATEGORIA
+  */
+
+  document
+    .getElementById(
+      "addCategoryBtn"
+    )
+    ?.addEventListener(
+      "click",
+      openCategoryModal
+    );
+
+
+  /*
+    BOTÃO ADICIONAR META
+  */
+
+  document
+    .getElementById(
+      "addGoalBtn"
+    )
+    ?.addEventListener(
+      "click",
+      openGoalModal
+    );
+
+
+  /*
+    LOGOUT
+  */
+
+  document
+    .getElementById(
+      "logoutBtn"
+    )
+    ?.addEventListener(
+      "click",
+      logout
+    );
+
+
+  /*
+    TEMA
+  */
+
+  document
+    .getElementById(
+      "themeBtn"
+    )
+    ?.addEventListener(
+      "click",
+      toggleTheme
+    );
+
+
+  /*
+    MENU MOBILE
+  */
+
+  document
+    .getElementById(
+      "mobileMenuBtn"
+    )
+    ?.addEventListener(
+      "click",
+      toggleMobileMenu
+    );
+
+
+  /*
+    NAVEGAÇÃO DOS ITENS DO MENU
+  */
+
+  document
+    .querySelectorAll(
+      ".nav-item"
+    )
+    .forEach(
+      item => {
+        item.addEventListener(
+          "click",
+          event => {
+            event.preventDefault();
+
+            const section =
+              item.dataset.section;
+
+            if (section) {
+              showSection(
+                section
+              );
+            }
+          }
+        );
+      }
+    );
+
+
+  /*
+    BOTÕES DE NOVA RECEITA
+  */
+
+  document
+    .querySelectorAll(
+      "[data-action='add-income']"
+    )
+    .forEach(
+      button => {
+        button.addEventListener(
+          "click",
+          () =>
+            openTransactionModal(
+              "income"
+            )
+        );
+      }
+    );
+
+
+  /*
+    BOTÕES DE NOVA DESPESA
+  */
+
+  document
+    .querySelectorAll(
+      "[data-action='add-expense']"
+    )
+    .forEach(
+      button => {
+        button.addEventListener(
+          "click",
+          () =>
+            openTransactionModal(
+              "expense"
+            )
+        );
+      }
+    );
+
+
+  /*
+    BOTÕES COM data-section
+  */
+
+  document
+    .querySelectorAll(
+      "[data-section]"
+    )
+    .forEach(
+      element => {
+        if (
+          element.classList.contains(
+            "nav-item"
+          )
+        ) {
+          return;
+        }
+
+        element.addEventListener(
+          "click",
+          event => {
+            const section =
+              element.dataset.section;
+
+            if (!section) {
+              return;
+            }
+
+            event.preventDefault();
+
+            showSection(
+              section
+            );
+          }
+        );
+      }
+    );
+
+
+  /*
+    FECHAR MODAIS
+  */
+
+  document
+    .querySelectorAll(
+      "[data-close-modal]"
+    )
+    .forEach(
+      button => {
+        button.addEventListener(
+          "click",
+          event => {
+            event.preventDefault();
+
+            const modalId =
+              button.dataset.closeModal;
+
+            if (modalId) {
+              closeModal(
+                modalId
+              );
+            }
+          }
+        );
+      }
+    );
+
+
+  /*
+    BOTÕES .modal-close
+  */
+
+  document
+    .querySelectorAll(
+      ".modal-close"
+    )
+    .forEach(
+      button => {
+        button.addEventListener(
+          "click",
+          event => {
+            event.preventDefault();
+
+            const modal =
+              button.closest(
+                ".modal"
+              );
+
+            if (modal) {
+              closeModal(
+                modal.id
+              );
+            }
+          }
+        );
+      }
+    );
+
+
+  /*
+    FECHAR CLICANDO NO FUNDO
+  */
+
+  document
+    .querySelectorAll(
+      ".modal"
+    )
+    .forEach(
+      modal => {
+        modal.addEventListener(
+          "click",
+          event => {
+            if (
+              event.target ===
+              modal
+            ) {
+              closeModal(
+                modal.id
+              );
+            }
+          }
+        );
+      }
+    );
+
+
+  /*
+    ESC FECHA MODAIS
+  */
+
+  document.addEventListener(
+    "keydown",
+    event => {
+      if (
+        event.key !==
+        "Escape"
+      ) {
+        return;
+      }
+
+      document
+        .querySelectorAll(
+          ".modal"
+        )
+        .forEach(
+          modal => {
+            if (
+              !modal.classList.contains(
+                "hidden"
+              )
+            ) {
+              closeModal(
+                modal.id
+              );
+            }
+          }
+        );
+    }
+  );
+
+
+  /*
+    FILTRO DE TRANSAÇÕES
+  */
+
+  document
+    .getElementById(
+      "transactionFilter"
+    )
+    ?.addEventListener(
+      "change",
+      applyTransactionFilters
+    );
+
+  document
+    .getElementById(
+      "typeFilter"
+    )
+    ?.addEventListener(
+      "change",
+      applyTransactionFilters
+    );
+
+  document
+    .getElementById(
+      "categoryFilter"
+    )
+    ?.addEventListener(
+      "change",
+      applyTransactionFilters
+    );
+
+
+  /*
+    PESQUISA DE TRANSAÇÕES
+  */
+
+  document
+    .getElementById(
+      "transactionSearch"
+    )
+    ?.addEventListener(
+      "input",
+      applyTransactionFilters
+    );
+
+
+  /*
+    BOTÕES EXPLÍCITOS DE RECEITA/DESPESA
+  */
+
+  document
+    .querySelectorAll(
+      "[data-transaction-type]"
+    )
+    .forEach(
+      button => {
+        button.addEventListener(
+          "click",
+          () => {
+            const type =
+              button.dataset.transactionType;
+
+            if (
+              type ===
+                "income" ||
+              type ===
+                "expense"
+            ) {
+              openTransactionModal(
+                type
+              );
+            }
+         
