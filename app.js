@@ -1122,8 +1122,7 @@ async function saveTransaction(event) {
   /*
     IMPORTANTE:
     A tabela "transactions" não possui a coluna "notes".
-    Por isso, o campo de observações continua disponível
-    na interface, mas não é enviado ao Supabase.
+    Por isso, não enviamos "notes" para o Supabase.
   */
 
   const payload = {
@@ -3658,7 +3657,7 @@ function setupEvents() {
 
             input.type =
               input.type ===
-              "password"
+                "password"
                 ? "text"
                 : "password";
 
@@ -3948,4 +3947,538 @@ function setDefaultDate() {
 
 function todayISO() {
 
-  const
+  const d =
+    new Date();
+
+
+  const local =
+    new Date(
+      d.getTime() -
+      d.getTimezoneOffset() *
+        60000
+    );
+
+
+  return local
+    .toISOString()
+    .slice(
+      0,
+      10
+    );
+}
+
+
+/* =========================================================
+   NORMALIZAR DATA
+========================================================= */
+
+function normalizeDate(
+  value
+) {
+
+  if (!value) {
+    return "";
+  }
+
+
+  const text =
+    String(value);
+
+
+  return text.length >= 10
+    ? text.slice(0, 10)
+    : "";
+}
+
+
+/* =========================================================
+   CONVERTER DATA
+========================================================= */
+
+function parseDate(
+  value
+) {
+
+  if (!value) {
+    return null;
+  }
+
+
+  const date =
+    new Date(
+      `${normalizeDate(
+        value
+      )}T12:00:00`
+    );
+
+
+  return Number.isNaN(
+    date.getTime()
+  )
+    ? null
+    : date;
+}
+
+
+/* =========================================================
+   FORMATAR DATA
+========================================================= */
+
+function formatDate(
+  value
+) {
+
+  const date =
+    parseDate(
+      value
+    );
+
+
+  return date
+    ? date.toLocaleDateString(
+        "pt-BR"
+      )
+    : "—";
+}
+
+
+/* =========================================================
+   FORMATAR DINHEIRO
+========================================================= */
+
+function formatMoney(
+  value
+) {
+
+  return Number(
+    value || 0
+  ).toLocaleString(
+    "pt-BR",
+    {
+      style:
+        "currency",
+
+      currency:
+        "BRL"
+    }
+  );
+}
+
+
+/* =========================================================
+   FORMATAR DINHEIRO COMPACTO
+========================================================= */
+
+function formatCompactMoney(
+  value
+) {
+
+  const n =
+    Number(
+      value || 0
+    );
+
+
+  if (
+    Math.abs(n) >=
+    1000000
+  ) {
+
+    return `R$ ${
+      (n / 1000000)
+        .toFixed(1)
+    } mi`;
+  }
+
+
+  if (
+    Math.abs(n) >=
+    1000
+  ) {
+
+    return `R$ ${
+      (n / 1000)
+        .toFixed(1)
+    } mil`;
+  }
+
+
+  return `R$ ${
+    n.toFixed(0)
+  }`;
+}
+
+
+/* =========================================================
+   VALIDAR E-MAIL
+========================================================= */
+
+function isValidEmail(
+  email
+) {
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    .test(email);
+}
+
+
+/* =========================================================
+   ERROS DE AUTENTICAÇÃO
+========================================================= */
+
+function friendlyAuthError(
+  error
+) {
+
+  const message =
+    String(
+      error?.message ||
+      ""
+    ).toLowerCase();
+
+
+  if (
+    message.includes(
+      "invalid login credentials"
+    )
+  ) {
+
+    return (
+      "E-mail ou senha incorretos."
+    );
+  }
+
+
+  if (
+    message.includes(
+      "user already registered"
+    )
+  ) {
+
+    return (
+      "Este e-mail já está cadastrado."
+    );
+  }
+
+
+  if (
+    message.includes(
+      "email not confirmed"
+    )
+  ) {
+
+    return (
+      "Confirme seu e-mail antes de entrar."
+    );
+  }
+
+
+  if (
+    message.includes(
+      "password"
+    )
+  ) {
+
+    return (
+      "A senha informada não é válida."
+    );
+  }
+
+
+  if (
+    message.includes(
+      "rate limit"
+    )
+  ) {
+
+    return (
+      "Muitas tentativas. Aguarde um pouco e tente novamente."
+    );
+  }
+
+
+  return (
+    error?.message ||
+    "Não foi possível concluir a operação."
+  );
+}
+
+
+/* =========================================================
+   ERROS DO BANCO
+========================================================= */
+
+function databaseError(
+  error,
+  fallback
+) {
+
+  if (
+    error?.code ===
+    "23505"
+  ) {
+
+    return (
+      "Este registro já existe."
+    );
+  }
+
+
+  return (
+    error?.message ||
+    fallback
+  );
+}
+
+
+/* =========================================================
+   LIMPAR MENSAGEM
+========================================================= */
+
+function clearMessage(
+  id
+) {
+
+  const el =
+    $(id);
+
+
+  if (!el) {
+    return;
+  }
+
+
+  el.textContent =
+    "";
+
+
+  el.classList.remove(
+    "success"
+  );
+}
+
+
+/* =========================================================
+   MOSTRAR MENSAGEM
+========================================================= */
+
+function showMessage(
+  id,
+  message,
+  success = false
+) {
+
+  const el =
+    $(id);
+
+
+  if (!el) {
+    return;
+  }
+
+
+  el.textContent =
+    message;
+
+
+  el.classList.toggle(
+    "success",
+    success
+  );
+}
+
+
+/* =========================================================
+   LOADING DO BOTÃO
+========================================================= */
+
+function setButtonLoading(
+  button,
+  loading,
+  text
+) {
+
+  if (!button) {
+    return;
+  }
+
+
+  if (loading) {
+
+    button.dataset
+      .originalText =
+      button.textContent;
+
+
+    button.disabled =
+      true;
+
+
+    button.textContent =
+      text;
+
+
+  } else {
+
+    button.disabled =
+      false;
+
+
+    button.textContent =
+      text ||
+      button.dataset
+        .originalText ||
+      "Salvar";
+  }
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(
+  message
+) {
+
+  const toast =
+    $("toast");
+
+
+  if (!toast) {
+    return;
+  }
+
+
+  clearTimeout(
+    toastTimer
+  );
+
+
+  toast.textContent =
+    message;
+
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  toastTimer =
+    setTimeout(
+      () =>
+        toast.classList.remove(
+          "show"
+        ),
+      3000
+    );
+}
+
+
+/* =========================================================
+   SEGURANÇA HTML
+========================================================= */
+
+function escapeHTML(
+  value
+) {
+
+  return String(
+    value ?? ""
+  ).replace(
+    /[&<>"']/g,
+    char => ({
+
+      "&":
+        "&amp;",
+
+      "<":
+        "&lt;",
+
+      ">":
+        "&gt;",
+
+      '"':
+        "&quot;",
+
+      "'":
+        "&#039;"
+
+    }[char])
+  );
+}
+
+
+function escapeAttribute(
+  value
+) {
+
+  return escapeHTML(
+    value
+  );
+}
+
+
+/* =========================================================
+   DESTRUIR GRÁFICOS
+========================================================= */
+
+function destroyCharts() {
+
+  if (financeChart) {
+
+    financeChart.destroy();
+
+    financeChart = null;
+  }
+
+
+  if (categoryChart) {
+
+    categoryChart.destroy();
+
+    categoryChart = null;
+  }
+}
+
+
+/* =========================================================
+   TEMA
+========================================================= */
+
+function loadTheme() {
+
+  const theme =
+    localStorage.getItem(
+      "controles_theme"
+    );
+
+
+  if (
+    theme ===
+    "dark"
+  ) {
+
+    document.body.classList.add(
+      "dark"
+    );
+  }
+}
+
+
+function toggleTheme() {
+
+  document.body.classList.toggle(
+    "dark"
+  );
+
+
+  localStorage.setItem(
+    "controles_theme",
+    document.body.classList.contains(
+      "dark"
+    )
+      ? "dark"
+      : "light"
+  );
+}
