@@ -86,21 +86,6 @@ const valueOf = id =>
    NORMALIZAR TIPO DO LANÇAMENTO
 ========================================================= */
 
-/*
-  O banco de dados usa:
-
-  receita
-  despesa
-
-  O aplicativo usa internamente:
-
-  income
-  expense
-
-  Esta função converte qualquer um dos formatos
-  para o formato interno do aplicativo.
-*/
-
 function normalizeTransactionType(type) {
 
   const value =
@@ -134,18 +119,6 @@ function normalizeTransactionType(type) {
 /* =========================================================
    CONVERTER TIPO PARA O SUPABASE
 ========================================================= */
-
-/*
-  O banco aceita SOMENTE:
-
-  receita
-  despesa
-
-  Portanto:
-
-  income  -> receita
-  expense -> despesa
-*/
 
 function databaseTransactionType(type) {
 
@@ -957,23 +930,6 @@ async function loadTransactions() {
     }
 
 
-    /*
-      CORREÇÃO:
-
-      O Supabase retorna:
-
-      receita
-      despesa
-
-      O aplicativo usa:
-
-      income
-      expense
-
-      Aqui convertemos os valores do banco
-      para o padrão interno do aplicativo.
-    */
-
     transactions =
       (data || []).map(
         transaction => ({
@@ -1006,6 +962,14 @@ async function loadGoals() {
   goals = [];
 
 
+  if (
+    !currentUser ||
+    !supabaseClient
+  ) {
+    return;
+  }
+
+
   try {
 
     const {
@@ -1032,8 +996,39 @@ async function loadGoals() {
     }
 
 
+    /*
+      A tabela goals usa:
+
+      id
+      user_id
+      name
+      target
+      saved
+      created_at
+
+      Portanto não usamos:
+
+      target_amount
+      current_amount
+      deadline
+    */
+
     goals =
-      data || [];
+      (data || []).map(
+        goal => ({
+          ...goal,
+
+          target:
+            Number(
+              goal.target
+            ) || 0,
+
+          saved:
+            Number(
+              goal.saved
+            ) || 0
+        })
+      );
 
 
   } catch (error) {
@@ -1218,28 +1213,6 @@ async function saveTransaction(event) {
     "Salvando..."
   );
 
-
-  /*
-    IMPORTANTE:
-
-    A tabela "transactions" NÃO possui
-    a coluna "notes".
-
-    Portanto, NÃO enviamos "notes".
-
-    O banco aceita SOMENTE:
-
-    receita
-    despesa
-
-    O aplicativo trabalha internamente
-    com:
-
-    income
-    expense
-
-    A conversão é feita no campo "type".
-  */
 
   const payload = {
 
@@ -2895,8 +2868,7 @@ function isPremiumActive() {
 
   if (
     ![
-      "active",
-      "trialing"
+      "active"
     ].includes(status)
   ) {
 
@@ -3022,10 +2994,12 @@ async function activatePremium() {
       user_id:
         currentUser.id,
 
-       status: "active",
-       
-plan: "trial",
-       
+      status:
+        "active",
+
+      plan:
+        "trial",
+
       price:
         24.99,
 
@@ -3148,11 +3122,13 @@ async function saveGoal(event) {
     );
 
 
-  const deadline =
-    valueOf(
-      "goalDeadline"
-    ) ||
-    null;
+  /*
+    A tabela goals NÃO possui deadline.
+
+    O campo pode continuar existindo
+    no HTML por enquanto, mas não será
+    enviado ao Supabase.
+  */
 
 
   if (
@@ -3188,9 +3164,41 @@ async function saveGoal(event) {
   }
 
 
+  if (current > target) {
+
+    showMessage(
+      "goalMessage",
+      "O valor guardado não pode ser maior que o valor da meta."
+    );
+
+    return;
+  }
+
+
   try {
 
+    /*
+      ======================================================
+      ESTRUTURA REAL DA TABELA goals
+
+      id
+      user_id
+      name
+      target
+      saved
+      created_at
+
+      Portanto:
+
+      target_amount  -> target
+      current_amount -> saved
+
+      deadline NÃO existe e não é enviado.
+      ======================================================
+    */
+
     const {
+      data,
       error
     } =
       await supabaseClient
@@ -3202,19 +3210,37 @@ async function saveGoal(event) {
 
           name,
 
-          target_amount:
+          target:
             target,
 
-          current_amount:
-            current,
+          saved:
+            current
 
-          deadline
-
-        });
+        })
+        .select()
+        .single();
 
 
     if (error) {
       throw error;
+    }
+
+
+    if (data) {
+
+      goals.unshift({
+        ...data,
+
+        target:
+          Number(
+            data.target
+          ) || 0,
+
+        saved:
+          Number(
+            data.saved
+          ) || 0
+      });
     }
 
 
