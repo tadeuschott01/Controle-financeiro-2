@@ -3022,12 +3022,9 @@ async function activatePremium() {
       user_id:
         currentUser.id,
 
-      status:
-        "trialing",
-
-    
-       plan:
-       "trial",
+       status: "active",
+       
+plan: "trial",
        
       price:
         24.99,
