@@ -39,21 +39,24 @@
         </div>
 
         <h1>ControleS</h1>
+
         <p>Seu dinheiro sob controle.</p>
 
       </div>
 
       <div class="auth-heading">
+
         <span>BEM-VINDO DE VOLTA</span>
+
         <h2>Entre na sua conta</h2>
+
         <p>Acompanhe suas finanças de onde estiver.</p>
+
       </div>
 
       <form id="loginForm" novalidate>
 
-        <label for="loginEmail">
-          E-mail
-        </label>
+        <label for="loginEmail">E-mail</label>
 
         <input
           id="loginEmail"
@@ -63,9 +66,7 @@
           required
         >
 
-        <label for="loginPassword">
-          Senha
-        </label>
+        <label for="loginPassword">Senha</label>
 
         <div class="password-wrap">
 
@@ -146,9 +147,7 @@
 
         <h1>ControleS</h1>
 
-        <p>
-          Seu dinheiro sob controle.
-        </p>
+        <p>Seu dinheiro sob controle.</p>
 
       </div>
 
@@ -156,21 +155,15 @@
 
         <span>COMECE AGORA</span>
 
-        <h2>
-          Crie sua conta
-        </h2>
+        <h2>Crie sua conta</h2>
 
-        <p>
-          Organize seu dinheiro de um jeito simples.
-        </p>
+        <p>Organize seu dinheiro de um jeito simples.</p>
 
       </div>
 
       <form id="registerForm" novalidate>
 
-        <label for="registerName">
-          Nome
-        </label>
+        <label for="registerName">Nome</label>
 
         <input
           id="registerName"
@@ -180,9 +173,7 @@
           required
         >
 
-        <label for="registerEmail">
-          E-mail
-        </label>
+        <label for="registerEmail">E-mail</label>
 
         <input
           id="registerEmail"
@@ -192,9 +183,7 @@
           required
         >
 
-        <label for="registerPassword">
-          Senha
-        </label>
+        <label for="registerPassword">Senha</label>
 
         <div class="password-wrap">
 
@@ -284,29 +273,17 @@
 
   <div id="appView" class="app-shell hidden">
 
-    <!-- SIDEBAR -->
-
     <aside id="sidebar" class="sidebar">
 
       <div class="sidebar-brand">
 
         <div class="mini-logo">
-          <img
-            src="logo.png"
-            alt="ControleS"
-          >
+          <img src="logo.png" alt="ControleS">
         </div>
 
         <div>
-
-          <strong>
-            ControleS
-          </strong>
-
-          <small>
-            Finanças pessoais
-          </small>
-
+          <strong>ControleS</strong>
+          <small>Finanças pessoais</small>
         </div>
 
       </div>
@@ -316,6 +293,7 @@
         <button
           class="nav-item active"
           data-section="dashboard"
+          type="button"
         >
           <span>⌂</span>
           Início
@@ -324,6 +302,7 @@
         <button
           class="nav-item"
           data-section="transactions"
+          type="button"
         >
           <span>↔</span>
           Lançamentos
@@ -332,6 +311,7 @@
         <button
           class="nav-item"
           data-section="categories"
+          type="button"
         >
           <span>◈</span>
           Categorias
@@ -340,6 +320,7 @@
         <button
           class="nav-item"
           data-section="reports"
+          type="button"
         >
           <span>▥</span>
           Relatórios
@@ -348,6 +329,7 @@
         <button
           class="nav-item"
           data-section="premium"
+          type="button"
         >
           <span>★</span>
           Premium
@@ -380,11 +362,11 @@
     </aside>
 
 
-    <!-- MAIN -->
-
     <main class="main-content">
 
-      <!-- TOPBAR -->
+      <!-- =================================================
+           TOPBAR
+      ================================================== -->
 
       <header class="topbar">
 
@@ -471,7 +453,7 @@
         </div>
 
 
-        <!-- RESUMO -->
+        <!-- RESUMO PRINCIPAL -->
 
         <div class="summary-grid">
 
@@ -534,93 +516,6 @@
         </div>
 
 
-        <!-- =================================================
-             PREMIUM DASHBOARD EXTRAS
-        ================================================== -->
-
-        <div
-          id="premiumDashboardExtras"
-          class="premium-dashboard-extras hidden"
-        >
-
-          <!-- CATEGORIA QUE MAIS GASTOU -->
-
-          <article class="panel premium-dashboard-card">
-
-            <div class="panel-header">
-
-              <div>
-
-                <h3>
-                  🏆 Categoria que mais gastou
-                </h3>
-
-                <p>
-                  Seu maior gasto neste mês
-                </p>
-
-              </div>
-
-              <span class="premium-mini-badge">
-                PREMIUM
-              </span>
-
-            </div>
-
-            <div
-              id="topCategoryDashboard"
-              class="premium-dashboard-value"
-            >
-              Nenhuma despesa este mês.
-            </div>
-
-          </article>
-
-
-          <!-- COFRINHO -->
-
-          <article class="panel premium-dashboard-card">
-
-            <div class="panel-header">
-
-              <div>
-
-                <h3>
-                  🐷 Meu Cofrinho
-                </h3>
-
-                <p>
-                  Quanto você está juntando este mês
-                </p>
-
-              </div>
-
-              <span class="premium-mini-badge">
-                PREMIUM
-              </span>
-
-            </div>
-
-            <div
-              id="dashboardPiggyBank"
-              class="piggy-dashboard"
-            >
-
-              <strong>
-                R$ 0,00
-              </strong>
-
-              <small>
-                Meta mensal: R$ 0,00
-              </small>
-
-            </div>
-
-          </article>
-
-        </div>
-
-
         <!-- AÇÕES RÁPIDAS -->
 
         <div class="quick-actions">
@@ -664,11 +559,191 @@
         </div>
 
 
-        <!-- DASHBOARD GRID -->
+        <!-- =================================================
+             PREMIUM DASHBOARD
+        ================================================== -->
+
+        <div
+          id="premiumDashboardContent"
+          class="premium-dashboard hidden"
+        >
+
+          <div class="dashboard-grid">
+
+            <!-- COFRINHO -->
+
+            <article class="panel premium-mini-card">
+
+              <div class="panel-header">
+
+                <div>
+
+                  <h3>
+                    🐷 Meu Cofrinho
+                  </h3>
+
+                  <p>
+                    Resultado deste mês
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div class="premium-value-box">
+
+                <strong id="monthlySavingsValue">
+                  R$ 0,00
+                </strong>
+
+                <small id="monthlySavingsText">
+                  Quanto sobrou no mês
+                </small>
+
+              </div>
+
+            </article>
+
+
+            <!-- MAIOR GASTO -->
+
+            <article class="panel premium-mini-card">
+
+              <div class="panel-header">
+
+                <div>
+
+                  <h3>
+                    🏆 Maior gasto
+                  </h3>
+
+                  <p>
+                    Categoria que mais consumiu
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div class="premium-value-box">
+
+                <strong id="topCategoryValue">
+                  —
+                </strong>
+
+                <small id="topCategoryText">
+                  Nenhuma despesa registrada
+                </small>
+
+              </div>
+
+            </article>
+
+          </div>
+
+
+          <!-- RESUMO DO MÊS -->
+
+          <article class="panel premium-monthly-panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  📅 Resumo mensal
+                </h3>
+
+                <p>
+                  Como está seu mês atual
+                </p>
+
+              </div>
+
+            </div>
+
+            <div class="premium-summary-grid">
+
+              <div class="premium-summary-item">
+
+                <span>
+                  Receitas do mês
+                </span>
+
+                <strong
+                  id="monthlyIncomeValue"
+                  class="positive"
+                >
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+              <div class="premium-summary-item">
+
+                <span>
+                  Despesas do mês
+                </span>
+
+                <strong
+                  id="monthlyExpenseValue"
+                  class="negative"
+                >
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+              <div class="premium-summary-item">
+
+                <span>
+                  Sobra do mês
+                </span>
+
+                <strong id="monthlyBalanceValue">
+                  R$ 0,00
+                </strong>
+
+              </div>
+
+            </div>
+
+          </article>
+
+
+          <!-- RANKING -->
+
+          <article class="panel">
+
+            <div class="panel-header">
+
+              <div>
+
+                <h3>
+                  🏆 Ranking de gastos
+                </h3>
+
+                <p>
+                  Categorias que mais receberam seu dinheiro
+                </p>
+
+              </div>
+
+            </div>
+
+            <div
+              id="expenseRanking"
+              class="expense-ranking"
+            ></div>
+
+          </article>
+
+        </div>
+
+
+        <!-- DASHBOARD NORMAL -->
 
         <div class="dashboard-grid">
-
-          <!-- GRÁFICO -->
 
           <article class="panel">
 
@@ -694,8 +769,6 @@
 
           </article>
 
-
-          <!-- ÚLTIMOS LANÇAMENTOS -->
 
           <article class="panel">
 
@@ -835,19 +908,19 @@
               <thead>
 
                 <tr>
+
                   <th>Descrição</th>
                   <th>Categoria</th>
                   <th>Data</th>
                   <th>Tipo</th>
                   <th>Valor</th>
                   <th></th>
+
                 </tr>
 
               </thead>
 
-              <tbody
-                id="transactionsTableBody"
-              ></tbody>
+              <tbody id="transactionsTableBody"></tbody>
 
             </table>
 
@@ -951,7 +1024,7 @@
         </div>
 
 
-        <!-- BLOQUEIO PREMIUM -->
+        <!-- GATE PREMIUM -->
 
         <div
           id="premiumReportContent"
@@ -981,7 +1054,7 @@
         </div>
 
 
-        <!-- RELATÓRIO NORMAL/PREMIUM -->
+        <!-- RELATÓRIOS NORMAIS -->
 
         <div id="normalReportContent">
 
@@ -1050,9 +1123,7 @@
 
               <div class="chart-box doughnut-box">
 
-                <canvas
-                  id="categoryChart"
-                ></canvas>
+                <canvas id="categoryChart"></canvas>
 
               </div>
 
@@ -1145,7 +1216,8 @@
           </h2>
 
           <p>
-            Desbloqueie recursos avançados do ControleS e acompanhe suas finanças com ainda mais detalhes.
+            Desbloqueie recursos avançados do ControleS
+            e acompanhe suas finanças com ainda mais detalhes.
           </p>
 
           <div class="premium-price">
@@ -1174,8 +1246,6 @@
 
         </div>
 
-
-        <!-- RECURSOS PREMIUM -->
 
         <div class="premium-features">
 
@@ -1228,7 +1298,7 @@
               </strong>
 
               <p>
-                Defina quanto quer juntar por mês e acompanhe seu progresso.
+                Veja automaticamente quanto sobrou no mês.
               </p>
 
             </div>
@@ -1247,7 +1317,7 @@
               </strong>
 
               <p>
-                Veja rapidamente quanto entrou, saiu e quanto sobrou.
+                Acompanhe receitas, despesas e sobra do mês.
               </p>
 
             </div>
@@ -1294,244 +1364,6 @@
 
         </div>
 
-
-        <!-- =================================================
-             PREMIUM EXTRAS
-        ================================================== -->
-
-        <div
-          id="premiumExtras"
-          class="premium-extras hidden"
-        >
-
-          <!-- COFRINHO -->
-
-          <article class="panel premium-extra-panel">
-
-            <div class="panel-header">
-
-              <div>
-
-                <h3>
-                  🐷 Cofrinho mensal
-                </h3>
-
-                <p id="piggyBankMonth">
-                  Seu cofrinho deste mês
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <div class="piggy-bank-box">
-
-              <div class="piggy-values">
-
-                <div>
-
-                  <small>
-                    Já juntou
-                  </small>
-
-                  <strong id="piggySaved">
-                    R$ 0,00
-                  </strong>
-
-                </div>
-
-
-                <div>
-
-                  <small>
-                    Meta do mês
-                  </small>
-
-                  <strong id="piggyTarget">
-                    R$ 0,00
-                  </strong>
-
-                </div>
-
-              </div>
-
-
-              <div class="piggy-progress">
-
-                <div
-                  id="piggyProgressBar"
-                ></div>
-
-              </div>
-
-
-              <div class="piggy-progress-info">
-
-                <span id="piggyProgressPercent">
-                  0%
-                </span>
-
-                <span id="piggyRemaining">
-                  Defina uma meta mensal
-                </span>
-
-              </div>
-
-
-              <div class="piggy-form">
-
-                <div>
-
-                  <label for="piggyTargetInput">
-                    Quanto quer juntar?
-                  </label>
-
-                  <input
-                    id="piggyTargetInput"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="Ex.: 1000"
-                  >
-
-                </div>
-
-
-                <div>
-
-                  <label for="piggySavedInput">
-                    Quanto já juntou?
-                  </label>
-
-                  <input
-                    id="piggySavedInput"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="Ex.: 250"
-                  >
-
-                </div>
-
-
-                <button
-                  id="savePiggyBankBtn"
-                  class="btn btn-primary"
-                  type="button"
-                >
-                  Salvar cofrinho
-                </button>
-
-              </div>
-
-
-              <div
-                id="piggyMessage"
-                class="form-message"
-              ></div>
-
-            </div>
-
-          </article>
-
-
-          <!-- RESUMO MENSAL -->
-
-          <article class="panel premium-extra-panel">
-
-            <div class="panel-header">
-
-              <div>
-
-                <h3>
-                  📅 Resumo deste mês
-                </h3>
-
-                <p>
-                  Visão rápida da sua situação financeira
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <div class="premium-summary-grid">
-
-              <div>
-
-                <small>
-                  Receitas
-                </small>
-
-                <strong id="monthlyIncome">
-                  R$ 0,00
-                </strong>
-
-              </div>
-
-
-              <div>
-
-                <small>
-                  Despesas
-                </small>
-
-                <strong id="monthlyExpense">
-                  R$ 0,00
-                </strong>
-
-              </div>
-
-
-              <div>
-
-                <small>
-                  Saldo
-                </small>
-
-                <strong id="monthlyBalance">
-                  R$ 0,00
-                </strong>
-
-              </div>
-
-            </div>
-
-          </article>
-
-
-          <!-- RANKING -->
-
-          <article class="panel premium-extra-panel">
-
-            <div class="panel-header">
-
-              <div>
-
-                <h3>
-                  🏆 Ranking de gastos
-                </h3>
-
-                <p>
-                  Onde você mais gastou neste mês
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <div
-              id="expenseRanking"
-              class="expense-ranking"
-            ></div>
-
-          </article>
-
-        </div>
-
       </section>
 
     </main>
@@ -1573,7 +1405,6 @@
           type="hidden"
         >
 
-
         <div class="type-buttons">
 
           <button
@@ -1594,13 +1425,11 @@
 
         </div>
 
-
         <input
           id="transactionType"
           type="hidden"
           value="income"
         >
-
 
         <label for="transactionDescription">
           Descrição
@@ -1612,7 +1441,6 @@
           placeholder="Ex.: Salário"
           required
         >
-
 
         <label for="transactionAmount">
           Valor
@@ -1627,7 +1455,6 @@
           required
         >
 
-
         <label for="transactionDate">
           Data
         </label>
@@ -1638,7 +1465,6 @@
           required
         >
 
-
         <label for="transactionCategory">
           Categoria
         </label>
@@ -1647,7 +1473,6 @@
           id="transactionCategory"
           required
         ></select>
-
 
         <label for="transactionNotes">
           Observações
@@ -1659,12 +1484,10 @@
           placeholder="Opcional"
         ></textarea>
 
-
         <div
           id="transactionMessage"
           class="form-message"
         ></div>
-
 
         <button
           id="saveTransactionBtn"
@@ -1721,7 +1544,6 @@
           required
         >
 
-
         <label for="categoryType">
           Tipo
         </label>
@@ -1738,12 +1560,10 @@
 
         </select>
 
-
         <div
           id="categoryMessage"
           class="form-message"
         ></div>
-
 
         <button
           class="btn btn-primary btn-large"
@@ -1799,7 +1619,6 @@
           required
         >
 
-
         <label for="goalTarget">
           Valor da meta
         </label>
@@ -1812,7 +1631,6 @@
           placeholder="0,00"
           required
         >
-
 
         <label for="goalCurrent">
           Valor já guardado
@@ -1827,7 +1645,6 @@
           placeholder="0,00"
         >
 
-
         <label for="goalDeadline">
           Prazo
         </label>
@@ -1837,12 +1654,10 @@
           type="date"
         >
 
-
         <div
           id="goalMessage"
           class="form-message"
         ></div>
-
 
         <button
           class="btn btn-primary btn-large"
@@ -1886,7 +1701,8 @@
       </h2>
 
       <p>
-        Durante os testes, o Premium será ativado por 7 dias. A cobrança real será integrada posteriormente.
+        Durante os testes, o Premium será ativado por 7 dias.
+        A cobrança real será integrada posteriormente.
       </p>
 
       <div class="trial-box">
@@ -1901,12 +1717,10 @@
 
       </div>
 
-
       <div
         id="premiumMessage"
         class="form-message"
       ></div>
-
 
       <button
         id="confirmPremiumBtn"
