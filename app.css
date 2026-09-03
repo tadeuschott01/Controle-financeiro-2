@@ -82,9 +82,11 @@ textarea {
 .login-screen {
   min-height: 100vh;
   width: 100%;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 30px 18px;
 
   background:
@@ -101,12 +103,44 @@ textarea {
     var(--green);
 }
 
+/*
+   CORREÇÃO:
+   A tela de login fica acima de absolutamente tudo.
+   O design interno permanece igual.
+*/
+
+#loginScreen {
+  position: fixed;
+  inset: 0;
+
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#loginScreen.hidden {
+  display: none !important;
+}
+
 .auth-card {
   width: 100%;
   max-width: 470px;
+
   background: var(--card);
+
   border-radius: 28px;
+
   padding: 42px;
+
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.18);
 }
 
@@ -118,6 +152,7 @@ textarea {
 .login-logo {
   width: 68px;
   height: 68px;
+
   margin: 0 auto 15px;
 
   border-radius: 19px;
@@ -134,19 +169,24 @@ textarea {
 .login-logo img {
   width: 100%;
   height: 100%;
+
   object-fit: contain;
 }
 
 .login-brand h1 {
   font-size: 30px;
   font-weight: 800;
+
   color: var(--green);
+
   letter-spacing: -1px;
 }
 
 .login-brand p {
   margin-top: 6px;
+
   color: var(--muted);
+
   font-size: 14px;
 }
 
@@ -157,23 +197,31 @@ textarea {
 .auth-kicker,
 .section-kicker {
   display: block;
+
   color: var(--orange);
+
   font-size: 10px;
   font-weight: 800;
+
   letter-spacing: 1.5px;
+
   margin-bottom: 7px;
 }
 
 .auth-heading h2 {
   font-size: 25px;
   line-height: 1.2;
+
   color: var(--text);
 }
 
 .auth-heading p {
   color: var(--muted);
+
   font-size: 14px;
+
   margin-top: 7px;
+
   line-height: 1.5;
 }
 
@@ -187,10 +235,12 @@ textarea {
 
 .input-group label {
   display: block;
+
   margin-bottom: 8px;
 
   font-size: 13px;
   font-weight: 700;
+
   color: var(--text);
 }
 
@@ -200,9 +250,11 @@ textarea {
   width: 100%;
 
   border: 1px solid var(--border);
+
   border-radius: 12px;
 
   background: #fff;
+
   color: var(--text);
 
   padding: 13px 14px;
@@ -226,7 +278,9 @@ textarea {
 .input-group select:focus,
 .input-group textarea:focus {
   border-color: var(--orange);
-  box-shadow: 0 0 0 4px rgba(232, 135, 50, 0.11);
+
+  box-shadow:
+    0 0 0 4px rgba(232, 135, 50, 0.11);
 }
 
 .password-field {
@@ -239,15 +293,18 @@ textarea {
 
 .password-toggle {
   position: absolute;
+
   top: 50%;
   right: 12px;
 
   transform: translateY(-50%);
 
   border: 0;
+
   background: transparent;
 
   color: var(--muted);
+
   font-size: 15px;
 }
 
@@ -280,18 +337,25 @@ textarea {
 
 .btn-primary {
   background: var(--orange);
+
   color: #fff;
-  box-shadow: 0 8px 20px rgba(232, 135, 50, 0.22);
+
+  box-shadow:
+    0 8px 20px rgba(232, 135, 50, 0.22);
 }
 
 .btn-primary:hover {
   background: var(--orange-dark);
+
   transform: translateY(-1px);
-  box-shadow: 0 12px 25px rgba(232, 135, 50, 0.28);
+
+  box-shadow:
+    0 12px 25px rgba(232, 135, 50, 0.28);
 }
 
 .btn-secondary {
   background: var(--green-soft);
+
   color: var(--green);
 }
 
@@ -301,16 +365,19 @@ textarea {
 
 .login-submit {
   width: 100%;
+
   margin-top: 5px;
 }
 
 .auth-secondary {
   width: 100%;
+
   margin-top: 10px;
 }
 
 .login-footer {
   margin-top: 25px;
+
   padding-top: 20px;
 
   border-top: 1px solid var(--border);
@@ -318,7 +385,9 @@ textarea {
   text-align: center;
 
   color: var(--muted);
+
   font-size: 11px;
+
   line-height: 1.5;
 }
 
@@ -335,20 +404,25 @@ textarea {
   margin-bottom: 15px;
 
   font-size: 13px;
+
   line-height: 1.45;
 }
 
 .auth-message.error,
 .form-message.error {
   background: #fff0f0;
+
   color: var(--danger);
+
   border: 1px solid #f1cccc;
 }
 
 .auth-message.success,
 .form-message.success {
   background: #edf8f2;
+
   color: var(--success);
+
   border: 1px solid #cbe8d7;
 }
 
@@ -358,7 +432,18 @@ textarea {
 
 .app {
   min-height: 100vh;
+
   background: var(--bg);
+}
+
+/*
+   CORREÇÃO:
+   Se houver uma tela de login ativa,
+   o aplicativo inteiro fica invisível.
+*/
+
+body:has(#loginScreen:not(.hidden)) #app {
+  display: none !important;
 }
 
 /* =====================================================
@@ -388,7 +473,9 @@ textarea {
 
 .sidebar-brand {
   display: flex;
+
   align-items: center;
+
   gap: 12px;
 
   padding: 4px 10px 28px;
@@ -403,6 +490,7 @@ textarea {
   border-radius: 12px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -416,17 +504,21 @@ textarea {
 .brand-logo img {
   width: 100%;
   height: 100%;
+
   object-fit: contain;
 }
 
 .brand-text {
   display: flex;
+
   flex-direction: column;
+
   min-width: 0;
 }
 
 .brand-text strong {
   font-size: 18px;
+
   font-weight: 800;
 }
 
@@ -442,7 +534,9 @@ textarea {
   margin-top: 25px;
 
   display: flex;
+
   flex-direction: column;
+
   gap: 7px;
 }
 
@@ -453,7 +547,9 @@ textarea {
   border: 0;
 
   display: flex;
+
   align-items: center;
+
   gap: 12px;
 
   padding: 12px 13px;
@@ -467,6 +563,7 @@ textarea {
   text-align: left;
 
   font-size: 13px;
+
   font-weight: 600;
 
   transition:
@@ -478,19 +575,24 @@ textarea {
 .nav-item:hover,
 .sidebar-action:hover {
   background: rgba(255, 255, 255, 0.08);
+
   color: #fff;
 }
 
 .nav-item.active {
   background: var(--orange);
+
   color: #fff;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.13);
+
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.13);
 }
 
 .nav-icon {
   width: 22px;
 
   display: inline-flex;
+
   justify-content: center;
 
   font-size: 17px;
@@ -504,7 +606,9 @@ textarea {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 
   display: flex;
+
   flex-direction: column;
+
   gap: 5px;
 }
 
@@ -532,11 +636,13 @@ textarea {
   height: 76px;
 
   position: sticky;
+
   top: 0;
 
   z-index: 50;
 
   display: flex;
+
   align-items: center;
 
   justify-content: space-between;
@@ -545,29 +651,35 @@ textarea {
 
   background: rgba(255, 255, 255, 0.88);
 
-  border-bottom: 1px solid rgba(226, 231, 227, 0.8);
+  border-bottom:
+    1px solid rgba(226, 231, 227, 0.8);
 
   backdrop-filter: blur(16px);
 }
 
 .topbar-brand {
   display: none;
+
   align-items: center;
+
   gap: 10px;
 }
 
 .topbar-brand > div:last-child {
   display: flex;
+
   flex-direction: column;
 }
 
 .topbar-brand strong {
   font-size: 16px;
+
   color: var(--green);
 }
 
 .topbar-brand span {
   font-size: 10px;
+
   color: var(--muted);
 }
 
@@ -575,6 +687,7 @@ textarea {
   margin-left: auto;
 
   display: flex;
+
   align-items: center;
 
   gap: 11px;
@@ -591,20 +704,24 @@ textarea {
   color: #fff;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   font-weight: 800;
+
   font-size: 14px;
 }
 
 .user-info {
   display: flex;
+
   flex-direction: column;
 }
 
 .user-info strong {
   font-size: 13px;
+
   font-weight: 700;
 }
 
@@ -612,12 +729,15 @@ textarea {
   margin-top: 2px;
 
   font-size: 10px;
+
   color: var(--muted);
 
   max-width: 220px;
 
   overflow: hidden;
+
   text-overflow: ellipsis;
+
   white-space: nowrap;
 }
 
@@ -655,7 +775,9 @@ textarea {
 
 .page-heading {
   display: flex;
+
   align-items: flex-end;
+
   justify-content: space-between;
 
   gap: 20px;
@@ -693,6 +815,7 @@ textarea {
   padding: 11px 15px;
 
   font-size: 12px;
+
   font-weight: 700;
 }
 
@@ -829,6 +952,7 @@ textarea {
   border-radius: 12px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -888,7 +1012,9 @@ textarea {
 .dashboard-grid {
   display: grid;
 
-  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr);
+  grid-template-columns:
+    minmax(0, 1.65fr)
+    minmax(300px, 1fr);
 
   gap: 22px;
 
@@ -917,6 +1043,7 @@ textarea {
 
 .recent-list {
   display: flex;
+
   flex-direction: column;
 
   gap: 7px;
@@ -944,6 +1071,7 @@ textarea {
   min-width: 0;
 
   display: flex;
+
   align-items: center;
 
   gap: 10px;
@@ -956,6 +1084,7 @@ textarea {
   flex-shrink: 0;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -976,7 +1105,9 @@ textarea {
   max-width: 180px;
 
   overflow: hidden;
+
   text-overflow: ellipsis;
+
   white-space: nowrap;
 
   font-size: 12px;
@@ -996,6 +1127,7 @@ textarea {
   white-space: nowrap;
 
   font-size: 12px;
+
   font-weight: 800;
 }
 
@@ -1047,7 +1179,8 @@ textarea {
 
   border-color: #cfd8d2;
 
-  box-shadow: 0 10px 25px rgba(18, 60, 43, 0.07);
+  box-shadow:
+    0 10px 25px rgba(18, 60, 43, 0.07);
 }
 
 .action-card-icon {
@@ -1059,6 +1192,7 @@ textarea {
   background: var(--orange-soft);
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -1271,7 +1405,8 @@ textarea {
 .category-card:hover {
   transform: translateY(-2px);
 
-  box-shadow: 0 10px 25px rgba(18, 60, 43, 0.07);
+  box-shadow:
+    0 10px 25px rgba(18, 60, 43, 0.07);
 }
 
 .category-icon {
@@ -1281,6 +1416,7 @@ textarea {
   border-radius: 11px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -1545,7 +1681,8 @@ textarea {
 
   padding: 25px;
 
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.2);
 }
 
 .modal-header {
@@ -1659,7 +1796,8 @@ textarea {
 
   color: #fff;
 
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.18);
 
   font-size: 12px;
 
@@ -1685,7 +1823,8 @@ body.dark {
 
   --orange-soft: #382818;
 
-  --shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+  --shadow:
+    0 12px 35px rgba(0, 0, 0, 0.22);
 }
 
 body.dark .topbar {
@@ -1799,6 +1938,7 @@ body.dark .empty-state h3 {
     display: flex;
 
     margin-right: auto;
+
     margin-left: 12px;
   }
 
@@ -1832,6 +1972,19 @@ body.dark .empty-state h3 {
 ===================================================== */
 
 @media (max-width: 600px) {
+
+  /*
+     Mantém a tela de login com o mesmo visual,
+     apenas garante bom comportamento vertical.
+  */
+
+  #loginScreen {
+    padding: 20px 15px;
+
+    align-items: center;
+
+    overflow-y: auto;
+  }
 
   .auth-card {
     padding: 30px 22px;
@@ -1957,7 +2110,9 @@ body.dark .empty-state h3 {
 
   .toast {
     left: 15px;
+
     right: 15px;
+
     bottom: 15px;
 
     max-width: none;
@@ -1991,27 +2146,66 @@ body.dark .empty-state h3 {
   }
 }
 
-
 /* =====================================================
-   CORREÇÃO DEFINITIVA DE VISIBILIDADE
+   CONTROLES FINAIS DE VISIBILIDADE
 ===================================================== */
+
+/*
+   Regra geral.
+   Qualquer elemento com .hidden desaparece.
+*/
 
 .hidden {
   display: none !important;
 }
 
+/*
+   Aplicativo escondido enquanto não estiver autenticado.
+*/
+
 #app.hidden {
   display: none !important;
 }
+
+/*
+   Tela de login escondida depois do login.
+*/
 
 #loginScreen.hidden {
   display: none !important;
 }
 
-.login-screen {
-  display: flex;
+/*
+   Tela de login visível.
+*/
+
+#loginScreen:not(.hidden) {
+  display: flex !important;
 }
 
-.login-screen.hidden {
+/*
+   GARANTIA PRINCIPAL:
+   se o login estiver visível, o app inteiro
+   não pode aparecer atrás.
+*/
+
+body:has(#loginScreen:not(.hidden)) #app {
   display: none !important;
+}
+
+/*
+   Segurança adicional para a sidebar.
+*/
+
+body:has(#loginScreen:not(.hidden)) .sidebar {
+  display: none !important;
+}
+
+/*
+   Depois que o login desaparecer, o app volta
+   normalmente.
+*/
+
+body:has(#loginScreen.hidden) #app {
+  display: flex;
 }
