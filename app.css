@@ -1990,3 +1990,28 @@ body.dark .empty-state h3 {
     font-size: 20px;
   }
 }
+
+
+/* =====================================================
+   CORREÇÃO DEFINITIVA DE VISIBILIDADE
+===================================================== */
+
+.hidden {
+  display: none !important;
+}
+
+#app.hidden {
+  display: none !important;
+}
+
+#loginScreen.hidden {
+  display: none !important;
+}
+
+.login-screen {
+  display: flex;
+}
+
+.login-screen.hidden {
+  display: none !important;
+}
