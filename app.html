@@ -8,7 +8,6 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -33,7 +32,6 @@
       <div class="brand-block">
 
         <div class="brand-logo">
-
           <img
             src="logo.png"
             alt="ControleS"
@@ -41,7 +39,6 @@
           >
 
           <span class="logo-fallback-mark">C↗</span>
-
         </div>
 
         <h1>ControleS</h1>
@@ -49,7 +46,6 @@
         <p>Seu dinheiro sob controle.</p>
 
       </div>
-
 
       <div class="auth-heading">
 
@@ -60,7 +56,6 @@
         <p>Acompanhe suas finanças de onde estiver.</p>
 
       </div>
-
 
       <form id="loginForm" novalidate>
 
@@ -73,7 +68,6 @@
           placeholder="seu@email.com"
           required
         >
-
 
         <label for="loginPassword">Senha</label>
 
@@ -98,13 +92,11 @@
 
         </div>
 
-
         <div
           id="loginMessage"
           class="form-message"
           role="alert"
         ></div>
-
 
         <button
           id="loginSubmitBtn"
@@ -113,7 +105,6 @@
         >
           Entrar no ControleS
         </button>
-
 
         <button
           id="registerBtn"
@@ -124,7 +115,6 @@
         </button>
 
       </form>
-
 
       <div class="security-note">
         <span>✓</span>
@@ -164,7 +154,6 @@
 
       </div>
 
-
       <div class="auth-heading">
 
         <span>COMECE AGORA</span>
@@ -174,7 +163,6 @@
         <p>Organize seu dinheiro de um jeito simples.</p>
 
       </div>
-
 
       <form id="registerForm" novalidate>
 
@@ -188,7 +176,6 @@
           required
         >
 
-
         <label for="registerEmail">E-mail</label>
 
         <input
@@ -198,7 +185,6 @@
           placeholder="seu@email.com"
           required
         >
-
 
         <label for="registerPassword">Senha</label>
 
@@ -223,7 +209,6 @@
           </button>
 
         </div>
-
 
         <label for="registerPasswordConfirm">
           Confirmar senha
@@ -251,13 +236,11 @@
 
         </div>
 
-
         <div
           id="registerMessage"
           class="form-message"
           role="alert"
         ></div>
-
 
         <button
           id="createAccountBtn"
@@ -266,7 +249,6 @@
         >
           Criar minha conta
         </button>
-
 
         <button
           id="backToLoginBtn"
@@ -277,7 +259,6 @@
         </button>
 
       </form>
-
 
       <div class="security-note">
         <span>✓</span>
@@ -295,9 +276,9 @@
 
   <div id="appView" class="app-shell hidden">
 
-    <!-- ===================================================
+    <!-- =================================================
          SIDEBAR
-    ==================================================== -->
+    ================================================== -->
 
     <aside
       id="sidebar"
@@ -308,22 +289,12 @@
       <div class="sidebar-brand">
 
         <div class="mini-logo">
-
-          <img
-            src="logo.png"
-            alt="ControleS"
-          >
-
+          <img src="logo.png" alt="ControleS">
         </div>
 
         <div>
-
           <strong>ControleS</strong>
-
-          <small>
-            Finanças pessoais
-          </small>
-
+          <small>Finanças pessoais</small>
         </div>
 
       </div>
@@ -401,7 +372,7 @@
 
 
       <!-- =================================================
-           RODAPÉ DO MENU
+           PARTE INFERIOR DO MENU
       ================================================== -->
 
       <div class="sidebar-bottom">
@@ -410,6 +381,7 @@
           id="themeBtn"
           class="side-action"
           type="button"
+          aria-label="Alternar tema claro e escuro"
         >
           <span>☾</span>
           Tema
@@ -417,6 +389,7 @@
 
 
         <a
+          id="supportBtn"
           class="side-action support-action"
           href="mailto:controlesfinanceirossuport@gmail.com"
         >
@@ -439,9 +412,9 @@
     </aside>
 
 
-    <!-- ===================================================
+    <!-- =================================================
          OVERLAY DO MENU MOBILE
-    ==================================================== -->
+    ================================================== -->
 
     <div
       id="mobileOverlay"
@@ -450,9 +423,9 @@
     ></div>
 
 
-    <!-- ===================================================
+    <!-- =================================================
          CONTEÚDO PRINCIPAL
-    ==================================================== -->
+    ================================================== -->
 
     <main class="main-content">
 
@@ -551,19 +524,128 @@
         </div>
 
 
+        <!-- =================================================
+             FILTRO DE PERÍODO
+        ================================================== -->
+
+        <div
+          id="dashboardPeriodFilter"
+          class="period-filter panel"
+        >
+
+          <div class="period-filter-header">
+
+            <div>
+
+              <h3>
+                Período financeiro
+              </h3>
+
+              <p>
+                Escolha o período para ver quanto você ganhou e gastou.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="period-filter-controls">
+
+            <div class="period-select-group">
+
+              <label for="dashboardPeriod">
+                Período
+              </label>
+
+              <select id="dashboardPeriod">
+
+                <option value="7">
+                  Últimos 7 dias
+                </option>
+
+                <option value="30">
+                  Último mês
+                </option>
+
+                <option value="custom">
+                  Escolher período
+                </option>
+
+                <option value="all">
+                  Ver tudo
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div
+              id="customPeriodFields"
+              class="custom-period-fields hidden"
+            >
+
+              <div>
+
+                <label for="periodStartDate">
+                  Data inicial
+                </label>
+
+                <input
+                  id="periodStartDate"
+                  type="date"
+                >
+
+              </div>
+
+
+              <div>
+
+                <label for="periodEndDate">
+                  Data final
+                </label>
+
+                <input
+                  id="periodEndDate"
+                  type="date"
+                >
+
+              </div>
+
+            </div>
+
+
+            <button
+              id="applyPeriodBtn"
+              class="btn btn-primary"
+              type="button"
+            >
+              Aplicar período
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+             RESUMO PRINCIPAL
+        ================================================== -->
+
         <div class="summary-grid">
 
           <article class="summary-card balance-card">
 
             <span>
-              Saldo atual
+              Saldo do período
             </span>
 
             <strong id="balanceValue">
               R$ 0,00
             </strong>
 
-            <small>
+            <small id="balancePeriodText">
               Receitas menos despesas
             </small>
 
@@ -573,7 +655,7 @@
           <article class="summary-card">
 
             <span>
-              Receitas
+              Quanto ganhou
             </span>
 
             <strong
@@ -583,7 +665,7 @@
               R$ 0,00
             </strong>
 
-            <small>
+            <small id="incomePeriodText">
               Total recebido
             </small>
 
@@ -593,7 +675,7 @@
           <article class="summary-card">
 
             <span>
-              Despesas
+              Quanto gastou
             </span>
 
             <strong
@@ -603,7 +685,7 @@
               R$ 0,00
             </strong>
 
-            <small>
+            <small id="expensePeriodText">
               Total gasto
             </small>
 
@@ -926,7 +1008,7 @@
                   Movimentação financeira
                 </h3>
 
-                <p>
+                <p id="financeChartPeriodText">
                   Receitas e despesas dos últimos meses
                 </p>
 
@@ -936,9 +1018,7 @@
 
 
             <div class="chart-box">
-
               <canvas id="financeChart"></canvas>
-
             </div>
 
           </article>
@@ -1095,7 +1175,6 @@
                 </tr>
 
               </thead>
-
 
               <tbody id="transactionsTableBody"></tbody>
 
@@ -1259,7 +1338,6 @@
                 </tr>
 
               </thead>
-
 
               <tbody id="receivablesTableBody"></tbody>
 
@@ -1833,7 +1911,6 @@
         class="modal-close"
         data-close-modal
         type="button"
-        aria-label="Fechar"
       >
         ×
       </button>
@@ -2002,7 +2079,6 @@
         class="modal-close"
         data-close-modal
         type="button"
-        aria-label="Fechar"
       >
         ×
       </button>
@@ -2083,7 +2159,6 @@
         class="modal-close"
         data-close-modal
         type="button"
-        aria-label="Fechar"
       >
         ×
       </button>
@@ -2185,7 +2260,6 @@
         class="modal-close"
         data-close-modal
         type="button"
-        aria-label="Fechar"
       >
         ×
       </button>
@@ -2247,7 +2321,6 @@
     id="toast"
     class="toast"
     role="status"
-    aria-live="polite"
   ></div>
 
 
