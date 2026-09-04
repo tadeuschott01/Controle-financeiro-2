@@ -6,6 +6,7 @@
    + Categorias + Relatórios + Premium + Tema
    + Supabase
    + Cofrinho Mensal + Resumo Mensal + Ranking
+   + Filtro de período + Ganhos/Gastos do período
 ========================================================= */
 
 const SUPABASE_URL =
@@ -41,6 +42,12 @@ let toastTimer = null;
 
 let authInitialized = false;
 let enteringApp = false;
+
+/*
+   Evita que setupEvents() seja executado
+   mais de uma vez e duplique listeners.
+*/
+let eventsBound = false;
 
 
 /* =========================================================
@@ -85,6 +92,23 @@ const $ = id =>
 
 const valueOf = id =>
   $(id)?.value ?? "";
+
+
+/*
+   Procura o primeiro elemento existente
+   entre vários IDs.
+*/
+function firstExisting(...ids) {
+  for (const id of ids) {
+    const element = $(id);
+
+    if (element) {
+      return element;
+    }
+  }
+
+  return null;
+}
 
 
 /* =========================================================
@@ -142,6 +166,8 @@ document.addEventListener(
     loadLocalCategories();
 
     initializeSupabase();
+
+    updatePeriodSummary();
 
     await checkSession();
   }
@@ -778,6 +804,8 @@ async function enterApp(user) {
     renderReceivables();
 
     updatePremiumUI();
+
+    updatePeriodSummary();
   } catch (error) {
     console.error(
       "enterApp:",
@@ -1470,6 +1498,8 @@ async function markTransactionAsReceived(
 
     renderTransactions();
     renderReceivables();
+
+    updatePeriodSummary();
   } catch (error) {
     console.error(
       "markTransactionAsReceived:",
@@ -1676,6 +1706,8 @@ async function saveTransaction(event) {
 
     renderTransactions();
     renderReceivables();
+
+    updatePeriodSummary();
   } catch (error) {
     console.error(
       "saveTransaction:",
@@ -1897,6 +1929,8 @@ async function deleteTransaction(id) {
 
     renderTransactions();
     renderReceivables();
+
+    updatePeriodSummary();
   } catch (error) {
     console.error(
       "deleteTransaction:",
@@ -2058,7 +2092,7 @@ function renderTransactions() {
 
 
 /* =========================================================
-   FILTROS
+   FILTROS DE TRANSAÇÕES
 ========================================================= */
 
 function applyTransactionFilters() {
@@ -2502,6 +2536,8 @@ function updateDashboard() {
   renderReceivables();
 
   updatePremiumDashboard();
+
+  updatePeriodSummary();
 }
 
 
@@ -2555,6 +2591,492 @@ function getTotals() {
     balance:
       income - expense
   };
+}
+
+
+/* =========================================================
+   FILTRO DE PERÍODO
+   1 semana / 1 mês / personalizado / tudo
+========================================================= */
+
+function getPeriodFilterElement() {
+  return (
+    firstExisting(
+      "periodFilter",
+      "dashboardPeriodFilter",
+      "summaryPeriodFilter",
+      "periodSelect"
+    ) ||
+    document.querySelector(
+      "[data-period-filter]"
+    )
+  );
+}
+
+
+function getPeriodStartElement() {
+  return (
+    firstExisting(
+      "periodStart",
+      "periodStartDate",
+      "customPeriodStart",
+      "customStartDate"
+    ) ||
+    document.querySelector(
+      "[data-period-start]"
+    )
+  );
+}
+
+
+function getPeriodEndElement() {
+  return (
+    firstExisting(
+      "periodEnd",
+      "periodEndDate",
+      "customPeriodEnd",
+      "customEndDate"
+    ) ||
+    document.querySelector(
+      "[data-period-end]"
+    )
+  );
+}
+
+
+function normalizePeriodValue(value) {
+  const text =
+    String(
+      value || ""
+    )
+      .toLowerCase()
+      .trim();
+
+  if (
+    text === "week" ||
+    text === "7days" ||
+    text === "7-days" ||
+    text === "1week" ||
+    text === "1-week" ||
+    text === "semana" ||
+    text === "1 semana"
+  ) {
+    return "week";
+  }
+
+  if (
+    text === "month" ||
+    text === "1month" ||
+    text === "1-month" ||
+    text === "mes" ||
+    text === "1 mês" ||
+    text === "1 mes"
+  ) {
+    return "month";
+  }
+
+  if (
+    text === "custom" ||
+    text === "personalizado" ||
+    text === "personalizada"
+  ) {
+    return "custom";
+  }
+
+  if (
+    text === "all" ||
+    text === "everything" ||
+    text === "tudo"
+  ) {
+    return "all";
+  }
+
+  return "month";
+}
+
+
+function getPeriodRange() {
+  const filter =
+    getPeriodFilterElement();
+
+  const selected =
+    normalizePeriodValue(
+      filter?.value ||
+      "month"
+    );
+
+  const today =
+    todayISO();
+
+  if (
+    selected === "week"
+  ) {
+    const date =
+      parseDate(today);
+
+    date.setDate(
+      date.getDate() - 6
+    );
+
+    return {
+      type: "week",
+      start:
+        dateToISO(date),
+      end:
+        today,
+      label:
+        "Últimos 7 dias"
+    };
+  }
+
+  if (
+    selected === "month"
+  ) {
+    const date =
+      parseDate(today);
+
+    date.setDate(1);
+
+    return {
+      type: "month",
+      start:
+        dateToISO(date),
+      end:
+        today,
+      label:
+        "Este mês"
+    };
+  }
+
+  if (
+    selected === "custom"
+  ) {
+    let start =
+      normalizeDate(
+        getPeriodStartElement()?.value
+      );
+
+    let end =
+      normalizeDate(
+        getPeriodEndElement()?.value
+      );
+
+    if (
+      !start &&
+      !end
+    ) {
+      return {
+        type: "custom",
+        start: today,
+        end: today,
+        label:
+          "Hoje"
+      };
+    }
+
+    if (!start) {
+      start = end;
+    }
+
+    if (!end) {
+      end = start;
+    }
+
+    if (start > end) {
+      const temp =
+        start;
+
+      start =
+        end;
+
+      end =
+        temp;
+    }
+
+    return {
+      type: "custom",
+      start,
+      end,
+      label:
+        `${formatDate(start)} até ${formatDate(end)}`
+    };
+  }
+
+  /*
+     TUDO
+  */
+
+  const dates =
+    transactions
+      .map(
+        transaction =>
+          normalizeDate(
+            transaction.date
+          )
+      )
+      .filter(Boolean)
+      .sort();
+
+  return {
+    type: "all",
+    start:
+      dates[0] || null,
+    end:
+      dates[dates.length - 1] ||
+      today,
+    label:
+      "Todo o período"
+  };
+}
+
+
+function getPeriodSummary() {
+  const range =
+    getPeriodRange();
+
+  let income = 0;
+  let expense = 0;
+
+  transactions.forEach(
+    transaction => {
+      const date =
+        normalizeDate(
+          transaction.date
+        );
+
+      if (!date) {
+        return;
+      }
+
+      if (
+        range.start &&
+        date <
+        range.start
+      ) {
+        return;
+      }
+
+      if (
+        range.end &&
+        date >
+        range.end
+      ) {
+        return;
+      }
+
+      const amount =
+        Number(
+          transaction.amount
+        ) || 0;
+
+      const type =
+        normalizeTransactionType(
+          transaction.type
+        );
+
+      /*
+         Receitas futuras não entram
+         em "ganho" até serem recebidas.
+      */
+      if (
+        type === "income" &&
+        !isIncomeReceived(
+          transaction
+        )
+      ) {
+        return;
+      }
+
+      if (
+        type === "income"
+      ) {
+        income +=
+          amount;
+      } else {
+        expense +=
+          amount;
+      }
+    }
+  );
+
+  return {
+    ...range,
+    income,
+    expense,
+    balance:
+      income - expense
+  };
+}
+
+
+function updatePeriodCustomFields() {
+  const filter =
+    getPeriodFilterElement();
+
+  const value =
+    normalizePeriodValue(
+      filter?.value ||
+      "month"
+    );
+
+  const customFields =
+    firstExisting(
+      "customPeriodFields",
+      "periodCustomFields",
+      "customDateRange"
+    ) ||
+    document.querySelector(
+      "[data-custom-period]"
+    );
+
+  if (!customFields) {
+    return;
+  }
+
+  customFields.classList.toggle(
+    "hidden",
+    value !== "custom"
+  );
+}
+
+
+function updatePeriodSummary() {
+  const summary =
+    getPeriodSummary();
+
+  updatePeriodCustomFields();
+
+  const incomeElements = [
+    firstExisting(
+      "periodIncome",
+      "periodIncomeValue",
+      "periodEarned",
+      "periodEarnedValue",
+      "earnedPeriodValue"
+    ),
+    ...Array.from(
+      document.querySelectorAll(
+        "[data-period-income]"
+      )
+    )
+  ].filter(Boolean);
+
+  const expenseElements = [
+    firstExisting(
+      "periodExpense",
+      "periodExpenseValue",
+      "periodSpent",
+      "periodSpentValue",
+      "spentPeriodValue"
+    ),
+    ...Array.from(
+      document.querySelectorAll(
+        "[data-period-expense]"
+      )
+    )
+  ].filter(Boolean);
+
+  const balanceElements = [
+    firstExisting(
+      "periodBalance",
+      "periodBalanceValue",
+      "periodResult",
+      "periodResultValue"
+    ),
+    ...Array.from(
+      document.querySelectorAll(
+        "[data-period-balance]"
+      )
+    )
+  ].filter(Boolean);
+
+  const labelElements = [
+    firstExisting(
+      "periodLabel",
+      "selectedPeriodLabel",
+      "periodSummaryLabel"
+    ),
+    ...Array.from(
+      document.querySelectorAll(
+        "[data-period-label]"
+      )
+    )
+  ].filter(Boolean);
+
+  incomeElements.forEach(
+    element => {
+      element.textContent =
+        formatMoney(
+          summary.income
+        );
+    }
+  );
+
+  expenseElements.forEach(
+    element => {
+      element.textContent =
+        formatMoney(
+          summary.expense
+        );
+    }
+  );
+
+  balanceElements.forEach(
+    element => {
+      element.textContent =
+        formatMoney(
+          summary.balance
+        );
+
+      element.classList.toggle(
+        "positive",
+        summary.balance >= 0
+      );
+
+      element.classList.toggle(
+        "negative",
+        summary.balance < 0
+      );
+    }
+  );
+
+  labelElements.forEach(
+    element => {
+      element.textContent =
+        summary.label;
+    }
+  );
+
+  /*
+     Elementos opcionais para mostrar
+     frases como "ganhou" e "gastou".
+  */
+
+  const earnedText =
+    firstExisting(
+      "periodEarnedText",
+      "periodIncomeText"
+    );
+
+  const spentText =
+    firstExisting(
+      "periodSpentText",
+      "periodExpenseText"
+    );
+
+  if (earnedText) {
+    earnedText.textContent =
+      `Você ganhou ${formatMoney(
+        summary.income
+      )} no período.`;
+  }
+
+  if (spentText) {
+    spentText.textContent =
+      `Você gastou ${formatMoney(
+        summary.expense
+      )} no período.`;
+  }
 }
 
 
@@ -3313,6 +3835,8 @@ function updateReports() {
   }
 
   updatePremiumDashboard();
+
+  updatePeriodSummary();
 }
 
 
@@ -4477,7 +5001,7 @@ function openCategoryModal() {
 
 /* =========================================================
    MENU MOBILE
-   CORREÇÃO DO BUG DE MENU TRAVADO
+   CORREÇÃO DEFINITIVA DO MENU TRAVADO
 ========================================================= */
 
 function getMobileOverlay() {
@@ -4685,9 +5209,8 @@ function showSection(
   }
 
   /*
-     IMPORTANTE:
-     Toda navegação pelo menu fecha
-     o menu mobile imediatamente.
+     Sempre fecha o menu mobile
+     ao trocar de seção.
   */
   closeMobileMenu();
 
@@ -4703,6 +5226,21 @@ function showSection(
 ========================================================= */
 
 function setupEvents() {
+
+  /*
+     Evita duplicação de listeners.
+  */
+  if (eventsBound) {
+    return;
+  }
+
+  eventsBound = true;
+
+
+  /* =======================================================
+     AUTH
+  ======================================================= */
+
   $("loginForm")
     ?.addEventListener(
       "submit",
@@ -4727,6 +5265,11 @@ function setupEvents() {
       showLoginView
     );
 
+
+  /* =======================================================
+     FORMULÁRIOS
+  ======================================================= */
+
   $("transactionForm")
     ?.addEventListener(
       "submit",
@@ -4745,6 +5288,11 @@ function setupEvents() {
       saveGoal
     );
 
+
+  /* =======================================================
+     PREMIUM
+  ======================================================= */
+
   $("confirmPremiumBtn")
     ?.addEventListener(
       "click",
@@ -4756,6 +5304,11 @@ function setupEvents() {
       "click",
       openPremiumModal
     );
+
+
+  /* =======================================================
+     BOTÕES
+  ======================================================= */
 
   $("addTransactionBtn")
     ?.addEventListener(
@@ -4799,11 +5352,21 @@ function setupEvents() {
       openGoalModal
     );
 
+
+  /* =======================================================
+     LOGOUT
+  ======================================================= */
+
   $("logoutBtn")
     ?.addEventListener(
       "click",
       logout
     );
+
+
+  /* =======================================================
+     TEMA
+  ======================================================= */
 
   $("themeBtn")
     ?.addEventListener(
@@ -4813,7 +5376,8 @@ function setupEvents() {
 
 
   /* =======================================================
-     MENU MOBILE — ÚNICO LISTENER
+     MENU MOBILE
+     UM ÚNICO LISTENER
   ======================================================= */
 
   $("mobileMenuBtn")
@@ -4829,7 +5393,7 @@ function setupEvents() {
 
 
   /* =======================================================
-     OVERLAY DO MENU MOBILE
+     OVERLAY
   ======================================================= */
 
   $("mobileOverlay")
@@ -4852,23 +5416,63 @@ function setupEvents() {
     event => {
 
       /*
-         IMPORTANTE:
-         O botão do menu e o overlay
-         já possuem listeners próprios.
+         Proteção para evitar erro
+         caso o target não seja Element.
       */
-
       if (
-        event.target.closest(
-          "#mobileMenuBtn,#mobileOverlay"
-        )
+        !(event.target instanceof Element)
       ) {
         return;
       }
 
 
+      /*
+         ---------------------------------------------------
+         MENU MOBILE
+         ---------------------------------------------------
+      */
+
+      const sidebar =
+        $("sidebar");
+
+      const menuButton =
+        $("mobileMenuBtn");
+
+      const clickedInsideSidebar =
+        sidebar?.contains(
+          event.target
+        );
+
+      const clickedMenuButton =
+        menuButton?.contains(
+          event.target
+        );
+
+      if (
+        isMobileViewport() &&
+        sidebar?.classList.contains(
+          "mobile-open"
+        ) &&
+        !clickedInsideSidebar &&
+        !clickedMenuButton
+      ) {
+        closeMobileMenu();
+      }
+
+
+      /*
+         ---------------------------------------------------
+         NAVEGAÇÃO
+         ---------------------------------------------------
+         
+         Aqui usamos somente .nav-item
+         para não capturar qualquer elemento
+         aleatório que possua data-section.
+      */
+
       const nav =
         event.target.closest(
-          ".nav-item,[data-section]"
+          ".nav-item"
         );
 
       if (
@@ -4886,6 +5490,12 @@ function setupEvents() {
         return;
       }
 
+
+      /*
+         ---------------------------------------------------
+         AÇÕES
+         ---------------------------------------------------
+      */
 
       const action =
         event.target.closest(
@@ -4919,6 +5529,12 @@ function setupEvents() {
       }
 
 
+      /*
+         ---------------------------------------------------
+         EDITAR
+         ---------------------------------------------------
+      */
+
       const edit =
         event.target.closest(
           "[data-edit-transaction]"
@@ -4950,6 +5566,12 @@ function setupEvents() {
       }
 
 
+      /*
+         ---------------------------------------------------
+         RECEBER
+         ---------------------------------------------------
+      */
+
       const receive =
         event.target.closest(
           "[data-receive-transaction]"
@@ -4965,6 +5587,12 @@ function setupEvents() {
       }
 
 
+      /*
+         ---------------------------------------------------
+         EXCLUIR
+         ---------------------------------------------------
+      */
+
       const del =
         event.target.closest(
           "[data-delete-transaction]"
@@ -4979,6 +5607,12 @@ function setupEvents() {
         return;
       }
 
+
+      /*
+         ---------------------------------------------------
+         FECHAR MODAL
+         ---------------------------------------------------
+      */
 
       const close =
         event.target.closest(
@@ -5075,7 +5709,7 @@ function setupEvents() {
 
 
   /* =======================================================
-     FILTROS
+     FILTROS DE TRANSAÇÕES
   ======================================================= */
 
   [
@@ -5097,7 +5731,39 @@ function setupEvents() {
 
 
   /* =======================================================
-     FECHAR MODAIS
+     FILTRO DE PERÍODO
+  ======================================================= */
+
+  const periodFilter =
+    getPeriodFilterElement();
+
+  periodFilter?.addEventListener(
+    "change",
+    () => {
+      updatePeriodCustomFields();
+      updatePeriodSummary();
+    }
+  );
+
+  const periodStart =
+    getPeriodStartElement();
+
+  const periodEnd =
+    getPeriodEndElement();
+
+  periodStart?.addEventListener(
+    "change",
+    updatePeriodSummary
+  );
+
+  periodEnd?.addEventListener(
+    "change",
+    updatePeriodSummary
+  );
+
+
+  /* =======================================================
+     FECHAR MODAIS PELO FUNDO
   ======================================================= */
 
   document
@@ -5138,9 +5804,20 @@ function setupEvents() {
       }
 
       /*
-         Primeiro fecha o menu mobile.
+         Primeiro fecha o menu.
       */
-      closeMobileMenu();
+      const sidebar =
+        $("sidebar");
+
+      if (
+        sidebar?.classList.contains(
+          "mobile-open"
+        )
+      ) {
+        closeMobileMenu();
+
+        return;
+      }
 
       /*
          Depois fecha os modais.
@@ -5167,26 +5844,24 @@ function setupEvents() {
     "resize",
     () => {
 
-      /*
-         Se saiu do modo mobile,
-         o menu é obrigatoriamente
-         fechado.
-      */
-
       if (
         !isMobileViewport()
       ) {
         closeMobileMenu();
       }
+
+      updatePeriodCustomFields();
     }
   );
 
 
   /* =======================================================
-     INICIALIZAÇÃO DO ESTADO DO MENU
+     INICIALIZAÇÃO DO MENU
   ======================================================= */
 
   closeMobileMenu();
+
+  updatePeriodCustomFields();
 }
 
 
@@ -5345,6 +6020,27 @@ function todayISO() {
     new Date(
       d.getTime() -
       d.getTimezoneOffset() *
+        60000
+    );
+
+  return local
+    .toISOString()
+    .slice(
+      0,
+      10
+    );
+}
+
+
+function dateToISO(date) {
+  if (!date) {
+    return "";
+  }
+
+  const local =
+    new Date(
+      date.getTime() -
+      date.getTimezoneOffset() *
         60000
     );
 
@@ -5904,6 +6600,10 @@ function loadTheme() {
     "dark"
   ) {
     document.body.classList.add(
+      "dark"
+    );
+  } else {
+    document.body.classList.remove(
       "dark"
     );
   }
