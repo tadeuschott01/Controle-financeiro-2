@@ -277,15 +277,13 @@ async function checkSession() {
 
             destroyCharts();
 
+            closeMobileMenu();
+
             showLoginView();
 
             return;
           }
 
-          /*
-             Quando o Supabase renovar o token,
-             mantemos o usuário conectado.
-          */
           if (
             event === "TOKEN_REFRESHED" &&
             session?.user
@@ -294,9 +292,6 @@ async function checkSession() {
               session.user;
           }
 
-          /*
-             Login realizado por outro fluxo.
-          */
           if (
             event === "SIGNED_IN" &&
             session?.user &&
@@ -758,6 +753,8 @@ async function enterApp(user) {
   try {
     currentUser = user;
 
+    closeMobileMenu();
+
     showAppView();
 
     await createProfileIfNeeded(
@@ -801,6 +798,8 @@ async function enterApp(user) {
 ========================================================= */
 
 async function logout() {
+  closeMobileMenu();
+
   try {
     if (supabaseClient) {
       await supabaseClient.auth.signOut();
@@ -1064,21 +1063,6 @@ async function loadSubscription() {
 /* =========================================================
    A RECEBER — REGRAS
 ========================================================= */
-
-/*
-   Receita futura:
-   - tipo = receita
-   - possui receivable_date
-   - receivable_date > hoje
-
-   Enquanto estiver no futuro:
-   - aparece em A Receber
-   - NÃO entra no saldo
-   - NÃO entra nas receitas recebidas
-
-   Quando a data chega:
-   - passa automaticamente a contar no saldo
-*/
 
 function isIncomeReceived(
   transaction,
@@ -1410,12 +1394,6 @@ function openNewReceivable() {
     "income"
   );
 
-  /*
-     Para uma nova receita aberta
-     pelo A Receber, deixamos a
-     data de recebimento inicialmente
-     vazia para o usuário escolher.
-  */
   if ($("transactionReceivableDate")) {
     $("transactionReceivableDate")
       .value = "";
@@ -1530,10 +1508,6 @@ async function saveTransaction(event) {
     return;
   }
 
-  /*
-     Garante que existe uma sessão antes
-     de enviar a operação para o banco.
-  */
   const session =
     await ensureValidSession();
 
@@ -1594,11 +1568,6 @@ async function saveTransaction(event) {
     return;
   }
 
-
-  /* -------------------------------------------------------
-     VALIDAÇÃO DA DATA DE RECEBIMENTO
-  ------------------------------------------------------- */
-
   if (
     selectedTransactionType ===
     "income"
@@ -1617,11 +1586,6 @@ async function saveTransaction(event) {
     }
   }
 
-
-  /* -------------------------------------------------------
-     DESPESA NÃO USA A RECEBER
-  ------------------------------------------------------- */
-
   const finalReceivableDate =
     selectedTransactionType ===
     "income"
@@ -1630,7 +1594,6 @@ async function saveTransaction(event) {
           null
         )
       : null;
-
 
   const button =
     $("saveTransactionBtn");
@@ -1641,13 +1604,6 @@ async function saveTransaction(event) {
     "Salvando..."
   );
 
-
-  /*
-     IMPORTANTE:
-     Não adicionamos "notes" aqui porque
-     o banco atual não foi confirmado com
-     essa coluna.
-  */
   const payload = {
     user_id:
       currentUser.id,
@@ -1668,7 +1624,6 @@ async function saveTransaction(event) {
     receivable_date:
       finalReceivableDate
   };
-
 
   try {
     let result;
@@ -1815,11 +1770,6 @@ function openTransactionModal(
     $("transactionNotes").value =
       transaction?.notes || "";
   }
-
-
-  /* -------------------------------------------------------
-     DATA DE RECEBIMENTO
-  ------------------------------------------------------- */
 
   if ($("transactionReceivableDate")) {
     $("transactionReceivableDate")
@@ -2577,10 +2527,6 @@ function getTotals() {
           t.type
         );
 
-      /*
-         Receita futura não entra
-         no saldo atual.
-      */
       if (
         type === "income" &&
         !isIncomeReceived(
@@ -2639,11 +2585,6 @@ function updatePremiumDashboard() {
   const monthly =
     getCurrentMonthSummary();
 
-
-  /* -------------------------------------------------------
-     COFRINHO
-  ------------------------------------------------------- */
-
   if ($("monthlySavingsValue")) {
     $("monthlySavingsValue")
       .textContent =
@@ -2680,11 +2621,6 @@ function updatePremiumDashboard() {
     }
   }
 
-
-  /* -------------------------------------------------------
-     RESUMO MENSAL
-  ------------------------------------------------------- */
-
   if ($("monthlyIncomeValue")) {
     $("monthlyIncomeValue")
       .textContent =
@@ -2720,11 +2656,6 @@ function updatePremiumDashboard() {
         monthly.balance < 0
       );
   }
-
-
-  /* -------------------------------------------------------
-     RANKING
-  ------------------------------------------------------- */
 
   const ranking =
     getMonthlyExpenseRanking();
@@ -2822,11 +2753,6 @@ function updatePremiumDashboard() {
     }
   }
 
-
-  /* -------------------------------------------------------
-     MAIOR GASTO
-  ------------------------------------------------------- */
-
   const top =
     ranking[0];
 
@@ -2882,10 +2808,6 @@ function getCurrentMonthSummary() {
           transaction.type
         );
 
-      /*
-         Receita futura não entra
-         no resumo mensal recebido.
-      */
       if (
         type === "income" &&
         !isIncomeReceived(
@@ -3297,9 +3219,6 @@ function sumByMonth(
         return sum;
       }
 
-      /*
-         Não conta receita futura.
-      */
       if (
         wantedType === "income" &&
         !isIncomeReceived(t)
@@ -3450,9 +3369,6 @@ function getMonthSummary(date) {
           transaction.type
         );
 
-      /*
-         Receita futura não entra.
-      */
       if (
         type === "income" &&
         !isIncomeReceived(
@@ -4560,6 +4476,127 @@ function openCategoryModal() {
 
 
 /* =========================================================
+   MENU MOBILE
+   CORREÇÃO DO BUG DE MENU TRAVADO
+========================================================= */
+
+function getMobileOverlay() {
+  return $("mobileOverlay");
+}
+
+
+function isMobileViewport() {
+  return window.innerWidth <= 720;
+}
+
+
+function openMobileMenu() {
+  const sidebar =
+    $("sidebar");
+
+  const overlay =
+    getMobileOverlay();
+
+  const button =
+    $("mobileMenuBtn");
+
+  if (!sidebar) {
+    return;
+  }
+
+  if (!isMobileViewport()) {
+    return;
+  }
+
+  sidebar.classList.add(
+    "mobile-open"
+  );
+
+  overlay?.classList.remove(
+    "hidden"
+  );
+
+  document.body.classList.add(
+    "menu-open"
+  );
+
+  button?.setAttribute(
+    "aria-expanded",
+    "true"
+  );
+
+  button?.setAttribute(
+    "aria-label",
+    "Fechar menu"
+  );
+
+  sidebar.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+}
+
+
+function closeMobileMenu() {
+  const sidebar =
+    $("sidebar");
+
+  const overlay =
+    getMobileOverlay();
+
+  const button =
+    $("mobileMenuBtn");
+
+  sidebar?.classList.remove(
+    "mobile-open"
+  );
+
+  overlay?.classList.add(
+    "hidden"
+  );
+
+  document.body.classList.remove(
+    "menu-open"
+  );
+
+  button?.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+  button?.setAttribute(
+    "aria-label",
+    "Abrir menu"
+  );
+
+  sidebar?.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+}
+
+
+function toggleMobileMenu() {
+  const sidebar =
+    $("sidebar");
+
+  if (!sidebar) {
+    return;
+  }
+
+  if (
+    sidebar.classList.contains(
+      "mobile-open"
+    )
+  ) {
+    closeMobileMenu();
+  } else {
+    openMobileMenu();
+  }
+}
+
+
+/* =========================================================
    SEÇÕES
 ========================================================= */
 
@@ -4647,10 +4684,12 @@ function showSection(
     updateDashboard();
   }
 
-  $("sidebar")
-    ?.classList.remove(
-      "mobile-open"
-    );
+  /*
+     IMPORTANTE:
+     Toda navegação pelo menu fecha
+     o menu mobile imediatamente.
+  */
+  closeMobileMenu();
 
   window.scrollTo({
     top: 0,
@@ -4772,14 +4811,34 @@ function setupEvents() {
       toggleTheme
     );
 
+
+  /* =======================================================
+     MENU MOBILE — ÚNICO LISTENER
+  ======================================================= */
+
   $("mobileMenuBtn")
     ?.addEventListener(
       "click",
-      () => {
-        $("sidebar")
-          ?.classList.toggle(
-            "mobile-open"
-          );
+      event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        toggleMobileMenu();
+      }
+    );
+
+
+  /* =======================================================
+     OVERLAY DO MENU MOBILE
+  ======================================================= */
+
+  $("mobileOverlay")
+    ?.addEventListener(
+      "click",
+      event => {
+        event.preventDefault();
+
+        closeMobileMenu();
       }
     );
 
@@ -4791,6 +4850,22 @@ function setupEvents() {
   document.addEventListener(
     "click",
     event => {
+
+      /*
+         IMPORTANTE:
+         O botão do menu e o overlay
+         já possuem listeners próprios.
+      */
+
+      if (
+        event.target.closest(
+          "#mobileMenuBtn,#mobileOverlay"
+        )
+      ) {
+        return;
+      }
+
+
       const nav =
         event.target.closest(
           ".nav-item,[data-section]"
@@ -4821,18 +4896,26 @@ function setupEvents() {
         action?.dataset.action ===
         "add-income"
       ) {
+        closeMobileMenu();
+
         openTransactionModal(
           "income"
         );
+
+        return;
       }
 
       if (
         action?.dataset.action ===
         "add-expense"
       ) {
+        closeMobileMenu();
+
         openTransactionModal(
           "expense"
         );
+
+        return;
       }
 
 
@@ -5048,22 +5131,62 @@ function setupEvents() {
     "keydown",
     event => {
       if (
-        event.key ===
+        event.key !==
         "Escape"
       ) {
-        document
-          .querySelectorAll(
-            ".modal:not(.hidden)"
-          )
-          .forEach(
-            modal =>
-              closeModal(
-                modal.id
-              )
-          );
+        return;
+      }
+
+      /*
+         Primeiro fecha o menu mobile.
+      */
+      closeMobileMenu();
+
+      /*
+         Depois fecha os modais.
+      */
+      document
+        .querySelectorAll(
+          ".modal:not(.hidden)"
+        )
+        .forEach(
+          modal =>
+            closeModal(
+              modal.id
+            )
+        );
+    }
+  );
+
+
+  /* =======================================================
+     REDIMENSIONAMENTO
+  ======================================================= */
+
+  window.addEventListener(
+    "resize",
+    () => {
+
+      /*
+         Se saiu do modo mobile,
+         o menu é obrigatoriamente
+         fechado.
+      */
+
+      if (
+        !isMobileViewport()
+      ) {
+        closeMobileMenu();
       }
     }
   );
+
+
+  /* =======================================================
+     INICIALIZAÇÃO DO ESTADO DO MENU
+  ======================================================= */
+
+  closeMobileMenu();
 }
 
 
@@ -5072,6 +5195,8 @@ function setupEvents() {
 ========================================================= */
 
 function showLoginView() {
+  closeMobileMenu();
+
   $("loginView")
     ?.classList.remove(
       "hidden"
@@ -5093,6 +5218,8 @@ function showLoginView() {
 
 
 function showRegisterView() {
+  closeMobileMenu();
+
   $("loginView")
     ?.classList.add(
       "hidden"
@@ -5118,6 +5245,8 @@ function showRegisterView() {
 
 
 function showAppView() {
+  closeMobileMenu();
+
   $("loginView")
     ?.classList.add(
       "hidden"
@@ -5144,6 +5273,8 @@ function showAppView() {
 ========================================================= */
 
 function openModal(id) {
+  closeMobileMenu();
+
   $(id)
     ?.classList.remove(
       "hidden"
