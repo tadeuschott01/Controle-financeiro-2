@@ -2575,18 +2575,30 @@ function updateReports() {
   const premium =
     isPremiumActive();
 
+  /*
+     CORREÇÃO:
+
+     Premium ATIVO:
+     - esconde o bloqueio Premium
+     - mostra os relatórios normais
+
+     Premium INATIVO:
+     - mostra o bloqueio Premium
+     - esconde os relatórios
+  */
+
   $(
     "premiumReportContent"
   )?.classList.toggle(
     "hidden",
-    !premium
+    premium
   );
 
   $(
     "normalReportContent"
   )?.classList.toggle(
     "hidden",
-    premium
+    !premium
   );
 
   if (premium) {
