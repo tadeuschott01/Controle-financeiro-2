@@ -8,7 +8,10 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -56,7 +59,9 @@
 
       <form id="loginForm" novalidate>
 
-        <label for="loginEmail">E-mail</label>
+        <label for="loginEmail">
+          E-mail
+        </label>
 
         <input
           id="loginEmail"
@@ -66,7 +71,9 @@
           required
         >
 
-        <label for="loginPassword">Senha</label>
+        <label for="loginPassword">
+          Senha
+        </label>
 
         <div class="password-wrap">
 
@@ -163,7 +170,9 @@
 
       <form id="registerForm" novalidate>
 
-        <label for="registerName">Nome</label>
+        <label for="registerName">
+          Nome
+        </label>
 
         <input
           id="registerName"
@@ -173,7 +182,9 @@
           required
         >
 
-        <label for="registerEmail">E-mail</label>
+        <label for="registerEmail">
+          E-mail
+        </label>
 
         <input
           id="registerEmail"
@@ -183,7 +194,9 @@
           required
         >
 
-        <label for="registerPassword">Senha</label>
+        <label for="registerPassword">
+          Senha
+        </label>
 
         <div class="password-wrap">
 
@@ -288,6 +301,9 @@
 
       </div>
 
+
+      <!-- MENU -->
+
       <nav class="sidebar-nav">
 
         <button
@@ -299,6 +315,7 @@
           Início
         </button>
 
+
         <button
           class="nav-item"
           data-section="transactions"
@@ -307,6 +324,21 @@
           <span>↔</span>
           Lançamentos
         </button>
+
+
+        <!-- =================================================
+             A RECEBER
+        ================================================== -->
+
+        <button
+          class="nav-item"
+          data-section="receivable"
+          type="button"
+        >
+          <span>💰</span>
+          A Receber
+        </button>
+
 
         <button
           class="nav-item"
@@ -317,6 +349,7 @@
           Categorias
         </button>
 
+
         <button
           class="nav-item"
           data-section="reports"
@@ -325,6 +358,7 @@
           <span>▥</span>
           Relatórios
         </button>
+
 
         <button
           class="nav-item"
@@ -337,6 +371,7 @@
 
       </nav>
 
+
       <div class="sidebar-bottom">
 
         <button
@@ -348,7 +383,6 @@
           Tema
         </button>
 
-        <!-- SUPORTE -->
 
         <a
           class="side-action support-action"
@@ -357,6 +391,7 @@
           <span>✉</span>
           Suporte
         </a>
+
 
         <button
           id="logoutBtn"
@@ -373,6 +408,7 @@
 
 
     <main class="main-content">
+
 
       <!-- =================================================
            TOPBAR
@@ -400,6 +436,7 @@
           </h1>
 
         </div>
+
 
         <div class="topbar-user">
 
@@ -451,6 +488,7 @@
             </p>
 
           </div>
+
 
           <button
             id="addTransactionBtn"
@@ -539,6 +577,7 @@
             Adicionar receita
           </button>
 
+
           <button
             class="quick-action"
             data-action="add-expense"
@@ -548,6 +587,7 @@
             Adicionar despesa
           </button>
 
+
           <button
             id="addCategoryBtn"
             class="quick-action"
@@ -556,6 +596,7 @@
             <span>◈</span>
             Nova categoria
           </button>
+
 
           <button
             id="addGoalBtn"
@@ -580,6 +621,7 @@
 
           <div class="dashboard-grid">
 
+
             <!-- COFRINHO -->
 
             <article class="panel premium-mini-card">
@@ -599,6 +641,7 @@
                 </div>
 
               </div>
+
 
               <div class="premium-value-box">
 
@@ -634,6 +677,7 @@
                 </div>
 
               </div>
+
 
               <div class="premium-value-box">
 
@@ -672,6 +716,7 @@
 
             </div>
 
+
             <div class="premium-summary-grid">
 
               <div class="premium-summary-item">
@@ -689,6 +734,7 @@
 
               </div>
 
+
               <div class="premium-summary-item">
 
                 <span>
@@ -703,6 +749,7 @@
                 </strong>
 
               </div>
+
 
               <div class="premium-summary-item">
 
@@ -741,6 +788,7 @@
 
             </div>
 
+
             <div
               id="expenseRanking"
               class="expense-ranking"
@@ -773,8 +821,11 @@
 
             </div>
 
+
             <div class="chart-box">
+
               <canvas id="financeChart"></canvas>
+
             </div>
 
           </article>
@@ -796,6 +847,7 @@
 
               </div>
 
+
               <button
                 class="text-button"
                 data-section="transactions"
@@ -805,6 +857,7 @@
               </button>
 
             </div>
+
 
             <div
               id="recentTransactions"
@@ -845,6 +898,7 @@
 
           </div>
 
+
           <button
             id="addTransactionBtn2"
             class="btn btn-primary"
@@ -863,6 +917,7 @@
             type="search"
             placeholder="Buscar lançamento..."
           >
+
 
           <select id="transactionFilter">
 
@@ -919,16 +974,32 @@
 
                 <tr>
 
-                  <th>Descrição</th>
-                  <th>Categoria</th>
-                  <th>Data</th>
-                  <th>Tipo</th>
-                  <th>Valor</th>
+                  <th>
+                    Descrição
+                  </th>
+
+                  <th>
+                    Categoria
+                  </th>
+
+                  <th>
+                    Data
+                  </th>
+
+                  <th>
+                    Tipo
+                  </th>
+
+                  <th>
+                    Valor
+                  </th>
+
                   <th></th>
 
                 </tr>
 
               </thead>
+
 
               <tbody id="transactionsTableBody"></tbody>
 
@@ -950,6 +1021,157 @@
 
             <p>
               Adicione sua primeira receita ou despesa.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           A RECEBER
+      ================================================== -->
+
+      <section
+        id="receivableSection"
+        class="content-section"
+      >
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="eyebrow">
+              CONTROLE DE RECEBIMENTOS
+            </span>
+
+            <h2>
+              A Receber
+            </h2>
+
+            <p>
+              Acompanhe os valores que ainda não entraram no seu saldo.
+            </p>
+
+          </div>
+
+
+          <button
+            class="btn btn-primary"
+            data-action="add-income"
+            type="button"
+          >
+            + Nova receita
+          </button>
+
+        </div>
+
+
+        <!-- RESUMO A RECEBER -->
+
+        <div class="summary-grid receivable-summary-grid">
+
+          <article class="summary-card">
+
+            <span>
+              Total a receber
+            </span>
+
+            <strong
+              id="receivableTotal"
+              class="positive"
+            >
+              R$ 0,00
+            </strong>
+
+            <small>
+              Valores ainda não recebidos
+            </small>
+
+          </article>
+
+
+          <article class="summary-card">
+
+            <span>
+              Vencendo hoje
+            </span>
+
+            <strong
+              id="receivableToday"
+              class="positive"
+            >
+              R$ 0,00
+            </strong>
+
+            <small>
+              Valores com data de hoje
+            </small>
+
+          </article>
+
+
+          <article class="summary-card">
+
+            <span>
+              Pendentes
+            </span>
+
+            <strong id="receivableCount">
+              0
+            </strong>
+
+            <small>
+              Lançamentos a receber
+            </small>
+
+          </article>
+
+        </div>
+
+
+        <!-- LISTA A RECEBER -->
+
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <div>
+
+              <h3>
+                💰 Valores a receber
+              </h3>
+
+              <p>
+                Quando receber, confirme para atualizar seu saldo.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="receivableList"
+            class="recent-list"
+          ></div>
+
+
+          <div
+            id="receivableEmpty"
+            class="empty-state hidden"
+          >
+
+            <div>✓</div>
+
+            <h3>
+              Nada a receber
+            </h3>
+
+            <p>
+              Você não possui valores pendentes no momento.
             </p>
 
           </div>
@@ -986,6 +1208,7 @@
 
           </div>
 
+
           <button
             id="addCategoryBtn2"
             class="btn btn-primary"
@@ -995,6 +1218,7 @@
           </button>
 
         </div>
+
 
         <div
           id="categoriesGrid"
@@ -1113,6 +1337,7 @@
 
           <div class="reports-grid">
 
+
             <article class="panel">
 
               <div class="panel-header">
@@ -1130,6 +1355,7 @@
                 </div>
 
               </div>
+
 
               <div class="chart-box doughnut-box">
 
@@ -1202,10 +1428,7 @@
           </div>
 
 
-          <!-- =================================================
-               COMPARAÇÃO COM MÊS ANTERIOR
-               NOVO — NÃO ALTERA OS ELEMENTOS EXISTENTES
-          ================================================== -->
+          <!-- COMPARAÇÃO COM MÊS ANTERIOR -->
 
           <article
             id="reportComparison"
@@ -1274,10 +1497,7 @@
           </article>
 
 
-          <!-- =================================================
-               ANÁLISE AUTOMÁTICA
-               NOVO — NÃO ALTERA OS ELEMENTOS EXISTENTES
-          ================================================== -->
+          <!-- ANÁLISE AUTOMÁTICA -->
 
           <article
             id="reportAnalysis"
@@ -1305,9 +1525,11 @@
               id="automaticReportAnalysis"
               class="report-analysis"
             >
+
               <p>
                 Adicione lançamentos para gerar sua análise financeira.
               </p>
+
             </div>
 
           </article>
@@ -1341,6 +1563,7 @@
             e acompanhe suas finanças com ainda mais detalhes.
           </p>
 
+
           <div class="premium-price">
 
             <strong>
@@ -1353,6 +1576,7 @@
 
           </div>
 
+
           <button
             id="activatePremiumBtn"
             class="btn btn-premium btn-large"
@@ -1360,6 +1584,7 @@
           >
             Ativar Premium
           </button>
+
 
           <small id="premiumStatusText">
             Free
@@ -1369,6 +1594,7 @@
 
 
         <div class="premium-features">
+
 
           <article>
 
@@ -1511,6 +1737,7 @@
         ×
       </button>
 
+
       <h2 id="transactionModalTitle">
         Novo lançamento
       </h2>
@@ -1519,12 +1746,14 @@
         Preencha os dados da movimentação.
       </p>
 
+
       <form id="transactionForm">
 
         <input
           id="transactionId"
           type="hidden"
         >
+
 
         <div class="type-buttons">
 
@@ -1536,6 +1765,7 @@
             Receita
           </button>
 
+
           <button
             type="button"
             class="type-button expense"
@@ -1546,11 +1776,13 @@
 
         </div>
 
+
         <input
           id="transactionType"
           type="hidden"
           value="income"
         >
+
 
         <label for="transactionDescription">
           Descrição
@@ -1562,6 +1794,7 @@
           placeholder="Ex.: Salário"
           required
         >
+
 
         <label for="transactionAmount">
           Valor
@@ -1576,6 +1809,7 @@
           required
         >
 
+
         <label for="transactionDate">
           Data
         </label>
@@ -1586,6 +1820,7 @@
           required
         >
 
+
         <label for="transactionCategory">
           Categoria
         </label>
@@ -1594,6 +1829,7 @@
           id="transactionCategory"
           required
         ></select>
+
 
         <label for="transactionNotes">
           Observações
@@ -1605,10 +1841,12 @@
           placeholder="Opcional"
         ></textarea>
 
+
         <div
           id="transactionMessage"
           class="form-message"
         ></div>
+
 
         <button
           id="saveTransactionBtn"
@@ -1619,6 +1857,76 @@
         </button>
 
       </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MODAL A RECEBER
+  ====================================================== -->
+
+  <div
+    id="receivableConfirmModal"
+    class="modal hidden"
+  >
+
+    <div class="modal-card">
+
+      <button
+        class="modal-close"
+        data-close-modal
+        type="button"
+      >
+        ×
+      </button>
+
+
+      <div class="premium-icon">
+        💰
+      </div>
+
+
+      <h2>
+        Você já recebeu este valor?
+      </h2>
+
+
+      <p id="receivableConfirmText">
+        Confirme se o valor já entrou na sua conta.
+      </p>
+
+
+      <div
+        id="receivableConfirmMessage"
+        class="form-message"
+      ></div>
+
+
+      <div
+        class="modal-actions"
+        style="display:flex;gap:10px;margin-top:20px;"
+      >
+
+        <button
+          id="receivableReceivedBtn"
+          class="btn btn-primary"
+          type="button"
+        >
+          ✓ Já recebi
+        </button>
+
+
+        <button
+          id="receivablePendingBtn"
+          class="btn btn-secondary"
+          type="button"
+        >
+          Ainda não recebi
+        </button>
+
+      </div>
 
     </div>
 
@@ -1644,6 +1952,7 @@
         ×
       </button>
 
+
       <h2>
         Nova categoria
       </h2>
@@ -1651,6 +1960,7 @@
       <p>
         Crie uma categoria personalizada.
       </p>
+
 
       <form id="categoryForm">
 
@@ -1664,6 +1974,7 @@
           placeholder="Ex.: Viagem"
           required
         >
+
 
         <label for="categoryType">
           Tipo
@@ -1681,10 +1992,12 @@
 
         </select>
 
+
         <div
           id="categoryMessage"
           class="form-message"
         ></div>
+
 
         <button
           class="btn btn-primary btn-large"
@@ -1719,6 +2032,7 @@
         ×
       </button>
 
+
       <h2>
         Nova meta
       </h2>
@@ -1726,6 +2040,7 @@
       <p>
         Defina um objetivo financeiro.
       </p>
+
 
       <form id="goalForm">
 
@@ -1740,6 +2055,7 @@
           required
         >
 
+
         <label for="goalTarget">
           Valor da meta
         </label>
@@ -1752,6 +2068,7 @@
           placeholder="0,00"
           required
         >
+
 
         <label for="goalCurrent">
           Valor já guardado
@@ -1766,6 +2083,7 @@
           placeholder="0,00"
         >
 
+
         <label for="goalDeadline">
           Prazo
         </label>
@@ -1775,10 +2093,12 @@
           type="date"
         >
 
+
         <div
           id="goalMessage"
           class="form-message"
         ></div>
+
 
         <button
           class="btn btn-primary btn-large"
@@ -1813,18 +2133,22 @@
         ×
       </button>
 
+
       <div class="premium-icon">
         ★
       </div>
+
 
       <h2>
         Ativar Premium
       </h2>
 
+
       <p>
         Durante os testes, o Premium será ativado por 7 dias.
         A cobrança real será integrada posteriormente.
       </p>
+
 
       <div class="trial-box">
 
@@ -1838,10 +2162,12 @@
 
       </div>
 
+
       <div
         id="premiumMessage"
         class="form-message"
       ></div>
+
 
       <button
         id="confirmPremiumBtn"
@@ -1856,7 +2182,9 @@
   </div>
 
 
-  <!-- TOAST -->
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
 
   <div
     id="toast"
