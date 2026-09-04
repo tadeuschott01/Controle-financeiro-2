@@ -2,10 +2,10 @@
    CONTROLES 1.0 — APP.JS
 
    Login + Cadastro + Dashboard + Lançamentos
+   + A Receber
    + Categorias + Relatórios + Premium + Tema
    + Supabase
    + Cofrinho Mensal + Resumo Mensal + Ranking
-   + A RECEBER
 ========================================================= */
 
 const SUPABASE_URL =
@@ -178,12 +178,56 @@ function initializeSupabase() {
         }
       );
   } catch (error) {
-    console.error(error);
+    console.error(
+      "initializeSupabase:",
+      error
+    );
 
     showMessage(
       "loginMessage",
       "Erro ao conectar ao banco de dados."
     );
+  }
+}
+
+
+/* =========================================================
+   GARANTIR SESSÃO VÁLIDA
+========================================================= */
+
+async function ensureValidSession() {
+  if (!supabaseClient) {
+    return null;
+  }
+
+  try {
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.getSession();
+
+    if (error) {
+      console.warn(
+        "getSession:",
+        error
+      );
+
+      return null;
+    }
+
+    if (data?.session) {
+      return data.session;
+    }
+
+    return null;
+  } catch (error) {
+    console.warn(
+      "ensureValidSession:",
+      error
+    );
+
+    return null;
   }
 }
 
@@ -198,19 +242,12 @@ async function checkSession() {
   }
 
   try {
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth.getSession();
+    const session =
+      await ensureValidSession();
 
-    if (error) {
-      throw error;
-    }
-
-    if (data.session?.user) {
+    if (session?.user) {
       await enterApp(
-        data.session.user
+        session.user
       );
     } else {
       showLoginView();
@@ -218,7 +255,15 @@ async function checkSession() {
 
     if (!authInitialized) {
       supabaseClient.auth.onAuthStateChange(
-        (event, session) => {
+        async (
+          event,
+          session
+        ) => {
+          console.log(
+            "Supabase Auth:",
+            event
+          );
+
           if (
             event === "SIGNED_OUT"
           ) {
@@ -233,6 +278,33 @@ async function checkSession() {
             destroyCharts();
 
             showLoginView();
+
+            return;
+          }
+
+          /*
+             Quando o Supabase renovar o token,
+             mantemos o usuário conectado.
+          */
+          if (
+            event === "TOKEN_REFRESHED" &&
+            session?.user
+          ) {
+            currentUser =
+              session.user;
+          }
+
+          /*
+             Login realizado por outro fluxo.
+          */
+          if (
+            event === "SIGNED_IN" &&
+            session?.user &&
+            !enteringApp
+          ) {
+            await enterApp(
+              session.user
+            );
           }
         }
       );
@@ -274,7 +346,9 @@ async function loginUser(event) {
   const password =
     valueOf("loginPassword");
 
-  clearMessage("loginMessage");
+  clearMessage(
+    "loginMessage"
+  );
 
   if (!email || !password) {
     showMessage(
@@ -319,11 +393,14 @@ async function loginUser(event) {
       throw error;
     }
 
-    if (!data.user) {
+    if (!data?.user) {
       throw new Error(
         "Usuário não encontrado."
       );
     }
+
+    currentUser =
+      data.user;
 
     await enterApp(
       data.user
@@ -538,7 +615,10 @@ async function createProfileIfNeeded(
       await supabaseClient
         .from("profiles")
         .select("*")
-        .eq("id", user.id)
+        .eq(
+          "id",
+          user.id
+        )
         .maybeSingle();
 
     if (error) {
@@ -698,7 +778,7 @@ async function enterApp(user) {
 
     renderTransactions();
 
-    updateReceivables();
+    renderReceivables();
 
     updatePremiumUI();
   } catch (error) {
@@ -748,9 +828,14 @@ async function logout() {
 ========================================================= */
 
 async function loadUserData() {
-  if (!currentUser) {
+  if (
+    !currentUser ||
+    !supabaseClient
+  ) {
     return;
   }
+
+  await ensureValidSession();
 
   await Promise.all([
     loadTransactions(),
@@ -767,6 +852,13 @@ async function loadUserData() {
 
 async function loadTransactions() {
   transactions = [];
+
+  if (
+    !currentUser ||
+    !supabaseClient
+  ) {
+    return;
+  }
 
   try {
     const {
@@ -807,429 +899,12 @@ async function loadTransactions() {
       "loadTransactions:",
       error
     );
-  }
-}
 
-
-/* =========================================================
-   A RECEBER — REGRAS
-========================================================= */
-
-/*
-   Uma receita só fica como "A Receber" quando:
-
-   1. É uma receita;
-   2. Possui data de recebimento;
-   3. A data de recebimento ainda é futura.
-
-   Exemplo:
-
-   Lançamento: 04/09
-   Recebimento: 05/09
-   Valor: R$ 1.500
-
-   Até 04/09:
-   -> A Receber
-   -> Não entra no saldo
-
-   A partir de 05/09:
-   -> Sai de A Receber
-   -> Entra no saldo
-*/
-
-function isIncomeReceived(
-  transaction,
-  referenceDate = todayISO()
-) {
-  const type =
-    normalizeTransactionType(
-      transaction?.type
-    );
-
-  if (
-    type !== "income"
-  ) {
-    return true;
-  }
-
-  const receivableDate =
-    normalizeDate(
-      transaction?.receivable_date
-    );
-
-  if (!receivableDate) {
-    return true;
-  }
-
-  return (
-    receivableDate <=
-    referenceDate
-  );
-}
-
-
-function isFutureReceivable(
-  transaction,
-  referenceDate = todayISO()
-) {
-  const type =
-    normalizeTransactionType(
-      transaction?.type
-    );
-
-  if (
-    type !== "income"
-  ) {
-    return false;
-  }
-
-  const receivableDate =
-    normalizeDate(
-      transaction?.receivable_date
-    );
-
-  if (!receivableDate) {
-    return false;
-  }
-
-  return (
-    receivableDate >
-    referenceDate
-  );
-}
-
-
-function getReceivables() {
-  const today =
-    todayISO();
-
-  return transactions
-    .filter(
-      transaction =>
-        isFutureReceivable(
-          transaction,
-          today
-        )
-    )
-    .sort(
-      (a, b) =>
-        normalizeDate(
-          a.receivable_date
-        ).localeCompare(
-          normalizeDate(
-            b.receivable_date
-          )
-        )
-    );
-}
-
-
-function getReceivablesTotal() {
-  return getReceivables()
-    .reduce(
-      (total, transaction) =>
-        total +
-        (
-          Number(
-            transaction.amount
-          ) || 0
-        ),
-      0
-    );
-}
-
-
-/* =========================================================
-   A RECEBER — ATUALIZAÇÃO COMPLETA
-========================================================= */
-
-function updateReceivables() {
-  const receivables =
-    getReceivables();
-
-  const total =
-    receivables.reduce(
-      (sum, transaction) =>
-        sum +
-        (
-          Number(
-            transaction.amount
-          ) || 0
-        ),
-      0
-    );
-
-  const count =
-    receivables.length;
-
-  const next =
-    receivables[0] || null;
-
-
-  /* -------------------------------------------------------
-     RESUMO DA SEÇÃO
-  ------------------------------------------------------- */
-
-  if ($("receivableTotalValue")) {
-    $("receivableTotalValue")
-      .textContent =
-      formatMoney(total);
-  }
-
-  if ($("receivableCount")) {
-    $("receivableCount")
-      .textContent =
-      String(count);
-  }
-
-  if ($("receivableNextDate")) {
-    $("receivableNextDate")
-      .textContent =
-      next
-        ? formatDate(
-            next.receivable_date
-          )
-        : "—";
-  }
-
-  if ($("receivableNextDescription")) {
-    $("receivableNextDescription")
-      .textContent =
-      next
-        ? next.description ||
-          "Recebimento pendente"
-        : "Nenhum recebimento pendente";
-  }
-
-
-  /* -------------------------------------------------------
-     DASHBOARD
-  ------------------------------------------------------- */
-
-  if ($("dashboardReceivableValue")) {
-    $("dashboardReceivableValue")
-      .textContent =
-      formatMoney(total);
-  }
-
-  if ($("dashboardNextReceivable")) {
-    $("dashboardNextReceivable")
-      .textContent =
-      next
-        ? formatDate(
-            next.receivable_date
-          )
-        : "—";
-  }
-
-
-  /* -------------------------------------------------------
-     TABELA
-  ------------------------------------------------------- */
-
-  renderReceivables();
-}
-
-
-/* =========================================================
-   RENDER A RECEBER
-========================================================= */
-
-function renderReceivables() {
-  const body =
-    $("receivablesTableBody");
-
-  const empty =
-    $("receivablesEmpty");
-
-  if (!body) {
-    return;
-  }
-
-  const list =
-    getReceivables();
-
-  body.innerHTML = "";
-
-  if (!list.length) {
-    empty?.classList.remove(
-      "hidden"
-    );
-
-    return;
-  }
-
-  empty?.classList.add(
-    "hidden"
-  );
-
-  list.forEach(
-    transaction => {
-      const tr =
-        document.createElement(
-          "tr"
-        );
-
-      tr.innerHTML = `
-        <td>
-          <strong>
-            ${escapeHTML(
-              transaction.description ||
-              "Sem descrição"
-            )}
-          </strong>
-        </td>
-
-        <td>
-          ${escapeHTML(
-            transaction.category ||
-            "Outros"
-          )}
-        </td>
-
-        <td>
-          ${formatDate(
-            transaction.date
-          )}
-        </td>
-
-        <td class="receivable-date">
-          <strong>
-            ${formatDate(
-              transaction.receivable_date
-            )}
-          </strong>
-        </td>
-
-        <td class="positive receivable-value">
-          <strong>
-            + ${formatMoney(
-              transaction.amount
-            )}
-          </strong>
-        </td>
-
-        <td>
-          <span class="receivable-status pending">
-            A receber
-          </span>
-        </td>
-
-        <td>
-          <div class="row-actions">
-
-            <button
-              class="btn btn-small btn-primary receivable-action"
-              data-receivable-received="${escapeAttribute(
-                transaction.id
-              )}"
-              type="button"
-            >
-              Recebido
-            </button>
-
-            <button
-              class="icon-button"
-              data-edit-transaction="${escapeAttribute(
-                transaction.id
-              )}"
-              type="button"
-              title="Editar"
-            >
-              ✎
-            </button>
-
-            <button
-              class="icon-button delete"
-              data-delete-transaction="${escapeAttribute(
-                transaction.id
-              )}"
-              type="button"
-              title="Excluir"
-            >
-              ×
-            </button>
-
-          </div>
-        </td>
-      `;
-
-      body.appendChild(
-        tr
-      );
+    if (
+      isAuthError(error)
+    ) {
+      await recoverSession();
     }
-  );
-}
-
-
-/* =========================================================
-   MARCAR COMO RECEBIDO
-========================================================= */
-
-async function markReceivableAsReceived(
-  id
-) {
-  if (
-    !currentUser ||
-    !id
-  ) {
-    return;
-  }
-
-  const transaction =
-    transactions.find(
-      item =>
-        String(item.id) ===
-        String(id)
-    );
-
-  if (!transaction) {
-    return;
-  }
-
-  try {
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("transactions")
-        .update({
-          receivable_date:
-            todayISO()
-        })
-        .eq(
-          "id",
-          id
-        )
-        .eq(
-          "user_id",
-          currentUser.id
-        );
-
-    if (error) {
-      throw error;
-    }
-
-    showToast(
-      "Recebimento confirmado! O valor entrou no saldo."
-    );
-
-    await loadTransactions();
-
-    updateDashboard();
-    updateReports();
-
-    renderTransactions();
-    updateReceivables();
-  } catch (error) {
-    console.error(
-      "markReceivableAsReceived:",
-      error
-    );
-
-    showToast(
-      "Não foi possível confirmar o recebimento."
-    );
   }
 }
 
@@ -1301,6 +976,13 @@ async function loadGoals() {
 async function loadBudgets() {
   budgets = [];
 
+  if (
+    !currentUser ||
+    !supabaseClient
+  ) {
+    return;
+  }
+
   try {
     const {
       data,
@@ -1335,6 +1017,13 @@ async function loadBudgets() {
 
 async function loadSubscription() {
   subscription = null;
+
+  if (
+    !currentUser ||
+    !supabaseClient
+  ) {
+    return;
+  }
 
   try {
     const {
@@ -1373,6 +1062,459 @@ async function loadSubscription() {
 
 
 /* =========================================================
+   A RECEBER — REGRAS
+========================================================= */
+
+/*
+   Receita futura:
+   - tipo = receita
+   - possui receivable_date
+   - receivable_date > hoje
+
+   Enquanto estiver no futuro:
+   - aparece em A Receber
+   - NÃO entra no saldo
+   - NÃO entra nas receitas recebidas
+
+   Quando a data chega:
+   - passa automaticamente a contar no saldo
+*/
+
+function isIncomeReceived(
+  transaction,
+  referenceDate = todayISO()
+) {
+  const type =
+    normalizeTransactionType(
+      transaction?.type
+    );
+
+  if (type !== "income") {
+    return true;
+  }
+
+  const receivableDate =
+    normalizeDate(
+      transaction?.receivable_date
+    );
+
+  if (!receivableDate) {
+    return true;
+  }
+
+  return (
+    receivableDate <=
+    referenceDate
+  );
+}
+
+
+function isFutureReceivable(
+  transaction,
+  referenceDate = todayISO()
+) {
+  const type =
+    normalizeTransactionType(
+      transaction?.type
+    );
+
+  if (type !== "income") {
+    return false;
+  }
+
+  const receivableDate =
+    normalizeDate(
+      transaction?.receivable_date
+    );
+
+  if (!receivableDate) {
+    return false;
+  }
+
+  return (
+    receivableDate >
+    referenceDate
+  );
+}
+
+
+function getReceivableTransactions() {
+  const today =
+    todayISO();
+
+  return transactions
+    .filter(
+      transaction =>
+        isFutureReceivable(
+          transaction,
+          today
+        )
+    )
+    .sort(
+      (a, b) =>
+        String(
+          a.receivable_date || ""
+        ).localeCompare(
+          String(
+            b.receivable_date || ""
+          )
+        )
+    );
+}
+
+
+/* =========================================================
+   A RECEBER — RESUMO
+========================================================= */
+
+function getReceivableSummary() {
+  const list =
+    getReceivableTransactions();
+
+  const total =
+    list.reduce(
+      (sum, transaction) =>
+        sum +
+        (
+          Number(
+            transaction.amount
+          ) || 0
+        ),
+      0
+    );
+
+  const next =
+    list[0] || null;
+
+  return {
+    list,
+    total,
+    count:
+      list.length,
+    next
+  };
+}
+
+
+/* =========================================================
+   A RECEBER — RENDER
+========================================================= */
+
+function renderReceivables() {
+  const body =
+    $("receivablesTableBody");
+
+  const empty =
+    $("receivablesEmpty");
+
+  const summary =
+    getReceivableSummary();
+
+  if (body) {
+    body.innerHTML = "";
+
+    summary.list.forEach(
+      transaction => {
+        const tr =
+          document.createElement(
+            "tr"
+          );
+
+        const receiptDate =
+          normalizeDate(
+            transaction.receivable_date
+          );
+
+        const days =
+          daysUntilDate(
+            receiptDate
+          );
+
+        tr.innerHTML = `
+          <td>
+            <strong>
+              ${escapeHTML(
+                transaction.description ||
+                "Sem descrição"
+              )}
+            </strong>
+          </td>
+
+          <td>
+            ${escapeHTML(
+              transaction.category ||
+              "Outros"
+            )}
+          </td>
+
+          <td>
+            ${formatDate(
+              transaction.date
+            )}
+          </td>
+
+          <td>
+            <span class="receivable-date">
+              ${formatDate(
+                receiptDate
+              )}
+            </span>
+          </td>
+
+          <td>
+            <strong class="positive receivable-value">
+              + ${formatMoney(
+                transaction.amount
+              )}
+            </strong>
+          </td>
+
+          <td>
+            <span class="receivable-status pending">
+              ${days === 0
+                ? "Recebe hoje"
+                : days === 1
+                  ? "Amanhã"
+                  : `Em ${days} dias`
+              }
+            </span>
+          </td>
+
+          <td>
+            <div class="row-actions">
+
+              <button
+                class="icon-button"
+                type="button"
+                data-edit-transaction="${escapeAttribute(
+                  transaction.id
+                )}"
+                title="Editar"
+              >
+                ✎
+              </button>
+
+              <button
+                class="icon-button"
+                type="button"
+                data-receive-transaction="${escapeAttribute(
+                  transaction.id
+                )}"
+                title="Marcar como recebido"
+              >
+                ✓
+              </button>
+
+              <button
+                class="icon-button delete"
+                type="button"
+                data-delete-transaction="${escapeAttribute(
+                  transaction.id
+                )}"
+                title="Excluir"
+              >
+                ×
+              </button>
+
+            </div>
+          </td>
+        `;
+
+        body.appendChild(tr);
+      }
+    );
+  }
+
+  if (empty) {
+    empty.classList.toggle(
+      "hidden",
+      summary.count > 0
+    );
+  }
+
+  if ($("receivableTotalValue")) {
+    $("receivableTotalValue")
+      .textContent =
+      formatMoney(
+        summary.total
+      );
+  }
+
+  if ($("receivableCount")) {
+    $("receivableCount")
+      .textContent =
+      String(
+        summary.count
+      );
+  }
+
+  if ($("receivableNextDate")) {
+    $("receivableNextDate")
+      .textContent =
+      summary.next
+        ? formatDate(
+            summary.next
+              .receivable_date
+          )
+        : "—";
+  }
+
+  if ($("receivableNextDescription")) {
+    $("receivableNextDescription")
+      .textContent =
+      summary.next
+        ? summary.next.description ||
+          "Próximo recebimento"
+        : "Nenhum recebimento pendente";
+  }
+
+  updateReceivableDashboard();
+}
+
+
+/* =========================================================
+   A RECEBER — DASHBOARD
+========================================================= */
+
+function updateReceivableDashboard() {
+  const summary =
+    getReceivableSummary();
+
+  if ($("dashboardReceivableValue")) {
+    $("dashboardReceivableValue")
+      .textContent =
+      formatMoney(
+        summary.total
+      );
+  }
+
+  if ($("dashboardNextReceivable")) {
+    $("dashboardNextReceivable")
+      .textContent =
+      summary.next
+        ? formatDate(
+            summary.next
+              .receivable_date
+          )
+        : "—";
+  }
+}
+
+
+/* =========================================================
+   A RECEBER — ABRIR NOVA RECEITA
+========================================================= */
+
+function openNewReceivable() {
+  openTransactionModal(
+    "income"
+  );
+
+  /*
+     Para uma nova receita aberta
+     pelo A Receber, deixamos a
+     data de recebimento inicialmente
+     vazia para o usuário escolher.
+  */
+  if ($("transactionReceivableDate")) {
+    $("transactionReceivableDate")
+      .value = "";
+  }
+}
+
+
+/* =========================================================
+   A RECEBER — MARCAR COMO RECEBIDO
+========================================================= */
+
+async function markTransactionAsReceived(
+  id
+) {
+  if (
+    !currentUser ||
+    !supabaseClient ||
+    !id
+  ) {
+    return;
+  }
+
+  const transaction =
+    transactions.find(
+      item =>
+        String(item.id) ===
+        String(id)
+    );
+
+  if (!transaction) {
+    return;
+  }
+
+  if (
+    !isFutureReceivable(
+      transaction
+    )
+  ) {
+    return;
+  }
+
+  try {
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("transactions")
+        .update({
+          receivable_date:
+            todayISO()
+        })
+        .eq(
+          "id",
+          id
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        );
+
+    if (error) {
+      throw error;
+    }
+
+    transaction.receivable_date =
+      todayISO();
+
+    showToast(
+      "Recebimento confirmado! O valor entrou no saldo."
+    );
+
+    updateDashboard();
+    updateReports();
+
+    renderTransactions();
+    renderReceivables();
+  } catch (error) {
+    console.error(
+      "markTransactionAsReceived:",
+      error
+    );
+
+    if (
+      isAuthError(error)
+    ) {
+      await recoverSession();
+    }
+
+    showToast(
+      databaseError(
+        error,
+        "Não foi possível marcar como recebido."
+      )
+    );
+  }
+}
+
+
+/* =========================================================
    SALVAR TRANSAÇÃO
 ========================================================= */
 
@@ -1383,6 +1525,22 @@ async function saveTransaction(event) {
     showMessage(
       "transactionMessage",
       "Faça login novamente."
+    );
+
+    return;
+  }
+
+  /*
+     Garante que existe uma sessão antes
+     de enviar a operação para o banco.
+  */
+  const session =
+    await ensureValidSession();
+
+  if (!session) {
+    showMessage(
+      "transactionMessage",
+      "Sua sessão expirou. Faça login novamente."
     );
 
     return;
@@ -1411,8 +1569,10 @@ async function saveTransaction(event) {
     );
 
   const receivableDate =
-    valueOf(
-      "transactionReceivableDate"
+    normalizeDate(
+      valueOf(
+        "transactionReceivableDate"
+      )
     );
 
   clearMessage(
@@ -1436,22 +1596,40 @@ async function saveTransaction(event) {
 
 
   /* -------------------------------------------------------
-     VALIDAR DATA DE RECEBIMENTO
+     VALIDAÇÃO DA DATA DE RECEBIMENTO
   ------------------------------------------------------- */
 
   if (
     selectedTransactionType ===
-      "income" &&
-    receivableDate &&
-    receivableDate < date
+    "income"
   ) {
-    showMessage(
-      "transactionMessage",
-      "A data de recebimento não pode ser anterior à data do lançamento."
-    );
+    if (
+      receivableDate &&
+      receivableDate <
+      date
+    ) {
+      showMessage(
+        "transactionMessage",
+        "A data de recebimento não pode ser anterior à data do lançamento."
+      );
 
-    return;
+      return;
+    }
   }
+
+
+  /* -------------------------------------------------------
+     DESPESA NÃO USA A RECEBER
+  ------------------------------------------------------- */
+
+  const finalReceivableDate =
+    selectedTransactionType ===
+    "income"
+      ? (
+          receivableDate ||
+          null
+        )
+      : null;
 
 
   const button =
@@ -1465,14 +1643,11 @@ async function saveTransaction(event) {
 
 
   /*
-     Receita:
-     - salva a data de recebimento
-     - se for futura, fica A Receber
-
-     Despesa:
-     - receivable_date = null
+     IMPORTANTE:
+     Não adicionamos "notes" aqui porque
+     o banco atual não foi confirmado com
+     essa coluna.
   */
-
   const payload = {
     user_id:
       currentUser.id,
@@ -1491,11 +1666,7 @@ async function saveTransaction(event) {
     category,
 
     receivable_date:
-      selectedTransactionType ===
-        "income" &&
-      receivableDate
-        ? receivableDate
-        : null
+      finalReceivableDate
   };
 
 
@@ -1530,10 +1701,17 @@ async function saveTransaction(event) {
       "transactionModal"
     );
 
-    editingTransactionId = null;
+    editingTransactionId =
+      null;
 
     showToast(
-      "Lançamento salvo!"
+      isFutureReceivable({
+        ...payload,
+        type:
+          selectedTransactionType
+      })
+        ? "Receita adicionada em A Receber!"
+        : "Lançamento salvo!"
     );
 
     await loadTransactions();
@@ -1542,12 +1720,28 @@ async function saveTransaction(event) {
     updateReports();
 
     renderTransactions();
-    updateReceivables();
+    renderReceivables();
   } catch (error) {
     console.error(
       "saveTransaction:",
       error
     );
+
+    if (
+      isAuthError(error)
+    ) {
+      const recovered =
+        await recoverSession();
+
+      if (!recovered) {
+        showMessage(
+          "transactionMessage",
+          "Sua sessão expirou. Faça login novamente."
+        );
+
+        return;
+      }
+    }
 
     showMessage(
       "transactionMessage",
@@ -1627,53 +1821,15 @@ function openTransactionModal(
      DATA DE RECEBIMENTO
   ------------------------------------------------------- */
 
-  const receivableDateGroup =
-    $("receivableDateGroup");
-
-  const receivableDateInput =
-    $("transactionReceivableDate");
-
-  if (
-    selectedTransactionType ===
-    "income"
-  ) {
-    receivableDateGroup
-      ?.classList.remove(
-        "hidden"
+  if ($("transactionReceivableDate")) {
+    $("transactionReceivableDate")
+      .value =
+      normalizeDate(
+        transaction?.receivable_date
       );
-
-    if (receivableDateInput) {
-      receivableDateInput.value =
-        normalizeDate(
-          transaction?.receivable_date
-        ) ||
-        normalizeDate(
-          transaction?.date
-        ) ||
-        todayISO();
-
-      receivableDateInput.min =
-        normalizeDate(
-          transaction?.date
-        ) ||
-        todayISO();
-    }
-  } else {
-    receivableDateGroup
-      ?.classList.add(
-        "hidden"
-      );
-
-    if (receivableDateInput) {
-      receivableDateInput.value =
-        "";
-
-      receivableDateInput.removeAttribute(
-        "min"
-      );
-    }
   }
 
+  updateReceivableDateVisibility();
 
   setTransactionTypeButtons();
 
@@ -1684,6 +1840,36 @@ function openTransactionModal(
   openModal(
     "transactionModal"
   );
+}
+
+
+/* =========================================================
+   MOSTRAR/OCULTAR DATA DE RECEBIMENTO
+========================================================= */
+
+function updateReceivableDateVisibility() {
+  const group =
+    $("receivableDateGroup");
+
+  if (!group) {
+    return;
+  }
+
+  const isIncome =
+    selectedTransactionType ===
+    "income";
+
+  group.classList.toggle(
+    "hidden",
+    !isIncome
+  );
+
+  if (!isIncome) {
+    if ($("transactionReceivableDate")) {
+      $("transactionReceivableDate")
+        .value = "";
+    }
+  }
 }
 
 
@@ -1706,47 +1892,7 @@ function setTransactionTypeButtons() {
       selectedTransactionType;
   }
 
-  const group =
-    $("receivableDateGroup");
-
-  const input =
-    $("transactionReceivableDate");
-
-  if (
-    selectedTransactionType ===
-    "income"
-  ) {
-    group?.classList.remove(
-      "hidden"
-    );
-
-    if (
-      input &&
-      $("transactionDate")
-    ) {
-      input.min =
-        valueOf(
-          "transactionDate"
-        ) ||
-        todayISO();
-
-      if (!input.value) {
-        input.value =
-          valueOf(
-            "transactionDate"
-          ) ||
-          todayISO();
-      }
-    }
-  } else {
-    group?.classList.add(
-      "hidden"
-    );
-
-    if (input) {
-      input.value = "";
-    }
-  }
+  updateReceivableDateVisibility();
 }
 
 
@@ -1800,9 +1946,18 @@ async function deleteTransaction(id) {
     updateReports();
 
     renderTransactions();
-    updateReceivables();
+    renderReceivables();
   } catch (error) {
-    console.error(error);
+    console.error(
+      "deleteTransaction:",
+      error
+    );
+
+    if (
+      isAuthError(error)
+    ) {
+      await recoverSession();
+    }
 
     showToast(
       "Não foi possível excluir o lançamento."
@@ -1849,13 +2004,15 @@ function renderTransactions() {
         t.type
       );
 
+    const futureReceivable =
+      isFutureReceivable(
+        t
+      );
+
     const tr =
       document.createElement(
         "tr"
       );
-
-    const futureReceivable =
-      isFutureReceivable(t);
 
     tr.innerHTML = `
       <td>
@@ -1890,11 +2047,9 @@ function renderTransactions() {
         ${
           futureReceivable
             ? `
-              <div style="margin-top:4px;">
-                <span class="receivable-status pending">
-                  A receber
-                </span>
-              </div>
+              <span class="receivable-status pending">
+                A receber
+              </span>
             `
             : ""
         }
@@ -2394,11 +2549,15 @@ function updateDashboard() {
 
   renderFinanceChart();
 
-  updatePremiumDashboard();
+  renderReceivables();
 
-  updateReceivables();
+  updatePremiumDashboard();
 }
 
+
+/* =========================================================
+   TOTAIS FINANCEIROS
+========================================================= */
 
 function getTotals() {
   let income = 0;
@@ -2419,7 +2578,8 @@ function getTotals() {
         );
 
       /*
-         Receita futura não entra no saldo.
+         Receita futura não entra
+         no saldo atual.
       */
       if (
         type === "income" &&
@@ -2454,7 +2614,6 @@ function getTotals() {
 
 /* =========================================================
    PREMIUM — DASHBOARD
-   COFRINHO + RESUMO MENSAL + RANKING
 ========================================================= */
 
 function updatePremiumDashboard() {
@@ -2724,7 +2883,8 @@ function getCurrentMonthSummary() {
         );
 
       /*
-         Não contar receita que ainda está A Receber.
+         Receita futura não entra
+         no resumo mensal recebido.
       */
       if (
         type === "income" &&
@@ -2908,8 +3068,10 @@ function renderRecentTransactions() {
     item.className =
       "recent-item";
 
-    const futureReceivable =
-      isFutureReceivable(t);
+    const future =
+      isFutureReceivable(
+        t
+      );
 
     item.innerHTML = `
       <div class="recent-left">
@@ -2934,7 +3096,7 @@ function renderRecentTransactions() {
           )}
 
           ${
-            futureReceivable
+            future
               ? " • A receber"
               : ""
           }
@@ -3123,22 +3285,23 @@ function sumByMonth(
           t.type
         );
 
-      if (
-        normalizedType !==
+      const wantedType =
         normalizeTransactionType(
           type
-        )
+        );
+
+      if (
+        normalizedType !==
+        wantedType
       ) {
         return sum;
       }
 
       /*
-         Não colocar receitas futuras
-         no gráfico financeiro.
+         Não conta receita futura.
       */
       if (
-        normalizedType ===
-          "income" &&
+        wantedType === "income" &&
         !isIncomeReceived(t)
       ) {
         return sum;
@@ -3203,34 +3366,22 @@ function updateReports() {
       }
     );
 
-
-  /* -------------------------------------------------------
-     COMPARAÇÃO COM MÊS ANTERIOR
-  ------------------------------------------------------- */
-
   updateReportComparison();
-
-
-  /* -------------------------------------------------------
-     PREMIUM
-  ------------------------------------------------------- */
 
   const premium =
     isPremiumActive();
 
-  $(
-    "premiumReportContent"
-  )?.classList.toggle(
-    "hidden",
-    premium
-  );
+  $("premiumReportContent")
+    ?.classList.toggle(
+      "hidden",
+      premium
+    );
 
-  $(
-    "normalReportContent"
-  )?.classList.toggle(
-    "hidden",
-    !premium
-  );
+  $("normalReportContent")
+    ?.classList.toggle(
+      "hidden",
+      !premium
+    );
 
   if (premium) {
     renderCategoryChart();
@@ -3289,14 +3440,18 @@ function getMonthSummary(date) {
         return;
       }
 
+      const amount =
+        Number(
+          transaction.amount
+        ) || 0;
+
       const type =
         normalizeTransactionType(
           transaction.type
         );
 
       /*
-         Receita futura não participa
-         da comparação financeira.
+         Receita futura não entra.
       */
       if (
         type === "income" &&
@@ -3309,11 +3464,6 @@ function getMonthSummary(date) {
 
       hasTransactions =
         true;
-
-      const amount =
-        Number(
-          transaction.amount
-        ) || 0;
 
       if (
         type === "expense"
@@ -3614,7 +3764,6 @@ function renderReportAnalysis(
     return;
   }
 
-
   const incomeChange =
     calculatePercentageChange(
       current.income,
@@ -3632,7 +3781,6 @@ function renderReportAnalysis(
       current.balance,
       previous.balance
     );
-
 
   const incomeImproved =
     current.income >
@@ -3658,7 +3806,6 @@ function renderReportAnalysis(
     current.balance <
     previous.balance;
 
-
   let title =
     "Sua situação financeira está estável.";
 
@@ -3667,11 +3814,6 @@ function renderReportAnalysis(
 
   let icon =
     "📊";
-
-
-  /* -------------------------------------------------------
-     MELHOROU
-  ------------------------------------------------------- */
 
   if (
     (
@@ -3704,7 +3846,7 @@ function renderReportAnalysis(
       expenseWorsened
     ) {
       text =
-        `Suas receitas aumentaram, mas suas despesas também subiram. Mesmo assim, seu saldo apresentou uma evolução positiva.`;
+        "Suas receitas aumentaram, mas suas despesas também subiram. Mesmo assim, seu saldo apresentou uma evolução positiva.";
 
     } else if (
       expenseImproved
@@ -3716,14 +3858,9 @@ function renderReportAnalysis(
 
     } else {
       text =
-        `Seu saldo ficou melhor do que no mês anterior. Continue acompanhando seus gastos para manter essa evolução.`;
+        "Seu saldo ficou melhor do que no mês anterior. Continue acompanhando seus gastos para manter essa evolução.";
     }
   }
-
-
-  /* -------------------------------------------------------
-     PIOROU
-  ------------------------------------------------------- */
 
   if (
     (
@@ -3755,13 +3892,13 @@ function renderReportAnalysis(
       incomeWorsened
     ) {
       text =
-        `Suas receitas diminuíram em relação ao mês anterior. Tente controlar as despesas para evitar que isso afete ainda mais seu saldo.`;
+        "Suas receitas diminuíram em relação ao mês anterior. Tente controlar as despesas para evitar que isso afete ainda mais seu saldo.";
 
     } else if (
       expenseWorsened
     ) {
       text =
-        `Suas despesas aumentaram em relação ao mês anterior. Observe principalmente as categorias que tiveram maior crescimento.`;
+        "Suas despesas aumentaram em relação ao mês anterior. Observe principalmente as categorias que tiveram maior crescimento.";
 
     } else {
       text =
@@ -3770,11 +3907,6 @@ function renderReportAnalysis(
         )}. Vale a pena acompanhar suas receitas e despesas com mais atenção.`;
     }
   }
-
-
-  /* -------------------------------------------------------
-     SALDO NEGATIVO NOS DOIS MESES
-  ------------------------------------------------------- */
 
   if (
     current.balance < 0 &&
@@ -3791,13 +3923,12 @@ function renderReportAnalysis(
       previous.balance
     ) {
       text =
-        `Apesar de seu saldo ainda estar negativo, houve uma melhora em relação ao mês anterior. Suas despesas ainda estão acima das receitas.`;
+        "Apesar de seu saldo ainda estar negativo, houve uma melhora em relação ao mês anterior. Suas despesas ainda estão acima das receitas.";
     } else {
       text =
-        `Seu saldo continua negativo e ficou pior em relação ao mês anterior. Procure reduzir despesas ou aumentar suas receitas.`;
+        "Seu saldo continua negativo e ficou pior em relação ao mês anterior. Procure reduzir despesas ou aumentar suas receitas.";
     }
   }
-
 
   const incomeText =
     incomeChange === null
@@ -3828,7 +3959,6 @@ function renderReportAnalysis(
           current.balance,
           previous.balance
         );
-
 
   container.innerHTML = `
     <div class="report-analysis-content">
@@ -3866,7 +3996,6 @@ function renderReportAnalysis(
           </small>
         </div>
 
-
         <div>
           <span>
             Despesas
@@ -3883,7 +4012,6 @@ function renderReportAnalysis(
             vs. mês anterior
           </small>
         </div>
-
 
         <div>
           <span>
@@ -4488,7 +4616,7 @@ function showSection(
     section ===
     "receivable"
   ) {
-    updateReceivables();
+    renderReceivables();
   }
 
   if (
@@ -4517,8 +4645,6 @@ function showSection(
     "dashboard"
   ) {
     updateDashboard();
-    updatePremiumDashboard();
-    updateReceivables();
   }
 
   $("sidebar")
@@ -4613,10 +4739,7 @@ function setupEvents() {
   $("addReceivableBtn")
     ?.addEventListener(
       "click",
-      () =>
-        openTransactionModal(
-          "income"
-        )
+      openNewReceivable
     );
 
   $("addCategoryBtn")
@@ -4657,40 +4780,6 @@ function setupEvents() {
           ?.classList.toggle(
             "mobile-open"
           );
-      }
-    );
-
-
-  /* =======================================================
-     ATUALIZAR MINIMUM DA DATA DE RECEBIMENTO
-  ======================================================= */
-
-  $("transactionDate")
-    ?.addEventListener(
-      "change",
-      () => {
-        const date =
-          valueOf(
-            "transactionDate"
-          );
-
-        const input =
-          $("transactionReceivableDate");
-
-        if (!input) {
-          return;
-        }
-
-        input.min =
-          date || todayISO();
-
-        if (
-          input.value &&
-          input.value < input.min
-        ) {
-          input.value =
-            input.min;
-        }
       }
     );
 
@@ -4747,29 +4836,6 @@ function setupEvents() {
       }
 
 
-      /* -----------------------------------------------------
-         MARCAR A RECEBER COMO RECEBIDO
-      ----------------------------------------------------- */
-
-      const received =
-        event.target.closest(
-          "[data-receivable-received]"
-        );
-
-      if (received) {
-        markReceivableAsReceived(
-          received.dataset
-            .receivableReceived
-        );
-
-        return;
-      }
-
-
-      /* -----------------------------------------------------
-         EDITAR
-      ----------------------------------------------------- */
-
       const edit =
         event.target.closest(
           "[data-edit-transaction]"
@@ -4801,9 +4867,20 @@ function setupEvents() {
       }
 
 
-      /* -----------------------------------------------------
-         EXCLUIR
-      ----------------------------------------------------- */
+      const receive =
+        event.target.closest(
+          "[data-receive-transaction]"
+        );
+
+      if (receive) {
+        markTransactionAsReceived(
+          receive.dataset
+            .receiveTransaction
+        );
+
+        return;
+      }
+
 
       const del =
         event.target.closest(
@@ -4819,10 +4896,6 @@ function setupEvents() {
         return;
       }
 
-
-      /* -----------------------------------------------------
-         FECHAR MODAIS
-      ----------------------------------------------------- */
 
       const close =
         event.target.closest(
@@ -5130,18 +5203,6 @@ function setDefaultDate() {
       .value =
       todayISO();
   }
-
-  if (
-    $("transactionReceivableDate")
-  ) {
-    $("transactionReceivableDate")
-      .value =
-      todayISO();
-
-    $("transactionReceivableDate")
-      .min =
-      todayISO();
-  }
 }
 
 
@@ -5230,6 +5291,44 @@ function formatDate(
 
 
 /* =========================================================
+   DIAS ATÉ RECEBIMENTO
+========================================================= */
+
+function daysUntilDate(
+  value
+) {
+  const target =
+    parseDate(
+      value
+    );
+
+  const today =
+    parseDate(
+      todayISO()
+    );
+
+  if (
+    !target ||
+    !today
+  ) {
+    return 0;
+  }
+
+  const difference =
+    target.getTime() -
+    today.getTime();
+
+  return Math.max(
+    0,
+    Math.ceil(
+      difference /
+      86400000
+    )
+  );
+}
+
+
+/* =========================================================
    DINHEIRO
 ========================================================= */
 
@@ -5299,6 +5398,92 @@ function isValidEmail(
    ERROS AUTH
 ========================================================= */
 
+function isAuthError(
+  error
+) {
+  const message =
+    String(
+      error?.message ||
+      ""
+    ).toLowerCase();
+
+  return (
+    message.includes(
+      "jwt expired"
+    ) ||
+    message.includes(
+      "jwt failed verification"
+    ) ||
+    message.includes(
+      "invalid jwt"
+    ) ||
+    message.includes(
+      "invalid token"
+    ) ||
+    message.includes(
+      "refresh token"
+    )
+  );
+}
+
+
+async function recoverSession() {
+  if (!supabaseClient) {
+    return false;
+  }
+
+  try {
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.refreshSession();
+
+    if (
+      error ||
+      !data?.session?.user
+    ) {
+      console.warn(
+        "refreshSession:",
+        error
+      );
+
+      currentUser = null;
+
+      showLoginView();
+
+      showMessage(
+        "loginMessage",
+        "Sua sessão expirou. Faça login novamente."
+      );
+
+      return false;
+    }
+
+    currentUser =
+      data.session.user;
+
+    return true;
+  } catch (error) {
+    console.error(
+      "recoverSession:",
+      error
+    );
+
+    currentUser = null;
+
+    showLoginView();
+
+    showMessage(
+      "loginMessage",
+      "Sua sessão expirou. Faça login novamente."
+    );
+
+    return false;
+  }
+}
+
+
 function friendlyAuthError(
   error
 ) {
@@ -5330,6 +5515,17 @@ function friendlyAuthError(
     )
   ) {
     return "Confirme seu e-mail antes de entrar.";
+  }
+
+  if (
+    message.includes(
+      "jwt expired"
+    ) ||
+    message.includes(
+      "jwt failed verification"
+    )
+  ) {
+    return "Sua sessão expirou. Faça login novamente.";
   }
 
   if (
@@ -5376,13 +5572,6 @@ function databaseError(
     "23505"
   ) {
     return "Este registro já existe.";
-  }
-
-  if (
-    error?.code ===
-    "42703"
-  ) {
-    return "A estrutura do banco ainda não possui algum campo necessário. Confira o SQL da atualização.";
   }
 
   return (
