@@ -2,9 +2,11 @@
    CONTROLES 1.0 — APP.JS
 
    Login + Cadastro + Dashboard + Lançamentos
+   + A Receber
    + Categorias + Relatórios + Premium + Tema
    + Supabase
    + Cofrinho Mensal + Resumo Mensal + Ranking
+   + Service Worker
 ========================================================= */
 
 const SUPABASE_URL =
@@ -43,6 +45,17 @@ let enteringApp = false;
 
 
 /* =========================================================
+   A RECEBER
+========================================================= */
+
+let receivablePromptedThisSession = new Set();
+
+let receivablePromptQueue = [];
+
+let receivablePromptOpen = false;
+
+
+/* =========================================================
    CATEGORIAS PADRÃO
 ========================================================= */
 
@@ -68,6 +81,7 @@ const DEFAULT_CATEGORIES = [
 const SECTION_TITLES = {
   dashboard: "Dashboard",
   transactions: "Lançamentos",
+  receivable: "A Receber",
   categories: "Categorias",
   reports: "Relatórios",
   premium: "Premium"
@@ -125,6 +139,81 @@ function databaseTransactionType(type) {
 
 
 /* =========================================================
+   A RECEBER — AUXILIARES
+========================================================= */
+
+function isIncomeTransaction(transaction) {
+  return (
+    normalizeTransactionType(
+      transaction?.type
+    ) === "income"
+  );
+}
+
+
+function isTransactionReceived(transaction) {
+  if (!isIncomeTransaction(transaction)) {
+    return true;
+  }
+
+  return (
+    String(
+      transaction?.payment_status ||
+      "received"
+    ).toLowerCase() === "received"
+  );
+}
+
+
+function isPendingReceivable(transaction) {
+  return (
+    isIncomeTransaction(transaction) &&
+    String(
+      transaction?.payment_status ||
+      "received"
+    ).toLowerCase() === "pending"
+  );
+}
+
+
+function getPendingReceivables() {
+  return transactions.filter(
+    transaction =>
+      isPendingReceivable(transaction)
+  );
+}
+
+
+function getDueReceivables() {
+  const today =
+    todayISO();
+
+  return getPendingReceivables()
+    .filter(transaction => {
+      const date =
+        normalizeDate(
+          transaction.date
+        );
+
+      return (
+        date &&
+        date <= today
+      );
+    })
+    .sort(
+      (a, b) =>
+        String(
+          a.date || ""
+        ).localeCompare(
+          String(
+            b.date || ""
+          )
+        )
+    );
+}
+
+
+/* =========================================================
    INICIALIZAÇÃO
 ========================================================= */
 
@@ -139,11 +228,43 @@ document.addEventListener(
     loadTheme();
     loadLocalCategories();
 
+    registerServiceWorker();
+
     initializeSupabase();
 
     await checkSession();
   }
 );
+
+
+/* =========================================================
+   SERVICE WORKER
+========================================================= */
+
+async function registerServiceWorker() {
+  if (
+    !("serviceWorker" in navigator)
+  ) {
+    return;
+  }
+
+  try {
+    const registration =
+      await navigator.serviceWorker.register(
+        "./sw.js"
+      );
+
+    console.log(
+      "Service Worker registrado com sucesso.",
+      registration
+    );
+  } catch (error) {
+    console.warn(
+      "Não foi possível registrar o Service Worker:",
+      error
+    );
+  }
+}
 
 
 /* =========================================================
@@ -227,6 +348,9 @@ async function checkSession() {
             transactions = [];
             goals = [];
             budgets = [];
+
+            receivablePromptedThisSession.clear();
+            receivablePromptQueue = [];
 
             destroyCharts();
 
@@ -676,6 +800,10 @@ async function enterApp(user) {
   try {
     currentUser = user;
 
+    receivablePromptedThisSession.clear();
+    receivablePromptQueue = [];
+    receivablePromptOpen = false;
+
     showAppView();
 
     await createProfileIfNeeded(
@@ -696,7 +824,19 @@ async function enterApp(user) {
 
     renderTransactions();
 
+    renderReceivables();
+
     updatePremiumUI();
+
+    /*
+       Verifica valores que já venceram.
+       O modal só aparece se os elementos
+       do A Receber estiverem presentes no HTML.
+    */
+    setTimeout(
+      checkReceivablesDue,
+      500
+    );
   } catch (error) {
     console.error(
       "enterApp:",
@@ -732,6 +872,9 @@ async function logout() {
   transactions = [];
   goals = [];
   budgets = [];
+
+  receivablePromptedThisSession.clear();
+  receivablePromptQueue = [];
 
   destroyCharts();
 
@@ -795,7 +938,17 @@ async function loadTransactions() {
           type:
             normalizeTransactionType(
               transaction.type
+            ),
+
+          payment_status:
+            isIncomeTransaction(
+              transaction
             )
+              ? String(
+                  transaction.payment_status ||
+                  "received"
+                ).toLowerCase()
+              : "received"
         })
       );
   } catch (error) {
@@ -983,6 +1136,11 @@ async function saveTransaction(event) {
       "transactionCategory"
     );
 
+  const notes =
+    valueOf(
+      "transactionNotes"
+    ).trim();
+
   clearMessage(
     "transactionMessage"
   );
@@ -1011,6 +1169,61 @@ async function saveTransaction(event) {
     "Salvando..."
   );
 
+
+  /* =======================================================
+     STATUS DO PAGAMENTO
+
+     Receita futura:
+       pending
+
+     Receita hoje/passada:
+       received
+
+     Receita já recebida:
+       mantém received
+
+     Despesa:
+       received
+  ======================================================= */
+
+  let paymentStatus =
+    "received";
+
+  if (
+    selectedTransactionType ===
+    "income"
+  ) {
+    if (editingTransactionId) {
+      const existing =
+        transactions.find(
+          transaction =>
+            String(
+              transaction.id
+            ) ===
+            String(
+              editingTransactionId
+            )
+        );
+
+      if (
+        existing?.payment_status ===
+        "received"
+      ) {
+        paymentStatus =
+          "received";
+      } else {
+        paymentStatus =
+          "pending";
+      }
+    } else {
+      paymentStatus =
+        date > todayISO()
+          ? "pending"
+          : "received";
+    }
+  }
+
+
   const payload = {
     user_id:
       currentUser.id,
@@ -1026,8 +1239,14 @@ async function saveTransaction(event) {
 
     date,
 
-    category
+    category,
+
+    notes,
+
+    payment_status:
+      paymentStatus
   };
+
 
   try {
     let result;
@@ -1062,9 +1281,18 @@ async function saveTransaction(event) {
 
     editingTransactionId = null;
 
-    showToast(
-      "Lançamento salvo!"
-    );
+    if (
+      paymentStatus ===
+      "pending"
+    ) {
+      showToast(
+        "Receita adicionada em A Receber!"
+      );
+    } else {
+      showToast(
+        "Lançamento salvo!"
+      );
+    }
 
     await loadTransactions();
 
@@ -1072,6 +1300,16 @@ async function saveTransaction(event) {
     updateReports();
 
     renderTransactions();
+    renderReceivables();
+
+    /*
+       Caso a pessoa edite uma receita
+       e ela já esteja vencida.
+    */
+    setTimeout(
+      checkReceivablesDue,
+      300
+    );
   } catch (error) {
     console.error(error);
 
@@ -1231,6 +1469,7 @@ async function deleteTransaction(id) {
     updateReports();
 
     renderTransactions();
+    renderReceivables();
   } catch (error) {
     console.error(error);
 
@@ -1279,6 +1518,9 @@ function renderTransactions() {
         t.type
       );
 
+    const pending =
+      isPendingReceivable(t);
+
     const tr =
       document.createElement(
         "tr"
@@ -1313,6 +1555,16 @@ function renderTransactions() {
               : "Despesa"
           }
         </span>
+
+        ${
+          pending
+            ? `
+              <small style="display:block;margin-top:4px;">
+                A receber
+              </small>
+            `
+            : ""
+        }
       </td>
 
       <td class="${
@@ -1439,6 +1691,540 @@ function applyTransactionFilters() {
         )
       );
     }
+  );
+}
+
+
+/* =========================================================
+   A RECEBER — RENDER
+========================================================= */
+
+function renderReceivables() {
+  const listContainer =
+    $("receivableList");
+
+  const empty =
+    $("receivableEmpty");
+
+  const pending =
+    getPendingReceivables()
+      .sort(
+        (a, b) =>
+          String(
+            a.date || ""
+          ).localeCompare(
+            String(
+              b.date || ""
+            )
+          )
+      );
+
+  updateReceivableSummary(
+    pending
+  );
+
+  if (!listContainer) {
+    return;
+  }
+
+  listContainer.innerHTML = "";
+
+  if (!pending.length) {
+    empty?.classList.remove(
+      "hidden"
+    );
+
+    return;
+  }
+
+  empty?.classList.add(
+    "hidden"
+  );
+
+  pending.forEach(
+    transaction => {
+      const item =
+        document.createElement(
+          "div"
+        );
+
+      item.className =
+        "recent-item";
+
+      const due =
+        normalizeDate(
+          transaction.date
+        ) <= todayISO();
+
+      item.innerHTML = `
+        <div class="recent-left">
+
+          <strong>
+            ${escapeHTML(
+              transaction.description ||
+              "Sem descrição"
+            )}
+          </strong>
+
+          <small>
+            ${escapeHTML(
+              transaction.category ||
+              "Outros"
+            )}
+
+            •
+
+            ${formatDate(
+              transaction.date
+            )}
+
+            ${
+              due
+                ? " • Vencido"
+                : ""
+            }
+          </small>
+
+        </div>
+
+        <div class="recent-right positive">
+
+          <strong>
+            ${formatMoney(
+              transaction.amount
+            )}
+          </strong>
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-receivable-received="${escapeAttribute(
+              transaction.id
+            )}"
+            style="margin-left:10px;"
+          >
+            Já recebi
+          </button>
+
+        </div>
+      `;
+
+      listContainer.appendChild(
+        item
+      );
+    }
+  );
+}
+
+
+/* =========================================================
+   A RECEBER — RESUMO
+========================================================= */
+
+function updateReceivableSummary(
+  pending = getPendingReceivables()
+) {
+  const total =
+    pending.reduce(
+      (sum, transaction) =>
+        sum +
+        (
+          Number(
+            transaction.amount
+          ) || 0
+        ),
+      0
+    );
+
+  const today =
+    todayISO();
+
+  const todayTotal =
+    pending
+      .filter(
+        transaction =>
+          normalizeDate(
+            transaction.date
+          ) === today
+      )
+      .reduce(
+        (sum, transaction) =>
+          sum +
+          (
+            Number(
+              transaction.amount
+            ) || 0
+          ),
+        0
+      );
+
+  const count =
+    pending.length;
+
+  if ($("receivableTotal")) {
+    $("receivableTotal")
+      .textContent =
+      formatMoney(
+        total
+      );
+  }
+
+  if ($("receivableToday")) {
+    $("receivableToday")
+      .textContent =
+      formatMoney(
+        todayTotal
+      );
+  }
+
+  if ($("receivableCount")) {
+    $("receivableCount")
+      .textContent =
+      String(count);
+  }
+}
+
+
+/* =========================================================
+   A RECEBER — CONFIRMAÇÃO DE RECEBIMENTO
+========================================================= */
+
+async function markReceivableAsReceived(
+  id
+) {
+  if (
+    !currentUser ||
+    !id
+  ) {
+    return false;
+  }
+
+  const transaction =
+    transactions.find(
+      item =>
+        String(
+          item.id
+        ) ===
+        String(id)
+    );
+
+  if (!transaction) {
+    return false;
+  }
+
+  try {
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("transactions")
+        .update({
+          payment_status:
+            "received"
+        })
+        .eq(
+          "id",
+          id
+        )
+        .eq(
+          "user_id",
+          currentUser.id
+        );
+
+    if (error) {
+      throw error;
+    }
+
+    await loadTransactions();
+
+    updateDashboard();
+    updateReports();
+    renderTransactions();
+    renderReceivables();
+
+    showToast(
+      "Valor recebido e adicionado ao saldo!"
+    );
+
+    return true;
+  } catch (error) {
+    console.error(
+      "markReceivableAsReceived:",
+      error
+    );
+
+    showToast(
+      "Não foi possível confirmar o recebimento."
+    );
+
+    return false;
+  }
+}
+
+
+/* =========================================================
+   A RECEBER — MODAL
+========================================================= */
+
+function showReceivableConfirmation(
+  transaction
+) {
+  if (!transaction) {
+    return;
+  }
+
+  /*
+     Se o HTML ainda não possui o modal,
+     não quebra o sistema.
+  */
+  if (
+    !$("receivableConfirmModal")
+  ) {
+    return;
+  }
+
+  const description =
+    transaction.description ||
+    "Valor a receber";
+
+  const amount =
+    formatMoney(
+      transaction.amount
+    );
+
+  const date =
+    formatDate(
+      transaction.date
+    );
+
+  const title =
+    $("receivableConfirmTitle");
+
+  const text =
+    $("receivableConfirmText");
+
+  if (title) {
+    title.textContent =
+      "Você já recebeu este valor?";
+  }
+
+  if (text) {
+    text.innerHTML = `
+      <strong>
+        ${escapeHTML(
+          description
+        )}
+      </strong>
+
+      <br>
+
+      Valor:
+      <strong>
+        ${amount}
+      </strong>
+
+      <br>
+
+      Data:
+      ${date}
+    `;
+  }
+
+  const receivedButton =
+    $("receivableReceivedBtn");
+
+  const pendingButton =
+    $("receivablePendingBtn");
+
+  if (receivedButton) {
+    receivedButton.dataset
+      .receivableId =
+      transaction.id;
+  }
+
+  if (pendingButton) {
+    pendingButton.dataset
+      .receivableId =
+      transaction.id;
+  }
+
+  openModal(
+    "receivableConfirmModal"
+  );
+
+  receivablePromptOpen =
+    true;
+}
+
+
+/* =========================================================
+   A RECEBER — VERIFICAR VENCIMENTOS
+========================================================= */
+
+function checkReceivablesDue() {
+  if (
+    !currentUser
+  ) {
+    return;
+  }
+
+  if (
+    receivablePromptOpen
+  ) {
+    return;
+  }
+
+  const due =
+    getDueReceivables()
+      .filter(
+        transaction =>
+          !receivablePromptedThisSession.has(
+            String(
+              transaction.id
+            )
+          )
+      );
+
+  if (!due.length) {
+    return;
+  }
+
+  receivablePromptQueue =
+    due.map(
+      transaction =>
+        String(
+          transaction.id
+        )
+    );
+
+  showNextReceivablePrompt();
+}
+
+
+function showNextReceivablePrompt() {
+  if (
+    receivablePromptOpen
+  ) {
+    return;
+  }
+
+  if (
+    !receivablePromptQueue.length
+  ) {
+    return;
+  }
+
+  const id =
+    receivablePromptQueue.shift();
+
+  const transaction =
+    transactions.find(
+      item =>
+        String(
+          item.id
+        ) ===
+        String(id)
+    );
+
+  if (!transaction) {
+    showNextReceivablePrompt();
+    return;
+  }
+
+  if (
+    !isPendingReceivable(
+      transaction
+    )
+  ) {
+    showNextReceivablePrompt();
+    return;
+  }
+
+  receivablePromptedThisSession.add(
+    String(
+      transaction.id
+    )
+  );
+
+  /*
+     Se o modal existir, mostra o modal.
+     Caso contrário, não trava o aplicativo.
+  */
+  if (
+    $("receivableConfirmModal")
+  ) {
+    showReceivableConfirmation(
+      transaction
+    );
+  }
+}
+
+
+/* =========================================================
+   A RECEBER — RESPONDER "JÁ RECEBI"
+========================================================= */
+
+async function handleReceivableReceived(
+  id
+) {
+  if (!id) {
+    return;
+  }
+
+  closeModal(
+    "receivableConfirmModal"
+  );
+
+  receivablePromptOpen =
+    false;
+
+  const success =
+    await markReceivableAsReceived(
+      id
+    );
+
+  if (success) {
+    /*
+       Continua para o próximo
+       vencimento, se existir.
+    */
+    setTimeout(
+      showNextReceivablePrompt,
+      300
+    );
+  }
+}
+
+
+/* =========================================================
+   A RECEBER — RESPONDER "AINDA NÃO RECEBI"
+========================================================= */
+
+function handleReceivablePending(
+  id
+) {
+  if (id) {
+    receivablePromptedThisSession.add(
+      String(id)
+    );
+  }
+
+  closeModal(
+    "receivableConfirmModal"
+  );
+
+  receivablePromptOpen =
+    false;
+
+  /*
+     Não mostra imediatamente o próximo.
+     Isso evita vários avisos seguidos.
+  */
+
+  receivablePromptQueue = [];
+
+  showToast(
+    "Tudo bem. O valor continua em A Receber."
   );
 }
 
@@ -1809,6 +2595,8 @@ function updateDashboard() {
 
   renderFinanceChart();
 
+  renderReceivables();
+
   updatePremiumDashboard();
 }
 
@@ -1823,14 +2611,21 @@ function getTotals() {
         Number(t.amount) ||
         0;
 
-      if (
+      const type =
         normalizeTransactionType(
           t.type
-        ) === "expense"
+        );
+
+      if (
+        type === "expense"
       ) {
         expense +=
           amount;
-      } else {
+      } else if (
+        isTransactionReceived(
+          t
+        )
+      ) {
         income +=
           amount;
       }
@@ -2122,7 +2917,11 @@ function getCurrentMonthSummary() {
       ) {
         expense +=
           amount;
-      } else {
+      } else if (
+        isTransactionReceived(
+          transaction
+        )
+      ) {
         income +=
           amount;
       }
@@ -2282,6 +3081,9 @@ function renderRecentTransactions() {
         t.type
       );
 
+    const pending =
+      isPendingReceivable(t);
+
     const item =
       document.createElement(
         "div"
@@ -2311,6 +3113,12 @@ function renderRecentTransactions() {
           ${formatDate(
             t.date
           )}
+
+          ${
+            pending
+              ? " • A receber"
+              : ""
+          }
         </small>
 
       </div>
@@ -2490,13 +3298,31 @@ function sumByMonth(
 ) {
   return transactions.reduce(
     (sum, t) => {
-      if (
+      const normalizedType =
         normalizeTransactionType(
           t.type
-        ) !==
+        );
+
+      const requestedType =
         normalizeTransactionType(
           type
-        )
+        );
+
+      if (
+        normalizedType !==
+        requestedType
+      ) {
+        return sum;
+      }
+
+      /*
+         Receita pendente não entra
+         no gráfico financeiro.
+      */
+      if (
+        requestedType ===
+          "income" &&
+        !isTransactionReceived(t)
       ) {
         return sum;
       }
@@ -2574,18 +3400,6 @@ function updateReports() {
 
   const premium =
     isPremiumActive();
-
-  /*
-     CORREÇÃO:
-
-     Premium ATIVO:
-     - esconde o bloqueio Premium
-     - mostra os relatórios normais
-
-     Premium INATIVO:
-     - mostra o bloqueio Premium
-     - esconde os relatórios
-  */
 
   $(
     "premiumReportContent"
@@ -2676,7 +3490,11 @@ function getMonthSummary(date) {
       ) {
         expense +=
           amount;
-      } else {
+      } else if (
+        isTransactionReceived(
+          transaction
+        )
+      ) {
         income +=
           amount;
       }
@@ -3025,10 +3843,6 @@ function renderReportAnalysis(
     "📊";
 
 
-  /* -------------------------------------------------------
-     MELHOROU
-  ------------------------------------------------------- */
-
   if (
     (
       incomeImproved &&
@@ -3077,10 +3891,6 @@ function renderReportAnalysis(
   }
 
 
-  /* -------------------------------------------------------
-     PIOROU
-  ------------------------------------------------------- */
-
   if (
     (
       incomeWorsened &&
@@ -3127,10 +3937,6 @@ function renderReportAnalysis(
     }
   }
 
-
-  /* -------------------------------------------------------
-     SALDO NEGATIVO NOS DOIS MESES
-  ------------------------------------------------------- */
 
   if (
     current.balance < 0 &&
@@ -3842,6 +4648,13 @@ function showSection(
 
   if (
     section ===
+    "receivable"
+  ) {
+    renderReceivables();
+  }
+
+  if (
+    section ===
     "categories"
   ) {
     renderCategories();
@@ -3865,7 +4678,7 @@ function showSection(
     section ===
     "dashboard"
   ) {
-    updatePremiumDashboard();
+    updateDashboard();
   }
 
   $("sidebar")
@@ -4000,6 +4813,41 @@ function setupEvents() {
 
 
   /* =======================================================
+     A RECEBER — BOTÕES DO MODAL
+  ======================================================= */
+
+  $("receivableReceivedBtn")
+    ?.addEventListener(
+      "click",
+      () => {
+        const id =
+          $("receivableReceivedBtn")
+            .dataset
+            .receivableId;
+
+        handleReceivableReceived(
+          id
+        );
+      }
+    );
+
+  $("receivablePendingBtn")
+    ?.addEventListener(
+      "click",
+      () => {
+        const id =
+          $("receivablePendingBtn")
+            .dataset
+            .receivableId;
+
+        handleReceivablePending(
+          id
+        );
+      }
+    );
+
+
+  /* =======================================================
      CLIQUES GERAIS
   ======================================================= */
 
@@ -4051,6 +4899,10 @@ function setupEvents() {
       }
 
 
+      /* -----------------------------------------------------
+         EDITAR
+      ----------------------------------------------------- */
+
       const edit =
         event.target.closest(
           "[data-edit-transaction]"
@@ -4080,6 +4932,10 @@ function setupEvents() {
       }
 
 
+      /* -----------------------------------------------------
+         EXCLUIR
+      ----------------------------------------------------- */
+
       const del =
         event.target.closest(
           "[data-delete-transaction]"
@@ -4093,6 +4949,27 @@ function setupEvents() {
       }
 
 
+      /* -----------------------------------------------------
+         A RECEBER — JÁ RECEBI
+      ----------------------------------------------------- */
+
+      const received =
+        event.target.closest(
+          "[data-receivable-received]"
+        );
+
+      if (received) {
+        handleReceivableReceived(
+          received.dataset
+            .receivableReceived
+        );
+      }
+
+
+      /* -----------------------------------------------------
+         FECHAR MODAIS
+      ----------------------------------------------------- */
+
       const close =
         event.target.closest(
           "[data-close-modal],.modal-close"
@@ -4104,6 +4981,15 @@ function setupEvents() {
             ".modal"
           )?.id
         );
+
+        if (
+          close.closest(
+            "#receivableConfirmModal"
+          )
+        ) {
+          receivablePromptOpen =
+            false;
+        }
       }
     }
   );
@@ -4229,6 +5115,14 @@ function setupEvents() {
               closeModal(
                 modal.id
               );
+
+              if (
+                modal.id ===
+                "receivableConfirmModal"
+              ) {
+                receivablePromptOpen =
+                  false;
+              }
             }
           }
         );
@@ -4252,10 +5146,19 @@ function setupEvents() {
             ".modal:not(.hidden)"
           )
           .forEach(
-            modal =>
+            modal => {
               closeModal(
                 modal.id
-              )
+              );
+
+              if (
+                modal.id ===
+                "receivableConfirmModal"
+              ) {
+                receivablePromptOpen =
+                  false;
+              }
+            }
           );
       }
     }
