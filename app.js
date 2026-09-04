@@ -1,5 +1,6 @@
 /* =========================================================
    CONTROLES 1.0 — APP.JS
+
    Login + Cadastro + Dashboard + Lançamentos
    + Categorias + Relatórios + Premium + Tema
    + Supabase
@@ -11,6 +12,7 @@ const SUPABASE_URL =
 
 const SUPABASE_KEY =
   "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
+
 
 /* =========================================================
    ESTADO DA APLICAÇÃO
@@ -39,6 +41,7 @@ let toastTimer = null;
 let authInitialized = false;
 let enteringApp = false;
 
+
 /* =========================================================
    CATEGORIAS PADRÃO
 ========================================================= */
@@ -57,6 +60,7 @@ const DEFAULT_CATEGORIES = [
   "Outros"
 ];
 
+
 /* =========================================================
    TÍTULOS DAS SEÇÕES
 ========================================================= */
@@ -69,6 +73,7 @@ const SECTION_TITLES = {
   premium: "Premium"
 };
 
+
 /* =========================================================
    ATALHOS
 ========================================================= */
@@ -78,6 +83,7 @@ const $ = id =>
 
 const valueOf = id =>
   $(id)?.value ?? "";
+
 
 /* =========================================================
    NORMALIZAR TIPO DO LANÇAMENTO
@@ -106,16 +112,17 @@ function normalizeTransactionType(type) {
   return "income";
 }
 
+
 /* =========================================================
    CONVERTER TIPO PARA O SUPABASE
 ========================================================= */
 
 function databaseTransactionType(type) {
-  return normalizeTransactionType(type) ===
-    "expense"
+  return normalizeTransactionType(type) === "expense"
     ? "despesa"
     : "receita";
 }
+
 
 /* =========================================================
    INICIALIZAÇÃO
@@ -127,11 +134,9 @@ document.addEventListener(
     setupEvents();
 
     setCurrentDate();
-
     setDefaultDate();
 
     loadTheme();
-
     loadLocalCategories();
 
     initializeSupabase();
@@ -140,12 +145,15 @@ document.addEventListener(
   }
 );
 
+
 /* =========================================================
    SUPABASE
 ========================================================= */
 
 function initializeSupabase() {
-  if (!window.supabase?.createClient) {
+  if (
+    !window.supabase?.createClient
+  ) {
     showMessage(
       "loginMessage",
       "Não foi possível carregar o sistema. Atualize a página."
@@ -177,21 +185,31 @@ function initializeSupabase() {
   }
 }
 
+
 /* =========================================================
    SESSÃO
 ========================================================= */
 
 async function checkSession() {
-  if (!supabaseClient) return;
+  if (!supabaseClient) {
+    return;
+  }
 
   try {
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient.auth.getSession();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     if (data.session?.user) {
-      await enterApp(data.session.user);
+      await enterApp(
+        data.session.user
+      );
     } else {
       showLoginView();
     }
@@ -199,10 +217,13 @@ async function checkSession() {
     if (!authInitialized) {
       supabaseClient.auth.onAuthStateChange(
         (event, session) => {
-          if (event === "SIGNED_OUT") {
+          if (
+            event === "SIGNED_OUT"
+          ) {
             currentUser = null;
             currentProfile = null;
             subscription = null;
+
             transactions = [];
             goals = [];
             budgets = [];
@@ -217,11 +238,15 @@ async function checkSession() {
       authInitialized = true;
     }
   } catch (error) {
-    console.error("checkSession:", error);
+    console.error(
+      "checkSession:",
+      error
+    );
 
     showLoginView();
   }
 }
+
 
 /* =========================================================
    LOGIN
@@ -277,13 +302,20 @@ async function loginUser(event) {
   );
 
   try {
-    const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signInWithPassword(
+        {
+          email,
+          password
+        }
+      );
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     if (!data.user) {
       throw new Error(
@@ -291,16 +323,19 @@ async function loginUser(event) {
       );
     }
 
-    await enterApp(data.user);
-
+    await enterApp(
+      data.user
+    );
   } catch (error) {
-    console.error("login:", error);
+    console.error(
+      "login:",
+      error
+    );
 
     showMessage(
       "loginMessage",
       friendlyAuthError(error)
     );
-
   } finally {
     setButtonLoading(
       button,
@@ -309,6 +344,7 @@ async function loginUser(event) {
     );
   }
 }
+
 
 /* =========================================================
    CADASTRO
@@ -327,7 +363,8 @@ async function registerUser(event) {
   }
 
   const name =
-    valueOf("registerName").trim();
+    valueOf("registerName")
+      .trim();
 
   const email =
     valueOf("registerEmail")
@@ -338,9 +375,13 @@ async function registerUser(event) {
     valueOf("registerPassword");
 
   const confirm =
-    valueOf("registerPasswordConfirm");
+    valueOf(
+      "registerPasswordConfirm"
+    );
 
-  clearMessage("registerMessage");
+  clearMessage(
+    "registerMessage"
+  );
 
   if (
     !name ||
@@ -393,22 +434,32 @@ async function registerUser(event) {
   );
 
   try {
-    const { data, error } =
-      await supabaseClient.auth.signUp({
-        email,
-        password,
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signUp(
+        {
+          email,
+          password,
 
-        options: {
-          data: {
-            full_name: name,
-            name: name
+          options: {
+            data: {
+              full_name: name,
+              name: name
+            }
           }
         }
-      });
+      );
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
-    if (data.user && data.session) {
+    if (
+      data.user &&
+      data.session
+    ) {
       await createProfileIfNeeded(
         data.user,
         name
@@ -420,8 +471,9 @@ async function registerUser(event) {
         true
       );
 
-      await enterApp(data.user);
-
+      await enterApp(
+        data.user
+      );
     } else {
       showMessage(
         "registerMessage",
@@ -434,15 +486,16 @@ async function registerUser(event) {
         2500
       );
     }
-
   } catch (error) {
-    console.error("register:", error);
+    console.error(
+      "register:",
+      error
+    );
 
     showMessage(
       "registerMessage",
       friendlyAuthError(error)
     );
-
   } finally {
     setButtonLoading(
       button,
@@ -451,6 +504,7 @@ async function registerUser(event) {
     );
   }
 }
+
 
 /* =========================================================
    PERFIL
@@ -475,7 +529,10 @@ async function createProfileIfNeeded(
     "Usuário";
 
   try {
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("profiles")
         .select("*")
@@ -507,11 +564,11 @@ async function createProfileIfNeeded(
         );
       }
     }
-
   } catch (error) {
     console.warn(error);
   }
 }
+
 
 async function loadProfile() {
   currentProfile = null;
@@ -524,18 +581,25 @@ async function loadProfile() {
   }
 
   try {
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("profiles")
         .select("*")
-        .eq("id", currentUser.id)
+        .eq(
+          "id",
+          currentUser.id
+        )
         .maybeSingle();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     currentProfile =
       data || null;
-
   } catch (error) {
     console.warn(
       "loadProfile:",
@@ -543,6 +607,7 @@ async function loadProfile() {
     );
   }
 }
+
 
 function getUserFullName() {
   return (
@@ -555,6 +620,7 @@ function getUserFullName() {
   );
 }
 
+
 function getFirstName() {
   return (
     getUserFullName()
@@ -563,6 +629,7 @@ function getFirstName() {
     "Usuário"
   );
 }
+
 
 function updateProfileUI() {
   const name =
@@ -580,7 +647,9 @@ function updateProfileUI() {
 
   if ($("userAvatar")) {
     $("userAvatar").textContent =
-      name.charAt(0).toUpperCase();
+      name
+        .charAt(0)
+        .toUpperCase();
   }
 
   if ($("welcomeMessage")) {
@@ -588,6 +657,7 @@ function updateProfileUI() {
       `Olá, ${getFirstName()}! 👋`;
   }
 }
+
 
 /* =========================================================
    ENTRAR NO APP
@@ -627,7 +697,6 @@ async function enterApp(user) {
     renderTransactions();
 
     updatePremiumUI();
-
   } catch (error) {
     console.error(
       "enterApp:",
@@ -637,11 +706,11 @@ async function enterApp(user) {
     showToast(
       "A conta entrou, mas alguns dados não puderam ser carregados."
     );
-
   } finally {
     enteringApp = false;
   }
 }
+
 
 /* =========================================================
    LOGOUT
@@ -652,7 +721,6 @@ async function logout() {
     if (supabaseClient) {
       await supabaseClient.auth.signOut();
     }
-
   } catch (error) {
     console.error(error);
   }
@@ -670,12 +738,15 @@ async function logout() {
   showLoginView();
 }
 
+
 /* =========================================================
    CARREGAR DADOS
 ========================================================= */
 
 async function loadUserData() {
-  if (!currentUser) return;
+  if (!currentUser) {
+    return;
+  }
 
   await Promise.all([
     loadTransactions(),
@@ -685,6 +756,7 @@ async function loadUserData() {
   ]);
 }
 
+
 /* =========================================================
    TRANSAÇÕES
 ========================================================= */
@@ -693,7 +765,10 @@ async function loadTransactions() {
   transactions = [];
 
   try {
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("transactions")
         .select("*")
@@ -708,7 +783,9 @@ async function loadTransactions() {
           }
         );
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     transactions =
       (data || []).map(
@@ -721,7 +798,6 @@ async function loadTransactions() {
             )
         })
       );
-
   } catch (error) {
     console.warn(
       "loadTransactions:",
@@ -729,6 +805,7 @@ async function loadTransactions() {
     );
   }
 }
+
 
 /* =========================================================
    METAS
@@ -745,7 +822,10 @@ async function loadGoals() {
   }
 
   try {
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("goals")
         .select("*")
@@ -760,7 +840,9 @@ async function loadGoals() {
           }
         );
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     goals =
       (data || []).map(
@@ -768,13 +850,14 @@ async function loadGoals() {
           ...goal,
 
           target:
-            Number(goal.target) || 0,
+            Number(goal.target) ||
+            0,
 
           saved:
-            Number(goal.saved) || 0
+            Number(goal.saved) ||
+            0
         })
       );
-
   } catch (error) {
     console.warn(
       "loadGoals:",
@@ -782,6 +865,7 @@ async function loadGoals() {
     );
   }
 }
+
 
 /* =========================================================
    ORÇAMENTOS
@@ -791,7 +875,10 @@ async function loadBudgets() {
   budgets = [];
 
   try {
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("budgets")
         .select("*")
@@ -800,10 +887,12 @@ async function loadBudgets() {
           currentUser.id
         );
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
-    budgets = data || [];
-
+    budgets =
+      data || [];
   } catch (error) {
     console.warn(
       "loadBudgets:",
@@ -811,6 +900,7 @@ async function loadBudgets() {
     );
   }
 }
+
 
 /* =========================================================
    ASSINATURA
@@ -820,7 +910,10 @@ async function loadSubscription() {
   subscription = null;
 
   try {
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("subscriptions")
         .select("*")
@@ -837,11 +930,12 @@ async function loadSubscription() {
         .limit(1)
         .maybeSingle();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     subscription =
       data || null;
-
   } catch (error) {
     console.warn(
       "loadSubscription:",
@@ -849,6 +943,7 @@ async function loadSubscription() {
     );
   }
 }
+
 
 /* =========================================================
    SALVAR TRANSAÇÃO
@@ -873,14 +968,20 @@ async function saveTransaction(event) {
 
   const amount =
     Number(
-      valueOf("transactionAmount")
+      valueOf(
+        "transactionAmount"
+      )
     );
 
   const date =
-    valueOf("transactionDate");
+    valueOf(
+      "transactionDate"
+    );
 
   const category =
-    valueOf("transactionCategory");
+    valueOf(
+      "transactionCategory"
+    );
 
   clearMessage(
     "transactionMessage"
@@ -944,7 +1045,6 @@ async function saveTransaction(event) {
             "user_id",
             currentUser.id
           );
-
     } else {
       result =
         await supabaseClient
@@ -969,11 +1069,9 @@ async function saveTransaction(event) {
     await loadTransactions();
 
     updateDashboard();
-
     updateReports();
 
     renderTransactions();
-
   } catch (error) {
     console.error(error);
 
@@ -984,7 +1082,6 @@ async function saveTransaction(event) {
         "Não foi possível salvar o lançamento."
       )
     );
-
   } finally {
     setButtonLoading(
       button,
@@ -993,6 +1090,7 @@ async function saveTransaction(event) {
     );
   }
 }
+
 
 /* =========================================================
    MODAL TRANSAÇÃO
@@ -1011,7 +1109,8 @@ function openTransactionModal(
     transaction?.id || null;
 
   if ($("transactionModalTitle")) {
-    $("transactionModalTitle").textContent =
+    $("transactionModalTitle")
+      .textContent =
       transaction
         ? "Editar lançamento"
         : "Novo lançamento";
@@ -1022,9 +1121,13 @@ function openTransactionModal(
       transaction?.id || "";
   }
 
-  if ($("transactionDescription")) {
-    $("transactionDescription").value =
-      transaction?.description || "";
+  if (
+    $("transactionDescription")
+  ) {
+    $("transactionDescription")
+      .value =
+      transaction?.description ||
+      "";
   }
 
   if ($("transactionAmount")) {
@@ -1056,6 +1159,7 @@ function openTransactionModal(
   );
 }
 
+
 function setTransactionTypeButtons() {
   document
     .querySelectorAll(
@@ -1075,6 +1179,7 @@ function setTransactionTypeButtons() {
       selectedTransactionType;
   }
 }
+
 
 /* =========================================================
    EXCLUIR TRANSAÇÃO
@@ -1097,17 +1202,24 @@ async function deleteTransaction(id) {
   }
 
   try {
-    const { error } =
+    const {
+      error
+    } =
       await supabaseClient
         .from("transactions")
         .delete()
-        .eq("id", id)
+        .eq(
+          "id",
+          id
+        )
         .eq(
           "user_id",
           currentUser.id
         );
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     showToast(
       "Lançamento excluído!"
@@ -1116,11 +1228,9 @@ async function deleteTransaction(id) {
     await loadTransactions();
 
     updateDashboard();
-
     updateReports();
 
     renderTransactions();
-
   } catch (error) {
     console.error(error);
 
@@ -1129,6 +1239,7 @@ async function deleteTransaction(id) {
     );
   }
 }
+
 
 /* =========================================================
    RENDER TRANSAÇÕES
@@ -1141,7 +1252,9 @@ function renderTransactions() {
   const empty =
     $("transactionsEmpty");
 
-  if (!body) return;
+  if (!body) {
+    return;
+  }
 
   const list =
     applyTransactionFilters();
@@ -1253,6 +1366,7 @@ function renderTransactions() {
   });
 }
 
+
 /* =========================================================
    FILTROS
 ========================================================= */
@@ -1303,10 +1417,12 @@ function applyTransactionFilters() {
         );
 
       return (
-        (!search ||
+        (
+          !search ||
           haystack.includes(
             search
-          )) &&
+          )
+        ) &&
 
         (
           type === "all" ||
@@ -1318,12 +1434,14 @@ function applyTransactionFilters() {
 
         (
           category === "all" ||
-          t.category === category
+          t.category ===
+            category
         )
       );
     }
   );
 }
+
 
 /* =========================================================
    CATEGORIAS
@@ -1377,7 +1495,6 @@ async function saveCategory(event) {
   saveLocalCategories();
 
   populateTransactionCategories();
-
   populateCategoryFilter();
 
   renderCategories();
@@ -1390,6 +1507,7 @@ async function saveCategory(event) {
     "Categoria criada!"
   );
 }
+
 
 function getAllCategories() {
   const customNames =
@@ -1407,6 +1525,7 @@ function getAllCategories() {
     ])
   ];
 }
+
 
 function loadLocalCategories() {
   try {
@@ -1427,11 +1546,11 @@ function loadLocalCategories() {
     ) {
       customCategories = [];
     }
-
   } catch {
     customCategories = [];
   }
 }
+
 
 function saveLocalCategories() {
   localStorage.setItem(
@@ -1442,13 +1561,16 @@ function saveLocalCategories() {
   );
 }
 
+
 function populateTransactionCategories(
   selected = ""
 ) {
   const select =
     $("transactionCategory");
 
-  if (!select) return;
+  if (!select) {
+    return;
+  }
 
   const currentType =
     selectedTransactionType;
@@ -1490,7 +1612,8 @@ function populateTransactionCategories(
       item.name;
 
     if (
-      item.name === selected
+      item.name ===
+      selected
     ) {
       option.selected =
         true;
@@ -1505,7 +1628,8 @@ function populateTransactionCategories(
     selected &&
     !filtered.some(
       i =>
-        i.name === selected
+        i.name ===
+        selected
     )
   ) {
     const option =
@@ -1528,6 +1652,7 @@ function populateTransactionCategories(
   }
 }
 
+
 function categoryDefaultType(name) {
   return [
     "Salário",
@@ -1537,11 +1662,14 @@ function categoryDefaultType(name) {
     : "expense";
 }
 
+
 function populateCategoryFilter() {
   const select =
     $("categoryFilter");
 
-  if (!select) return;
+  if (!select) {
+    return;
+  }
 
   const current =
     select.value ||
@@ -1589,11 +1717,14 @@ function populateCategoryFilter() {
       : "all";
 }
 
+
 function renderCategories() {
   const grid =
     $("categoriesGrid");
 
-  if (!grid) return;
+  if (!grid) {
+    return;
+  }
 
   grid.innerHTML = "";
 
@@ -1641,6 +1772,7 @@ function renderCategories() {
   populateCategoryFilter();
 }
 
+
 /* =========================================================
    DASHBOARD
 ========================================================= */
@@ -1650,21 +1782,24 @@ function updateDashboard() {
     getTotals();
 
   if ($("balanceValue")) {
-    $("balanceValue").textContent =
+    $("balanceValue")
+      .textContent =
       formatMoney(
         totals.balance
       );
   }
 
   if ($("incomeValue")) {
-    $("incomeValue").textContent =
+    $("incomeValue")
+      .textContent =
       formatMoney(
         totals.income
       );
   }
 
   if ($("expenseValue")) {
-    $("expenseValue").textContent =
+    $("expenseValue")
+      .textContent =
       formatMoney(
         totals.expense
       );
@@ -1676,6 +1811,7 @@ function updateDashboard() {
 
   updatePremiumDashboard();
 }
+
 
 function getTotals() {
   let income = 0;
@@ -1692,9 +1828,11 @@ function getTotals() {
           t.type
         ) === "expense"
       ) {
-        expense += amount;
+        expense +=
+          amount;
       } else {
-        income += amount;
+        income +=
+          amount;
       }
     }
   );
@@ -1706,6 +1844,7 @@ function getTotals() {
       income - expense
   };
 }
+
 
 /* =========================================================
    PREMIUM — DASHBOARD
@@ -1735,70 +1874,88 @@ function updatePremiumDashboard() {
   const monthly =
     getCurrentMonthSummary();
 
+
   /* -------------------------------------------------------
      COFRINHO
   ------------------------------------------------------- */
 
   if ($("monthlySavingsValue")) {
-    $("monthlySavingsValue").textContent =
+    $("monthlySavingsValue")
+      .textContent =
       formatMoney(
         monthly.balance
       );
   }
 
   if ($("monthlySavingsText")) {
-    if (monthly.balance > 0) {
-      $("monthlySavingsText").textContent =
+    if (
+      monthly.balance > 0
+    ) {
+      $("monthlySavingsText")
+        .textContent =
         `Você tem ${formatMoney(
           monthly.balance
         )} de sobra neste mês.`;
 
-    } else if (monthly.balance < 0) {
-      $("monthlySavingsText").textContent =
+    } else if (
+      monthly.balance < 0
+    ) {
+      $("monthlySavingsText")
+        .textContent =
         `Suas despesas ultrapassaram as receitas em ${formatMoney(
-          Math.abs(monthly.balance)
+          Math.abs(
+            monthly.balance
+          )
         )}.`;
 
     } else {
-      $("monthlySavingsText").textContent =
+      $("monthlySavingsText")
+        .textContent =
         "Receitas e despesas estão equilibradas.";
     }
   }
+
 
   /* -------------------------------------------------------
      RESUMO MENSAL
   ------------------------------------------------------- */
 
   if ($("monthlyIncomeValue")) {
-    $("monthlyIncomeValue").textContent =
+    $("monthlyIncomeValue")
+      .textContent =
       formatMoney(
         monthly.income
       );
   }
 
   if ($("monthlyExpenseValue")) {
-    $("monthlyExpenseValue").textContent =
+    $("monthlyExpenseValue")
+      .textContent =
       formatMoney(
         monthly.expense
       );
   }
 
   if ($("monthlyBalanceValue")) {
-    $("monthlyBalanceValue").textContent =
+    $("monthlyBalanceValue")
+      .textContent =
       formatMoney(
         monthly.balance
       );
 
-    $("monthlyBalanceValue").classList.toggle(
-      "positive",
-      monthly.balance >= 0
-    );
+    $("monthlyBalanceValue")
+      .classList.toggle(
+        "positive",
+        monthly.balance >= 0
+      );
 
-    $("monthlyBalanceValue").classList.toggle(
-      "negative",
-      monthly.balance < 0
-    );
+    $("monthlyBalanceValue")
+      .classList.toggle(
+        "negative",
+        monthly.balance < 0
+      );
   }
+
 
   /* -------------------------------------------------------
      RANKING
@@ -1811,7 +1968,8 @@ function updatePremiumDashboard() {
     $("expenseRanking");
 
   if (rankingContainer) {
-    rankingContainer.innerHTML = "";
+    rankingContainer.innerHTML =
+      "";
 
     if (!ranking.length) {
       rankingContainer.innerHTML = `
@@ -1899,6 +2057,7 @@ function updatePremiumDashboard() {
     }
   }
 
+
   /* -------------------------------------------------------
      MAIOR GASTO
   ------------------------------------------------------- */
@@ -1907,7 +2066,8 @@ function updatePremiumDashboard() {
     ranking[0];
 
   if ($("topCategoryValue")) {
-    $("topCategoryValue").textContent =
+    $("topCategoryValue")
+      .textContent =
       top
         ? formatMoney(
             top.amount
@@ -1916,12 +2076,14 @@ function updatePremiumDashboard() {
   }
 
   if ($("topCategoryText")) {
-    $("topCategoryText").textContent =
+    $("topCategoryText")
+      .textContent =
       top
         ? top.category
         : "Nenhuma despesa registrada";
   }
 }
+
 
 /* =========================================================
    RESUMO DO MÊS ATUAL
@@ -1958,9 +2120,11 @@ function getCurrentMonthSummary() {
       if (
         type === "expense"
       ) {
-        expense += amount;
+        expense +=
+          amount;
       } else {
-        income += amount;
+        income +=
+          amount;
       }
     }
   );
@@ -1972,6 +2136,7 @@ function getCurrentMonthSummary() {
       income - expense
   };
 }
+
 
 /* =========================================================
    RANKING DE GASTOS DO MÊS
@@ -2039,6 +2204,7 @@ function getMonthlyExpenseRanking() {
     .slice(0, 5);
 }
 
+
 /* =========================================================
    VERIFICAR MÊS ATUAL
 ========================================================= */
@@ -2057,10 +2223,12 @@ function isDateInCurrentMonth(
   return (
     date.getFullYear() ===
       referenceDate.getFullYear() &&
+
     date.getMonth() ===
       referenceDate.getMonth()
   );
 }
+
 
 /* =========================================================
    TRANSAÇÕES RECENTES
@@ -2070,7 +2238,9 @@ function renderRecentTransactions() {
   const container =
     $("recentTransactions");
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
 
   container.innerHTML = "";
 
@@ -2091,7 +2261,6 @@ function renderRecentTransactions() {
   if (!recent.length) {
     container.innerHTML = `
       <div class="empty-state">
-
         <div>◎</div>
 
         <h3>
@@ -2101,7 +2270,6 @@ function renderRecentTransactions() {
         <p>
           Adicione uma receita ou despesa.
         </p>
-
       </div>
     `;
 
@@ -2171,6 +2339,7 @@ function renderRecentTransactions() {
     );
   });
 }
+
 
 /* =========================================================
    GRÁFICO FINANCEIRO
@@ -2314,15 +2483,13 @@ function renderFinanceChart() {
     );
 }
 
+
 function sumByMonth(
   key,
   type
 ) {
   return transactions.reduce(
-    (
-      sum,
-      t
-    ) => {
+    (sum, t) => {
       if (
         normalizeTransactionType(
           t.type
@@ -2341,14 +2508,17 @@ function sumByMonth(
         7
       ) === key
         ? sum +
-          (Number(
-            t.amount
-          ) || 0)
+          (
+            Number(
+              t.amount
+            ) || 0
+          )
         : sum;
     },
     0
   );
 }
+
 
 /* =========================================================
    RELATÓRIOS
@@ -2390,6 +2560,18 @@ function updateReports() {
       }
     );
 
+
+  /* -------------------------------------------------------
+     COMPARAÇÃO COM MÊS ANTERIOR
+  ------------------------------------------------------- */
+
+  updateReportComparison();
+
+
+  /* -------------------------------------------------------
+     PREMIUM
+  ------------------------------------------------------- */
+
   const premium =
     isPremiumActive();
 
@@ -2409,7 +2591,6 @@ function updateReports() {
 
   if (premium) {
     renderCategoryChart();
-
   } else if (
     categoryChart
   ) {
@@ -2420,6 +2601,657 @@ function updateReports() {
 
   updatePremiumDashboard();
 }
+
+
+/* =========================================================
+   COMPARAÇÃO MENSAL
+========================================================= */
+
+function getMonthKey(date) {
+  return `${date.getFullYear()}-${String(
+    date.getMonth() + 1
+  ).padStart(
+    2,
+    "0"
+  )}`;
+}
+
+
+function getMonthSummary(date) {
+  const key =
+    getMonthKey(date);
+
+  let income = 0;
+  let expense = 0;
+
+  let hasTransactions =
+    false;
+
+  transactions.forEach(
+    transaction => {
+      const transactionDate =
+        parseDate(
+          transaction.date
+        );
+
+      if (!transactionDate) {
+        return;
+      }
+
+      if (
+        getMonthKey(
+          transactionDate
+        ) !== key
+      ) {
+        return;
+      }
+
+      hasTransactions =
+        true;
+
+      const amount =
+        Number(
+          transaction.amount
+        ) || 0;
+
+      const type =
+        normalizeTransactionType(
+          transaction.type
+        );
+
+      if (
+        type === "expense"
+      ) {
+        expense +=
+          amount;
+      } else {
+        income +=
+          amount;
+      }
+    }
+  );
+
+  return {
+    income,
+    expense,
+    balance:
+      income - expense,
+    hasTransactions
+  };
+}
+
+
+function getPreviousMonthDate() {
+  const now =
+    new Date();
+
+  return new Date(
+    now.getFullYear(),
+    now.getMonth() - 1,
+    1
+  );
+}
+
+
+function calculatePercentageChange(
+  current,
+  previous
+) {
+  if (
+    previous === 0
+  ) {
+    if (
+      current === 0
+    ) {
+      return 0;
+    }
+
+    return null;
+  }
+
+  return (
+    (
+      (current - previous) /
+      Math.abs(previous)
+    ) * 100
+  );
+}
+
+
+function formatPercentageChange(
+  current,
+  previous
+) {
+  const change =
+    calculatePercentageChange(
+      current,
+      previous
+    );
+
+  if (
+    change === null
+  ) {
+    return current > 0
+      ? "novo"
+      : "—";
+  }
+
+  if (
+    Math.abs(change) <
+    0.05
+  ) {
+    return "0%";
+  }
+
+  const sign =
+    change > 0
+      ? "+"
+      : "";
+
+  return `${sign}${change.toFixed(
+    1
+  )}%`;
+}
+
+
+function getChangeClass(
+  current,
+  previous,
+  lowerIsBetter = false
+) {
+  if (
+    current === previous
+  ) {
+    return "neutral";
+  }
+
+  const increased =
+    current > previous;
+
+  if (lowerIsBetter) {
+    return increased
+      ? "negative"
+      : "positive";
+  }
+
+  return increased
+    ? "positive"
+    : "negative";
+}
+
+
+function getMonthName(date) {
+  return date.toLocaleDateString(
+    "pt-BR",
+    {
+      month: "long"
+    }
+  );
+}
+
+
+/* =========================================================
+   ATUALIZAR COMPARAÇÃO DOS RELATÓRIOS
+========================================================= */
+
+function updateReportComparison() {
+  const now =
+    new Date();
+
+  const previousDate =
+    getPreviousMonthDate();
+
+  const current =
+    getMonthSummary(
+      now
+    );
+
+  const previous =
+    getMonthSummary(
+      previousDate
+    );
+
+  const comparison = {
+    comparisonIncome: {
+      current:
+        current.income,
+
+      previous:
+        previous.income,
+
+      lowerIsBetter:
+        false
+    },
+
+    comparisonExpense: {
+      current:
+        current.expense,
+
+      previous:
+        previous.expense,
+
+      lowerIsBetter:
+        true
+    },
+
+    comparisonBalance: {
+      current:
+        current.balance,
+
+      previous:
+        previous.balance,
+
+      lowerIsBetter:
+        false
+    }
+  };
+
+  Object.entries(
+    comparison
+  ).forEach(
+    ([id, data]) => {
+      const element =
+        $(id);
+
+      if (!element) {
+        return;
+      }
+
+      const percentage =
+        formatPercentageChange(
+          data.current,
+          data.previous
+        );
+
+      const className =
+        getChangeClass(
+          data.current,
+          data.previous,
+          data.lowerIsBetter
+        );
+
+      element.textContent =
+        `${formatMoney(
+          data.current
+        )} (${percentage})`;
+
+      element.classList.remove(
+        "positive",
+        "negative",
+        "neutral"
+      );
+
+      element.classList.add(
+        className
+      );
+    }
+  );
+
+  renderReportAnalysis(
+    current,
+    previous,
+    now,
+    previousDate
+  );
+}
+
+
+/* =========================================================
+   ANÁLISE AUTOMÁTICA DOS RELATÓRIOS
+========================================================= */
+
+function renderReportAnalysis(
+  current,
+  previous,
+  currentDate,
+  previousDate
+) {
+  const container =
+    $("automaticReportAnalysis");
+
+  if (!container) {
+    return;
+  }
+
+  if (
+    !current.hasTransactions &&
+    !previous.hasTransactions
+  ) {
+    container.innerHTML = `
+      <div class="report-analysis-content">
+
+        <strong>
+          📊 Ainda não há dados suficientes.
+        </strong>
+
+        <p>
+          Adicione receitas e despesas para que o
+          ControleS possa analisar sua evolução financeira.
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+
+  if (
+    !previous.hasTransactions
+  ) {
+    container.innerHTML = `
+      <div class="report-analysis-content">
+
+        <strong>
+          📅 Primeiro mês de análise
+        </strong>
+
+        <p>
+          Ainda não existem lançamentos suficientes no
+          mês anterior para fazer uma comparação.
+          Continue registrando suas movimentações para
+          acompanhar sua evolução financeira.
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const incomeChange =
+    calculatePercentageChange(
+      current.income,
+      previous.income
+    );
+
+  const expenseChange =
+    calculatePercentageChange(
+      current.expense,
+      previous.expense
+    );
+
+  const balanceChange =
+    calculatePercentageChange(
+      current.balance,
+      previous.balance
+    );
+
+
+  const incomeImproved =
+    current.income >
+    previous.income;
+
+  const incomeWorsened =
+    current.income <
+    previous.income;
+
+  const expenseImproved =
+    current.expense <
+    previous.expense;
+
+  const expenseWorsened =
+    current.expense >
+    previous.expense;
+
+  const balanceImproved =
+    current.balance >
+    previous.balance;
+
+  const balanceWorsened =
+    current.balance <
+    previous.balance;
+
+
+  let title =
+    "Sua situação financeira está estável.";
+
+  let text =
+    "Houve poucas mudanças entre os dois meses.";
+
+  let icon =
+    "📊";
+
+
+  /* -------------------------------------------------------
+     MELHOROU
+  ------------------------------------------------------- */
+
+  if (
+    (
+      incomeImproved &&
+      !expenseWorsened
+    ) ||
+    (
+      expenseImproved &&
+      !incomeWorsened
+    ) ||
+    balanceImproved
+  ) {
+    title =
+      "Sua situação financeira melhorou.";
+
+    icon =
+      "📈";
+
+    if (
+      incomeImproved &&
+      expenseImproved
+    ) {
+      text =
+        `Você aumentou suas receitas e reduziu suas despesas em relação a ${getMonthName(
+          previousDate
+        )}. Isso fez seu saldo melhorar.`;
+
+    } else if (
+      incomeImproved &&
+      expenseWorsened
+    ) {
+      text =
+        `Suas receitas aumentaram, mas suas despesas também subiram. Mesmo assim, seu saldo apresentou uma evolução positiva.`;
+
+    } else if (
+      expenseImproved
+    ) {
+      text =
+        `Você conseguiu reduzir suas despesas em relação a ${getMonthName(
+          previousDate
+        )}, o que ajudou a melhorar seu resultado financeiro.`;
+
+    } else {
+      text =
+        `Seu saldo ficou melhor do que no mês anterior. Continue acompanhando seus gastos para manter essa evolução.`;
+    }
+  }
+
+
+  /* -------------------------------------------------------
+     PIOROU
+  ------------------------------------------------------- */
+
+  if (
+    (
+      incomeWorsened &&
+      !expenseImproved
+    ) ||
+    (
+      expenseWorsened &&
+      !incomeImproved
+    ) ||
+    balanceWorsened
+  ) {
+    title =
+      "Sua situação financeira piorou.";
+
+    icon =
+      "📉";
+
+    if (
+      incomeWorsened &&
+      expenseWorsened
+    ) {
+      text =
+        `Suas receitas diminuíram e suas despesas aumentaram em relação a ${getMonthName(
+          previousDate
+        )}. Vale a pena revisar seus gastos.`;
+
+    } else if (
+      incomeWorsened
+    ) {
+      text =
+        `Suas receitas diminuíram em relação ao mês anterior. Tente controlar as despesas para evitar que isso afete ainda mais seu saldo.`;
+
+    } else if (
+      expenseWorsened
+    ) {
+      text =
+        `Suas despesas aumentaram em relação ao mês anterior. Observe principalmente as categorias que tiveram maior crescimento.`;
+
+    } else {
+      text =
+        `Seu saldo ficou abaixo do resultado de ${getMonthName(
+          previousDate
+        )}. Vale a pena acompanhar suas receitas e despesas com mais atenção.`;
+    }
+  }
+
+
+  /* -------------------------------------------------------
+     SALDO NEGATIVO NOS DOIS MESES
+  ------------------------------------------------------- */
+
+  if (
+    current.balance < 0 &&
+    previous.balance < 0
+  ) {
+    title =
+      "Atenção ao seu saldo.";
+
+    icon =
+      "⚠️";
+
+    if (
+      current.balance >
+      previous.balance
+    ) {
+      text =
+        `Apesar de seu saldo ainda estar negativo, houve uma melhora em relação ao mês anterior. Suas despesas ainda estão acima das receitas.`;
+    } else {
+      text =
+        `Seu saldo continua negativo e ficou pior em relação ao mês anterior. Procure reduzir despesas ou aumentar suas receitas.`;
+    }
+  }
+
+
+  const incomeText =
+    incomeChange === null
+      ? current.income > 0
+        ? "novo"
+        : "—"
+      : formatPercentageChange(
+          current.income,
+          previous.income
+        );
+
+  const expenseText =
+    expenseChange === null
+      ? current.expense > 0
+        ? "novo"
+        : "—"
+      : formatPercentageChange(
+          current.expense,
+          previous.expense
+        );
+
+  const balanceText =
+    balanceChange === null
+      ? current.balance > 0
+        ? "novo"
+        : "—"
+      : formatPercentageChange(
+          current.balance,
+          previous.balance
+        );
+
+
+  container.innerHTML = `
+    <div class="report-analysis-content">
+
+      <div class="report-analysis-title">
+        <span>
+          ${icon}
+        </span>
+
+        <strong>
+          ${title}
+        </strong>
+      </div>
+
+      <p>
+        ${text}
+      </p>
+
+      <div class="report-analysis-details">
+
+        <div>
+          <span>
+            Receitas
+          </span>
+
+          <strong>
+            ${formatMoney(
+              current.income
+            )}
+          </strong>
+
+          <small>
+            ${incomeText}
+            vs. mês anterior
+          </small>
+        </div>
+
+
+        <div>
+          <span>
+            Despesas
+          </span>
+
+          <strong>
+            ${formatMoney(
+              current.expense
+            )}
+          </strong>
+
+          <small>
+            ${expenseText}
+            vs. mês anterior
+          </small>
+        </div>
+
+
+        <div>
+          <span>
+            Saldo
+          </span>
+
+          <strong>
+            ${formatMoney(
+              current.balance
+            )}
+          </strong>
+
+          <small>
+            ${balanceText}
+            vs. mês anterior
+          </small>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
 
 /* =========================================================
    GRÁFICO DE CATEGORIAS
@@ -2445,24 +3277,22 @@ function renderCategoryChart() {
           t.type
         ) === "expense"
     )
-    .forEach(
-      t => {
-        const category =
-          t.category ||
-          "Outros";
+    .forEach(t => {
+      const category =
+        t.category ||
+        "Outros";
 
-        totals[category] =
-          (
-            totals[category] ||
-            0
-          ) +
-          (
-            Number(
-              t.amount
-            ) || 0
-          );
-      }
-    );
+      totals[category] =
+        (
+          totals[category] ||
+          0
+        ) +
+        (
+          Number(
+            t.amount
+          ) || 0
+        );
+    });
 
   const labels =
     Object.keys(
@@ -2523,6 +3353,7 @@ function renderCategoryChart() {
     );
 }
 
+
 /* =========================================================
    PREMIUM
 ========================================================= */
@@ -2553,7 +3384,6 @@ function updatePremiumUI() {
       button.disabled =
         true;
     }
-
   } else {
     if (status) {
       status.textContent =
@@ -2573,6 +3403,7 @@ function updatePremiumUI() {
 
   updatePremiumDashboard();
 }
+
 
 function isPremiumActive() {
   if (!subscription) {
@@ -2614,6 +3445,7 @@ function isPremiumActive() {
   );
 }
 
+
 function openPremiumModal() {
   if (
     isPremiumActive()
@@ -2633,6 +3465,7 @@ function openPremiumModal() {
     "premiumModal"
   );
 }
+
 
 /* =========================================================
    ATIVAÇÃO PREMIUM — TESTE
@@ -2726,7 +3559,6 @@ async function activatePremium() {
     showToast(
       "Premium ativado por 7 dias para teste!"
     );
-
   } catch (error) {
     console.error(
       "activatePremium:",
@@ -2740,7 +3572,6 @@ async function activatePremium() {
         "Não foi possível ativar o Premium."
       )
     );
-
   } finally {
     setButtonLoading(
       button,
@@ -2749,6 +3580,7 @@ async function activatePremium() {
     );
   }
 }
+
 
 /* =========================================================
    METAS
@@ -2773,13 +3605,16 @@ async function saveGoal(event) {
 
   const target =
     Number(
-      valueOf("goalTarget")
+      valueOf(
+        "goalTarget"
+      )
     );
 
   const current =
     Number(
-      valueOf("goalCurrent") ||
-      0
+      valueOf(
+        "goalCurrent"
+      ) || 0
     );
 
   if (
@@ -2872,7 +3707,6 @@ async function saveGoal(event) {
     );
 
     await loadGoals();
-
   } catch (error) {
     console.error(
       "saveGoal:",
@@ -2889,31 +3723,37 @@ async function saveGoal(event) {
   }
 }
 
+
 function openGoalModal() {
   clearMessage(
     "goalMessage"
   );
 
   if ($("goalName")) {
-    $("goalName").value = "";
+    $("goalName").value =
+      "";
   }
 
   if ($("goalTarget")) {
-    $("goalTarget").value = "";
+    $("goalTarget").value =
+      "";
   }
 
   if ($("goalCurrent")) {
-    $("goalCurrent").value = "0";
+    $("goalCurrent").value =
+      "0";
   }
 
   if ($("goalDeadline")) {
-    $("goalDeadline").value = "";
+    $("goalDeadline").value =
+      "";
   }
 
   openModal(
     "goalModal"
   );
 }
+
 
 /* =========================================================
    MODAL CATEGORIA
@@ -2934,6 +3774,7 @@ function openCategoryModal() {
   );
 }
 
+
 /* =========================================================
    SEÇÕES
 ========================================================= */
@@ -2953,29 +3794,25 @@ function showSection(
     .querySelectorAll(
       ".content-section"
     )
-    .forEach(
-      el => {
-        el.classList.toggle(
-          "active",
-          el.id ===
-            `${section}Section`
-        );
-      }
-    );
+    .forEach(el => {
+      el.classList.toggle(
+        "active",
+        el.id ===
+          `${section}Section`
+      );
+    });
 
   document
     .querySelectorAll(
       ".nav-item"
     )
-    .forEach(
-      el => {
-        el.classList.toggle(
-          "active",
-          el.dataset.section ===
-            section
-        );
-      }
-    );
+    .forEach(el => {
+      el.classList.toggle(
+        "active",
+        el.dataset.section ===
+          section
+      );
+    });
 
   if ($("pageTitle")) {
     $("pageTitle").textContent =
@@ -3029,6 +3866,7 @@ function showSection(
     behavior: "smooth"
   });
 }
+
 
 /* =========================================================
    EVENTOS
@@ -3148,6 +3986,7 @@ function setupEvents() {
       }
     );
 
+
   /* =======================================================
      CLIQUES GERAIS
   ======================================================= */
@@ -3175,6 +4014,7 @@ function setupEvents() {
         return;
       }
 
+
       const action =
         event.target.closest(
           "[data-action]"
@@ -3197,6 +4037,7 @@ function setupEvents() {
           "expense"
         );
       }
+
 
       const edit =
         event.target.closest(
@@ -3226,6 +4067,7 @@ function setupEvents() {
         }
       }
 
+
       const del =
         event.target.closest(
           "[data-delete-transaction]"
@@ -3237,6 +4079,7 @@ function setupEvents() {
             .deleteTransaction
         );
       }
+
 
       const close =
         event.target.closest(
@@ -3252,6 +4095,7 @@ function setupEvents() {
       }
     }
   );
+
 
   /* =======================================================
      TIPO TRANSAÇÃO
@@ -3271,8 +4115,10 @@ function setupEvents() {
                 .transactionType;
 
             if (
-              type === "income" ||
-              type === "expense"
+              type ===
+                "income" ||
+              type ===
+                "expense"
             ) {
               selectedTransactionType =
                 type;
@@ -3285,6 +4131,7 @@ function setupEvents() {
         );
       }
     );
+
 
   /* =======================================================
      MOSTRAR SENHA
@@ -3305,7 +4152,9 @@ function setupEvents() {
                   .passwordToggle
               );
 
-            if (!input) return;
+            if (!input) {
+              return;
+            }
 
             input.type =
               input.type ===
@@ -3325,6 +4174,7 @@ function setupEvents() {
       }
     );
 
+
   /* =======================================================
      FILTROS
   ======================================================= */
@@ -3334,19 +4184,18 @@ function setupEvents() {
     "transactionFilter",
     "typeFilter",
     "categoryFilter"
-  ].forEach(
-    id => {
-      $(id)?.addEventListener(
-        "input",
-        renderTransactions
-      );
+  ].forEach(id => {
+    $(id)?.addEventListener(
+      "input",
+      renderTransactions
+    );
 
-      $(id)?.addEventListener(
-        "change",
-        renderTransactions
-      );
-    }
-  );
+    $(id)?.addEventListener(
+      "change",
+      renderTransactions
+    );
+  });
+
 
   /* =======================================================
      FECHAR MODAIS
@@ -3374,6 +4223,7 @@ function setupEvents() {
       }
     );
 
+
   /* =======================================================
      ESC
   ======================================================= */
@@ -3400,6 +4250,7 @@ function setupEvents() {
   );
 }
 
+
 /* =========================================================
    TELAS
 ========================================================= */
@@ -3420,8 +4271,10 @@ function showLoginView() {
       "hidden"
     );
 
-  $("loginEmail")?.focus();
+  $("loginEmail")
+    ?.focus();
 }
+
 
 function showRegisterView() {
   $("loginView")
@@ -3443,8 +4296,10 @@ function showRegisterView() {
     "registerMessage"
   );
 
-  $("registerName")?.focus();
+  $("registerName")
+    ?.focus();
 }
+
 
 function showAppView() {
   $("loginView")
@@ -3467,6 +4322,7 @@ function showAppView() {
   );
 }
 
+
 /* =========================================================
    MODAIS
 ========================================================= */
@@ -3478,14 +4334,18 @@ function openModal(id) {
     );
 }
 
+
 function closeModal(id) {
-  if (!id) return;
+  if (!id) {
+    return;
+  }
 
   $(id)
     ?.classList.add(
       "hidden"
     );
 }
+
 
 /* =========================================================
    DATA
@@ -3495,7 +4355,9 @@ function setCurrentDate() {
   const el =
     $("currentDate");
 
-  if (!el) return;
+  if (!el) {
+    return;
+  }
 
   el.textContent =
     new Date().toLocaleDateString(
@@ -3516,14 +4378,17 @@ function setCurrentDate() {
     );
 }
 
+
 function setDefaultDate() {
   if (
     $("transactionDate")
   ) {
-    $("transactionDate").value =
+    $("transactionDate")
+      .value =
       todayISO();
   }
 }
+
 
 function todayISO() {
   const d =
@@ -3532,8 +4397,8 @@ function todayISO() {
   const local =
     new Date(
       d.getTime() -
-        d.getTimezoneOffset() *
-          60000
+      d.getTimezoneOffset() *
+        60000
     );
 
   return local
@@ -3544,10 +4409,13 @@ function todayISO() {
     );
 }
 
+
 function normalizeDate(
   value
 ) {
-  if (!value) return "";
+  if (!value) {
+    return "";
+  }
 
   const text =
     String(value);
@@ -3560,13 +4428,18 @@ function normalizeDate(
     : "";
 }
 
+
 function parseDate(
   value
 ) {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   const normalized =
-    normalizeDate(value);
+    normalizeDate(
+      value
+    );
 
   if (!normalized) {
     return null;
@@ -3584,11 +4457,14 @@ function parseDate(
     : date;
 }
 
+
 function formatDate(
   value
 ) {
   const date =
-    parseDate(value);
+    parseDate(
+      value
+    );
 
   return date
     ? date.toLocaleDateString(
@@ -3596,6 +4472,7 @@ function formatDate(
       )
     : "—";
 }
+
 
 /* =========================================================
    DINHEIRO
@@ -3618,6 +4495,7 @@ function formatMoney(
   );
 }
 
+
 function formatCompactMoney(
   value
 ) {
@@ -3630,28 +4508,25 @@ function formatCompactMoney(
     Math.abs(n) >=
     1000000
   ) {
-    return `R$ ${
-      (
-        n / 1000000
-      ).toFixed(1)
-    } mi`;
+    return `R$ ${(
+      n / 1000000
+    ).toFixed(1)} mi`;
   }
 
   if (
     Math.abs(n) >=
     1000
   ) {
-    return `R$ ${
-      (
-        n / 1000
-      ).toFixed(1)
-    } mil`;
+    return `R$ ${(
+      n / 1000
+    ).toFixed(1)} mil`;
   }
 
   return `R$ ${n.toFixed(
     0
   )}`;
 }
+
 
 /* =========================================================
    VALIDAÇÃO
@@ -3660,10 +4535,10 @@ function formatCompactMoney(
 function isValidEmail(
   email
 ) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-    email
-  );
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    .test(email);
 }
+
 
 /* =========================================================
    ERROS AUTH
@@ -3675,7 +4550,7 @@ function friendlyAuthError(
   const message =
     String(
       error?.message ||
-        ""
+      ""
     ).toLowerCase();
 
   if (
@@ -3732,6 +4607,7 @@ function friendlyAuthError(
   );
 }
 
+
 /* =========================================================
    ERROS DATABASE
 ========================================================= */
@@ -3753,17 +4629,18 @@ function databaseError(
   );
 }
 
+
 /* =========================================================
    MENSAGENS
 ========================================================= */
 
-function clearMessage(
-  id
-) {
+function clearMessage(id) {
   const el =
     $(id);
 
-  if (!el) return;
+  if (!el) {
+    return;
+  }
 
   el.textContent =
     "";
@@ -3773,6 +4650,7 @@ function clearMessage(
   );
 }
 
+
 function showMessage(
   id,
   message,
@@ -3781,7 +4659,9 @@ function showMessage(
   const el =
     $(id);
 
-  if (!el) return;
+  if (!el) {
+    return;
+  }
 
   el.textContent =
     message;
@@ -3792,6 +4672,7 @@ function showMessage(
   );
 }
 
+
 /* =========================================================
    BOTÕES
 ========================================================= */
@@ -3801,7 +4682,9 @@ function setButtonLoading(
   loading,
   text
 ) {
-  if (!button) return;
+  if (!button) {
+    return;
+  }
 
   if (loading) {
     button.dataset
@@ -3813,7 +4696,6 @@ function setButtonLoading(
 
     button.textContent =
       text;
-
   } else {
     button.disabled =
       false;
@@ -3826,6 +4708,7 @@ function setButtonLoading(
   }
 }
 
+
 /* =========================================================
    TOAST
 ========================================================= */
@@ -3836,7 +4719,9 @@ function showToast(
   const toast =
     $("toast");
 
-  if (!toast) return;
+  if (!toast) {
+    return;
+  }
 
   clearTimeout(
     toastTimer
@@ -3858,6 +4743,7 @@ function showToast(
       3000
     );
 }
+
 
 /* =========================================================
    SEGURANÇA HTML
@@ -3890,6 +4776,7 @@ function escapeHTML(
   );
 }
 
+
 function escapeAttribute(
   value
 ) {
@@ -3897,6 +4784,7 @@ function escapeAttribute(
     value
   );
 }
+
 
 /* =========================================================
    GRÁFICOS
@@ -3918,6 +4806,7 @@ function destroyCharts() {
   }
 }
 
+
 /* =========================================================
    TEMA
 ========================================================= */
@@ -3929,13 +4818,15 @@ function loadTheme() {
     );
 
   if (
-    theme === "dark"
+    theme ===
+    "dark"
   ) {
     document.body.classList.add(
       "dark"
     );
   }
 }
+
 
 function toggleTheme() {
   document.body.classList.toggle(
