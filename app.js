@@ -2581,7 +2581,7 @@ function renderRecentTransactions() {
 
 
 /* =========================================================
-   PERÍODO FINANCEIRO
+   PERÍODO FINANCEIRO — CORRIGIDO
    ========================================================= */
 
 function getPeriodElements() {
@@ -2589,13 +2589,8 @@ function getPeriodElements() {
     return {
 
         select:
-            firstExisting(
-                "periodFilter"
-            ) ||
-            document.querySelector(
-                "[data-period-filter]"
-            ),
-
+            firstExisting("periodFilter") ||
+            document.querySelector("[data-period-filter]"),
 
         apply:
             firstExisting(
@@ -2603,10 +2598,7 @@ function getPeriodElements() {
                 "applyPeriod",
                 "btnApplyPeriod"
             ) ||
-            document.querySelector(
-                "[data-apply-period]"
-            ),
-
+            document.querySelector("[data-apply-period]"),
 
         customFields:
             firstExisting(
@@ -2615,17 +2607,13 @@ function getPeriodElements() {
                 "customDateRange"
             ),
 
-
         start:
             firstExisting(
                 "periodStart",
                 "customStartDate",
                 "startDate"
             ) ||
-            document.querySelector(
-                "[data-period-start]"
-            ),
-
+            document.querySelector("[data-period-start]"),
 
         end:
             firstExisting(
@@ -2633,10 +2621,7 @@ function getPeriodElements() {
                 "customEndDate",
                 "endDate"
             ) ||
-            document.querySelector(
-                "[data-period-end]"
-            ),
-
+            document.querySelector("[data-period-end]"),
 
         income:
             firstExisting(
@@ -2644,10 +2629,7 @@ function getPeriodElements() {
                 "periodIncomeValue",
                 "periodEarnedValue"
             ) ||
-            document.querySelector(
-                "[data-period-income]"
-            ),
-
+            document.querySelector("[data-period-income]"),
 
         expense:
             firstExisting(
@@ -2655,29 +2637,958 @@ function getPeriodElements() {
                 "periodExpenseValue",
                 "periodSpentValue"
             ) ||
-            document.querySelector(
-                "[data-period-expense]"
-            ),
-
+            document.querySelector("[data-period-expense]"),
 
         balance:
             firstExisting(
                 "periodBalance",
                 "periodBalanceValue"
             ) ||
-            document.querySelector(
-                "[data-period-balance]"
-            ),
-
+            document.querySelector("[data-period-balance]"),
 
         label:
-            firstExisting(
-                "periodLabel"
-            ) ||
-            document.querySelector(
-                "[data-period-label]"
-            )
+            firstExisting("periodLabel") ||
+            document.querySelector("[data-period-label]")
     };
+}
+
+
+/* =========================================================
+   INICIALIZAR FILTRO
+   ========================================================= */
+
+function initializePeriodFilter() {
+
+    const {
+        select,
+        customFields,
+        start,
+        end
+    } = getPeriodElements();
+
+    if (!select) return;
+
+    /*
+     * Se o HTML já tiver as opções,
+     * preservamos o que existe.
+     *
+     * Se estiver vazio, criamos as opções
+     * oficiais do ControleS.
+     */
+
+    if (select.options.length === 0) {
+
+        select.innerHTML = `
+            <option value="today">
+                Hoje
+            </option>
+
+            <option value="yesterday">
+                Ontem
+            </option>
+
+            <option value="7days">
+                Últimos 7 dias
+            </option>
+
+            <option value="30days">
+                Últimos 30 dias
+            </option>
+
+            <option value="month">
+                Este mês
+            </option>
+
+            <option value="previousMonth">
+                Mês anterior
+            </option>
+
+            <option value="all">
+                Todo o período
+            </option>
+
+            <option value="custom">
+                Personalizado
+            </option>
+        `;
+    }
+
+    /*
+     * Caso o HTML já tenha opções antigas,
+     * normalizamos os valores sem destruir
+     * o texto visual existente.
+     */
+
+    const optionMap = {
+        week: "7days",
+        "1week": "7days",
+        "7": "7days",
+
+        month: "month",
+        "1month": "30days",
+
+        all: "all",
+        everything: "all",
+
+        custom: "custom"
+    };
+
+    Array.from(select.options).forEach(option => {
+
+        const value =
+            String(option.value || "")
+                .trim()
+                .toLowerCase();
+
+        if (optionMap[value]) {
+            option.value = optionMap[value];
+        }
+    });
+
+
+    /*
+     * Garante que as opções necessárias
+     * existam mesmo que o HTML esteja com
+     * uma versão antiga.
+     */
+
+    const requiredOptions = [
+        ["today", "Hoje"],
+        ["yesterday", "Ontem"],
+        ["7days", "Últimos 7 dias"],
+        ["30days", "Últimos 30 dias"],
+        ["month", "Este mês"],
+        ["previousMonth", "Mês anterior"],
+        ["all", "Todo o período"],
+        ["custom", "Personalizado"]
+    ];
+
+
+    requiredOptions.forEach(([value, text]) => {
+
+        const exists =
+            Array.from(select.options)
+                .some(option =>
+                    option.value === value
+                );
+
+        if (!exists) {
+
+            select.add(
+                new Option(text, value)
+            );
+        }
+    });
+
+
+    /*
+     * Período inicial:
+     * Hoje
+     */
+
+    if (!select.value) {
+        select.value = "today";
+    }
+
+
+    /*
+     * Datas personalizadas começam escondidas.
+     */
+
+    if (customFields) {
+
+        const isCustom =
+            select.value === "custom";
+
+        customFields.classList.toggle(
+            "hidden",
+            !isCustom
+        );
+
+        customFields.style.display =
+            isCustom
+                ? "flex"
+                : "none";
+    }
+
+
+    /*
+     * Limites dos campos de data.
+     */
+
+    if (start) {
+        start.max = todayISO();
+    }
+
+    if (end) {
+        end.max = todayISO();
+    }
+}
+
+
+/* =========================================================
+   MOSTRAR / ESCONDER PERSONALIZADO
+   ========================================================= */
+
+function toggleCustomPeriodFields() {
+
+    const {
+        select,
+        customFields
+    } = getPeriodElements();
+
+    if (!select || !customFields) {
+        return;
+    }
+
+    const isCustom =
+        select.value === "custom";
+
+    customFields.classList.toggle(
+        "hidden",
+        !isCustom
+    );
+
+    customFields.style.display =
+        isCustom
+            ? "flex"
+            : "none";
+}
+
+
+/* =========================================================
+   PRIMEIRO DIA DO MÊS
+   ========================================================= */
+
+function getFirstDayOfMonth(year, month) {
+
+    const date =
+        new Date(
+            year,
+            month,
+            1
+        );
+
+    const y =
+        date.getFullYear();
+
+    const m =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    return `${y}-${m}-01`;
+}
+
+
+/* =========================================================
+   ÚLTIMO DIA DO MÊS
+   ========================================================= */
+
+function getLastDayOfMonth(year, month) {
+
+    const date =
+        new Date(
+            year,
+            month + 1,
+            0
+        );
+
+    const y =
+        date.getFullYear();
+
+    const m =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    const d =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+    return `${y}-${m}-${d}`;
+}
+
+
+/* =========================================================
+   PERÍODO SELECIONADO
+   ========================================================= */
+
+function getSelectedPeriod() {
+
+    const {
+        select,
+        start,
+        end
+    } = getPeriodElements();
+
+    if (!select || !select.value) {
+        return null;
+    }
+
+
+    const today =
+        todayISO();
+
+
+    switch (select.value) {
+
+
+        /* -----------------------------------------
+           HOJE
+           ----------------------------------------- */
+
+        case "today":
+
+            return {
+                start: today,
+                end: today,
+                label: "Hoje"
+            };
+
+
+        /* -----------------------------------------
+           ONTEM
+           ----------------------------------------- */
+
+        case "yesterday": {
+
+            const yesterday =
+                changeDate(
+                    today,
+                    -1
+                );
+
+            return {
+                start: yesterday,
+                end: yesterday,
+                label: "Ontem"
+            };
+        }
+
+
+        /* -----------------------------------------
+           ÚLTIMOS 7 DIAS
+           ----------------------------------------- */
+
+        case "7days":
+
+            return {
+                start:
+                    changeDate(
+                        today,
+                        -6
+                    ),
+
+                end:
+                    today,
+
+                label:
+                    "Últimos 7 dias"
+            };
+
+
+        /* -----------------------------------------
+           ÚLTIMOS 30 DIAS
+           ----------------------------------------- */
+
+        case "30days":
+
+            return {
+                start:
+                    changeDate(
+                        today,
+                        -29
+                    ),
+
+                end:
+                    today,
+
+                label:
+                    "Últimos 30 dias"
+            };
+
+
+        /* -----------------------------------------
+           ESTE MÊS
+           ----------------------------------------- */
+
+        case "month": {
+
+            const date =
+                new Date();
+
+            const year =
+                date.getFullYear();
+
+            const month =
+                date.getMonth();
+
+            return {
+                start:
+                    getFirstDayOfMonth(
+                        year,
+                        month
+                    ),
+
+                end:
+                    today,
+
+                label:
+                    "Este mês"
+            };
+        }
+
+
+        /* -----------------------------------------
+           MÊS ANTERIOR
+           ----------------------------------------- */
+
+        case "previousMonth": {
+
+            const date =
+                new Date();
+
+            const year =
+                date.getFullYear();
+
+            const month =
+                date.getMonth() - 1;
+
+            return {
+                start:
+                    getFirstDayOfMonth(
+                        year,
+                        month
+                    ),
+
+                end:
+                    getLastDayOfMonth(
+                        year,
+                        month
+                    ),
+
+                label:
+                    "Mês anterior"
+            };
+        }
+
+
+        /* -----------------------------------------
+           TODO O PERÍODO
+           ----------------------------------------- */
+
+        case "all":
+
+            return {
+                start: null,
+                end: null,
+                label: "Todo o período"
+            };
+
+
+        /* -----------------------------------------
+           PERSONALIZADO
+           ----------------------------------------- */
+
+        case "custom": {
+
+            let startDate =
+                start?.value || "";
+
+            let endDate =
+                end?.value || "";
+
+
+            /*
+             * Se nenhuma data foi escolhida,
+             * ainda não existe período válido.
+             */
+
+            if (
+                !startDate &&
+                !endDate
+            ) {
+                return null;
+            }
+
+
+            /*
+             * Se somente uma data foi informada,
+             * usamos o mesmo dia para início/fim.
+             */
+
+            if (!startDate) {
+                startDate = endDate;
+            }
+
+            if (!endDate) {
+                endDate = startDate;
+            }
+
+
+            /*
+             * Corrige automaticamente caso
+             * as datas tenham sido invertidas.
+             */
+
+            if (startDate > endDate) {
+
+                const temp =
+                    startDate;
+
+                startDate =
+                    endDate;
+
+                endDate =
+                    temp;
+            }
+
+
+            return {
+
+                start:
+                    startDate,
+
+                end:
+                    endDate,
+
+                label:
+                    `${formatDateBR(startDate)} até ${formatDateBR(endDate)}`
+            };
+        }
+
+
+        default:
+            return null;
+    }
+}
+
+
+/* =========================================================
+   TRANSAÇÃO DENTRO DO PERÍODO
+   ========================================================= */
+
+function transactionIsInPeriod(
+    transaction,
+    period
+) {
+
+    if (!period) {
+        return false;
+    }
+
+    const date =
+        String(
+            getTransactionDate(
+                transaction
+            ) || ""
+        ).split("T")[0];
+
+
+    if (!date) {
+        return false;
+    }
+
+
+    /*
+     * Todo o período.
+     */
+
+    if (
+        !period.start &&
+        !period.end
+    ) {
+        return true;
+    }
+
+
+    if (
+        period.start &&
+        date < period.start
+    ) {
+        return false;
+    }
+
+
+    if (
+        period.end &&
+        date > period.end
+    ) {
+        return false;
+    }
+
+
+    return true;
+}
+
+
+/* =========================================================
+   CALCULAR RESUMO DO PERÍODO
+   ========================================================= */
+
+function calculatePeriodSummary(period) {
+
+    let income = 0;
+    let expense = 0;
+
+
+    if (!Array.isArray(transactions)) {
+
+        return {
+            income: 0,
+            expense: 0,
+            balance: 0
+        };
+    }
+
+
+    transactions.forEach(transaction => {
+
+        if (
+            !transactionIsInPeriod(
+                transaction,
+                period
+            )
+        ) {
+            return;
+        }
+
+
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo ||
+                transaction.transaction_type
+            );
+
+
+        const amount =
+            getTransactionAmount(
+                transaction
+            );
+
+
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ) {
+            return;
+        }
+
+
+        if (type === "income") {
+
+            /*
+             * Receita futura não entra
+             * como dinheiro recebido.
+             */
+
+            if (
+                isIncomeReceived(
+                    transaction
+                )
+            ) {
+                income += amount;
+            }
+
+        } else {
+
+            expense += amount;
+        }
+    });
+
+
+    return {
+
+        income,
+
+        expense,
+
+        balance:
+            income - expense
+    };
+}
+
+
+/* =========================================================
+   ATUALIZAR CARDS DO PERÍODO
+   ========================================================= */
+
+function updatePeriodSummary() {
+
+    const elements =
+        getPeriodElements();
+
+    const period =
+        getSelectedPeriod();
+
+
+    /*
+     * Se ainda não houver período,
+     * limpamos os cards.
+     */
+
+    if (!period) {
+
+        if (elements.income) {
+            elements.income.textContent =
+                formatCurrency(0);
+        }
+
+        if (elements.expense) {
+            elements.expense.textContent =
+                formatCurrency(0);
+        }
+
+        if (elements.balance) {
+            elements.balance.textContent =
+                formatCurrency(0);
+        }
+
+        if (elements.label) {
+            elements.label.textContent =
+                "Escolha um período";
+        }
+
+        return;
+    }
+
+
+    const summary =
+        calculatePeriodSummary(
+            period
+        );
+
+
+    if (elements.income) {
+
+        elements.income.textContent =
+            formatCurrency(
+                summary.income
+            );
+    }
+
+
+    if (elements.expense) {
+
+        elements.expense.textContent =
+            formatCurrency(
+                summary.expense
+            );
+    }
+
+
+    if (elements.balance) {
+
+        elements.balance.textContent =
+            formatCurrency(
+                summary.balance
+            );
+    }
+
+
+    if (elements.label) {
+
+        elements.label.textContent =
+            period.label;
+    }
+}
+
+
+/* =========================================================
+   APLICAR PERÍODO
+   ========================================================= */
+
+function applySelectedPeriod() {
+
+    const {
+        select,
+        start,
+        end
+    } = getPeriodElements();
+
+
+    if (!select || !select.value) {
+
+        showToast(
+            "Escolha um período primeiro.",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    /*
+     * Validação do personalizado.
+     */
+
+    if (
+        select.value === "custom"
+    ) {
+
+        if (
+            !start?.value &&
+            !end?.value
+        ) {
+
+            showToast(
+                "Escolha pelo menos uma data.",
+                "warning"
+            );
+
+            return;
+        }
+
+
+        if (
+            start?.value &&
+            end?.value &&
+            start.value > end.value
+        ) {
+
+            showToast(
+                "A data inicial não pode ser maior que a final.",
+                "warning"
+            );
+
+            return;
+        }
+    }
+
+
+    updatePeriodSummary();
+
+
+    /*
+     * Atualiza também os relatórios
+     * e dashboard caso estejam presentes.
+     */
+
+    updateDashboard();
+
+    renderTransactions();
+
+    renderReports();
+
+
+    showToast(
+        `Período "${getSelectedPeriod()?.label || ""}" aplicado.`,
+        "success"
+    );
+}
+
+
+/* =========================================================
+   EVENTOS DO PERÍODO
+   ========================================================= */
+
+function setupPeriodEvents() {
+
+    const elements =
+        getPeriodElements();
+
+
+    if (elements.select) {
+
+        /*
+         * Evita listeners duplicados caso
+         * essa função seja chamada novamente.
+         */
+
+        if (
+            elements.select.dataset.periodBound !==
+            "true"
+        ) {
+
+            elements.select.dataset.periodBound =
+                "true";
+
+
+            elements.select.addEventListener(
+                "change",
+                () => {
+
+                    toggleCustomPeriodFields();
+
+                    /*
+                     * Para os períodos prontos,
+                     * atualizamos imediatamente.
+                     *
+                     * Personalizado espera o botão
+                     * Aplicar.
+                     */
+
+                    if (
+                        elements.select.value !==
+                        "custom"
+                    ) {
+                        updatePeriodSummary();
+                    }
+                }
+            );
+        }
+    }
+
+
+    if (elements.apply) {
+
+        if (
+            elements.apply.dataset.periodBound !==
+            "true"
+        ) {
+
+            elements.apply.dataset.periodBound =
+                "true";
+
+
+            elements.apply.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    applySelectedPeriod();
+                }
+            );
+        }
+    }
+
+
+    /*
+     * Atualiza ao alterar as datas personalizadas.
+     */
+
+    [elements.start, elements.end]
+        .filter(Boolean)
+        .forEach(input => {
+
+            if (
+                input.dataset.periodDateBound ===
+                "true"
+            ) {
+                return;
+            }
+
+            input.dataset.periodDateBound =
+                "true";
+
+
+            input.addEventListener(
+                "change",
+                () => {
+
+                    if (
+                        elements.select?.value ===
+                        "custom"
+                    ) {
+                        updatePeriodSummary();
+                    }
+                }
+            );
+        });
 }
 
 
