@@ -798,6 +798,30 @@ async function enterApp() {
    VIEWS
    ========================================================= */
 
+function showRegisterView() {
+
+    closeMobileMenu();
+
+    const login = firstExisting("loginView", "authView");
+    const register = firstExisting("registerView", "signupView");
+    const app = firstExisting("appView", "mainApp");
+
+    if (login) {
+        login.classList.add("hidden");
+        login.style.display = "none";
+    }
+
+    if (register) {
+        register.classList.remove("hidden");
+        register.style.display = "";
+    }
+
+    if (app) {
+        app.classList.add("hidden");
+    }
+}
+
+
 function showLoginView() {
 
     closeMobileMenu();
@@ -1055,10 +1079,23 @@ function getMobileOverlay() {
 }
 
 
-function isMobileViewport() {
-
-    return window.innerWidth <= 720;
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || "")
+        || window.matchMedia?.("(pointer: coarse)")?.matches === true;
 }
+
+function isMobileViewport() {
+    return window.innerWidth <= 720 || isMobileDevice();
+}
+
+// Alguns celulares podem estar com “Site para computador” ativado.
+// Nesse caso o navegador informa uma largura de desktop, mas ainda é um celular.
+// Marcamos o documento para o CSS manter o layout mobile correto.
+function applyDeviceLayout() {
+    document.documentElement.toggleAttribute("data-mobile-device", isMobileDevice());
+}
+
+applyDeviceLayout();
 
 
 function openMobileMenu() {
@@ -5110,6 +5147,24 @@ function setupEvents() {
         );
     }
 
+    const registerButton = firstExisting("registerBtn");
+    if (registerButton && !registerButton.dataset.bound) {
+        registerButton.dataset.bound = "true";
+        registerButton.addEventListener("click", event => {
+            event.preventDefault();
+            showRegisterView();
+        });
+    }
+
+    const backToLoginButton = firstExisting("backToLoginBtn");
+    if (backToLoginButton && !backToLoginButton.dataset.bound) {
+        backToLoginButton.dataset.bound = "true";
+        backToLoginButton.addEventListener("click", event => {
+            event.preventDefault();
+            showLoginView();
+        });
+    }
+
 
     /* -----------------------------------------
        LOGOUT
@@ -5751,8 +5806,9 @@ function setupEvents() {
         "resize",
         () => {
 
-            if (!isMobileViewport()) {
+            applyDeviceLayout();
 
+            if (!isMobileViewport()) {
                 closeMobileMenu();
             }
         }
