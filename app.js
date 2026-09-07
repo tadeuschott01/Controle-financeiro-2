@@ -798,30 +798,6 @@ async function enterApp() {
    VIEWS
    ========================================================= */
 
-function showRegisterView() {
-
-    closeMobileMenu();
-
-    const login = firstExisting("loginView", "authView");
-    const register = firstExisting("registerView", "signupView");
-    const app = firstExisting("appView", "mainApp");
-
-    if (login) {
-        login.classList.add("hidden");
-        login.style.display = "none";
-    }
-
-    if (register) {
-        register.classList.remove("hidden");
-        register.style.display = "";
-    }
-
-    if (app) {
-        app.classList.add("hidden");
-    }
-}
-
-
 function showLoginView() {
 
     closeMobileMenu();
@@ -1419,15 +1395,6 @@ function isIncomeReceived(
         return false;
     }
 
-    if (
-        transaction.received === true ||
-        transaction.is_received === true ||
-        transaction.status === "received" ||
-        transaction.status === "recebido"
-    ) {
-        return true;
-    }
-
     const date =
         getTransactionDate(transaction);
 
@@ -1454,15 +1421,6 @@ function isFutureReceivable(transaction) {
         getTransactionDate(transaction);
 
     if (!date) return false;
-
-    if (
-        transaction.received === true ||
-        transaction.is_received === true ||
-        transaction.status === "received" ||
-        transaction.status === "recebido"
-    ) {
-        return false;
-    }
 
     return date > todayISO();
 }
@@ -1674,9 +1632,7 @@ async function markTransactionAsReceived(id) {
         } = await supabaseClient
             .from("transactions")
             .update({
-                received: true,
-                is_received: true,
-                status: "received"
+                date: todayISO()
             })
             .eq("id", id)
             .eq("user_id", currentUser.id);
@@ -2039,23 +1995,19 @@ async function saveTransaction(event) {
             : true;
 
 
+    /*
+     * A tabela transactions do projeto não possui as colunas
+     * received / is_received. O estado de recebido é calculado
+     * pela data: receita com data futura = A Receber; receita
+     * com data de hoje/passada = recebida.
+     */
     const payload = {
         user_id: currentUser.id,
         description,
         amount,
         date,
         category,
-        type,
-        received,
-        is_received: received,
-        status:
-            type === "income"
-                ? (
-                    received
-                        ? "received"
-                        : "pending"
-                )
-                : "paid"
+        type
     };
 
 
@@ -2397,6 +2349,7 @@ function updateDashboard() {
     updateExpenseRanking();
 
     updatePiggyBank();
+    updatePremiumDashboard();
 
     renderRecentTransactions();
 
@@ -3942,6 +3895,87 @@ function updateExpenseRanking() {
 
 
 /* =========================================================
+   RESUMO / COFRINHO / RANKING NO DASHBOARD
+   ========================================================= */
+
+function updatePremiumDashboard() {
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+
+    let income = 0;
+    let expense = 0;
+    const ranking = {};
+
+    transactions.forEach(transaction => {
+        const dateString = getTransactionDate(transaction);
+        if (!dateString) return;
+
+        const date = new Date(`${dateString}T00:00:00`);
+        if (date.getMonth() !== month || date.getFullYear() !== year) return;
+
+        const amount = getTransactionAmount(transaction);
+        if (!Number.isFinite(amount) || amount <= 0) return;
+
+        const type = normalizeTransactionType(
+            transaction.type || transaction.tipo || transaction.transaction_type
+        );
+
+        if (type === "income") {
+            if (isIncomeReceived(transaction)) income += amount;
+        } else {
+            expense += amount;
+            const category = getTransactionCategory(transaction);
+            ranking[category] = (ranking[category] || 0) + amount;
+        }
+    });
+
+    const balance = income - expense;
+
+    const savings = firstExisting("monthlySavingsValue", "piggyBankAmount", "cofrinhoAmount");
+    if (savings) savings.textContent = formatCurrency(Math.max(0, balance));
+
+    const savingsText = $("monthlySavingsText");
+    if (savingsText) {
+        savingsText.textContent = balance >= 0
+            ? "Quanto sobrou no mês"
+            : "Despesas acima das receitas";
+    }
+
+    const incomeEl = $("monthlyIncomeValue");
+    const expenseEl = $("monthlyExpenseValue");
+    const balanceEl = $("monthlyBalanceValue");
+    if (incomeEl) incomeEl.textContent = formatCurrency(income);
+    if (expenseEl) expenseEl.textContent = formatCurrency(expense);
+    if (balanceEl) balanceEl.textContent = formatCurrency(balance);
+
+    const entries = Object.entries(ranking).sort((a,b) => b[1] - a[1]).slice(0, 5);
+
+    const topCategory = $("topCategoryValue");
+    const topCategoryText = $("topCategoryText");
+    if (topCategory) topCategory.textContent = entries.length ? formatCurrency(entries[0][1]) : "—";
+    if (topCategoryText) topCategoryText.textContent = entries.length ? entries[0][0] : "Nenhuma despesa registrada";
+
+    const rankingEl = $("expenseRanking");
+    if (rankingEl) {
+        rankingEl.innerHTML = entries.length
+            ? entries.map(([category, amount], index) => {
+                const percent = expense > 0 ? (amount / expense) * 100 : 0;
+                return `<div class="expense-ranking-item">
+                    <div class="expense-ranking-main">
+                        <strong>${index + 1}. ${escapeHTML(category)}</strong>
+                        <span>${formatCurrency(amount)}</span>
+                    </div>
+                    <div class="expense-ranking-bar"><span style="width:${Math.min(100, percent)}%"></span></div>
+                    <small>${percent.toFixed(1)}% das despesas</small>
+                </div>`;
+            }).join("")
+            : `<div class="empty-state">Nenhum gasto registrado neste mês.</div>`;
+    }
+}
+
+
+/* =========================================================
    COFRINHO
    ========================================================= */
 
@@ -4485,11 +4519,30 @@ async function saveGoal(event) {
 
 function renderReports() {
 
+    const period = getSelectedPeriod();
+    const summary = period ? calculatePeriodSummary(period) : getTotals();
+
+    const reportPeriod = $("reportPeriodText");
+    if (reportPeriod && period) reportPeriod.textContent = period.label;
+
+    ["reportIncomeCard", "reportIncome"].forEach(id => {
+        const el = $(id);
+        if (el) el.textContent = formatCurrency(summary.income);
+    });
+    ["reportExpenseCard", "reportExpense"].forEach(id => {
+        const el = $(id);
+        if (el) el.textContent = formatCurrency(summary.expense);
+    });
+    ["reportBalanceCard", "reportBalance"].forEach(id => {
+        const el = $(id);
+        if (el) el.textContent = formatCurrency(summary.balance);
+    });
+
     updateMonthlySummary();
-
     updateExpenseRanking();
-
     renderCategoryChart();
+    renderMonthlyComparison();
+    renderAutomaticAnalysis();
 }
 
 
@@ -5145,24 +5198,6 @@ function setupEvents() {
             "submit",
             handleRegister
         );
-    }
-
-    const registerButton = firstExisting("registerBtn");
-    if (registerButton && !registerButton.dataset.bound) {
-        registerButton.dataset.bound = "true";
-        registerButton.addEventListener("click", event => {
-            event.preventDefault();
-            showRegisterView();
-        });
-    }
-
-    const backToLoginButton = firstExisting("backToLoginBtn");
-    if (backToLoginButton && !backToLoginButton.dataset.bound) {
-        backToLoginButton.dataset.bound = "true";
-        backToLoginButton.addEventListener("click", event => {
-            event.preventDefault();
-            showLoginView();
-        });
     }
 
 
