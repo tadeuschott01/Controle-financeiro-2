@@ -3,61 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="theme-color"
-        content="#0b3f2d"
-    >
-
-    <meta
-        name="description"
-        content="ControleS — Seu dinheiro sob controle."
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b3f2d">
+    <meta name="description" content="ControleS — Seu dinheiro sob controle.">
 
     <title>ControleS — Seu dinheiro sob controle</title>
 
-    <!-- Fonte -->
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
     >
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
-    <!-- CSS -->
     <link rel="stylesheet" href="app.css">
 </head>
 
 <body>
 
-    <!-- =====================================================
+    <!-- =========================
          LOGIN
-    ====================================================== -->
+    ========================== -->
 
-    <div
-        id="loginView"
-        class="auth-page"
-    >
+    <div id="loginView" class="auth-page">
 
         <div class="auth-card">
 
@@ -71,46 +44,31 @@
                         onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
                     >
 
-                    <span class="logo-fallback-mark">
-                        C↗
-                    </span>
+                    <span class="logo-fallback-mark">C↗</span>
 
                 </div>
 
                 <h1>ControleS</h1>
 
-                <p>
-                    Seu dinheiro sob controle.
-                </p>
+                <p>Seu dinheiro sob controle.</p>
 
             </div>
 
 
             <div class="auth-heading">
 
-                <span>
-                    BEM-VINDO DE VOLTA
-                </span>
+                <span>BEM-VINDO DE VOLTA</span>
 
-                <h2>
-                    Entre na sua conta
-                </h2>
+                <h2>Entre na sua conta</h2>
 
-                <p>
-                    Acompanhe suas finanças de onde estiver.
-                </p>
+                <p>Acompanhe suas finanças de onde estiver.</p>
 
             </div>
 
 
-            <form
-                id="loginForm"
-                novalidate
-            >
+            <form id="loginForm" novalidate>
 
-                <label for="loginEmail">
-                    E-mail
-                </label>
+                <label for="loginEmail">E-mail</label>
 
                 <input
                     id="loginEmail"
@@ -121,9 +79,7 @@
                 >
 
 
-                <label for="loginPassword">
-                    Senha
-                </label>
+                <label for="loginPassword">Senha</label>
 
                 <div class="password-wrap">
 
@@ -180,8 +136,7 @@
 
                 <span>✓</span>
 
-                Controle financeiro simples,
-                inteligente e seguro.
+                Controle financeiro simples, inteligente e seguro.
 
             </div>
 
@@ -190,14 +145,11 @@
     </div>
 
 
-    <!-- =====================================================
+    <!-- =========================
          CADASTRO
-    ====================================================== -->
+    ========================== -->
 
-    <div
-        id="registerView"
-        class="auth-page hidden"
-    >
+    <div id="registerView" class="auth-page hidden">
 
         <div class="auth-card">
 
@@ -211,48 +163,31 @@
                         onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
                     >
 
-                    <span class="logo-fallback-mark">
-                        C↗
-                    </span>
+                    <span class="logo-fallback-mark">C↗</span>
 
                 </div>
 
-                <h1>
-                    ControleS
-                </h1>
+                <h1>ControleS</h1>
 
-                <p>
-                    Seu dinheiro sob controle.
-                </p>
+                <p>Seu dinheiro sob controle.</p>
 
             </div>
 
 
             <div class="auth-heading">
 
-                <span>
-                    COMECE AGORA
-                </span>
+                <span>COMECE AGORA</span>
 
-                <h2>
-                    Crie sua conta
-                </h2>
+                <h2>Crie sua conta</h2>
 
-                <p>
-                    Organize seu dinheiro de um jeito simples.
-                </p>
+                <p>Organize seu dinheiro de um jeito simples.</p>
 
             </div>
 
 
-            <form
-                id="registerForm"
-                novalidate
-            >
+            <form id="registerForm" novalidate>
 
-                <label for="registerName">
-                    Nome
-                </label>
+                <label for="registerName">Nome</label>
 
                 <input
                     id="registerName"
@@ -263,9 +198,7 @@
                 >
 
 
-                <label for="registerEmail">
-                    E-mail
-                </label>
+                <label for="registerEmail">E-mail</label>
 
                 <input
                     id="registerEmail"
@@ -276,9 +209,7 @@
                 >
 
 
-                <label for="registerPassword">
-                    Senha
-                </label>
+                <label for="registerPassword">Senha</label>
 
                 <div class="password-wrap">
 
@@ -373,19 +304,14 @@
     </div>
 
 
-    <!-- =====================================================
+    <!-- =========================
          APLICAÇÃO
-    ====================================================== -->
+    ========================== -->
 
-    <div
-        id="appView"
-        class="app-shell hidden"
-    >
+    <div id="appView" class="app-shell hidden">
 
 
-        <!-- =================================================
-             MENU LATERAL
-        ================================================== -->
+        <!-- SIDEBAR -->
 
         <aside
             id="sidebar"
@@ -407,13 +333,9 @@
 
                 <div>
 
-                    <strong>
-                        ControleS
-                    </strong>
+                    <strong>ControleS</strong>
 
-                    <small>
-                        Finanças pessoais
-                    </small>
+                    <small>Finanças pessoais</small>
 
                 </div>
 
@@ -493,16 +415,11 @@
                     id="themeBtn"
                     class="side-action"
                     type="button"
-                    aria-label="Alternar tema"
+                    aria-label="Alternar tema claro e escuro"
                     aria-pressed="false"
                 >
-
-                    <span class="theme-icon">
-                        ☾
-                    </span>
-
+                    <span>☾</span>
                     Tema
-
                 </button>
 
 
@@ -511,13 +428,8 @@
                     class="side-action support-action"
                     href="mailto:controlesfinanceirossuport@gmail.com"
                 >
-
-                    <span>
-                        ✉
-                    </span>
-
+                    <span>✉</span>
                     Suporte
-
                 </a>
 
 
@@ -526,13 +438,8 @@
                     class="side-action danger"
                     type="button"
                 >
-
-                    <span>
-                        ↪
-                    </span>
-
+                    <span>↪</span>
                     Sair
-
                 </button>
 
             </div>
@@ -540,7 +447,7 @@
         </aside>
 
 
-        <!-- Overlay do menu mobile -->
+        <!-- MENU MOBILE -->
 
         <div
             id="mobileOverlay"
@@ -549,9 +456,7 @@
         ></div>
 
 
-        <!-- =================================================
-             CONTEÚDO PRINCIPAL
-        ================================================== -->
+        <!-- CONTEÚDO -->
 
         <main class="main-content">
 
@@ -610,15 +515,14 @@
             </header>
 
 
-            <!-- =================================================
+            <!-- =========================
                  DASHBOARD
-            ================================================== -->
+            ========================== -->
 
             <section
                 id="dashboardSection"
                 class="content-section active"
             >
-
 
                 <div class="welcome-row">
 
@@ -642,7 +546,6 @@
                     <button
                         id="addTransactionBtn"
                         class="btn btn-primary"
-                        data-new-transaction="true"
                         type="button"
                     >
                         + Novo lançamento
@@ -651,7 +554,7 @@
                 </div>
 
 
-                <!-- Filtro de período -->
+                <!-- FILTRO -->
 
                 <div
                     id="dashboardPeriodFilter"
@@ -666,13 +569,11 @@
                                 FILTRO FINANCEIRO
                             </span>
 
-                            <h3>
-                                Período
-                            </h3>
+                            <h3>Período</h3>
 
                             <p>
-                                Escolha o período para atualizar
-                                seus números, lançamentos e gráficos.
+                                Escolha o período para atualizar seus números,
+                                lançamentos e gráficos.
                             </p>
 
                         </div>
@@ -688,10 +589,7 @@
                                 Período
                             </label>
 
-                            <select
-                                id="dashboardPeriod"
-                                aria-label="Selecionar período financeiro"
-                            >
+                            <select id="dashboardPeriod">
 
                                 <option value="today">
                                     Hoje
@@ -705,15 +603,8 @@
                                     Últimos 7 dias
                                 </option>
 
-                                <option
-                                    value="30"
-                                    selected
-                                >
+                                <option value="30" selected>
                                     Últimos 30 dias
-                                </option>
-
-                                <option value="week">
-                                    Esta semana
                                 </option>
 
                                 <option value="month">
@@ -798,7 +689,6 @@
                     <div
                         id="activePeriodLabel"
                         class="active-period-label"
-                        aria-live="polite"
                     >
                         Período atual: Últimos 30 dias
                     </div>
@@ -806,15 +696,13 @@
                 </div>
 
 
-                <!-- Resumo -->
+                <!-- RESUMO PRINCIPAL -->
 
                 <div class="summary-grid">
 
                     <article class="summary-card balance-card">
 
-                        <span>
-                            Saldo do período
-                        </span>
+                        <span>Saldo do período</span>
 
                         <strong id="balanceValue">
                             R$ 0,00
@@ -829,9 +717,7 @@
 
                     <article class="summary-card">
 
-                        <span>
-                            Quanto ganhou
-                        </span>
+                        <span>Quanto ganhou</span>
 
                         <strong
                             id="incomeValue"
@@ -849,9 +735,7 @@
 
                     <article class="summary-card">
 
-                        <span>
-                            Quanto gastou
-                        </span>
+                        <span>Quanto gastou</span>
 
                         <strong
                             id="expenseValue"
@@ -869,7 +753,7 @@
                 </div>
 
 
-                <!-- Ações rápidas -->
+                <!-- AÇÕES -->
 
                 <div class="quick-actions">
 
@@ -896,7 +780,6 @@
                     <button
                         id="addCategoryBtn"
                         class="quick-action"
-                        data-new-category="true"
                         type="button"
                     >
                         <span>◈</span>
@@ -907,7 +790,6 @@
                     <button
                         id="addGoalBtn"
                         class="quick-action"
-                        data-new-goal="true"
                         type="button"
                     >
                         <span>◎</span>
@@ -917,7 +799,7 @@
                 </div>
 
 
-                <!-- A receber -->
+                <!-- A RECEBER -->
 
                 <article
                     id="receivableDashboardCard"
@@ -928,9 +810,7 @@
 
                         <div>
 
-                            <h3>
-                                💰 A Receber
-                            </h3>
+                            <h3>💰 A Receber</h3>
 
                             <p>
                                 Valores que ainda serão recebidos
@@ -954,9 +834,7 @@
 
                         <div>
 
-                            <span>
-                                Total a receber
-                            </span>
+                            <span>Total a receber</span>
 
                             <strong
                                 id="dashboardReceivableValue"
@@ -970,9 +848,7 @@
 
                         <div>
 
-                            <span>
-                                Próximo recebimento
-                            </span>
+                            <span>Próximo recebimento</span>
 
                             <strong id="dashboardNextReceivable">
                                 —
@@ -985,14 +861,19 @@
                 </article>
 
 
-                <!-- Área Premium do dashboard -->
+                <!-- =========================
+                     COFRINHO / RANKING / RESUMO
+                ========================== -->
 
                 <div
                     id="premiumDashboardContent"
-                    class="premium-dashboard hidden"
+                    class="premium-dashboard"
                 >
 
                     <div class="dashboard-grid">
+
+
+                        <!-- COFRINHO -->
 
                         <article class="panel premium-mini-card">
 
@@ -1027,6 +908,8 @@
 
                         </article>
 
+
+                        <!-- MAIOR GASTO -->
 
                         <article class="panel premium-mini-card">
 
@@ -1063,6 +946,8 @@
 
                     </div>
 
+
+                    <!-- RESUMO MENSAL -->
 
                     <article class="panel premium-monthly-panel">
 
@@ -1134,6 +1019,8 @@
                     </article>
 
 
+                    <!-- RANKING -->
+
                     <article class="panel">
 
                         <div class="panel-header">
@@ -1163,7 +1050,7 @@
                 </div>
 
 
-                <!-- Gráfico e últimos lançamentos -->
+                <!-- GRÁFICO -->
 
                 <div class="dashboard-grid">
 
@@ -1194,6 +1081,8 @@
 
                     </article>
 
+
+                    <!-- ÚLTIMOS LANÇAMENTOS -->
 
                     <article class="panel">
 
@@ -1235,9 +1124,9 @@
             </section>
 
 
-            <!-- =================================================
+            <!-- =========================
                  LANÇAMENTOS
-            ================================================== -->
+            ========================== -->
 
             <section
                 id="transactionsSection"
@@ -1252,9 +1141,7 @@
                             MOVIMENTAÇÕES
                         </span>
 
-                        <h2>
-                            Lançamentos
-                        </h2>
+                        <h2>Lançamentos</h2>
 
                         <p>
                             Controle tudo que entra e sai.
@@ -1266,7 +1153,6 @@
                     <button
                         id="addTransactionBtn2"
                         class="btn btn-primary"
-                        data-new-transaction="true"
                         type="button"
                     >
                         + Novo lançamento
@@ -1274,8 +1160,6 @@
 
                 </div>
 
-
-                <!-- Filtros -->
 
                 <div class="filters panel">
 
@@ -1288,7 +1172,7 @@
                             </h3>
 
                             <p>
-                                Encontre rapidamente uma movimentação.
+                                Combine período, tipo, categoria e pesquisa.
                             </p>
 
                         </div>
@@ -1350,6 +1234,31 @@
 
                         <div class="filter-field">
 
+                            <label for="typeFilter">
+                                Movimento
+                            </label>
+
+                            <select id="typeFilter">
+
+                                <option value="all">
+                                    Todos
+                                </option>
+
+                                <option value="income">
+                                    Receita
+                                </option>
+
+                                <option value="expense">
+                                    Despesa
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="filter-field">
+
                             <label for="categoryFilter">
                                 Categoria
                             </label>
@@ -1364,82 +1273,45 @@
 
                         </div>
 
-
-                        <div class="filter-field">
-
-                            <label for="transactionDateFrom">
-                                Data inicial
-                            </label>
-
-                            <input
-                                id="transactionDateFrom"
-                                type="date"
-                            >
-
-                        </div>
-
-
-                        <div class="filter-field">
-
-                            <label for="transactionDateTo">
-                                Data final
-                            </label>
-
-                            <input
-                                id="transactionDateTo"
-                                type="date"
-                            >
-
-                        </div>
-
                     </div>
 
 
                     <div
                         id="transactionFilterSummary"
                         class="filter-summary"
-                        aria-live="polite"
                     >
-                        Mostrando todos os lançamentos.
+                        Mostrando todos os lançamentos do período.
                     </div>
 
                 </div>
 
 
-                <!-- Lista -->
+                <div class="panel table-panel">
 
-                <div class="panel transactions-panel">
+                    <div class="table-wrap">
 
-                    <div class="panel-header">
+                        <table>
 
-                        <div>
+                            <thead>
 
-                            <h3>
-                                Seus lançamentos
-                            </h3>
+                                <tr>
 
-                            <p id="transactionsCountLabel">
-                                Nenhum lançamento
-                            </p>
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th>Data</th>
+                                    <th>Tipo</th>
+                                    <th>Valor</th>
+                                    <th>Ações</th>
 
-                        </div>
+                                </tr>
 
+                            </thead>
 
-                        <button
-                            id="exportTransactionsBtn"
-                            class="text-button"
-                            type="button"
-                        >
-                            Exportar CSV
-                        </button>
+                            <tbody id="transactionsTableBody"></tbody>
+
+                        </table>
 
                     </div>
-
-
-                    <div
-                        id="transactionsList"
-                        class="transactions-list"
-                    ></div>
 
 
                     <div
@@ -1447,9 +1319,7 @@
                         class="empty-state hidden"
                     >
 
-                        <div>
-                            ◎
-                        </div>
+                        <div>◎</div>
 
                         <h3>
                             Nenhum lançamento encontrado
@@ -1466,9 +1336,9 @@
             </section>
 
 
-            <!-- =================================================
+            <!-- =========================
                  A RECEBER
-            ================================================== -->
+            ========================== -->
 
             <section
                 id="receivableSection"
@@ -1483,9 +1353,7 @@
                             CONTROLE DE RECEBIMENTOS
                         </span>
 
-                        <h2>
-                            A Receber
-                        </h2>
+                        <h2>A Receber</h2>
 
                         <p>
                             Acompanhe os valores que ainda serão recebidos.
@@ -1497,7 +1365,6 @@
                     <button
                         id="addReceivableBtn"
                         class="btn btn-primary"
-                        data-new-receivable="true"
                         type="button"
                     >
                         + Nova receita
@@ -1510,9 +1377,7 @@
 
                     <article class="summary-card">
 
-                        <span>
-                            Total a receber
-                        </span>
+                        <span>Total a receber</span>
 
                         <strong
                             id="receivableTotalValue"
@@ -1530,9 +1395,7 @@
 
                     <article class="summary-card">
 
-                        <span>
-                            Quantidade
-                        </span>
+                        <span>Quantidade</span>
 
                         <strong id="receivableCount">
                             0
@@ -1547,9 +1410,7 @@
 
                     <article class="summary-card">
 
-                        <span>
-                            Próximo recebimento
-                        </span>
+                        <span>Próximo recebimento</span>
 
                         <strong id="receivableNextDate">
                             —
@@ -1564,7 +1425,7 @@
                 </div>
 
 
-                <div class="panel receivables-panel">
+                <div class="panel table-panel">
 
                     <div class="panel-header">
 
@@ -1575,7 +1436,7 @@
                             </h3>
 
                             <p>
-                                Receitas que ainda não entraram no saldo.
+                                Receitas lançadas que ainda não entraram no saldo.
                             </p>
 
                         </div>
@@ -1583,10 +1444,31 @@
                     </div>
 
 
-                    <div
-                        id="receivableList"
-                        class="transactions-list receivables-list"
-                    ></div>
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th>Lançamento</th>
+                                    <th>Recebimento</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="receivablesTableBody"></tbody>
+
+                        </table>
+
+                    </div>
 
 
                     <div
@@ -1594,9 +1476,7 @@
                         class="empty-state hidden"
                     >
 
-                        <div>
-                            💰
-                        </div>
+                        <div>💰</div>
 
                         <h3>
                             Nenhum valor a receber
@@ -1614,9 +1494,9 @@
             </section>
 
 
-            <!-- =================================================
+            <!-- =========================
                  CATEGORIAS
-            ================================================== -->
+            ========================== -->
 
             <section
                 id="categoriesSection"
@@ -1631,9 +1511,7 @@
                             ORGANIZAÇÃO
                         </span>
 
-                        <h2>
-                            Categorias
-                        </h2>
+                        <h2>Categorias</h2>
 
                         <p>
                             Organize seus lançamentos por categoria.
@@ -1645,7 +1523,6 @@
                     <button
                         id="addCategoryBtn2"
                         class="btn btn-primary"
-                        data-new-category="true"
                         type="button"
                     >
                         + Nova categoria
@@ -1662,9 +1539,9 @@
             </section>
 
 
-            <!-- =================================================
+            <!-- =========================
                  RELATÓRIOS
-            ================================================== -->
+            ========================== -->
 
             <section
                 id="reportsSection"
@@ -1679,9 +1556,7 @@
                             ANÁLISE
                         </span>
 
-                        <h2>
-                            Relatórios
-                        </h2>
+                        <h2>Relatórios</h2>
 
                         <p>
                             Entenda melhor para onde seu dinheiro está indo.
@@ -1760,9 +1635,7 @@
 
                         <article class="report-card">
 
-                            <span>
-                                Receitas
-                            </span>
+                            <span>Receitas</span>
 
                             <strong id="reportIncomeCard">
                                 R$ 0,00
@@ -1773,9 +1646,7 @@
 
                         <article class="report-card">
 
-                            <span>
-                                Despesas
-                            </span>
+                            <span>Despesas</span>
 
                             <strong id="reportExpenseCard">
                                 R$ 0,00
@@ -1786,9 +1657,7 @@
 
                         <article class="report-card">
 
-                            <span>
-                                Saldo
-                            </span>
+                            <span>Saldo</span>
 
                             <strong id="reportBalanceCard">
                                 R$ 0,00
@@ -1812,7 +1681,7 @@
                                     </h3>
 
                                     <p>
-                                        Distribuição das despesas no período.
+                                        Distribuição das despesas no período
                                     </p>
 
                                 </div>
@@ -1835,12 +1704,10 @@
 
                                 <div>
 
-                                    <h3>
-                                        Resumo
-                                    </h3>
+                                    <h3>Resumo</h3>
 
                                     <p>
-                                        Valores do período selecionado.
+                                        Valores do período selecionado
                                     </p>
 
                                 </div>
@@ -1850,9 +1717,7 @@
 
                             <div class="report-line">
 
-                                <span>
-                                    Receitas
-                                </span>
+                                <span>Receitas</span>
 
                                 <strong id="reportIncome">
                                     R$ 0,00
@@ -1863,9 +1728,7 @@
 
                             <div class="report-line">
 
-                                <span>
-                                    Despesas
-                                </span>
+                                <span>Despesas</span>
 
                                 <strong id="reportExpense">
                                     R$ 0,00
@@ -1876,9 +1739,7 @@
 
                             <div class="report-line total">
 
-                                <span>
-                                    Saldo
-                                </span>
+                                <span>Saldo</span>
 
                                 <strong id="reportBalance">
                                     R$ 0,00
@@ -1905,7 +1766,7 @@
                                 </h3>
 
                                 <p>
-                                    Veja como suas finanças mudaram.
+                                    Veja como suas finanças mudaram em relação ao mês passado.
                                 </p>
 
                             </div>
@@ -1917,9 +1778,7 @@
 
                             <div class="report-line">
 
-                                <span>
-                                    Receitas
-                                </span>
+                                <span>Receitas</span>
 
                                 <strong id="comparisonIncome">
                                     —
@@ -1930,9 +1789,7 @@
 
                             <div class="report-line">
 
-                                <span>
-                                    Despesas
-                                </span>
+                                <span>Despesas</span>
 
                                 <strong id="comparisonExpense">
                                     —
@@ -1943,9 +1800,7 @@
 
                             <div class="report-line total">
 
-                                <span>
-                                    Saldo
-                                </span>
+                                <span>Saldo</span>
 
                                 <strong id="comparisonBalance">
                                     —
@@ -1998,9 +1853,9 @@
             </section>
 
 
-            <!-- =================================================
+            <!-- =========================
                  PREMIUM
-            ================================================== -->
+            ========================== -->
 
             <section
                 id="premiumSection"
@@ -2176,9 +2031,9 @@
     </div>
 
 
-    <!-- =====================================================
-         MODAL — LANÇAMENTO
-    ====================================================== -->
+    <!-- =========================
+         MODAL LANÇAMENTO
+    ========================== -->
 
     <div
         id="transactionModal"
@@ -2354,9 +2209,9 @@
     </div>
 
 
-    <!-- =====================================================
-         MODAL — CATEGORIA
-    ====================================================== -->
+    <!-- =========================
+         MODAL CATEGORIA
+    ========================== -->
 
     <div
         id="categoryModal"
@@ -2443,9 +2298,9 @@
     </div>
 
 
-    <!-- =====================================================
-         MODAL — META
-    ====================================================== -->
+    <!-- =========================
+         MODAL META
+    ========================== -->
 
     <div
         id="goalModal"
@@ -2555,9 +2410,9 @@
     </div>
 
 
-    <!-- =====================================================
-         MODAL — PREMIUM
-    ====================================================== -->
+    <!-- =========================
+         MODAL PREMIUM
+    ========================== -->
 
     <div
         id="premiumModal"
@@ -2593,9 +2448,8 @@
 
 
             <p>
-                Durante os testes, o Premium será ativado
-                por 7 dias. A cobrança real será integrada
-                posteriormente.
+                Durante os testes, o Premium será ativado por 7 dias.
+                A cobrança real será integrada posteriormente.
             </p>
 
 
@@ -2633,9 +2487,7 @@
     </div>
 
 
-    <!-- =====================================================
-         TOAST
-    ====================================================== -->
+    <!-- TOAST -->
 
     <div
         id="toast"
@@ -2645,12 +2497,9 @@
     ></div>
 
 
-    <!-- =====================================================
-         JAVASCRIPT
-    ====================================================== -->
+    <!-- JAVASCRIPT -->
 
     <script src="app.js"></script>
 
 </body>
-
 </html>
