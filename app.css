@@ -428,7 +428,8 @@ form > label:not(:first-child) {
   z-index: 1500;
 
   width: var(--sidebar-width);
-  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
 
   display: flex;
   flex-direction: column;
@@ -895,6 +896,639 @@ form > label:not(:first-child) {
   box-shadow: var(--shadow-sm);
 }
 
+
+/* =========================================================
+   PERIOD FILTER
+   ========================================================= */
+
+.period-filter {
+  margin-bottom: 20px;
+  padding: 16px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.period-filter-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.period-filter-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.period-filter-actions .btn {
+  min-width: 105px;
+}
+
+.custom-period-fields {
+  display: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.custom-period-fields.active {
+  display: grid;
+}
+
+.period-label {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   DASHBOARD GRID
+   ========================================================= */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.85fr);
+  gap: 18px;
+}
+
+.dashboard-card {
+  min-width: 0;
+
+  padding: 20px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+.dashboard-card-header h3 {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.dashboard-card-header span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   CHART
+   ========================================================= */
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  min-height: 260px;
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 260px !important;
+}
+
+
+/* =========================================================
+   RECENT TRANSACTIONS
+   ========================================================= */
+
+.recent-transactions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recent-transaction {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 12px;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background: var(--bg);
+}
+
+.recent-transaction-main {
+  min-width: 0;
+}
+
+.recent-transaction-title {
+  display: block;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.recent-transaction-meta {
+  display: block;
+  margin-top: 3px;
+
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.recent-transaction-value {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   RECEIVABLE SUMMARY
+   ========================================================= */
+
+.receivable-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.receivable-mini-card {
+  padding: 14px;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background: var(--bg);
+}
+
+.receivable-mini-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.receivable-mini-card strong {
+  display: block;
+  margin-top: 5px;
+
+  font-size: 18px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   EMPTY STATES
+   ========================================================= */
+
+.empty-state {
+  padding: 38px 20px;
+
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-state-icon {
+  width: 50px;
+  height: 50px;
+
+  margin: 0 auto 12px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 15px;
+
+  background: var(--green-100);
+  color: var(--green-900);
+
+  font-size: 22px;
+}
+
+.empty-state strong {
+  display: block;
+
+  color: var(--text);
+  font-size: 14px;
+}
+
+.empty-state p {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   SECTION CARDS
+   ========================================================= */
+
+.section-card {
+  padding: 20px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.section-card + .section-card {
+  margin-top: 18px;
+}
+
+
+/* =========================================================
+   TRANSACTION FILTERS
+   ========================================================= */
+
+.transaction-filters {
+  display: grid;
+  grid-template-columns:
+    minmax(180px, 1.4fr)
+    minmax(140px, 0.8fr)
+    minmax(140px, 0.8fr)
+    minmax(140px, 0.8fr);
+
+  gap: 10px;
+
+  margin-bottom: 16px;
+}
+
+.transaction-filter-item {
+  min-width: 0;
+}
+
+.transaction-filter-item label {
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.transaction-filter-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  margin-bottom: 12px;
+
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.transaction-filter-summary strong {
+  color: var(--text);
+}
+
+
+/* =========================================================
+   TRANSACTIONS — MODERN CARDS
+   ========================================================= */
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transaction-card {
+  display: grid;
+
+  grid-template-columns: 48px minmax(0, 1fr) auto auto;
+
+  align-items: center;
+  gap: 13px;
+
+  padding: 14px;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  background: var(--card);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.transaction-card:hover {
+  transform: translateY(-1px);
+  border-color: #cbd8d2;
+  box-shadow: var(--shadow-sm);
+}
+
+.transaction-icon {
+  width: 48px;
+  height: 48px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background: var(--green-100);
+  color: var(--green-900);
+
+  font-size: 20px;
+}
+
+.transaction-card.expense .transaction-icon {
+  background: #fff0f0;
+  color: var(--danger);
+}
+
+.transaction-card.income .transaction-icon {
+  background: var(--green-100);
+  color: var(--green-900);
+}
+
+.transaction-info {
+  min-width: 0;
+}
+
+.transaction-title {
+  display: block;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.transaction-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+
+  margin-top: 5px;
+
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.transaction-meta span {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 20px;
+  padding: 0 7px;
+
+  border-radius: 999px;
+
+  background: var(--bg);
+}
+
+.transaction-value {
+  white-space: nowrap;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.transaction-card.expense .transaction-value {
+  color: var(--danger);
+}
+
+.transaction-card.income .transaction-value {
+  color: var(--green-800);
+}
+
+.transaction-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  background: transparent;
+  color: var(--muted);
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.icon-btn:hover {
+  background: var(--green-100);
+  color: var(--green-900);
+  border-color: #cbd8d2;
+}
+
+.icon-btn.danger:hover {
+  background: #fff0f0;
+  color: var(--danger);
+  border-color: #f1cccc;
+}
+
+
+/* =========================================================
+   TABLE FALLBACK / LEGACY
+   ========================================================= */
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.data-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 12px;
+}
+
+.data-table th {
+  color: var(--muted);
+  background: var(--bg);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.data-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table td strong {
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   CATEGORIES
+   ========================================================= */
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.category-card {
+  min-width: 0;
+
+  padding: 16px;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  background: var(--card);
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.category-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.category-icon {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 12px;
+
+  background: var(--green-100);
+  color: var(--green-900);
+}
+
+.category-card strong {
+  display: block;
+  margin-top: 11px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font-size: 13px;
+}
+
+.category-card small {
+  display: block;
+  margin-top: 4px;
+
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.category-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.category-actions .icon-btn {
+  width: 30px;
+  height: 30px;
+}
+
+
+/* =========================================================
+   GOALS
+   ========================================================= */
+
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.goal-card {
+  padding: 18px;
+
+  border: 1px solid var(--border);
+  border-radius: 15px;
+
+  background: var(--card);
+}
+
+.goal-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.goal-card-header strong {
+  font-size: 14px;
+}
+
+.goal-card-header small {
+  display: block;
+  margin-top: 4px;
+
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.goal-value {
+  margin-top: 14px;
+
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.goal-value strong {
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.goal-value span {
+  color: var(--muted);
+  font-size: 10
+   
 
 /* =========================================================
    PANELS
@@ -1779,39 +2413,6 @@ tbody tr:hover {
   display: none;
 }
 
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (max-width: 1100px) {
-
-  :root {
-    --sidebar-width: 235px;
-  }
-
-  .main-content {
-    width: calc(100% - var(--sidebar-width));
-    margin-left: var(--sidebar-width);
-
-    padding-left: 22px;
-    padding-right: 22px;
-  }
-
-  .summary-grid {
-    gap: 12px;
-  }
-
-  .quick-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .categories-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-
 /* =========================================================
    TABLET PEQUENO
    ========================================================= */
@@ -1897,7 +2498,8 @@ tbody tr:hover {
     bottom: 0 !important;
 
     width: min(285px, 82vw) !important;
-    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
 
     margin: 0 !important;
 
@@ -1930,7 +2532,8 @@ tbody tr:hover {
     inset: 0 !important;
 
     width: 100vw !important;
-    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
 
     z-index: 1400 !important;
 
@@ -2466,5 +3069,274 @@ body.dark .auth-page {
     animation-duration: 0.01ms !important;
 
     animation-iteration-count: 1 !important;
+  }
+}
+
+
+/* =========================================================
+   CONTROLES — NOVO VISUAL DE LANÇAMENTOS / FILTROS
+   ========================================================= */
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transaction-item {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    auto;
+
+  align-items: center;
+  gap: 14px;
+
+  padding: 15px 16px;
+
+  border: 1px solid var(--border);
+  border-radius: 15px;
+
+  background: var(--card);
+
+  box-shadow: var(--shadow-sm);
+}
+
+.transaction-info {
+  min-width: 0;
+}
+
+.transaction-info strong {
+  display: block;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transaction-info small {
+  display: block;
+
+  margin-top: 5px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+.income-value,
+.positive {
+  color: #16845d;
+}
+
+.expense-value,
+.negative {
+  color: var(--danger);
+}
+
+.transaction-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.transaction-actions button {
+  width: 34px;
+  height: 34px;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  background: var(--bg);
+  color: var(--text);
+
+  font-weight: 800;
+}
+
+.transaction-actions .delete-transaction-btn:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.receivable-item {
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    auto;
+}
+
+.receivable-item .mark-received-btn {
+  white-space: nowrap;
+}
+
+.transactions-panel,
+.receivables-panel {
+  padding: 18px;
+}
+
+.filters-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(180px, 2fr)
+    repeat(4, minmax(130px, 1fr));
+
+  gap: 12px;
+}
+
+.filter-field input,
+.filter-field select {
+  min-height: 44px;
+}
+
+.filter-summary {
+  margin-top: 12px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   TEMA ESCURO COMPLETO
+   ========================================================= */
+
+html[data-theme="dark"],
+body.dark-mode {
+  --bg: #0b1511;
+  --card: #10201a;
+
+  --text: #edf5f1;
+  --muted: #9eaaa5;
+
+  --border: #244038;
+
+  --white: #10201a;
+
+  --green-100: #19372c;
+  --green-900: #2b8a68;
+  --green-800: #3a9e79;
+
+  --danger: #ff7777;
+
+  --shadow-sm:
+    0 4px 16px rgba(0, 0, 0, 0.20);
+
+  --shadow-md:
+    0 12px 34px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="dark"] body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background: #0d1b16;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+html[data-theme="dark"] .auth-card,
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .summary-card,
+html[data-theme="dark"] .report-card,
+html[data-theme="dark"] .modal-card {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+html[data-theme="dark"] .mobile-menu-btn {
+  background: var(--card);
+  color: #fff;
+  border-color: var(--border);
+}
+
+html[data-theme="dark"] .btn-secondary {
+  background: #19372c;
+  color: #dff4eb;
+}
+
+html[data-theme="dark"] .transaction-actions button {
+  background: #152a22;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+html[data-theme="dark"] .transaction-item {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+
+/* =========================================================
+   LANÇAMENTOS / FILTROS NO CELULAR
+   ========================================================= */
+
+@media (max-width: 720px) {
+
+  .transaction-item {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+
+    gap: 10px;
+  }
+
+  .transaction-item > .transaction-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .transaction-item >
+  .income-value,
+  .transaction-item >
+  .expense-value {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .receivable-item {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+  }
+
+  .receivable-item .mark-received-btn {
+    grid-column: 1 / -1;
+
+    width: 100%;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-search {
+    grid-column: 1 / -1;
+  }
+}
+
+
+/* =========================================================
+   CELULARES MUITO PEQUENOS — FILTROS
+   ========================================================= */
+
+@media (max-width: 430px) {
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-search {
+    grid-column: auto;
   }
 }
