@@ -1,2438 +1,2656 @@
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b3f2d">
-  <meta name="description" content="ControleS — Seu dinheiro sob controle.">
-  <title>ControleS — Seu dinheiro sob controle</title>  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>  <link rel="stylesheet" href="app.css">
-</head><body>  <!-- =====================================================
-       LOGIN
-  ====================================================== -->  <div id="loginView" class="auth-page"><div class="auth-card">
+    <meta charset="UTF-8">
 
-  <div class="brand-block">
-
-    <div class="brand-logo">
-
-      <img
-        src="logo.png"
-        alt="ControleS"
-        onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
-      >
-
-      <span class="logo-fallback-mark">C↗</span>
-
-    </div>
-
-    <h1>ControleS</h1>
-
-    <p>Seu dinheiro sob controle.</p>
-
-  </div>
-
-  <div class="auth-heading">
-
-    <span>BEM-VINDO DE VOLTA</span>
-
-    <h2>Entre na sua conta</h2>
-
-    <p>Acompanhe suas finanças de onde estiver.</p>
-
-  </div>
-
-  <form id="loginForm" novalidate>
-
-    <label for="loginEmail">E-mail</label>
-
-    <input
-      id="loginEmail"
-      type="email"
-      autocomplete="email"
-      placeholder="seu@email.com"
-      required
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
     >
 
-    <label for="loginPassword">Senha</label>
+    <meta
+        name="theme-color"
+        content="#0b3f2d"
+    >
 
-    <div class="password-wrap">
+    <meta
+        name="description"
+        content="ControleS — Seu dinheiro sob controle."
+    >
 
-      <input
-        id="loginPassword"
-        type="password"
-        autocomplete="current-password"
-        placeholder="Digite sua senha"
-        required
-      >
+    <title>ControleS — Seu dinheiro sob controle</title>
 
-      <button
-        type="button"
-        class="password-toggle"
-        data-password-toggle="loginPassword"
-        aria-label="Mostrar senha"
-        aria-pressed="false"
-      >
-        ◉
-      </button>
+    <!-- Fonte -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
-    </div>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+
+    <!-- =====================================================
+         LOGIN
+    ====================================================== -->
 
     <div
-      id="loginMessage"
-      class="form-message"
-      role="alert"
-      aria-live="polite"
-    ></div>
-
-    <button
-      id="loginSubmitBtn"
-      class="btn btn-primary btn-large"
-      type="submit"
-    >
-      Entrar no ControleS
-    </button>
-
-    <button
-      id="registerBtn"
-      class="btn btn-secondary btn-large"
-      type="button"
-    >
-      Criar minha conta
-    </button>
-
-  </form>
-
-  <div class="security-note">
-    <span>✓</span>
-    Controle financeiro simples, inteligente e seguro.
-  </div>
-
-</div>
-
-  </div>  <!-- =====================================================
-       CADASTRO
-  ====================================================== -->  <div id="registerView" class="auth-page hidden"><div class="auth-card">
-
-  <div class="brand-block">
-
-    <div class="brand-logo">
-
-      <img
-        src="logo.png"
-        alt="ControleS"
-        onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
-      >
-
-      <span class="logo-fallback-mark">C↗</span>
-
-    </div>
-
-    <h1>ControleS</h1>
-
-    <p>Seu dinheiro sob controle.</p>
-
-  </div>
-
-  <div class="auth-heading">
-
-    <span>COMECE AGORA</span>
-
-    <h2>Crie sua conta</h2>
-
-    <p>Organize seu dinheiro de um jeito simples.</p>
-
-  </div>
-
-  <form id="registerForm" novalidate>
-
-    <label for="registerName">Nome</label>
-
-    <input
-      id="registerName"
-      type="text"
-      autocomplete="name"
-      placeholder="Seu nome"
-      required
+        id="loginView"
+        class="auth-page"
     >
 
-    <label for="registerEmail">E-mail</label>
+        <div class="auth-card">
 
-    <input
-      id="registerEmail"
-      type="email"
-      autocomplete="email"
-      placeholder="seu@email.com"
-      required
-    >
+            <div class="brand-block">
 
-    <label for="registerPassword">Senha</label>
+                <div class="brand-logo">
 
-    <div class="password-wrap">
+                    <img
+                        src="logo.png"
+                        alt="ControleS"
+                        onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
+                    >
 
-      <input
-        id="registerPassword"
-        type="password"
-        autocomplete="new-password"
-        placeholder="Crie uma senha"
-        minlength="6"
-        required
-      >
+                    <span class="logo-fallback-mark">
+                        C↗
+                    </span>
 
-      <button
-        type="button"
-        class="password-toggle"
-        data-password-toggle="registerPassword"
-        aria-label="Mostrar senha"
-        aria-pressed="false"
-      >
-        ◉
-      </button>
+                </div>
 
-    </div>
+                <h1>ControleS</h1>
 
-    <label for="registerPasswordConfirm">
-      Confirmar senha
-    </label>
-
-    <div class="password-wrap">
-
-      <input
-        id="registerPasswordConfirm"
-        type="password"
-        autocomplete="new-password"
-        placeholder="Repita sua senha"
-        minlength="6"
-        required
-      >
-
-      <button
-        type="button"
-        class="password-toggle"
-        data-password-toggle="registerPasswordConfirm"
-        aria-label="Mostrar senha"
-        aria-pressed="false"
-      >
-        ◉
-      </button>
-
-    </div>
-
-    <div
-      id="registerMessage"
-      class="form-message"
-      role="alert"
-      aria-live="polite"
-    ></div>
-
-    <button
-      id="createAccountBtn"
-      class="btn btn-primary btn-large"
-      type="submit"
-    >
-      Criar minha conta
-    </button>
-
-    <button
-      id="backToLoginBtn"
-      class="btn btn-secondary btn-large"
-      type="button"
-    >
-      Já tenho uma conta
-    </button>
-
-  </form>
-
-  <div class="security-note">
-    <span>✓</span>
-    Seus dados ficam associados somente à sua conta.
-  </div>
-
-</div>
-
-  </div>  <!-- =====================================================
-       APLICAÇÃO
-  ====================================================== -->  <div id="appView" class="app-shell hidden"><!-- =================================================
-     SIDEBAR
-================================================== -->
-
-<aside
-  id="sidebar"
-  class="sidebar"
-  aria-label="Menu principal"
->
-
-  <div class="sidebar-brand">
-
-    <div class="mini-logo">
-
-      <img
-        src="logo.png"
-        alt="ControleS"
-        onerror="this.style.display='none'"
-      >
-
-    </div>
-
-    <div>
-      <strong>ControleS</strong>
-      <small>Finanças pessoais</small>
-    </div>
-
-  </div>
-
-
-  <nav
-    class="sidebar-nav"
-    aria-label="Navegação principal"
-  >
-
-    <button
-      class="nav-item active"
-      data-section="dashboard"
-      type="button"
-    >
-      <span>⌂</span>
-      Início
-    </button>
-
-    <button
-      class="nav-item"
-      data-section="transactions"
-      type="button"
-    >
-      <span>↔</span>
-      Lançamentos
-    </button>
-
-    <button
-      class="nav-item"
-      data-section="receivable"
-      type="button"
-    >
-      <span>💰</span>
-      A Receber
-    </button>
-
-    <button
-      class="nav-item"
-      data-section="categories"
-      type="button"
-    >
-      <span>◈</span>
-      Categorias
-    </button>
-
-    <button
-      class="nav-item"
-      data-section="reports"
-      type="button"
-    >
-      <span>▥</span>
-      Relatórios
-    </button>
-
-    <button
-      class="nav-item"
-      data-section="premium"
-      type="button"
-    >
-      <span>★</span>
-      Premium
-    </button>
-
-  </nav>
-
-
-  <div class="sidebar-bottom">
-
-    <button
-      id="themeBtn"
-      class="side-action"
-      type="button"
-      aria-label="Alternar tema claro e escuro"
-      aria-pressed="false"
-    >
-      <span>☾</span>
-      Tema
-    </button>
-
-    <a
-      id="supportBtn"
-      class="side-action support-action"
-      href="mailto:controlesfinanceirossuport@gmail.com"
-    >
-      <span>✉</span>
-      Suporte
-    </a>
-
-    <button
-      id="logoutBtn"
-      class="side-action danger"
-      type="button"
-    >
-      <span>↪</span>
-      Sair
-    </button>
-
-  </div>
-
-</aside>
-
-
-<!-- =================================================
-     OVERLAY MOBILE
-================================================== -->
-
-<div
-  id="mobileOverlay"
-  class="mobile-overlay hidden"
-  aria-hidden="true"
-></div>
-
-
-<!-- =================================================
-     CONTEÚDO
-================================================== -->
-
-<main class="main-content">
-
-  <!-- =================================================
-       TOPBAR
-  ================================================== -->
-
-  <header class="topbar">
-
-    <button
-      id="mobileMenuBtn"
-      class="mobile-menu-btn"
-      type="button"
-      aria-label="Abrir menu"
-      aria-expanded="false"
-      aria-controls="sidebar"
-    >
-      ☰
-    </button>
-
-    <div>
-
-      <span
-        id="currentDate"
-        class="current-date"
-      ></span>
-
-      <h1 id="pageTitle">
-        Início
-      </h1>
-
-    </div>
-
-    <div class="topbar-user">
-
-      <div
-        id="userAvatar"
-        class="avatar"
-      >
-        C
-      </div>
-
-      <div>
-
-        <strong id="userName">
-          Usuário
-        </strong>
-
-        <small id="userEmail"></small>
-
-      </div>
-
-    </div>
-
-  </header>
-
-
-  <!-- =================================================
-       DASHBOARD
-  ================================================== -->
-
-  <section
-    id="dashboardSection"
-    class="content-section active"
-  >
-
-    <div class="welcome-row">
-
-      <div>
-
-        <span class="eyebrow">
-          VISÃO GERAL
-        </span>
-
-        <h2 id="welcomeMessage">
-          Olá! 👋
-        </h2>
-
-        <p>
-          Veja como estão suas finanças.
-        </p>
-
-      </div>
-
-      <button
-        id="addTransactionBtn"
-        class="btn btn-primary"
-        type="button"
-      >
-        + Novo lançamento
-      </button>
-
-    </div>
-
-
-    <!-- =================================================
-         FILTRO PRINCIPAL DE PERÍODO
-    ================================================== -->
-
-    <div
-      id="dashboardPeriodFilter"
-      class="period-filter panel"
-    >
-
-      <div class="period-filter-header">
-
-        <div>
-
-          <span class="eyebrow">
-            FILTRO FINANCEIRO
-          </span>
-
-          <h3>
-            Período
-          </h3>
-
-          <p>
-            Escolha o período para atualizar seus números,
-            lançamentos e gráficos.
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <div class="period-filter-controls">
-
-        <div class="period-select-group">
-
-          <label for="dashboardPeriod">
-            Período
-          </label>
-
-          <select
-            id="dashboardPeriod"
-            aria-label="Selecionar período financeiro"
-          >
-
-            <option value="today">
-              Hoje
-            </option>
-
-            <option value="yesterday">
-              Ontem
-            </option>
-
-            <option value="7">
-              Últimos 7 dias
-            </option>
-
-            <option value="30" selected>
-              Últimos 30 dias
-            </option>
-
-            <option value="month">
-              Este mês
-            </option>
-
-            <option value="previous-month">
-              Mês anterior
-            </option>
-
-            <option value="custom">
-              Personalizado
-            </option>
-
-            <option value="all">
-              Todo o período
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div
-          id="customPeriodFields"
-          class="custom-period-fields hidden"
-        >
-
-          <div>
-
-            <label for="periodStartDate">
-              Data inicial
-            </label>
-
-            <input
-              id="periodStartDate"
-              type="date"
-            >
-
-          </div>
-
-          <div>
-
-            <label for="periodEndDate">
-              Data final
-            </label>
-
-            <input
-              id="periodEndDate"
-              type="date"
-            >
-
-          </div>
-
-        </div>
-
-
-        <div class="period-filter-actions">
-
-          <button
-            id="applyPeriodBtn"
-            class="btn btn-primary"
-            type="button"
-          >
-            Aplicar período
-          </button>
-
-          <button
-            id="clearPeriodBtn"
-            class="btn btn-secondary"
-            type="button"
-          >
-            Limpar
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <div
-        id="activePeriodLabel"
-        class="active-period-label"
-        aria-live="polite"
-      >
-        Período atual: Últimos 30 dias
-      </div>
-
-    </div>
-
-
-    <!-- =================================================
-         RESUMO
-    ================================================== -->
-
-    <div class="summary-grid">
-
-      <article class="summary-card balance-card">
-
-        <span>
-          Saldo do período
-        </span>
-
-        <strong id="balanceValue">
-          R$ 0,00
-        </strong>
-
-        <small id="balancePeriodText">
-          Receitas menos despesas
-        </small>
-
-      </article>
-
-
-      <article class="summary-card">
-
-        <span>
-          Quanto ganhou
-        </span>
-
-        <strong
-          id="incomeValue"
-          class="positive"
-        >
-          R$ 0,00
-        </strong>
-
-        <small id="incomePeriodText">
-          Total recebido
-        </small>
-
-      </article>
-
-
-      <article class="summary-card">
-
-        <span>
-          Quanto gastou
-        </span>
-
-        <strong
-          id="expenseValue"
-          class="negative"
-        >
-          R$ 0,00
-        </strong>
-
-        <small id="expensePeriodText">
-          Total gasto
-        </small>
-
-      </article>
-
-    </div>
-
-
-    <!-- =================================================
-         AÇÕES RÁPIDAS
-    ================================================== -->
-
-    <div class="quick-actions">
-
-      <button
-        class="quick-action"
-        data-action="add-income"
-        type="button"
-      >
-        <span>＋</span>
-        Adicionar receita
-      </button>
-
-      <button
-        class="quick-action"
-        data-action="add-expense"
-        type="button"
-      >
-        <span>−</span>
-        Adicionar despesa
-      </button>
-
-      <button
-        id="addCategoryBtn"
-        class="quick-action"
-        type="button"
-      >
-        <span>◈</span>
-        Nova categoria
-      </button>
-
-      <button
-        id="addGoalBtn"
-        class="quick-action"
-        type="button"
-      >
-        <span>◎</span>
-        Nova meta
-      </button>
-
-    </div>
-
-
-    <!-- =================================================
-         A RECEBER
-    ================================================== -->
-
-    <article
-      id="receivableDashboardCard"
-      class="panel receivable-dashboard-card"
-    >
-
-      <div class="panel-header">
-
-        <div>
-
-          <h3>
-            💰 A Receber
-          </h3>
-
-          <p>
-            Valores que ainda serão recebidos
-          </p>
-
-        </div>
-
-        <button
-          class="text-button"
-          data-section="receivable"
-          type="button"
-        >
-          Ver detalhes
-        </button>
-
-      </div>
-
-
-      <div class="receivable-dashboard-content">
-
-        <div>
-
-          <span>
-            Total a receber
-          </span>
-
-          <strong
-            id="dashboardReceivableValue"
-            class="positive"
-          >
-            R$ 0,00
-          </strong>
-
-        </div>
-
-        <div>
-
-          <span>
-            Próximo recebimento
-          </span>
-
-          <strong id="dashboardNextReceivable">
-            —
-          </strong>
-
-        </div>
-
-      </div>
-
-    </article>
-
-
-    <!-- =================================================
-         PREMIUM DASHBOARD
-    ================================================== -->
-
-    <div
-      id="premiumDashboardContent"
-      class="premium-dashboard hidden"
-    >
-
-      <div class="dashboard-grid">
-
-        <article class="panel premium-mini-card">
-
-          <div class="panel-header">
-
-            <div>
-
-              <h3>
-                🐷 Meu Cofrinho
-              </h3>
-
-              <p>
-                Resultado deste mês
-              </p>
+                <p>
+                    Seu dinheiro sob controle.
+                </p>
 
             </div>
 
-          </div>
 
-          <div class="premium-value-box">
+            <div class="auth-heading">
 
-            <strong id="monthlySavingsValue">
-              R$ 0,00
-            </strong>
+                <span>
+                    BEM-VINDO DE VOLTA
+                </span>
 
-            <small id="monthlySavingsText">
-              Quanto sobrou no mês
-            </small>
+                <h2>
+                    Entre na sua conta
+                </h2>
 
-          </div>
-
-        </article>
-
-
-        <article class="panel premium-mini-card">
-
-          <div class="panel-header">
-
-            <div>
-
-              <h3>
-                🏆 Maior gasto
-              </h3>
-
-              <p>
-                Categoria que mais consumiu
-              </p>
+                <p>
+                    Acompanhe suas finanças de onde estiver.
+                </p>
 
             </div>
 
-          </div>
 
-          <div class="premium-value-box">
-
-            <strong id="topCategoryValue">
-              —
-            </strong>
-
-            <small id="topCategoryText">
-              Nenhuma despesa registrada
-            </small>
-
-          </div>
-
-        </article>
-
-      </div>
-
-
-      <article class="panel premium-monthly-panel">
-
-        <div class="panel-header">
-
-          <div>
-
-            <h3>
-              📅 Resumo mensal
-            </h3>
-
-            <p>
-              Como está seu mês atual
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div class="premium-summary-grid">
-
-          <div class="premium-summary-item">
-
-            <span>
-              Receitas do mês
-            </span>
-
-            <strong
-              id="monthlyIncomeValue"
-              class="positive"
+            <form
+                id="loginForm"
+                novalidate
             >
-              R$ 0,00
-            </strong>
 
-          </div>
+                <label for="loginEmail">
+                    E-mail
+                </label>
 
-          <div class="premium-summary-item">
+                <input
+                    id="loginEmail"
+                    type="email"
+                    autocomplete="email"
+                    placeholder="seu@email.com"
+                    required
+                >
 
-            <span>
-              Despesas do mês
-            </span>
 
-            <strong
-              id="monthlyExpenseValue"
-              class="negative"
+                <label for="loginPassword">
+                    Senha
+                </label>
+
+                <div class="password-wrap">
+
+                    <input
+                        id="loginPassword"
+                        type="password"
+                        autocomplete="current-password"
+                        placeholder="Digite sua senha"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-password-toggle="loginPassword"
+                        aria-label="Mostrar senha"
+                        aria-pressed="false"
+                    >
+                        ◉
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="loginMessage"
+                    class="form-message"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+
+
+                <button
+                    id="loginSubmitBtn"
+                    class="btn btn-primary btn-large"
+                    type="submit"
+                >
+                    Entrar no ControleS
+                </button>
+
+
+                <button
+                    id="registerBtn"
+                    class="btn btn-secondary btn-large"
+                    type="button"
+                >
+                    Criar minha conta
+                </button>
+
+            </form>
+
+
+            <div class="security-note">
+
+                <span>✓</span>
+
+                Controle financeiro simples,
+                inteligente e seguro.
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CADASTRO
+    ====================================================== -->
+
+    <div
+        id="registerView"
+        class="auth-page hidden"
+    >
+
+        <div class="auth-card">
+
+            <div class="brand-block">
+
+                <div class="brand-logo">
+
+                    <img
+                        src="logo.png"
+                        alt="ControleS"
+                        onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
+                    >
+
+                    <span class="logo-fallback-mark">
+                        C↗
+                    </span>
+
+                </div>
+
+                <h1>
+                    ControleS
+                </h1>
+
+                <p>
+                    Seu dinheiro sob controle.
+                </p>
+
+            </div>
+
+
+            <div class="auth-heading">
+
+                <span>
+                    COMECE AGORA
+                </span>
+
+                <h2>
+                    Crie sua conta
+                </h2>
+
+                <p>
+                    Organize seu dinheiro de um jeito simples.
+                </p>
+
+            </div>
+
+
+            <form
+                id="registerForm"
+                novalidate
             >
-              R$ 0,00
-            </strong>
 
-          </div>
+                <label for="registerName">
+                    Nome
+                </label>
 
-          <div class="premium-summary-item">
+                <input
+                    id="registerName"
+                    type="text"
+                    autocomplete="name"
+                    placeholder="Seu nome"
+                    required
+                >
 
-            <span>
-              Sobra do mês
-            </span>
 
-            <strong id="monthlyBalanceValue">
-              R$ 0,00
-            </strong>
+                <label for="registerEmail">
+                    E-mail
+                </label>
 
-          </div>
+                <input
+                    id="registerEmail"
+                    type="email"
+                    autocomplete="email"
+                    placeholder="seu@email.com"
+                    required
+                >
+
+
+                <label for="registerPassword">
+                    Senha
+                </label>
+
+                <div class="password-wrap">
+
+                    <input
+                        id="registerPassword"
+                        type="password"
+                        autocomplete="new-password"
+                        placeholder="Crie uma senha"
+                        minlength="6"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-password-toggle="registerPassword"
+                        aria-label="Mostrar senha"
+                        aria-pressed="false"
+                    >
+                        ◉
+                    </button>
+
+                </div>
+
+
+                <label for="registerPasswordConfirm">
+                    Confirmar senha
+                </label>
+
+                <div class="password-wrap">
+
+                    <input
+                        id="registerPasswordConfirm"
+                        type="password"
+                        autocomplete="new-password"
+                        placeholder="Repita sua senha"
+                        minlength="6"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-password-toggle="registerPasswordConfirm"
+                        aria-label="Mostrar senha"
+                        aria-pressed="false"
+                    >
+                        ◉
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="registerMessage"
+                    class="form-message"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+
+
+                <button
+                    id="createAccountBtn"
+                    class="btn btn-primary btn-large"
+                    type="submit"
+                >
+                    Criar minha conta
+                </button>
+
+
+                <button
+                    id="backToLoginBtn"
+                    class="btn btn-secondary btn-large"
+                    type="button"
+                >
+                    Já tenho uma conta
+                </button>
+
+            </form>
+
+
+            <div class="security-note">
+
+                <span>✓</span>
+
+                Seus dados ficam associados somente à sua conta.
+
+            </div>
 
         </div>
 
-      </article>
+    </div>
 
 
-      <article class="panel">
+    <!-- =====================================================
+         APLICAÇÃO
+    ====================================================== -->
 
-        <div class="panel-header">
+    <div
+        id="appView"
+        class="app-shell hidden"
+    >
 
-          <div>
 
-            <h3>
-              🏆 Ranking de gastos
-            </h3>
+        <!-- =================================================
+             MENU LATERAL
+        ================================================== -->
 
-            <p>
-              Categorias que mais receberam seu dinheiro
-            </p>
+        <aside
+            id="sidebar"
+            class="sidebar"
+            aria-label="Menu principal"
+        >
 
-          </div>
+            <div class="sidebar-brand">
 
-        </div>
+                <div class="mini-logo">
+
+                    <img
+                        src="logo.png"
+                        alt="ControleS"
+                        onerror="this.style.display='none'"
+                    >
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        ControleS
+                    </strong>
+
+                    <small>
+                        Finanças pessoais
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <nav
+                class="sidebar-nav"
+                aria-label="Navegação principal"
+            >
+
+                <button
+                    class="nav-item active"
+                    data-section="dashboard"
+                    type="button"
+                >
+                    <span>⌂</span>
+                    Início
+                </button>
+
+
+                <button
+                    class="nav-item"
+                    data-section="transactions"
+                    type="button"
+                >
+                    <span>↔</span>
+                    Lançamentos
+                </button>
+
+
+                <button
+                    class="nav-item"
+                    data-section="receivable"
+                    type="button"
+                >
+                    <span>💰</span>
+                    A Receber
+                </button>
+
+
+                <button
+                    class="nav-item"
+                    data-section="categories"
+                    type="button"
+                >
+                    <span>◈</span>
+                    Categorias
+                </button>
+
+
+                <button
+                    class="nav-item"
+                    data-section="reports"
+                    type="button"
+                >
+                    <span>▥</span>
+                    Relatórios
+                </button>
+
+
+                <button
+                    class="nav-item"
+                    data-section="premium"
+                    type="button"
+                >
+                    <span>★</span>
+                    Premium
+                </button>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <button
+                    id="themeBtn"
+                    class="side-action"
+                    type="button"
+                    aria-label="Alternar tema"
+                    aria-pressed="false"
+                >
+
+                    <span class="theme-icon">
+                        ☾
+                    </span>
+
+                    Tema
+
+                </button>
+
+
+                <a
+                    id="supportBtn"
+                    class="side-action support-action"
+                    href="mailto:controlesfinanceirossuport@gmail.com"
+                >
+
+                    <span>
+                        ✉
+                    </span>
+
+                    Suporte
+
+                </a>
+
+
+                <button
+                    id="logoutBtn"
+                    class="side-action danger"
+                    type="button"
+                >
+
+                    <span>
+                        ↪
+                    </span>
+
+                    Sair
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- Overlay do menu mobile -->
 
         <div
-          id="expenseRanking"
-          class="expense-ranking"
+            id="mobileOverlay"
+            class="mobile-overlay hidden"
+            aria-hidden="true"
         ></div>
 
-      </article>
+
+        <!-- =================================================
+             CONTEÚDO PRINCIPAL
+        ================================================== -->
+
+        <main class="main-content">
+
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+                <button
+                    id="mobileMenuBtn"
+                    class="mobile-menu-btn"
+                    type="button"
+                    aria-label="Abrir menu"
+                    aria-expanded="false"
+                    aria-controls="sidebar"
+                >
+                    ☰
+                </button>
+
+
+                <div>
+
+                    <span
+                        id="currentDate"
+                        class="current-date"
+                    ></span>
+
+                    <h1 id="pageTitle">
+                        Início
+                    </h1>
+
+                </div>
+
+
+                <div class="topbar-user">
+
+                    <div
+                        id="userAvatar"
+                        class="avatar"
+                    >
+                        C
+                    </div>
+
+                    <div>
+
+                        <strong id="userName">
+                            Usuário
+                        </strong>
+
+                        <small id="userEmail"></small>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 DASHBOARD
+            ================================================== -->
+
+            <section
+                id="dashboardSection"
+                class="content-section active"
+            >
+
+
+                <div class="welcome-row">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            VISÃO GERAL
+                        </span>
+
+                        <h2 id="welcomeMessage">
+                            Olá! 👋
+                        </h2>
+
+                        <p>
+                            Veja como estão suas finanças.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        id="addTransactionBtn"
+                        class="btn btn-primary"
+                        data-new-transaction="true"
+                        type="button"
+                    >
+                        + Novo lançamento
+                    </button>
+
+                </div>
+
+
+                <!-- Filtro de período -->
+
+                <div
+                    id="dashboardPeriodFilter"
+                    class="period-filter panel"
+                >
+
+                    <div class="period-filter-header">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                FILTRO FINANCEIRO
+                            </span>
+
+                            <h3>
+                                Período
+                            </h3>
+
+                            <p>
+                                Escolha o período para atualizar
+                                seus números, lançamentos e gráficos.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="period-filter-controls">
+
+                        <div class="period-select-group">
+
+                            <label for="dashboardPeriod">
+                                Período
+                            </label>
+
+                            <select
+                                id="dashboardPeriod"
+                                aria-label="Selecionar período financeiro"
+                            >
+
+                                <option value="today">
+                                    Hoje
+                                </option>
+
+                                <option value="yesterday">
+                                    Ontem
+                                </option>
+
+                                <option value="7">
+                                    Últimos 7 dias
+                                </option>
+
+                                <option
+                                    value="30"
+                                    selected
+                                >
+                                    Últimos 30 dias
+                                </option>
+
+                                <option value="week">
+                                    Esta semana
+                                </option>
+
+                                <option value="month">
+                                    Este mês
+                                </option>
+
+                                <option value="previous-month">
+                                    Mês anterior
+                                </option>
+
+                                <option value="custom">
+                                    Personalizado
+                                </option>
+
+                                <option value="all">
+                                    Todo o período
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div
+                            id="customPeriodFields"
+                            class="custom-period-fields hidden"
+                        >
+
+                            <div>
+
+                                <label for="periodStartDate">
+                                    Data inicial
+                                </label>
+
+                                <input
+                                    id="periodStartDate"
+                                    type="date"
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label for="periodEndDate">
+                                    Data final
+                                </label>
+
+                                <input
+                                    id="periodEndDate"
+                                    type="date"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="period-filter-actions">
+
+                            <button
+                                id="applyPeriodBtn"
+                                class="btn btn-primary"
+                                type="button"
+                            >
+                                Aplicar período
+                            </button>
+
+                            <button
+                                id="clearPeriodBtn"
+                                class="btn btn-secondary"
+                                type="button"
+                            >
+                                Limpar
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="activePeriodLabel"
+                        class="active-period-label"
+                        aria-live="polite"
+                    >
+                        Período atual: Últimos 30 dias
+                    </div>
+
+                </div>
+
+
+                <!-- Resumo -->
+
+                <div class="summary-grid">
+
+                    <article class="summary-card balance-card">
+
+                        <span>
+                            Saldo do período
+                        </span>
+
+                        <strong id="balanceValue">
+                            R$ 0,00
+                        </strong>
+
+                        <small id="balancePeriodText">
+                            Receitas menos despesas
+                        </small>
+
+                    </article>
+
+
+                    <article class="summary-card">
+
+                        <span>
+                            Quanto ganhou
+                        </span>
+
+                        <strong
+                            id="incomeValue"
+                            class="positive"
+                        >
+                            R$ 0,00
+                        </strong>
+
+                        <small id="incomePeriodText">
+                            Total recebido
+                        </small>
+
+                    </article>
+
+
+                    <article class="summary-card">
+
+                        <span>
+                            Quanto gastou
+                        </span>
+
+                        <strong
+                            id="expenseValue"
+                            class="negative"
+                        >
+                            R$ 0,00
+                        </strong>
+
+                        <small id="expensePeriodText">
+                            Total gasto
+                        </small>
+
+                    </article>
+
+                </div>
+
+
+                <!-- Ações rápidas -->
+
+                <div class="quick-actions">
+
+                    <button
+                        class="quick-action"
+                        data-action="add-income"
+                        type="button"
+                    >
+                        <span>＋</span>
+                        Adicionar receita
+                    </button>
+
+
+                    <button
+                        class="quick-action"
+                        data-action="add-expense"
+                        type="button"
+                    >
+                        <span>−</span>
+                        Adicionar despesa
+                    </button>
+
+
+                    <button
+                        id="addCategoryBtn"
+                        class="quick-action"
+                        data-new-category="true"
+                        type="button"
+                    >
+                        <span>◈</span>
+                        Nova categoria
+                    </button>
+
+
+                    <button
+                        id="addGoalBtn"
+                        class="quick-action"
+                        data-new-goal="true"
+                        type="button"
+                    >
+                        <span>◎</span>
+                        Nova meta
+                    </button>
+
+                </div>
+
+
+                <!-- A receber -->
+
+                <article
+                    id="receivableDashboardCard"
+                    class="panel receivable-dashboard-card"
+                >
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h3>
+                                💰 A Receber
+                            </h3>
+
+                            <p>
+                                Valores que ainda serão recebidos
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="text-button"
+                            data-section="receivable"
+                            type="button"
+                        >
+                            Ver detalhes
+                        </button>
+
+                    </div>
+
+
+                    <div class="receivable-dashboard-content">
+
+                        <div>
+
+                            <span>
+                                Total a receber
+                            </span>
+
+                            <strong
+                                id="dashboardReceivableValue"
+                                class="positive"
+                            >
+                                R$ 0,00
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Próximo recebimento
+                            </span>
+
+                            <strong id="dashboardNextReceivable">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <!-- Área Premium do dashboard -->
+
+                <div
+                    id="premiumDashboardContent"
+                    class="premium-dashboard hidden"
+                >
+
+                    <div class="dashboard-grid">
+
+                        <article class="panel premium-mini-card">
+
+                            <div class="panel-header">
+
+                                <div>
+
+                                    <h3>
+                                        🐷 Meu Cofrinho
+                                    </h3>
+
+                                    <p>
+                                        Resultado deste mês
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="premium-value-box">
+
+                                <strong id="monthlySavingsValue">
+                                    R$ 0,00
+                                </strong>
+
+                                <small id="monthlySavingsText">
+                                    Quanto sobrou no mês
+                                </small>
+
+                            </div>
+
+                        </article>
+
+
+                        <article class="panel premium-mini-card">
+
+                            <div class="panel-header">
+
+                                <div>
+
+                                    <h3>
+                                        🏆 Maior gasto
+                                    </h3>
+
+                                    <p>
+                                        Categoria que mais consumiu
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="premium-value-box">
+
+                                <strong id="topCategoryValue">
+                                    —
+                                </strong>
+
+                                <small id="topCategoryText">
+                                    Nenhuma despesa registrada
+                                </small>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+
+                    <article class="panel premium-monthly-panel">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <h3>
+                                    📅 Resumo mensal
+                                </h3>
+
+                                <p>
+                                    Como está seu mês atual
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="premium-summary-grid">
+
+                            <div class="premium-summary-item">
+
+                                <span>
+                                    Receitas do mês
+                                </span>
+
+                                <strong
+                                    id="monthlyIncomeValue"
+                                    class="positive"
+                                >
+                                    R$ 0,00
+                                </strong>
+
+                            </div>
+
+
+                            <div class="premium-summary-item">
+
+                                <span>
+                                    Despesas do mês
+                                </span>
+
+                                <strong
+                                    id="monthlyExpenseValue"
+                                    class="negative"
+                                >
+                                    R$ 0,00
+                                </strong>
+
+                            </div>
+
+
+                            <div class="premium-summary-item">
+
+                                <span>
+                                    Sobra do mês
+                                </span>
+
+                                <strong id="monthlyBalanceValue">
+                                    R$ 0,00
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="panel">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <h3>
+                                    🏆 Ranking de gastos
+                                </h3>
+
+                                <p>
+                                    Categorias que mais receberam seu dinheiro
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="expenseRanking"
+                            class="expense-ranking"
+                        ></div>
+
+                    </article>
+
+                </div>
+
+
+                <!-- Gráfico e últimos lançamentos -->
+
+                <div class="dashboard-grid">
+
+                    <article class="panel">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <h3>
+                                    Movimentação financeira
+                                </h3>
+
+                                <p id="financeChartPeriodText">
+                                    Evolução conforme o período selecionado
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="chart-box">
+
+                            <canvas id="financeChart"></canvas>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="panel">
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <h3>
+                                    Últimos lançamentos
+                                </h3>
+
+                                <p>
+                                    Movimentações do período selecionado
+                                </p>
+
+                            </div>
+
+
+                            <button
+                                class="text-button"
+                                data-section="transactions"
+                                type="button"
+                            >
+                                Ver todos
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="recentTransactions"
+                            class="recent-list"
+                        ></div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 LANÇAMENTOS
+            ================================================== -->
+
+            <section
+                id="transactionsSection"
+                class="content-section"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            MOVIMENTAÇÕES
+                        </span>
+
+                        <h2>
+                            Lançamentos
+                        </h2>
+
+                        <p>
+                            Controle tudo que entra e sai.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        id="addTransactionBtn2"
+                        class="btn btn-primary"
+                        data-new-transaction="true"
+                        type="button"
+                    >
+                        + Novo lançamento
+                    </button>
+
+                </div>
+
+
+                <!-- Filtros -->
+
+                <div class="filters panel">
+
+                    <div class="filters-header">
+
+                        <div>
+
+                            <h3>
+                                🔎 Filtrar lançamentos
+                            </h3>
+
+                            <p>
+                                Encontre rapidamente uma movimentação.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            id="clearTransactionFiltersBtn"
+                            class="text-button"
+                            type="button"
+                        >
+                            Limpar filtros
+                        </button>
+
+                    </div>
+
+
+                    <div class="filters-grid">
+
+                        <div class="filter-field filter-search">
+
+                            <label for="transactionSearch">
+                                Pesquisa
+                            </label>
+
+                            <input
+                                id="transactionSearch"
+                                type="search"
+                                placeholder="Buscar lançamento..."
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <div class="filter-field">
+
+                            <label for="transactionFilter">
+                                Tipo
+                            </label>
+
+                            <select id="transactionFilter">
+
+                                <option value="all">
+                                    Todos os tipos
+                                </option>
+
+                                <option value="income">
+                                    Receitas
+                                </option>
+
+                                <option value="expense">
+                                    Despesas
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="filter-field">
+
+                            <label for="categoryFilter">
+                                Categoria
+                            </label>
+
+                            <select id="categoryFilter">
+
+                                <option value="all">
+                                    Todas as categorias
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="filter-field">
+
+                            <label for="transactionDateFrom">
+                                Data inicial
+                            </label>
+
+                            <input
+                                id="transactionDateFrom"
+                                type="date"
+                            >
+
+                        </div>
+
+
+                        <div class="filter-field">
+
+                            <label for="transactionDateTo">
+                                Data final
+                            </label>
+
+                            <input
+                                id="transactionDateTo"
+                                type="date"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="transactionFilterSummary"
+                        class="filter-summary"
+                        aria-live="polite"
+                    >
+                        Mostrando todos os lançamentos.
+                    </div>
+
+                </div>
+
+
+                <!-- Lista -->
+
+                <div class="panel transactions-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h3>
+                                Seus lançamentos
+                            </h3>
+
+                            <p id="transactionsCountLabel">
+                                Nenhum lançamento
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            id="exportTransactionsBtn"
+                            class="text-button"
+                            type="button"
+                        >
+                            Exportar CSV
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="transactionsList"
+                        class="transactions-list"
+                    ></div>
+
+
+                    <div
+                        id="transactionsEmpty"
+                        class="empty-state hidden"
+                    >
+
+                        <div>
+                            ◎
+                        </div>
+
+                        <h3>
+                            Nenhum lançamento encontrado
+                        </h3>
+
+                        <p>
+                            Ajuste os filtros ou adicione uma nova movimentação.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 A RECEBER
+            ================================================== -->
+
+            <section
+                id="receivableSection"
+                class="content-section"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            CONTROLE DE RECEBIMENTOS
+                        </span>
+
+                        <h2>
+                            A Receber
+                        </h2>
+
+                        <p>
+                            Acompanhe os valores que ainda serão recebidos.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        id="addReceivableBtn"
+                        class="btn btn-primary"
+                        data-new-receivable="true"
+                        type="button"
+                    >
+                        + Nova receita
+                    </button>
+
+                </div>
+
+
+                <div class="summary-grid">
+
+                    <article class="summary-card">
+
+                        <span>
+                            Total a receber
+                        </span>
+
+                        <strong
+                            id="receivableTotalValue"
+                            class="positive"
+                        >
+                            R$ 0,00
+                        </strong>
+
+                        <small>
+                            Valores ainda não recebidos
+                        </small>
+
+                    </article>
+
+
+                    <article class="summary-card">
+
+                        <span>
+                            Quantidade
+                        </span>
+
+                        <strong id="receivableCount">
+                            0
+                        </strong>
+
+                        <small>
+                            Recebimentos pendentes
+                        </small>
+
+                    </article>
+
+
+                    <article class="summary-card">
+
+                        <span>
+                            Próximo recebimento
+                        </span>
+
+                        <strong id="receivableNextDate">
+                            —
+                        </strong>
+
+                        <small id="receivableNextDescription">
+                            Nenhum recebimento pendente
+                        </small>
+
+                    </article>
+
+                </div>
+
+
+                <div class="panel receivables-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h3>
+                                Contas pendentes
+                            </h3>
+
+                            <p>
+                                Receitas que ainda não entraram no saldo.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="receivableList"
+                        class="transactions-list receivables-list"
+                    ></div>
+
+
+                    <div
+                        id="receivablesEmpty"
+                        class="empty-state hidden"
+                    >
+
+                        <div>
+                            💰
+                        </div>
+
+                        <h3>
+                            Nenhum valor a receber
+                        </h3>
+
+                        <p>
+                            Quando você lançar uma receita para uma data futura,
+                            ela aparecerá aqui.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 CATEGORIAS
+            ================================================== -->
+
+            <section
+                id="categoriesSection"
+                class="content-section"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            ORGANIZAÇÃO
+                        </span>
+
+                        <h2>
+                            Categorias
+                        </h2>
+
+                        <p>
+                            Organize seus lançamentos por categoria.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        id="addCategoryBtn2"
+                        class="btn btn-primary"
+                        data-new-category="true"
+                        type="button"
+                    >
+                        + Nova categoria
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="categoriesGrid"
+                    class="categories-grid"
+                ></div>
+
+            </section>
+
+
+            <!-- =================================================
+                 RELATÓRIOS
+            ================================================== -->
+
+            <section
+                id="reportsSection"
+                class="content-section"
+            >
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            ANÁLISE
+                        </span>
+
+                        <h2>
+                            Relatórios
+                        </h2>
+
+                        <p>
+                            Entenda melhor para onde seu dinheiro está indo.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="period-filter panel report-period-filter">
+
+                    <div class="period-filter-header">
+
+                        <div>
+
+                            <h3>
+                                Período do relatório
+                            </h3>
+
+                            <p>
+                                O relatório acompanha o período financeiro selecionado.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-period-status">
+
+                        <span>
+                            Período atual
+                        </span>
+
+                        <strong id="reportPeriodText">
+                            Últimos 30 dias
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="premiumReportContent"
+                    class="premium-report-gate hidden"
+                >
+
+                    <div class="premium-lock">
+                        ★
+                    </div>
+
+                    <h3>
+                        Relatórios Premium
+                    </h3>
+
+                    <p>
+                        Ative o Premium para liberar análises avançadas.
+                    </p>
+
+                    <button
+                        class="btn btn-primary"
+                        data-section="premium"
+                        type="button"
+                    >
+                        Conhecer Premium
+                    </button>
+
+                </div>
+
+
+                <div id="normalReportContent">
+
+                    <div class="report-cards">
+
+                        <article class="report-card">
+
+                            <span>
+                                Receitas
+                            </span>
+
+                            <strong id="reportIncomeCard">
+                                R$ 0,00
+                            </strong>
+
+                        </article>
+
+
+                        <article class="report-card">
+
+                            <span>
+                                Despesas
+                            </span>
+
+                            <strong id="reportExpenseCard">
+                                R$ 0,00
+                            </strong>
+
+                        </article>
+
+
+                        <article class="report-card">
+
+                            <span>
+                                Saldo
+                            </span>
+
+                            <strong id="reportBalanceCard">
+                                R$ 0,00
+                            </strong>
+
+                        </article>
+
+                    </div>
+
+
+                    <div class="reports-grid">
+
+                        <article class="panel">
+
+                            <div class="panel-header">
+
+                                <div>
+
+                                    <h3>
+                                        Por categoria
+                                    </h3>
+
+                                    <p>
+                                        Distribuição das despesas no período.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="chart-box doughnut-box">
+
+                                <canvas id="categoryChart"></canvas>
+
+                            </div>
+
+                        </article>
+
+
+                        <article class="panel report-values">
+
+                            <div class="panel-header">
+
+                                <div>
+
+                                    <h3>
+                                        Resumo
+                                    </h3>
+
+                                    <p>
+                                        Valores do período selecionado.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="report-line">
+
+                                <span>
+                                    Receitas
+                                </span>
+
+                                <strong id="reportIncome">
+                                    R$ 0,00
+                                </strong>
+
+                            </div>
+
+
+                            <div class="report-line">
+
+                                <span>
+                                    Despesas
+                                </span>
+
+                                <strong id="reportExpense">
+                                    R$ 0,00
+                                </strong>
+
+                            </div>
+
+
+                            <div class="report-line total">
+
+                                <span>
+                                    Saldo
+                                </span>
+
+                                <strong id="reportBalance">
+                                    R$ 0,00
+                                </strong>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+
+                    <article
+                        id="reportComparison"
+                        class="panel"
+                    >
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <h3>
+                                    📊 Comparação com mês anterior
+                                </h3>
+
+                                <p>
+                                    Veja como suas finanças mudaram.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="report-values">
+
+                            <div class="report-line">
+
+                                <span>
+                                    Receitas
+                                </span>
+
+                                <strong id="comparisonIncome">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="report-line">
+
+                                <span>
+                                    Despesas
+                                </span>
+
+                                <strong id="comparisonExpense">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="report-line total">
+
+                                <span>
+                                    Saldo
+                                </span>
+
+                                <strong id="comparisonBalance">
+                                    —
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <article
+                        id="reportAnalysis"
+                        class="panel"
+                    >
+
+                        <div class="panel-header">
+
+                            <div>
+
+                                <h3>
+                                    🧠 Análise automática
+                                </h3>
+
+                                <p>
+                                    Uma análise simples do seu desempenho financeiro.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="automaticReportAnalysis"
+                            class="report-analysis"
+                        >
+
+                            <p>
+                                Adicione lançamentos para gerar sua análise financeira.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 PREMIUM
+            ================================================== -->
+
+            <section
+                id="premiumSection"
+                class="content-section"
+            >
+
+                <div class="premium-hero">
+
+                    <div class="premium-badge">
+                        ★ PREMIUM
+                    </div>
+
+                    <h2>
+                        Tenha mais controle sobre seu dinheiro.
+                    </h2>
+
+                    <p>
+                        Desbloqueie recursos avançados do ControleS
+                        e acompanhe suas finanças com ainda mais detalhes.
+                    </p>
+
+
+                    <div class="premium-price">
+
+                        <strong>
+                            R$ 24,99
+                        </strong>
+
+                        <span>
+                            / mês
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        id="activatePremiumBtn"
+                        class="btn btn-premium btn-large"
+                        type="button"
+                    >
+                        Ativar Premium
+                    </button>
+
+
+                    <small id="premiumStatusText">
+                        Free
+                    </small>
+
+                </div>
+
+
+                <div class="premium-features">
+
+                    <article>
+
+                        <span>✓</span>
+
+                        <div>
+
+                            <strong>
+                                Relatórios avançados
+                            </strong>
+
+                            <p>
+                                Veja análises detalhadas das suas movimentações.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>✓</span>
+
+                        <div>
+
+                            <strong>
+                                Metas financeiras
+                            </strong>
+
+                            <p>
+                                Crie e acompanhe objetivos para seu dinheiro.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>✓</span>
+
+                        <div>
+
+                            <strong>
+                                🐷 Cofrinho mensal
+                            </strong>
+
+                            <p>
+                                Veja automaticamente quanto sobrou no mês.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>✓</span>
+
+                        <div>
+
+                            <strong>
+                                📅 Resumo mensal
+                            </strong>
+
+                            <p>
+                                Acompanhe receitas, despesas e sobra do mês.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>✓</span>
+
+                        <div>
+
+                            <strong>
+                                🏆 Ranking de gastos
+                            </strong>
+
+                            <p>
+                                Descubra quais categorias mais consomem seu dinheiro.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article>
+
+                        <span>✓</span>
+
+                        <div>
+
+                            <strong>
+                                Controle completo
+                            </strong>
+
+                            <p>
+                                Tenha sua vida financeira organizada em um só lugar.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+        </main>
 
     </div>
 
 
-    <!-- =================================================
-         GRÁFICO + LANÇAMENTOS
-    ================================================== -->
+    <!-- =====================================================
+         MODAL — LANÇAMENTO
+    ====================================================== -->
 
-    <div class="dashboard-grid">
-
-      <article class="panel">
-
-        <div class="panel-header">
-
-          <div>
-
-            <h3>
-              Movimentação financeira
-            </h3>
-
-            <p id="financeChartPeriodText">
-              Evolução conforme o período selecionado
-            </p>
-
-          </div>
-
-        </div>
-
-        <div class="chart-box">
-          <canvas id="financeChart"></canvas>
-        </div>
-
-      </article>
-
-
-      <article class="panel">
-
-        <div class="panel-header">
-
-          <div>
-
-            <h3>
-              Últimos lançamentos
-            </h3>
-
-            <p>
-              Movimentações do período selecionado
-            </p>
-
-          </div>
-
-          <button
-            class="text-button"
-            data-section="transactions"
-            type="button"
-          >
-            Ver todos
-          </button>
-
-        </div>
+    <div
+        id="transactionModal"
+        class="modal hidden"
+        aria-hidden="true"
+    >
 
         <div
-          id="recentTransactions"
-          class="recent-list"
-        ></div>
-
-      </article>
-
-    </div>
-
-  </section>
-
-
-  <!-- =================================================
-       LANÇAMENTOS
-  ================================================== -->
-
-  <section
-    id="transactionsSection"
-    class="content-section"
-  >
-
-    <div class="section-heading">
-
-      <div>
-
-        <span class="eyebrow">
-          MOVIMENTAÇÕES
-        </span>
-
-        <h2>
-          Lançamentos
-        </h2>
-
-        <p>
-          Controle tudo que entra e sai.
-        </p>
-
-      </div>
-
-      <button
-        id="addTransactionBtn2"
-        class="btn btn-primary"
-        type="button"
-      >
-        + Novo lançamento
-      </button>
-
-    </div>
-
-
-    <!-- =================================================
-         FILTROS DOS LANÇAMENTOS
-    ================================================== -->
-
-    <div class="filters panel">
-
-      <div class="filters-header">
-
-        <div>
-
-          <h3>
-            🔎 Filtrar lançamentos
-          </h3>
-
-          <p>
-            Combine período, tipo, categoria e pesquisa.
-          </p>
-
-        </div>
-
-        <button
-          id="clearTransactionFiltersBtn"
-          class="text-button"
-          type="button"
+            class="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="transactionModalTitle"
         >
-          Limpar filtros
-        </button>
 
-      </div>
+            <button
+                class="modal-close"
+                data-close-modal
+                type="button"
+                aria-label="Fechar"
+            >
+                ×
+            </button>
 
 
-      <div class="filters-grid">
+            <h2 id="transactionModalTitle">
+                Novo lançamento
+            </h2>
 
-        <div class="filter-field filter-search">
+            <p>
+                Preencha os dados da movimentação.
+            </p>
 
-          <label for="transactionSearch">
-            Pesquisa
-          </label>
 
-          <input
-            id="transactionSearch"
-            type="search"
-            placeholder="Buscar lançamento..."
-            autocomplete="off"
-          >
+            <form id="transactionForm">
+
+                <input
+                    id="transactionId"
+                    type="hidden"
+                >
+
+
+                <div class="type-buttons">
+
+                    <button
+                        type="button"
+                        class="type-button active income"
+                        data-transaction-type="income"
+                    >
+                        Receita
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="type-button expense"
+                        data-transaction-type="expense"
+                    >
+                        Despesa
+                    </button>
+
+                </div>
+
+
+                <input
+                    id="transactionType"
+                    type="hidden"
+                    value="income"
+                >
+
+
+                <label for="transactionDescription">
+                    Descrição
+                </label>
+
+                <input
+                    id="transactionDescription"
+                    type="text"
+                    placeholder="Ex.: Salário"
+                    required
+                >
+
+
+                <label for="transactionAmount">
+                    Valor
+                </label>
+
+                <input
+                    id="transactionAmount"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    inputmode="decimal"
+                    placeholder="0,00"
+                    required
+                >
+
+
+                <label for="transactionDate">
+                    Data do lançamento
+                </label>
+
+                <input
+                    id="transactionDate"
+                    type="date"
+                    required
+                >
+
+
+                <div
+                    id="receivableDateGroup"
+                    class="receivable-date-group"
+                >
+
+                    <label for="transactionReceivableDate">
+                        Data de recebimento
+                    </label>
+
+                    <input
+                        id="transactionReceivableDate"
+                        type="date"
+                    >
+
+                    <small>
+                        Se a receita só será recebida no futuro,
+                        ela ficará em <strong>A Receber</strong>
+                        e não entrará no saldo atual.
+                    </small>
+
+                </div>
+
+
+                <label for="transactionCategory">
+                    Categoria
+                </label>
+
+                <select
+                    id="transactionCategory"
+                    required
+                ></select>
+
+
+                <label for="transactionNotes">
+                    Observações
+                </label>
+
+                <textarea
+                    id="transactionNotes"
+                    rows="3"
+                    placeholder="Opcional"
+                ></textarea>
+
+
+                <div
+                    id="transactionMessage"
+                    class="form-message"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+
+
+                <button
+                    id="saveTransactionBtn"
+                    class="btn btn-primary btn-large"
+                    type="submit"
+                >
+                    Salvar lançamento
+                </button>
+
+            </form>
 
         </div>
 
+    </div>
 
-        <div class="filter-field">
 
-          <label for="transactionFilter">
-            Tipo
-          </label>
+    <!-- =====================================================
+         MODAL — CATEGORIA
+    ====================================================== -->
 
-          <select id="transactionFilter">
+    <div
+        id="categoryModal"
+        class="modal hidden"
+        aria-hidden="true"
+    >
 
-            <option value="all">
-              Todos os tipos
-            </option>
+        <div
+            class="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="categoryModalTitle"
+        >
 
-            <option value="income">
-              Receitas
-            </option>
+            <button
+                class="modal-close"
+                data-close-modal
+                type="button"
+                aria-label="Fechar"
+            >
+                ×
+            </button>
 
-            <option value="expense">
-              Despesas
-            </option>
 
-          </select>
+            <h2 id="categoryModalTitle">
+                Nova categoria
+            </h2>
+
+            <p>
+                Crie uma categoria personalizada.
+            </p>
+
+
+            <form id="categoryForm">
+
+                <label for="categoryName">
+                    Nome
+                </label>
+
+                <input
+                    id="categoryName"
+                    type="text"
+                    placeholder="Ex.: Viagem"
+                    required
+                >
+
+
+                <label for="categoryType">
+                    Tipo
+                </label>
+
+                <select id="categoryType">
+
+                    <option value="expense">
+                        Despesa
+                    </option>
+
+                    <option value="income">
+                        Receita
+                    </option>
+
+                </select>
+
+
+                <div
+                    id="categoryMessage"
+                    class="form-message"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+
+
+                <button
+                    class="btn btn-primary btn-large"
+                    type="submit"
+                >
+                    Salvar categoria
+                </button>
+
+            </form>
 
         </div>
 
+    </div>
 
-        <div class="filter-field">
 
-          <label for="typeFilter">
-            Movimento
-          </label>
+    <!-- =====================================================
+         MODAL — META
+    ====================================================== -->
 
-          <select id="typeFilter">
+    <div
+        id="goalModal"
+        class="modal hidden"
+        aria-hidden="true"
+    >
 
-            <option value="all">
-              Todos
-            </option>
+        <div
+            class="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="goalModalTitle"
+        >
 
-            <option value="income">
-              Receita
-            </option>
+            <button
+                class="modal-close"
+                data-close-modal
+                type="button"
+                aria-label="Fechar"
+            >
+                ×
+            </button>
 
-            <option value="expense">
-              Despesa
-            </option>
 
-          </select>
+            <h2 id="goalModalTitle">
+                Nova meta
+            </h2>
+
+            <p>
+                Defina um objetivo financeiro.
+            </p>
+
+
+            <form id="goalForm">
+
+                <label for="goalName">
+                    Nome da meta
+                </label>
+
+                <input
+                    id="goalName"
+                    type="text"
+                    placeholder="Ex.: Viagem"
+                    required
+                >
+
+
+                <label for="goalTarget">
+                    Valor da meta
+                </label>
+
+                <input
+                    id="goalTarget"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    inputmode="decimal"
+                    placeholder="0,00"
+                    required
+                >
+
+
+                <label for="goalCurrent">
+                    Valor já guardado
+                </label>
+
+                <input
+                    id="goalCurrent"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value="0"
+                    inputmode="decimal"
+                    placeholder="0,00"
+                >
+
+
+                <label for="goalDeadline">
+                    Prazo
+                </label>
+
+                <input
+                    id="goalDeadline"
+                    type="date"
+                >
+
+
+                <div
+                    id="goalMessage"
+                    class="form-message"
+                    role="alert"
+                    aria-live="polite"
+                ></div>
+
+
+                <button
+                    class="btn btn-primary btn-large"
+                    type="submit"
+                >
+                    Criar meta
+                </button>
+
+            </form>
 
         </div>
 
+    </div>
 
-        <div class="filter-field">
 
-          <label for="categoryFilter">
-            Categoria
-          </label>
+    <!-- =====================================================
+         MODAL — PREMIUM
+    ====================================================== -->
 
-          <select id="categoryFilter">
+    <div
+        id="premiumModal"
+        class="modal hidden"
+        aria-hidden="true"
+    >
 
-            <option value="all">
-              Todas as categorias
-            </option>
+        <div
+            class="modal-card premium-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="premiumModalTitle"
+        >
 
-          </select>
+            <button
+                class="modal-close"
+                data-close-modal
+                type="button"
+                aria-label="Fechar"
+            >
+                ×
+            </button>
+
+
+            <div class="premium-icon">
+                ★
+            </div>
+
+
+            <h2 id="premiumModalTitle">
+                Ativar Premium
+            </h2>
+
+
+            <p>
+                Durante os testes, o Premium será ativado
+                por 7 dias. A cobrança real será integrada
+                posteriormente.
+            </p>
+
+
+            <div class="trial-box">
+
+                <strong>
+                    7 dias
+                </strong>
+
+                <span>
+                    de período de teste
+                </span>
+
+            </div>
+
+
+            <div
+                id="premiumMessage"
+                class="form-message"
+                role="alert"
+                aria-live="polite"
+            ></div>
+
+
+            <button
+                id="confirmPremiumBtn"
+                class="btn btn-premium btn-large"
+                type="button"
+            >
+                Confirmar ativação
+            </button>
 
         </div>
 
-      </div>
+    </div>
 
 
-      <div
-        id="transactionFilterSummary"
-        class="filter-summary"
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
+
+    <div
+        id="toast"
+        class="toast"
+        role="status"
         aria-live="polite"
-      >
-        Mostrando todos os lançamentos do período.
-      </div>
-
-    </div>
-
-
-    <div class="panel table-panel">
-
-      <div class="table-wrap">
-
-        <table>
-
-          <thead>
-
-            <tr>
-              <th>Descrição</th>
-              <th>Categoria</th>
-              <th>Data</th>
-              <th>Tipo</th>
-              <th>Valor</th>
-              <th>Ações</th>
-            </tr>
-
-          </thead>
-
-          <tbody id="transactionsTableBody"></tbody>
-
-        </table>
-
-      </div>
-
-
-      <div
-        id="transactionsEmpty"
-        class="empty-state hidden"
-      >
-
-        <div>◎</div>
-
-        <h3>
-          Nenhum lançamento encontrado
-        </h3>
-
-        <p>
-          Ajuste os filtros ou adicione uma nova movimentação.
-        </p>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =================================================
-       A RECEBER
-  ================================================== -->
-
-  <section
-    id="receivableSection"
-    class="content-section"
-  >
-
-    <div class="section-heading">
-
-      <div>
-
-        <span class="eyebrow">
-          CONTROLE DE RECEBIMENTOS
-        </span>
-
-        <h2>
-          A Receber
-        </h2>
-
-        <p>
-          Acompanhe os valores que ainda serão recebidos.
-        </p>
-
-      </div>
-
-      <button
-        id="addReceivableBtn"
-        class="btn btn-primary"
-        type="button"
-      >
-        + Nova receita
-      </button>
-
-    </div>
-
-
-    <div class="summary-grid">
-
-      <article class="summary-card">
-
-        <span>
-          Total a receber
-        </span>
-
-        <strong
-          id="receivableTotalValue"
-          class="positive"
-        >
-          R$ 0,00
-        </strong>
-
-        <small>
-          Valores ainda não recebidos
-        </small>
-
-      </article>
-
-
-      <article class="summary-card">
-
-        <span>
-          Quantidade
-        </span>
-
-        <strong id="receivableCount">
-          0
-        </strong>
-
-        <small>
-          Recebimentos pendentes
-        </small>
-
-      </article>
-
-
-      <article class="summary-card">
-
-        <span>
-          Próximo recebimento
-        </span>
-
-        <strong id="receivableNextDate">
-          —
-        </strong>
-
-        <small id="receivableNextDescription">
-          Nenhum recebimento pendente
-        </small>
-
-      </article>
-
-    </div>
-
-
-    <div class="panel table-panel">
-
-      <div class="panel-header">
-
-        <div>
-
-          <h3>
-            Contas pendentes
-          </h3>
-
-          <p>
-            Receitas lançadas que ainda não entraram no saldo.
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <div class="table-wrap">
-
-        <table>
-
-          <thead>
-
-            <tr>
-              <th>Descrição</th>
-              <th>Categoria</th>
-              <th>Lançamento</th>
-              <th>Recebimento</th>
-              <th>Valor</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-
-          </thead>
-
-          <tbody id="receivablesTableBody"></tbody>
-
-        </table>
-
-      </div>
-
-
-      <div
-        id="receivablesEmpty"
-        class="empty-state hidden"
-      >
-
-        <div>💰</div>
-
-        <h3>
-          Nenhum valor a receber
-        </h3>
-
-        <p>
-          Quando você lançar uma receita para uma data futura,
-          ela aparecerá aqui.
-        </p>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =================================================
-       CATEGORIAS
-  ================================================== -->
-
-  <section
-    id="categoriesSection"
-    class="content-section"
-  >
-
-    <div class="section-heading">
-
-      <div>
-
-        <span class="eyebrow">
-          ORGANIZAÇÃO
-        </span>
-
-        <h2>
-          Categorias
-        </h2>
-
-        <p>
-          Organize seus lançamentos por categoria.
-        </p>
-
-      </div>
-
-      <button
-        id="addCategoryBtn2"
-        class="btn btn-primary"
-        type="button"
-      >
-        + Nova categoria
-      </button>
-
-    </div>
-
-
-    <div
-      id="categoriesGrid"
-      class="categories-grid"
-    ></div>
-
-  </section>
-
-
-  <!-- =================================================
-       RELATÓRIOS
-  ================================================== -->
-
-  <section
-    id="reportsSection"
-    class="content-section"
-  >
-
-    <div class="section-heading">
-
-      <div>
-
-        <span class="eyebrow">
-          ANÁLISE
-        </span>
-
-        <h2>
-          Relatórios
-        </h2>
-
-        <p>
-          Entenda melhor para onde seu dinheiro está indo.
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <!-- Filtro de relatório -->
-
-    <div class="period-filter panel report-period-filter">
-
-      <div class="period-filter-header">
-
-        <div>
-
-          <h3>
-            Período do relatório
-          </h3>
-
-          <p>
-            O relatório acompanha o período financeiro selecionado.
-          </p>
-
-        </div>
-
-      </div>
-
-      <div class="report-period-status">
-
-        <span>
-          Período atual
-        </span>
-
-        <strong id="reportPeriodText">
-          Últimos 30 dias
-        </strong>
-
-      </div>
-
-    </div>
-
-
-    <div
-      id="premiumReportContent"
-      class="premium-report-gate hidden"
-    >
-
-      <div class="premium-lock">
-        ★
-      </div>
-
-      <h3>
-        Relatórios Premium
-      </h3>
-
-      <p>
-        Ative o Premium para liberar análises avançadas.
-      </p>
-
-      <button
-        class="btn btn-primary"
-        data-section="premium"
-        type="button"
-      >
-        Conhecer Premium
-      </button>
-
-    </div>
-
-
-    <div id="normalReportContent">
-
-      <div class="report-cards">
-
-        <article class="report-card">
-
-          <span>
-            Receitas
-          </span>
-
-          <strong id="reportIncomeCard">
-            R$ 0,00
-          </strong>
-
-        </article>
-
-
-        <article class="report-card">
-
-          <span>
-            Despesas
-          </span>
-
-          <strong id="reportExpenseCard">
-            R$ 0,00
-          </strong>
-
-        </article>
-
-
-        <article class="report-card">
-
-          <span>
-            Saldo
-          </span>
-
-          <strong id="reportBalanceCard">
-            R$ 0,00
-          </strong>
-
-        </article>
-
-      </div>
-
-
-      <div class="reports-grid">
-
-        <article class="panel">
-
-          <div class="panel-header">
-
-            <div>
-
-              <h3>
-                Por categoria
-              </h3>
-
-              <p>
-                Distribuição das despesas no período
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="chart-box doughnut-box">
-
-            <canvas id="categoryChart"></canvas>
-
-          </div>
-
-        </article>
-
-
-        <article class="panel report-values">
-
-          <div class="panel-header">
-
-            <div>
-
-              <h3>
-                Resumo
-              </h3>
-
-              <p>
-                Valores do período selecionado
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="report-line">
-
-            <span>
-              Receitas
-            </span>
-
-            <strong id="reportIncome">
-              R$ 0,00
-            </strong>
-
-          </div>
-
-
-          <div class="report-line">
-
-            <span>
-              Despesas
-            </span>
-
-            <strong id="reportExpense">
-              R$ 0,00
-            </strong>
-
-          </div>
-
-
-          <div class="report-line total">
-
-            <span>
-              Saldo
-            </span>
-
-            <strong id="reportBalance">
-              R$ 0,00
-            </strong>
-
-          </div>
-
-        </article>
-
-      </div>
-
-
-      <article
-        id="reportComparison"
-        class="panel"
-      >
-
-        <div class="panel-header">
-
-          <div>
-
-            <h3>
-              📊 Comparação com mês anterior
-            </h3>
-
-            <p>
-              Veja como suas finanças mudaram em relação ao mês passado.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div class="report-values">
-
-          <div class="report-line">
-
-            <span>
-              Receitas
-            </span>
-
-            <strong id="comparisonIncome">
-              —
-            </strong>
-
-          </div>
-
-
-          <div class="report-line">
-
-            <span>
-              Despesas
-            </span>
-
-            <strong id="comparisonExpense">
-              —
-            </strong>
-
-          </div>
-
-
-          <div class="report-line total">
-
-            <span>
-              Saldo
-            </span>
-
-            <strong id="comparisonBalance">
-              —
-            </strong>
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-      <article
-        id="reportAnalysis"
-        class="panel"
-      >
-
-        <div class="panel-header">
-
-          <div>
-
-            <h3>
-              🧠 Análise automática
-            </h3>
-
-            <p>
-              Uma análise simples do seu desempenho financeiro.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="automaticReportAnalysis"
-          class="report-analysis"
-        >
-
-          <p>
-            Adicione lançamentos para gerar sua análise financeira.
-          </p>
-
-        </div>
-
-      </article>
-
-    </div>
-
-  </section>
-
-
-  <!-- =================================================
-       PREMIUM
-  ================================================== -->
-
-  <section
-    id="premiumSection"
-    class="content-section"
-  >
-
-    <div class="premium-hero">
-
-      <div class="premium-badge">
-        ★ PREMIUM
-      </div>
-
-      <h2>
-        Tenha mais controle sobre seu dinheiro.
-      </h2>
-
-      <p>
-        Desbloqueie recursos avançados do ControleS
-        e acompanhe suas finanças com ainda mais detalhes.
-      </p>
-
-
-      <div class="premium-price">
-
-        <strong>
-          R$ 24,99
-        </strong>
-
-        <span>
-          / mês
-        </span>
-
-      </div>
-
-
-      <button
-        id="activatePremiumBtn"
-        class="btn btn-premium btn-large"
-        type="button"
-      >
-        Ativar Premium
-      </button>
-
-
-      <small id="premiumStatusText">
-        Free
-      </small>
-
-    </div>
-
-
-    <div class="premium-features">
-
-      <article>
-
-        <span>✓</span>
-
-        <div>
-
-          <strong>
-            Relatórios avançados
-          </strong>
-
-          <p>
-            Veja análises detalhadas das suas movimentações.
-          </p>
-
-        </div>
-
-      </article>
-
-
-      <article>
-
-        <span>✓</span>
-
-        <div>
-
-          <strong>
-            Metas financeiras
-          </strong>
-
-          <p>
-            Crie e acompanhe objetivos para seu dinheiro.
-          </p>
-
-        </div>
-
-      </article>
-
-
-      <article>
-
-        <span>✓</span>
-
-        <div>
-
-          <strong>
-            🐷 Cofrinho mensal
-          </strong>
-
-          <p>
-            Veja automaticamente quanto sobrou no mês.
-          </p>
-
-        </div>
-
-      </article>
-
-
-      <article>
-
-        <span>✓</span>
-
-        <div>
-
-          <strong>
-            📅 Resumo mensal
-          </strong>
-
-          <p>
-            Acompanhe receitas, despesas e sobra do mês.
-          </p>
-
-        </div>
-
-      </article>
-
-
-      <article>
-
-        <span>✓</span>
-
-        <div>
-
-          <strong>
-            🏆 Ranking de gastos
-          </strong>
-
-          <p>
-            Descubra quais categorias mais consomem seu dinheiro.
-          </p>
-
-        </div>
-
-      </article>
-
-
-      <article>
-
-        <span>✓</span>
-
-        <div>
-
-          <strong>
-            Controle completo
-          </strong>
-
-          <p>
-            Tenha sua vida financeira organizada em um só lugar.
-          </p>
-
-        </div>
-
-      </article>
-
-    </div>
-
-  </section>
-
-</main>
-
-  </div>  <!-- =====================================================
-       MODAL — LANÇAMENTO
-  ====================================================== -->  <div
-    id="transactionModal"
-    class="modal hidden"
-    aria-hidden="true"
-  ><div
-  class="modal-card"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="transactionModalTitle"
->
-
-  <button
-    class="modal-close"
-    data-close-modal
-    type="button"
-    aria-label="Fechar"
-  >
-    ×
-  </button>
-
-
-  <h2 id="transactionModalTitle">
-    Novo lançamento
-  </h2>
-
-  <p>
-    Preencha os dados da movimentação.
-  </p>
-
-
-  <form id="transactionForm">
-
-    <input
-      id="transactionId"
-      type="hidden"
-    >
-
-
-    <div class="type-buttons">
-
-      <button
-        type="button"
-        class="type-button active income"
-        data-transaction-type="income"
-      >
-        Receita
-      </button>
-
-
-      <button
-        type="button"
-        class="type-button expense"
-        data-transaction-type="expense"
-      >
-        Despesa
-      </button>
-
-    </div>
-
-
-    <input
-      id="transactionType"
-      type="hidden"
-      value="income"
-    >
-
-
-    <label for="transactionDescription">
-      Descrição
-    </label>
-
-    <input
-      id="transactionDescription"
-      type="text"
-      placeholder="Ex.: Salário"
-      required
-    >
-
-
-    <label for="transactionAmount">
-      Valor
-    </label>
-
-    <input
-      id="transactionAmount"
-      type="number"
-      step="0.01"
-      min="0.01"
-      inputmode="decimal"
-      placeholder="0,00"
-      required
-    >
-
-
-    <label for="transactionDate">
-      Data do lançamento
-    </label>
-
-    <input
-      id="transactionDate"
-      type="date"
-      required
-    >
-
-
-    <div
-      id="receivableDateGroup"
-      class="receivable-date-group"
-    >
-
-      <label for="transactionReceivableDate">
-        Data de recebimento
-      </label>
-
-      <input
-        id="transactionReceivableDate"
-        type="date"
-      >
-
-      <small>
-        Se a receita só será recebida no futuro,
-        ela ficará em <strong>A Receber</strong> e
-        não entrará no saldo atual.
-      </small>
-
-    </div>
-
-
-    <label for="transactionCategory">
-      Categoria
-    </label>
-
-    <select
-      id="transactionCategory"
-      required
-    ></select>
-
-
-    <label for="transactionNotes">
-      Observações
-    </label>
-
-    <textarea
-      id="transactionNotes"
-      rows="3"
-      placeholder="Opcional"
-    ></textarea>
-
-
-    <div
-      id="transactionMessage"
-      class="form-message"
-      role="alert"
-      aria-live="polite"
     ></div>
 
 
-    <button
-      id="saveTransactionBtn"
-      class="btn btn-primary btn-large"
-      type="submit"
-    >
-      Salvar lançamento
-    </button>
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
 
-  </form>
+    <script src="app.js"></script>
 
-</div>
+</body>
 
-  </div>  <!-- =====================================================
-       MODAL — CATEGORIA
-  ====================================================== -->  <div
-    id="categoryModal"
-    class="modal hidden"
-    aria-hidden="true"
-  ><div
-  class="modal-card"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="categoryModalTitle"
->
-
-  <button
-    class="modal-close"
-    data-close-modal
-    type="button"
-    aria-label="Fechar"
-  >
-    ×
-  </button>
-
-
-  <h2 id="categoryModalTitle">
-    Nova categoria
-  </h2>
-
-  <p>
-    Crie uma categoria personalizada.
-  </p>
-
-
-  <form id="categoryForm">
-
-    <label for="categoryName">
-      Nome
-    </label>
-
-    <input
-      id="categoryName"
-      type="text"
-      placeholder="Ex.: Viagem"
-      required
-    >
-
-
-    <label for="categoryType">
-      Tipo
-    </label>
-
-    <select id="categoryType">
-
-      <option value="expense">
-        Despesa
-      </option>
-
-      <option value="income">
-        Receita
-      </option>
-
-    </select>
-
-
-    <div
-      id="categoryMessage"
-      class="form-message"
-      role="alert"
-      aria-live="polite"
-    ></div>
-
-
-    <button
-      class="btn btn-primary btn-large"
-      type="submit"
-    >
-      Salvar categoria
-    </button>
-
-  </form>
-
-</div>
-
-  </div>  <!-- =====================================================
-       MODAL — META
-  ====================================================== -->  <div
-    id="goalModal"
-    class="modal hidden"
-    aria-hidden="true"
-  ><div
-  class="modal-card"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="goalModalTitle"
->
-
-  <button
-    class="modal-close"
-    data-close-modal
-    type="button"
-    aria-label="Fechar"
-  >
-    ×
-  </button>
-
-
-  <h2 id="goalModalTitle">
-    Nova meta
-  </h2>
-
-  <p>
-    Defina um objetivo financeiro.
-  </p>
-
-
-  <form id="goalForm">
-
-    <label for="goalName">
-      Nome da meta
-    </label>
-
-    <input
-      id="goalName"
-      type="text"
-      placeholder="Ex.: Viagem"
-      required
-    >
-
-
-    <label for="goalTarget">
-      Valor da meta
-    </label>
-
-    <input
-      id="goalTarget"
-      type="number"
-      step="0.01"
-      min="0.01"
-      inputmode="decimal"
-      placeholder="0,00"
-      required
-    >
-
-
-    <label for="goalCurrent">
-      Valor já guardado
-    </label>
-
-    <input
-      id="goalCurrent"
-      type="number"
-      step="0.01"
-      min="0"
-      value="0"
-      inputmode="decimal"
-      placeholder="0,00"
-    >
-
-
-    <label for="goalDeadline">
-      Prazo
-    </label>
-
-    <input
-      id="goalDeadline"
-      type="date"
-    >
-
-
-    <div
-      id="goalMessage"
-      class="form-message"
-      role="alert"
-      aria-live="polite"
-    ></div>
-
-
-    <button
-      class="btn btn-primary btn-large"
-      type="submit"
-    >
-      Criar meta
-    </button>
-
-  </form>
-
-</div>
-
-  </div>  <!-- =====================================================
-       MODAL — PREMIUM
-  ====================================================== -->  <div
-    id="premiumModal"
-    class="modal hidden"
-    aria-hidden="true"
-  ><div
-  class="modal-card premium-modal"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="premiumModalTitle"
->
-
-  <button
-    class="modal-close"
-    data-close-modal
-    type="button"
-    aria-label="Fechar"
-  >
-    ×
-  </button>
-
-
-  <div class="premium-icon">
-    ★
-  </div>
-
-
-  <h2 id="premiumModalTitle">
-    Ativar Premium
-  </h2>
-
-
-  <p>
-    Durante os testes, o Premium será ativado por 7 dias.
-    A cobrança real será integrada posteriormente.
-  </p>
-
-
-  <div class="trial-box">
-
-    <strong>
-      7 dias
-    </strong>
-
-    <span>
-      de período de teste
-    </span>
-
-  </div>
-
-
-  <div
-    id="premiumMessage"
-    class="form-message"
-    role="alert"
-    aria-live="polite"
-  ></div>
-
-
-  <button
-    id="confirmPremiumBtn"
-    class="btn btn-premium btn-large"
-    type="button"
-  >
-    Confirmar ativação
-  </button>
-
-</div>
-
-  </div>  <!-- =====================================================
-       TOAST
-  ====================================================== -->  <div
-    id="toast"
-    class="toast"
-    role="status"
-    aria-live="polite"
-  ></div>  <!-- =====================================================
-       JAVASCRIPT
-  ====================================================== -->  <script src="app.js"></script></body>
 </html>
