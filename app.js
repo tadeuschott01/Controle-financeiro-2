@@ -808,6 +808,12 @@ function showLoginView() {
             "authView"
         );
 
+    const register =
+        firstExisting(
+            "registerView",
+            "signupView"
+        );
+
     const app =
         firstExisting(
             "appView",
@@ -819,8 +825,53 @@ function showLoginView() {
         login.style.display = "";
     }
 
+    if (register) {
+        register.classList.add("hidden");
+        register.style.display = "none";
+    }
+
     if (app) {
         app.classList.add("hidden");
+        app.style.display = "none";
+    }
+}
+
+
+function showRegisterView() {
+
+    closeMobileMenu();
+
+    const login =
+        firstExisting(
+            "loginView",
+            "authView"
+        );
+
+    const register =
+        firstExisting(
+            "registerView",
+            "signupView"
+        );
+
+    const app =
+        firstExisting(
+            "appView",
+            "mainApp"
+        );
+
+    if (login) {
+        login.classList.add("hidden");
+        login.style.display = "none";
+    }
+
+    if (app) {
+        app.classList.add("hidden");
+        app.style.display = "none";
+    }
+
+    if (register) {
+        register.classList.remove("hidden");
+        register.style.display = "";
     }
 }
 
@@ -833,6 +884,12 @@ function showAppView() {
             "authView"
         );
 
+    const register =
+        firstExisting(
+            "registerView",
+            "signupView"
+        );
+
     const app =
         firstExisting(
             "appView",
@@ -841,6 +898,12 @@ function showAppView() {
 
     if (login) {
         login.classList.add("hidden");
+        login.style.display = "none";
+    }
+
+    if (register) {
+        register.classList.add("hidden");
+        register.style.display = "none";
     }
 
     if (app) {
@@ -1055,23 +1118,10 @@ function getMobileOverlay() {
 }
 
 
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || "")
-        || window.matchMedia?.("(pointer: coarse)")?.matches === true;
-}
-
 function isMobileViewport() {
-    return window.innerWidth <= 720 || isMobileDevice();
-}
 
-// Alguns celulares podem estar com “Site para computador” ativado.
-// Nesse caso o navegador informa uma largura de desktop, mas ainda é um celular.
-// Marcamos o documento para o CSS manter o layout mobile correto.
-function applyDeviceLayout() {
-    document.documentElement.toggleAttribute("data-mobile-device", isMobileDevice());
+    return window.innerWidth <= 720;
 }
-
-applyDeviceLayout();
 
 
 function openMobileMenu() {
@@ -2172,67 +2222,180 @@ async function deleteTransaction(id) {
    RENDER TRANSAÇÕES
    ========================================================= */
 
-function getTransactionFilterState() {
-    const search = valueOf("transactionSearch").toLowerCase().trim();
-    const type = valueOf("transactionFilter") || valueOf("transactionTypeFilter") || "all";
-    const category = valueOf("categoryFilter") || valueOf("transactionCategoryFilter") || "all";
-    const from = valueOf("transactionDateFrom");
-    const to = valueOf("transactionDateTo");
-    return { search, type, category, from, to };
-}
-
-function getFilteredTransactions() {
-    const f = getTransactionFilterState();
-    return [...transactions].filter(transaction => {
-        const description = getTransactionDescription(transaction);
-        const category = getTransactionCategory(transaction);
-        const date = getTransactionDate(transaction);
-        const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
-        const haystack = `${description} ${category}`.toLowerCase();
-        if (f.search && !haystack.includes(f.search)) return false;
-        if (f.type && f.type !== "all" && type !== f.type) return false;
-        if (f.category && f.category !== "all" && category !== f.category) return false;
-        if (f.from && date < f.from) return false;
-        if (f.to && date > f.to) return false;
-        return true;
-    });
-}
-
 function renderTransactions() {
-    const list = firstExisting("transactionsList", "transactionList", "launchesList");
-    const empty = $("transactionsEmpty");
-    const countLabel = $("transactionsCountLabel");
+
+    const list =
+        firstExisting(
+            "transactionsList",
+            "transactionList",
+            "launchesList"
+        );
+
     if (!list) return;
 
-    const filtered = getFilteredTransactions();
-    if (countLabel) countLabel.textContent = `${filtered.length} lançamento${filtered.length === 1 ? "" : "s"} encontrado${filtered.length === 1 ? "" : "s"}`;
-    if (empty) empty.classList.toggle("hidden", filtered.length > 0);
 
-    if (!filtered.length) { list.innerHTML = ""; updateTransactionFilterSummary(0); return; }
+    const search =
+        valueOf(
+            "transactionSearch"
+        ).toLowerCase().trim();
 
-    list.innerHTML = filtered.map(transaction => {
-        const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
-        const amount = getTransactionAmount(transaction);
-        const isIncome = type === "income";
-        return `<article class="transaction-item" data-transaction-id="${escapeHTML(transaction.id)}">
-            <div class="transaction-info"><strong>${escapeHTML(getTransactionDescription(transaction))}</strong><small>${escapeHTML(getTransactionCategory(transaction))} • ${formatDateBR(getTransactionDate(transaction))}</small></div>
-            <strong class="${isIncome ? "income-value" : "expense-value"}">${isIncome ? "+" : "-"} ${formatCurrency(amount)}</strong>
-            <div class="transaction-actions"><button type="button" class="edit-transaction-btn" data-edit-transaction="${escapeHTML(transaction.id)}" title="Editar">✎</button><button type="button" class="delete-transaction-btn" data-delete-transaction="${escapeHTML(transaction.id)}" title="Excluir">×</button></div>
-        </article>`;
-    }).join("");
-    updateTransactionFilterSummary(filtered.length);
-}
 
-function updateTransactionFilterSummary(count) {
-    const el = $("transactionFilterSummary");
-    if (!el) return;
-    const f = getTransactionFilterState();
-    const active = [];
-    if (f.search) active.push(`busca: “${f.search}”`);
-    if (f.type !== "all") active.push(f.type === "income" ? "receitas" : "despesas");
-    if (f.category !== "all") active.push(f.category);
-    if (f.from || f.to) active.push(`${formatDateBR(f.from || f.to)}${f.from && f.to ? " até " + formatDateBR(f.to) : ""}`);
-    el.textContent = active.length ? `Filtros ativos: ${active.join(" • ")} — ${count} resultado${count === 1 ? "" : "s"}.` : `Mostrando todos os lançamentos — ${count} resultado${count === 1 ? "" : "s"}.`;
+    const filterType =
+        valueOf(
+            "transactionTypeFilter"
+        );
+
+
+    const filterCategory =
+        valueOf(
+            "transactionCategoryFilter"
+        );
+
+
+    let filtered =
+        [...transactions];
+
+
+    if (search) {
+
+        filtered =
+            filtered.filter(transaction => {
+
+                const text =
+                    `${getTransactionDescription(transaction)}
+                    ${getTransactionCategory(transaction)}`
+                        .toLowerCase();
+
+                return text.includes(search);
+            });
+    }
+
+
+    if (filterType) {
+
+        filtered =
+            filtered.filter(
+                transaction =>
+                    normalizeTransactionType(
+                        transaction.type ||
+                        transaction.tipo
+                    ) === filterType
+            );
+    }
+
+
+    if (filterCategory) {
+
+        filtered =
+            filtered.filter(
+                transaction =>
+                    getTransactionCategory(
+                        transaction
+                    ) === filterCategory
+            );
+    }
+
+
+    if (!filtered.length) {
+
+        list.innerHTML = `
+            <div class="empty-state">
+                <p>Nenhum lançamento encontrado.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    list.innerHTML =
+        filtered
+            .map(transaction => {
+
+                const type =
+                    normalizeTransactionType(
+                        transaction.type ||
+                        transaction.tipo
+                    );
+
+                const amount =
+                    getTransactionAmount(
+                        transaction
+                    );
+
+                const isIncome =
+                    type === "income";
+
+
+                return `
+                    <div
+                        class="transaction-item"
+                        data-transaction-id="${escapeHTML(transaction.id)}"
+                    >
+
+                        <div class="transaction-info">
+
+                            <strong>
+                                ${escapeHTML(
+                                    getTransactionDescription(transaction)
+                                )}
+                            </strong>
+
+                            <small>
+                                ${escapeHTML(
+                                    getTransactionCategory(transaction)
+                                )}
+                                •
+                                ${formatDateBR(
+                                    getTransactionDate(transaction)
+                                )}
+                            </small>
+
+                        </div>
+
+
+                        <strong
+                            class="${
+                                isIncome
+                                    ? "income-value"
+                                    : "expense-value"
+                            }"
+                        >
+                            ${
+                                isIncome
+                                    ? "+"
+                                    : "-"
+                            }
+                            ${formatCurrency(amount)}
+                        </strong>
+
+
+                        <div class="transaction-actions">
+
+                            <button
+                                type="button"
+                                class="edit-transaction-btn"
+                                data-edit-transaction="${escapeHTML(transaction.id)}"
+                                title="Editar"
+                            >
+                                ✎
+                            </button>
+
+                            <button
+                                type="button"
+                                class="delete-transaction-btn"
+                                data-delete-transaction="${escapeHTML(transaction.id)}"
+                                title="Excluir"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    </div>
+                `;
+            })
+            .join("");
 }
 
 
@@ -2485,17 +2648,70 @@ function renderRecentTransactions() {
    ========================================================= */
 
 function getPeriodElements() {
+
     return {
-        select: firstExisting("dashboardPeriod", "periodFilter") || document.querySelector("[data-period-filter]"),
-        apply: firstExisting("applyPeriodBtn", "applyPeriod", "btnApplyPeriod") || document.querySelector("[data-apply-period]"),
-        clear: firstExisting("clearPeriodBtn"),
-        customFields: firstExisting("customPeriodFields", "periodCustomFields", "customDateRange"),
-        start: firstExisting("periodStartDate", "periodStart", "customStartDate", "startDate") || document.querySelector("[data-period-start]"),
-        end: firstExisting("periodEndDate", "periodEnd", "customEndDate", "endDate") || document.querySelector("[data-period-end]"),
-        income: firstExisting("incomeValue", "periodIncome", "periodIncomeValue", "periodEarnedValue") || document.querySelector("[data-period-income]"),
-        expense: firstExisting("expenseValue", "periodExpense", "periodExpenseValue", "periodSpentValue") || document.querySelector("[data-period-expense]"),
-        balance: firstExisting("balanceValue", "periodBalance", "periodBalanceValue") || document.querySelector("[data-period-balance]"),
-        label: firstExisting("activePeriodLabel", "periodLabel") || document.querySelector("[data-period-label]")
+
+        select:
+            firstExisting("periodFilter") ||
+            document.querySelector("[data-period-filter]"),
+
+        apply:
+            firstExisting(
+                "applyPeriodBtn",
+                "applyPeriod",
+                "btnApplyPeriod"
+            ) ||
+            document.querySelector("[data-apply-period]"),
+
+        customFields:
+            firstExisting(
+                "customPeriodFields",
+                "periodCustomFields",
+                "customDateRange"
+            ),
+
+        start:
+            firstExisting(
+                "periodStart",
+                "customStartDate",
+                "startDate"
+            ) ||
+            document.querySelector("[data-period-start]"),
+
+        end:
+            firstExisting(
+                "periodEnd",
+                "customEndDate",
+                "endDate"
+            ) ||
+            document.querySelector("[data-period-end]"),
+
+        income:
+            firstExisting(
+                "periodIncome",
+                "periodIncomeValue",
+                "periodEarnedValue"
+            ) ||
+            document.querySelector("[data-period-income]"),
+
+        expense:
+            firstExisting(
+                "periodExpense",
+                "periodExpenseValue",
+                "periodSpentValue"
+            ) ||
+            document.querySelector("[data-period-expense]"),
+
+        balance:
+            firstExisting(
+                "periodBalance",
+                "periodBalanceValue"
+            ) ||
+            document.querySelector("[data-period-balance]"),
+
+        label:
+            firstExisting("periodLabel") ||
+            document.querySelector("[data-period-label]")
     };
 }
 
@@ -2763,20 +2979,252 @@ function getLastDayOfMonth(year, month) {
    ========================================================= */
 
 function getSelectedPeriod() {
-    const { select, start, end } = getPeriodElements();
-    if (!select || !select.value) return null;
-    const today = todayISO();
+
+    const {
+        select,
+        start,
+        end
+    } = getPeriodElements();
+
+    if (!select || !select.value) {
+        return null;
+    }
+
+
+    const today =
+        todayISO();
+
+
     switch (select.value) {
-        case "today": return { start: today, end: today, label: "Hoje" };
-        case "yesterday": { const d=changeDate(today,-1); return { start:d,end:d,label:"Ontem" }; }
-        case "7": return { start:changeDate(today,-6), end:today, label:"Últimos 7 dias" };
-        case "30": return { start:changeDate(today,-29), end:today, label:"Últimos 30 dias" };
-        case "week": return { start:changeDate(today,-6), end:today, label:"Última semana" };
-        case "month": return { start:getFirstDayOfCurrentMonth(), end:today, label:"Este mês" };
-        case "previous-month": { const first=new Date(new Date().getFullYear(),new Date().getMonth()-1,1); const last=new Date(new Date().getFullYear(),new Date().getMonth(),0); const f=`${first.getFullYear()}-${String(first.getMonth()+1).padStart(2,"0")}-01`; const l=`${last.getFullYear()}-${String(last.getMonth()+1).padStart(2,"0")}-${String(last.getDate()).padStart(2,"0")}`; return {start:f,end:l,label:"Mês anterior"}; }
-        case "all": return { start:null, end:null, label:"Todo o período" };
-        case "custom": { let a=start?.value||"", b=end?.value||""; if(!a&&!b) return null; if(!a)a=b; if(!b)b=a; if(a>b)[a,b]=[b,a]; return {start:a,end:b,label:`${formatDateBR(a)} até ${formatDateBR(b)}`}; }
-        default: return null;
+
+
+        /* -----------------------------------------
+           HOJE
+           ----------------------------------------- */
+
+        case "today":
+
+            return {
+                start: today,
+                end: today,
+                label: "Hoje"
+            };
+
+
+        /* -----------------------------------------
+           ONTEM
+           ----------------------------------------- */
+
+        case "yesterday": {
+
+            const yesterday =
+                changeDate(
+                    today,
+                    -1
+                );
+
+            return {
+                start: yesterday,
+                end: yesterday,
+                label: "Ontem"
+            };
+        }
+
+
+        /* -----------------------------------------
+           ÚLTIMOS 7 DIAS
+           ----------------------------------------- */
+
+        case "7days":
+
+            return {
+                start:
+                    changeDate(
+                        today,
+                        -6
+                    ),
+
+                end:
+                    today,
+
+                label:
+                    "Últimos 7 dias"
+            };
+
+
+        /* -----------------------------------------
+           ÚLTIMOS 30 DIAS
+           ----------------------------------------- */
+
+        case "30days":
+
+            return {
+                start:
+                    changeDate(
+                        today,
+                        -29
+                    ),
+
+                end:
+                    today,
+
+                label:
+                    "Últimos 30 dias"
+            };
+
+
+        /* -----------------------------------------
+           ESTE MÊS
+           ----------------------------------------- */
+
+        case "month": {
+
+            const date =
+                new Date();
+
+            const year =
+                date.getFullYear();
+
+            const month =
+                date.getMonth();
+
+            return {
+                start:
+                    getFirstDayOfMonth(
+                        year,
+                        month
+                    ),
+
+                end:
+                    today,
+
+                label:
+                    "Este mês"
+            };
+        }
+
+
+        /* -----------------------------------------
+           MÊS ANTERIOR
+           ----------------------------------------- */
+
+        case "previousMonth": {
+
+            const date =
+                new Date();
+
+            const year =
+                date.getFullYear();
+
+            const month =
+                date.getMonth() - 1;
+
+            return {
+                start:
+                    getFirstDayOfMonth(
+                        year,
+                        month
+                    ),
+
+                end:
+                    getLastDayOfMonth(
+                        year,
+                        month
+                    ),
+
+                label:
+                    "Mês anterior"
+            };
+        }
+
+
+        /* -----------------------------------------
+           TODO O PERÍODO
+           ----------------------------------------- */
+
+        case "all":
+
+            return {
+                start: null,
+                end: null,
+                label: "Todo o período"
+            };
+
+
+        /* -----------------------------------------
+           PERSONALIZADO
+           ----------------------------------------- */
+
+        case "custom": {
+
+            let startDate =
+                start?.value || "";
+
+            let endDate =
+                end?.value || "";
+
+
+            /*
+             * Se nenhuma data foi escolhida,
+             * ainda não existe período válido.
+             */
+
+            if (
+                !startDate &&
+                !endDate
+            ) {
+                return null;
+            }
+
+
+            /*
+             * Se somente uma data foi informada,
+             * usamos o mesmo dia para início/fim.
+             */
+
+            if (!startDate) {
+                startDate = endDate;
+            }
+
+            if (!endDate) {
+                endDate = startDate;
+            }
+
+
+            /*
+             * Corrige automaticamente caso
+             * as datas tenham sido invertidas.
+             */
+
+            if (startDate > endDate) {
+
+                const temp =
+                    startDate;
+
+                startDate =
+                    endDate;
+
+                endDate =
+                    temp;
+            }
+
+
+            return {
+
+                start:
+                    startDate,
+
+                end:
+                    endDate,
+
+                label:
+                    `${formatDateBR(startDate)} até ${formatDateBR(endDate)}`
+            };
+        }
+
+
+        default:
+            return null;
     }
 }
 
@@ -3105,19 +3553,6 @@ function setupPeriodEvents() {
     const elements =
         getPeriodElements();
 
-    if (elements.clear && elements.clear.dataset.periodBound !== "true") {
-        elements.clear.dataset.periodBound = "true";
-        elements.clear.addEventListener("click", event => {
-            event.preventDefault();
-            if (elements.select) elements.select.value = "30";
-            if (elements.start) elements.start.value = "";
-            if (elements.end) elements.end.value = "";
-            toggleCustomPeriodFields();
-            updatePeriodSummary();
-            showToast("Filtro de período limpo.", "success");
-        });
-    }
-
 
     if (elements.select) {
 
@@ -3329,20 +3764,113 @@ function toggleCustomPeriodFields() {
    ========================================================= */
 
 function getSelectedPeriod() {
-    const { select, start, end } = getPeriodElements();
-    if (!select || !select.value) return null;
-    const today = todayISO();
+
+    const {
+        select,
+        start,
+        end
+    } = getPeriodElements();
+
+
+    if (!select || !select.value) {
+        return null;
+    }
+
+
+    const today =
+        todayISO();
+
+
     switch (select.value) {
-        case "today": return { start: today, end: today, label: "Hoje" };
-        case "yesterday": { const d=changeDate(today,-1); return { start:d,end:d,label:"Ontem" }; }
-        case "7": return { start:changeDate(today,-6), end:today, label:"Últimos 7 dias" };
-        case "30": return { start:changeDate(today,-29), end:today, label:"Últimos 30 dias" };
-        case "week": return { start:changeDate(today,-6), end:today, label:"Última semana" };
-        case "month": return { start:getFirstDayOfCurrentMonth(), end:today, label:"Este mês" };
-        case "previous-month": { const first=new Date(new Date().getFullYear(),new Date().getMonth()-1,1); const last=new Date(new Date().getFullYear(),new Date().getMonth(),0); const f=`${first.getFullYear()}-${String(first.getMonth()+1).padStart(2,"0")}-01`; const l=`${last.getFullYear()}-${String(last.getMonth()+1).padStart(2,"0")}-${String(last.getDate()).padStart(2,"0")}`; return {start:f,end:l,label:"Mês anterior"}; }
-        case "all": return { start:null, end:null, label:"Todo o período" };
-        case "custom": { let a=start?.value||"", b=end?.value||""; if(!a&&!b) return null; if(!a)a=b; if(!b)b=a; if(a>b)[a,b]=[b,a]; return {start:a,end:b,label:`${formatDateBR(a)} até ${formatDateBR(b)}`}; }
-        default: return null;
+
+
+        case "week":
+
+            return {
+                start: changeDate(
+                    today,
+                    -6
+                ),
+                end: today,
+                label: "Última semana"
+            };
+
+
+        case "month":
+
+            return {
+                start:
+                    getFirstDayOfCurrentMonth(),
+                end: today,
+                label: "Este mês"
+            };
+
+
+        case "all":
+
+            return {
+                start: null,
+                end: null,
+                label: "Todo o período"
+            };
+
+
+        case "custom": {
+
+            let startDate =
+                start?.value || "";
+
+            let endDate =
+                end?.value || "";
+
+
+            if (
+                !startDate &&
+                !endDate
+            ) {
+                return null;
+            }
+
+
+            if (!startDate) {
+                startDate = endDate;
+            }
+
+
+            if (!endDate) {
+                endDate = startDate;
+            }
+
+
+            if (startDate > endDate) {
+
+                const temp =
+                    startDate;
+
+                startDate =
+                    endDate;
+
+                endDate =
+                    temp;
+            }
+
+
+            return {
+
+                start: startDate,
+
+                end: endDate,
+
+                label:
+                    `${formatDateBR(startDate)}
+                    até
+                    ${formatDateBR(endDate)}`
+            };
+        }
+
+
+        default:
+            return null;
     }
 }
 
@@ -4312,22 +4840,81 @@ function getAllCategories() {
 
 
 function updateCategories() {
-    const categories = getAllCategories();
-    const select = firstExisting("transactionCategory", "category");
+
+    const categories =
+        getAllCategories();
+
+
+    const select =
+        firstExisting(
+            "transactionCategory",
+            "category"
+        );
+
+
     if (select) {
-        const current = select.value;
-        select.innerHTML = categories.map(category => `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`).join("");
-        if (categories.includes(current)) select.value = current;
+
+        const current =
+            select.value;
+
+
+        select.innerHTML =
+            categories
+                .map(
+                    category =>
+                        `<option value="${escapeHTML(category)}">
+                            ${escapeHTML(category)}
+                        </option>`
+                )
+                .join("");
+
+
+        if (
+            categories.includes(current)
+        ) {
+            select.value = current;
+        }
     }
-    const filter = firstExisting("categoryFilter", "transactionCategoryFilter");
-    if (filter) {
-        const current = filter.value;
-        filter.innerHTML = `<option value="all">Todas as categorias</option>` + categories.map(category => `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`).join("");
-        if (categories.includes(current)) filter.value = current;
-    }
-    const list = firstExisting("categoriesGrid", "categoriesList", "categoryList");
+
+
+    const list =
+        firstExisting(
+            "categoriesList",
+            "categoryList"
+        );
+
+
     if (!list) return;
-    list.innerHTML = categories.map(category => `<article class="category-item"><span>◈</span><strong>${escapeHTML(category)}</strong>${DEFAULT_CATEGORIES.includes(category) ? "" : `<button type="button" class="delete-category-btn" data-delete-category="${escapeHTML(category)}">×</button>`}</article>`).join("");
+
+
+    list.innerHTML =
+        categories
+            .map(
+                category => `
+                    <div class="category-item">
+
+                        <span>
+                            ${escapeHTML(category)}
+                        </span>
+
+                        ${
+                            DEFAULT_CATEGORIES.includes(category)
+                                ? ""
+                                : `
+                                    <button
+                                        type="button"
+                                        class="delete-category-btn"
+                                        data-delete-category="${escapeHTML(category)}"
+                                    >
+                                        ×
+                                    </button>
+                                `
+                        }
+
+                    </div>
+                `
+            )
+            .join("");
 }
 
 
@@ -4432,26 +5019,6 @@ function deleteCategory(name) {
         "Categoria excluída.",
         "success"
     );
-}
-
-
-async function saveGoal(event) {
-    if (event) event.preventDefault();
-    if (!supabaseClient || !currentUser) { showToast("Faça login novamente.", "error"); return; }
-    const name = valueOf("goalName").trim();
-    const target = Number(valueOf("goalTarget"));
-    const current = Number(valueOf("goalCurrent")) || 0;
-    const deadline = valueOf("goalDeadline") || null;
-    if (!name || !Number.isFinite(target) || target <= 0 || current < 0) { showToast("Preencha os dados da meta corretamente.", "warning"); return; }
-    try {
-        const { error } = await supabaseClient.from("goals").insert({ user_id: currentUser.id, name, target_amount: target, current_amount: current, deadline });
-        if (error) throw error;
-        showToast("Meta criada com sucesso.", "success");
-        $("goalForm")?.reset();
-        closeModal("goalModal");
-        await loadGoals();
-        renderGoals();
-    } catch (error) { console.error(error); showToast(error.message || "Não foi possível criar a meta.", "error"); }
 }
 
 
@@ -5106,6 +5673,24 @@ function setupEvents() {
     }
 
 
+    const registerBtn =
+        firstExisting(
+            "registerBtn"
+        );
+
+    if (registerBtn) {
+
+        registerBtn.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+                showRegisterView();
+            }
+        );
+    }
+
+
     /* -----------------------------------------
        CADASTRO
        ----------------------------------------- */
@@ -5123,20 +5708,22 @@ function setupEvents() {
         );
     }
 
-    const createAccountLink = firstExisting("createAccountLink", "createAccountBtn");
-    if (createAccountLink && createAccountLink.id !== "createAccountBtn") {
-        createAccountLink.addEventListener("click", event => {
-            event.preventDefault();
-            showRegisterView();
-        });
-    }
 
-    const backToLoginBtn = $("backToLoginBtn");
+    const backToLoginBtn =
+        firstExisting(
+            "backToLoginBtn"
+        );
+
     if (backToLoginBtn) {
-        backToLoginBtn.addEventListener("click", event => {
-            event.preventDefault();
-            showLoginView();
-        });
+
+        backToLoginBtn.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+                showLoginView();
+            }
+        );
     }
 
 
@@ -5508,8 +6095,6 @@ function setupEvents() {
         document.querySelectorAll(
             "#newTransactionBtn," +
             "#newLaunchBtn," +
-            "#addTransactionBtn," +
-            "#addTransactionBtn2," +
             "[data-new-transaction]"
         );
 
@@ -5646,8 +6231,7 @@ function setupEvents() {
 
     const typeFilter =
         firstExisting(
-            "transactionTypeFilter",
-            "transactionFilter"
+            "transactionTypeFilter"
         );
 
 
@@ -5666,8 +6250,7 @@ function setupEvents() {
 
     const categoryFilter =
         firstExisting(
-            "transactionCategoryFilter",
-            "categoryFilter"
+            "transactionCategoryFilter"
         );
 
 
@@ -5679,29 +6262,6 @@ function setupEvents() {
         );
     }
 
-
-    /* -----------------------------------------
-       BOTÕES DO DASHBOARD / AÇÕES
-       ----------------------------------------- */
-    ["addTransactionBtn", "addTransactionBtn2"].forEach(id => {
-        const button = $(id);
-        if (button && !button.dataset.bound) { button.dataset.bound = "true"; button.addEventListener("click", e => { e.preventDefault(); openTransactionModal("expense"); }); }
-    });
-    ["addCategoryBtn", "addCategoryBtn2"].forEach(id => {
-        const button = $(id);
-        if (button && !button.dataset.bound) { button.dataset.bound = "true"; button.addEventListener("click", e => { e.preventDefault(); openModal("categoryModal"); }); }
-    });
-    const goalButton = $("addGoalBtn");
-    if (goalButton && !goalButton.dataset.bound) { goalButton.dataset.bound = "true"; goalButton.addEventListener("click", e => { e.preventDefault(); openModal("goalModal"); }); }
-    const receivableButton = $("addReceivableBtn");
-    if (receivableButton && !receivableButton.dataset.bound) { receivableButton.dataset.bound = "true"; receivableButton.addEventListener("click", e => { e.preventDefault(); openNewReceivable(); }); }
-    const goalForm = $("goalForm");
-    if (goalForm && !goalForm.dataset.bound) { goalForm.dataset.bound = "true"; goalForm.addEventListener("submit", saveGoal); }
-    const confirmPremium = $("confirmPremiumBtn");
-    if (confirmPremium && !confirmPremium.dataset.bound) { confirmPremium.dataset.bound = "true"; confirmPremium.addEventListener("click", activatePremiumTrial); }
-    const clearFilters = $("clearTransactionFiltersBtn");
-    if (clearFilters && !clearFilters.dataset.bound) { clearFilters.dataset.bound = "true"; clearFilters.addEventListener("click", () => { ["transactionSearch","transactionFilter","categoryFilter","transactionDateFrom","transactionDateTo"].forEach(id => { const el=$(id); if(el) el.value = id === "transactionFilter" || id === "categoryFilter" ? "all" : ""; }); renderTransactions(); }); }
-    ["transactionFilter","categoryFilter","transactionDateFrom","transactionDateTo"].forEach(id => { const el=$(id); if(el && !el.dataset.bound){ el.dataset.bound="true"; el.addEventListener("change", renderTransactions); }});
 
     /* -----------------------------------------
        FECHAR MODAIS
@@ -5780,9 +6340,8 @@ function setupEvents() {
         "resize",
         () => {
 
-            applyDeviceLayout();
-
             if (!isMobileViewport()) {
+
                 closeMobileMenu();
             }
         }
@@ -6197,59 +6756,5 @@ function exportTransactionsCSV() {
 
 
     document.body.appendChild(
-        link
-    );
-
-
-    link.click();
-
-    link.remove();
-
-
-    URL.revokeObjectURL(
-        url
-    );
-}
-
-
-/* =========================================================
-   EXPORTAR
-   ========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const target =
-            event.target;
-
-
-        if (
-            !target ||
-            typeof target.closest !==
-            "function"
-        ) {
-            return;
-        }
-
-
-        const button =
-            target.closest(
-                "#exportTransactionsBtn," +
-                "[data-export-transactions]"
-            );
-
-
-        if (button) {
-
-            event.preventDefault();
-
-            exportTransactionsCSV();
-        }
-    }
-);
-
-
-/* =========================================================
-   FIM DO APP.JS
-   ========================================================= */
+   
+Prévia truncada devido ao tamanho do arquivo
