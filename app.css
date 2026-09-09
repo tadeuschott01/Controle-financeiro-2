@@ -1928,10 +1928,14 @@ tbody tr:hover {
      APP
   ------------------------------------------------------- */
 
-  .app-shell {
+  .app-shell:not(.hidden) {
     display: block !important;
     width: 100% !important;
     min-width: 0 !important;
+  }
+
+  .app-shell.hidden {
+    display: none !important;
   }
 
 
