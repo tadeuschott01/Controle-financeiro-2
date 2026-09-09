@@ -1047,6 +1047,41 @@ function updateThemeButton() {
 
 
 /* =========================================================
+   MOSTRAR / OCULTAR SENHA
+   ========================================================= */
+
+function togglePasswordVisibility(button) {
+
+    const targetId =
+        button.dataset.passwordToggle;
+
+    const input =
+        targetId ? $(targetId) : null;
+
+    if (!input) return;
+
+    const isHidden =
+        input.type === "password";
+
+    input.type =
+        isHidden ? "text" : "password";
+
+    button.setAttribute(
+        "aria-pressed",
+        isHidden ? "true" : "false"
+    );
+
+    button.setAttribute(
+        "aria-label",
+        isHidden ? "Ocultar senha" : "Mostrar senha"
+    );
+
+    button.textContent =
+        isHidden ? "○" : "◉";
+}
+
+
+/* =========================================================
    DATA
    ========================================================= */
 
@@ -5294,6 +5329,29 @@ function setupEvents() {
             }
         );
     }
+
+
+    /* -----------------------------------------
+       MOSTRAR / OCULTAR SENHA
+       ----------------------------------------- */
+
+    const passwordToggles =
+        document.querySelectorAll(
+            "[data-password-toggle]"
+        );
+
+    passwordToggles.forEach(button => {
+
+        button.addEventListener(
+            "click",
+            event => {
+
+                event.preventDefault();
+
+                togglePasswordVisibility(button);
+            }
+        );
+    });
 
 
     /* -----------------------------------------
