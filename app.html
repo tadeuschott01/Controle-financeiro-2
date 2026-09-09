@@ -1,250 +1,1575 @@
-C↗
-ControleS
-Seu dinheiro sob controle.
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <article class="report-card">
+          <span>Despesas</span>
+          <strong id="reportExpenseCard">
+            R$ 0,00
+          </strong>
+        </article>
 
-BEM-VINDO DE VOLTA
-Entre na sua conta
-Acompanhe suas finanças de onde estiver.
+        <article class="report-card">
+          <span>Saldo</span>
+          <strong id="reportBalanceCard">
+            R$ 0,00
+          </strong>
+        </article>
+      </div>
 
-E-mail 
-seu@email.com
- Senha
-Digite sua senha
- ◉
-Entrar no ControleS Criar minha conta
-✓ Controle financeiro simples, inteligente e seguro.
-C↗
-ControleS
-Seu dinheiro sob controle.
+      <div class="reports-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Despesas por categoria</h3>
+              <p>Distribuição dos seus gastos.</p>
+            </div>
+          </div>
 
-COMECE AGORA
-Crie sua conta
-Organize seu dinheiro de um jeito simples.
+          <div class="chart-box report-chart-box">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </article>
 
-Nome 
-Seu nome
- E-mail 
-seu@email.com
- Senha
-Crie uma senha
- ◉
-Confirmar senha
-Repita sua senha
- ◉
-Criar minha conta Já tenho uma conta
-✓ Seus dados ficam associados somente à sua conta.
-ControleS Finanças pessoais
-⌂ Início ↔ Lançamentos 💰 A Receber ◈ Categorias ▥ Relatórios ★ Premium
-☾ Tema ✉ Suporte ↪ Sair
-☰
-Início
-C
-Usuário
-VISÃO GERAL
-Olá! 👋
-Veja como estão suas finanças.
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Resumo financeiro</h3>
+              <p>Comparativo do período selecionado.</p>
+            </div>
+          </div>
 
-+ Novo lançamento
-FILTRO FINANCEIRO
-Período
-Escolha o período para atualizar seus números, lançamentos e gráficos.
+          <div id="reportSummary" class="report-summary"></div>
+        </article>
+      </div>
+    </div>
+  </section>
 
-Período 
-Últimos 30 dias
-Data inicial 
- 
-Data final 
- 
-Aplicar período Limpar
-Período atual: Últimos 30 dias
-Saldo do período R$ 0,00 Receitas menos despesas
-Quanto ganhou R$ 0,00 Total recebido
-Quanto gastou R$ 0,00 Total gasto
-＋ Adicionar receita − Adicionar despesa ◈ Nova categoria ◎ Nova meta
-💰 A Receber
-Valores que ainda serão recebidos
+  <!-- =================================================
+       METAS
+  ================================================== -->
 
-Ver detalhes
-Total a receber R$ 0,00
-Próximo recebimento —
-🐷 Meu Cofrinho
-Resultado deste mês
+  <section
+    id="goalsSection"
+    class="content-section"
+  >
 
-R$ 0,00 Quanto sobrou no mês
-🏆 Maior gasto
-Categoria que mais consumiu
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">
+          PLANEJAMENTO
+        </span>
 
-— Nenhuma despesa registrada
-📅 Resumo mensal
-Como está seu mês atual
+        <h2>
+          Metas
+        </h2>
 
-Receitas do mês R$ 0,00
-Despesas do mês R$ 0,00
-Sobra do mês R$ 0,00
-🏆 Ranking de gastos
-Categorias que mais receberam seu dinheiro
+        <p>
+          Defina objetivos e acompanhe seu progresso.
+        </p>
+      </div>
 
-Movimentação financeira
-Evolução conforme o período selecionado
+      <button
+        id="addGoalBtn"
+        class="btn btn-primary"
+        type="button"
+      >
+        + Nova meta
+      </button>
+    </div>
 
-Últimos lançamentos
-Movimentações do período selecionado
 
-Ver todos
-MOVIMENTAÇÕES
-Lançamentos
-Controle tudo que entra e sai.
+    <div
+      id="goalsGrid"
+      class="goals-grid"
+    ></div>
 
-+ Novo lançamento
-🔎 Filtrar lançamentos
-Combine período, tipo, categoria e pesquisa.
 
-Limpar filtros
-Pesquisa 
-Buscar lançamento...
-Tipo 
-Todos os tipos
-Movimento 
-Todos
-Categoria 
-Todas as categorias
-Mostrando todos os lançamentos do período.
-Descrição	Categoria	Data	Tipo	Valor	Ações
-◎
-Nenhum lançamento encontrado
-Ajuste os filtros ou adicione uma nova movimentação.
+    <div
+      id="goalsEmpty"
+      class="empty-state hidden"
+    >
+      <div>🎯</div>
 
-CONTROLE DE RECEBIMENTOS
-A Receber
-Acompanhe os valores que ainda serão recebidos.
+      <h3>
+        Nenhuma meta cadastrada
+      </h3>
 
-+ Nova receita
-Total a receber R$ 0,00 Valores ainda não recebidos
-Quantidade 0 Recebimentos pendentes
-Próximo recebimento — Nenhum recebimento pendente
-Contas pendentes
-Receitas lançadas que ainda não entraram no saldo.
+      <p>
+        Crie uma meta para começar a acompanhar seu progresso.
+      </p>
+    </div>
 
-Descrição	Categoria	Lançamento	Recebimento	Valor	Status	Ações
-💰
-Nenhum valor a receber
-Quando você lançar uma receita para uma data futura, ela aparecerá aqui.
+  </section>
 
-ORGANIZAÇÃO
-Categorias
-Organize seus lançamentos por categoria.
 
-+ Nova categoria
-ANÁLISE
-Relatórios
-Entenda melhor para onde seu dinheiro está indo.
+  <!-- =================================================
+       PREMIUM
+  ================================================== -->
 
-Período do relatório
-O relatório acompanha o período financeiro selecionado.
+  <section
+    id="premiumSection"
+    class="content-section"
+  >
 
-Período atual Últimos 30 dias
-★
-Relatórios Premium
-Ative o Premium para liberar análises avançadas.
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">
+          CONTROLE S
+        </span>
 
-Conhecer Premium
-Receitas R$ 0,00
-Despesas R$ 0,00
-Saldo R$ 0,00
-Por categoria
-Distribuição das despesas no período
+        <h2>
+          Premium
+        </h2>
 
-Resumo
-Valores do período selecionado
+        <p>
+          Tenha acesso a recursos avançados para controlar
+          melhor sua vida financeira.
+        </p>
+      </div>
+    </div>
 
-Receitas R$ 0,00
-Despesas R$ 0,00
-Saldo R$ 0,00
-📊 Comparação com mês anterior
-Veja como suas finanças mudaram em relação ao mês passado.
 
-Receitas —
-Despesas —
-Saldo —
-🧠 Análise automática
-Uma análise simples do seu desempenho financeiro.
+    <div class="premium-hero panel">
 
-Adicione lançamentos para gerar sua análise financeira.
+      <div class="premium-hero-content">
 
-★ PREMIUM
-Tenha mais controle sobre seu dinheiro.
-Desbloqueie recursos avançados do ControleS e acompanhe suas finanças com ainda mais detalhes.
+        <span class="premium-badge">
+          ★ PREMIUM
+        </span>
 
-R$ 24,99 / mês
-Ativar Premium Free
-✓
-Relatórios avançados
-Veja análises detalhadas das suas movimentações.
+        <h3>
+          Seu dinheiro merece mais controle.
+        </h3>
 
-✓
-Metas financeiras
-Crie e acompanhe objetivos para seu dinheiro.
+        <p>
+          Desbloqueie análises avançadas, recursos exclusivos
+          e uma experiência financeira ainda mais completa.
+        </p>
 
-✓
-🐷 Cofrinho mensal
-Veja automaticamente quanto sobrou no mês.
+        <button
+          id="premiumSubscribeBtn"
+          class="btn btn-primary"
+          type="button"
+        >
+          Ativar Premium
+        </button>
 
-✓
-📅 Resumo mensal
-Acompanhe receitas, despesas e sobra do mês.
+      </div>
 
-✓
-🏆 Ranking de gastos
-Descubra quais categorias mais consomem seu dinheiro.
+    </div>
 
-✓
-Controle completo
-Tenha sua vida financeira organizada em um só lugar.
 
-×
-Novo lançamento
-Preencha os dados da movimentação.
+    <div class="premium-features">
 
-Receita Despesa
-Descrição 
-Ex.: Salário
- Valor 
-0,00
- Data do lançamento 
- 
-Data de recebimento 
- 
- Se a receita só será recebida no futuro, ela ficará em A Receber e não entrará no saldo atual.
-Categoria 
- Observações 
-Opcional
-Salvar lançamento
-×
-Nova categoria
-Crie uma categoria personalizada.
+      <article class="premium-feature-card panel">
+        <div class="premium-feature-icon">
+          📊
+        </div>
 
-Nome 
-Ex.: Viagem
- Tipo 
-Despesa
-Salvar categoria
-×
-Nova meta
-Defina um objetivo financeiro.
+        <h3>
+          Relatórios avançados
+        </h3>
 
-Nome da meta 
-Ex.: Viagem
- Valor da meta 
-0,00
- Valor já guardado 
-0
- Prazo 
- 
-Criar meta
-×
-★
-Ativar Premium
-Durante os testes, o Premium será ativado por 7 dias. A cobrança real será integrada posteriormente.
+        <p>
+          Analise seus gastos e receitas com mais detalhes.
+        </p>
+      </article>
 
-7 dias de período de teste
-Confirmar ativação
+
+      <article class="premium-feature-card panel">
+        <div class="premium-feature-icon">
+          🐷
+        </div>
+
+        <h3>
+          Cofrinho inteligente
+        </h3>
+
+        <p>
+          Acompanhe quanto você conseguiu guardar.
+        </p>
+      </article>
+
+
+      <article class="premium-feature-card panel">
+        <div class="premium-feature-icon">
+          🏆
+        </div>
+
+        <h3>
+          Ranking de gastos
+        </h3>
+
+        <p>
+          Descubra quais categorias mais consomem seu dinheiro.
+        </p>
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- =================================================
+       CONFIGURAÇÕES
+  ================================================== -->
+
+  <section
+    id="settingsSection"
+    class="content-section"
+  >
+
+    <div class="section-heading">
+
+      <div>
+        <span class="eyebrow">
+          PERSONALIZAÇÃO
+        </span>
+
+        <h2>
+          Configurações
+        </h2>
+
+        <p>
+          Ajuste sua conta e as preferências do aplicativo.
+        </p>
+      </div>
+
+    </div>
+
+
+    <div class="settings-grid">
+
+      <article class="panel settings-card">
+
+        <div class="panel-header">
+
+          <div>
+            <h3>
+              Perfil
+            </h3>
+
+            <p>
+              Informações da sua conta.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="settings-form">
+
+          <div class="form-field">
+            <label for="settingsName">
+              Nome
+            </label>
+
+            <input
+              id="settingsName"
+              type="text"
+              autocomplete="name"
+            >
+          </div>
+
+
+          <div class="form-field">
+            <label for="settingsEmail">
+              E-mail
+            </label>
+
+            <input
+              id="settingsEmail"
+              type="email"
+              autocomplete="email"
+              disabled
+            >
+          </div>
+
+
+          <button
+            id="saveSettingsBtn"
+            class="btn btn-primary"
+            type="button"
+          >
+            Salvar alterações
+          </button>
+
+        </div>
+
+      </article>
+
+
+      <article class="panel settings-card">
+
+        <div class="panel-header">
+
+          <div>
+            <h3>
+              Segurança
+            </h3>
+
+            <p>
+              Gerencie o acesso à sua conta.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="settings-actions">
+
+          <button
+            id="changePasswordBtn"
+            class="settings-action"
+            type="button"
+          >
+            <span>
+              🔐
+            </span>
+
+            <div>
+              <strong>
+                Alterar senha
+              </strong>
+
+              <small>
+                Atualize sua senha de acesso.
+              </small>
+            </div>
+          </button>
+
+
+          <button
+            id="logoutSettingsBtn"
+            class="settings-action danger"
+            type="button"
+          >
+            <span>
+              ↪
+            </span>
+
+            <div>
+              <strong>
+                Sair da conta
+              </strong>
+
+              <small>
+                Encerrar sua sessão atual.
+              </small>
+            </div>
+          </button>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- =====================================================
+     MODAIS
+====================================================== -->
+
+
+<!-- MODAL DE LANÇAMENTO -->
+
+<div
+  id="transactionModal"
+  class="modal hidden"
+  aria-hidden="true"
+>
+
+  <div class="modal-overlay"></div>
+
+  <div
+    class="modal-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="transactionModalTitle"
+  >
+
+    <div class="modal-header">
+
+      <div>
+        <span class="eyebrow">
+          MOVIMENTAÇÃO
+        </span>
+
+        <h2 id="transactionModalTitle">
+          Novo lançamento
+        </h2>
+      </div>
+
+      <button
+        class="modal-close"
+        data-close-modal="transactionModal"
+        type="button"
+        aria-label="Fechar"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="transactionForm">
+
+      <input
+        type="hidden"
+        id="transactionId"
+      >
+
+
+      <div class="form-grid">
+
+        <div class="form-field form-field-full">
+
+          <label for="transactionDescription">
+            Descrição
+          </label>
+
+          <input
+            id="transactionDescription"
+            type="text"
+            placeholder="Ex.: Salário, mercado..."
+            required
+          >
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="transactionAmount">
+            Valor
+          </label>
+
+          <input
+            id="transactionAmount"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0,00"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="transactionType">
+            Tipo
+          </label>
+
+          <select
+            id="transactionType"
+            required
+          >
+            <option value="expense">
+              Despesa
+            </option>
+
+            <option value="income">
+              Receita
+            </option>
+          </select>
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="transactionCategory">
+            Categoria
+          </label>
+
+          <select
+            id="transactionCategory"
+            required
+          ></select>
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="transactionDate">
+            Data
+          </label>
+
+          <input
+            id="transactionDate"
+            type="date"
+            required
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-close-modal="transactionModal"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+        >
+          Salvar lançamento
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- MODAL DE RECEITA -->
+
+<div
+  id="receivableModal"
+  class="modal hidden"
+  aria-hidden="true"
+>
+
+  <div class="modal-overlay"></div>
+
+  <div
+    class="modal-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="receivableModalTitle"
+  >
+
+    <div class="modal-header">
+
+      <div>
+        <span class="eyebrow">
+          RECEBIMENTO
+        </span>
+
+        <h2 id="receivableModalTitle">
+          Nova receita
+        </h2>
+      </div>
+
+      <button
+        class="modal-close"
+        data-close-modal="receivableModal"
+        type="button"
+        aria-label="Fechar"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="receivableForm">
+
+      <input
+        type="hidden"
+        id="receivableId"
+      >
+
+
+      <div class="form-grid">
+
+        <div class="form-field form-field-full">
+
+          <label for="receivableDescription">
+            Descrição
+          </label>
+
+          <input
+            id="receivableDescription"
+            type="text"
+            placeholder="Ex.: Salário, comissão..."
+            required
+          >
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="receivableAmount">
+            Valor
+          </label>
+
+          <input
+            id="receivableAmount"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0,00"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="receivableCategory">
+            Categoria
+          </label>
+
+          <select
+            id="receivableCategory"
+            required
+          ></select>
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="receivableLaunchDate">
+            Data do lançamento
+          </label>
+
+          <input
+            id="receivableLaunchDate"
+            type="date"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="receivableDate">
+            Data de recebimento
+          </label>
+
+          <input
+            id="receivableDate"
+            type="date"
+            required
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-close-modal="receivableModal"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+        >
+          Salvar receita
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+             Despesas
+          </span>
+
+          <strong id="reportExpenseCard">
+            R$ 0,00
+          </strong>
+
+        </article>
+
+
+        <article class="report-card">
+
+          <span>
+            Saldo
+          </span>
+
+          <strong id="reportBalanceCard">
+            R$ 0,00
+          </strong>
+
+        </article>
+
+      </div>
+
+
+      <div class="reports-grid">
+
+        <article class="panel">
+
+          <div class="panel-header">
+
+            <div>
+
+              <h3>
+                Por categoria
+              </h3>
+
+              <p>
+                Distribuição das despesas no período
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="chart-box doughnut-box">
+            <canvas id="categoryChart"></canvas>
+          </div>
+
+        </article>
+
+
+        <article class="panel report-values">
+
+          <div class="panel-header">
+
+            <div>
+
+              <h3>
+                Resumo
+              </h3>
+
+              <p>
+                Valores do período selecionado
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="report-line">
+
+            <span>
+              Receitas
+            </span>
+
+            <strong id="reportIncome">
+              R$ 0,00
+            </strong>
+
+          </div>
+
+
+          <div class="report-line">
+
+            <span>
+              Despesas
+            </span>
+
+            <strong id="reportExpense">
+              R$ 0,00
+            </strong>
+
+          </div>
+
+
+          <div class="report-line total">
+
+            <span>
+              Saldo
+            </span>
+
+            <strong id="reportBalance">
+              R$ 0,00
+            </strong>
+
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <article
+        id="reportComparison"
+        class="panel"
+      >
+
+        <div class="panel-header">
+
+          <div>
+
+            <h3>
+              📊 Comparação com mês anterior
+            </h3>
+
+            <p>
+              Veja como suas finanças mudaram em relação ao mês passado.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="report-values">
+
+          <div class="report-line">
+
+            <span>
+              Receitas
+            </span>
+
+            <strong id="comparisonIncome">
+              —
+            </strong>
+
+          </div>
+
+
+          <div class="report-line">
+
+            <span>
+              Despesas
+            </span>
+
+            <strong id="comparisonExpense">
+              —
+            </strong>
+
+          </div>
+
+
+          <div class="report-line total">
+
+            <span>
+              Saldo
+            </span>
+
+            <strong id="comparisonBalance">
+              —
+            </strong>
+
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <article
+        id="reportAnalysis"
+        class="panel"
+      >
+
+        <div class="panel-header">
+
+          <div>
+
+            <h3>
+              🧠 Análise automática
+            </h3>
+
+            <p>
+              Uma análise simples do seu desempenho financeiro.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="automaticReportAnalysis"
+          class="report-analysis"
+        >
+
+          <p>
+            Adicione lançamentos para gerar sua análise financeira.
+          </p>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- =================================================
+       PREMIUM
+  ================================================== -->
+
+  <section
+    id="premiumSection"
+    class="content-section"
+  >
+
+    <div class="premium-hero">
+
+      <div class="premium-badge">
+        ★ PREMIUM
+      </div>
+
+      <h2>
+        Tenha mais controle sobre seu dinheiro.
+      </h2>
+
+      <p>
+        Desbloqueie recursos avançados do ControleS
+        e acompanhe suas finanças com ainda mais detalhes.
+      </p>
+
+
+      <div class="premium-price">
+
+        <strong>
+          R$ 24,99
+        </strong>
+
+        <span>
+          / mês
+        </span>
+
+      </div>
+
+
+      <button
+        id="activatePremiumBtn"
+        class="btn btn-premium btn-large"
+        type="button"
+      >
+        Ativar Premium
+      </button>
+
+
+      <small id="premiumStatusText">
+        Free
+      </small>
+
+    </div>
+
+
+    <div class="premium-features">
+
+      <article>
+
+        <span>✓</span>
+
+        <div>
+
+          <strong>
+            Relatórios avançados
+          </strong>
+
+          <p>
+            Veja análises detalhadas das suas movimentações.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <article>
+
+        <span>✓</span>
+
+        <div>
+
+          <strong>
+            Metas financeiras
+          </strong>
+
+          <p>
+            Crie e acompanhe objetivos para seu dinheiro.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <article>
+
+        <span>✓</span>
+
+        <div>
+
+          <strong>
+            🐷 Cofrinho mensal
+          </strong>
+
+          <p>
+            Veja automaticamente quanto sobrou no mês.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <article>
+
+        <span>✓</span>
+
+        <div>
+
+          <strong>
+            📅 Resumo mensal
+          </strong>
+
+          <p>
+            Acompanhe receitas, despesas e sobra do mês.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <article>
+
+        <span>✓</span>
+
+        <div>
+
+          <strong>
+            🏆 Ranking de gastos
+          </strong>
+
+          <p>
+            Descubra quais categorias mais consomem seu dinheiro.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <article>
+
+        <span>✓</span>
+
+        <div>
+
+          <strong>
+            Controle completo
+          </strong>
+
+          <p>
+            Tenha sua vida financeira organizada em um só lugar.
+          </p>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+  </div>
+
+  <!-- =====================================================
+       MODAL — LANÇAMENTO
+  ====================================================== -->
+
+  <div
+    id="transactionModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="transactionModalTitle"
+    >
+
+      <button
+        class="modal-close"
+        data-close-modal
+        type="button"
+        aria-label="Fechar"
+      >
+        ×
+      </button>
+
+
+      <h2 id="transactionModalTitle">
+        Novo lançamento
+      </h2>
+
+      <p>
+        Preencha os dados da movimentação.
+      </p>
+
+
+      <form id="transactionForm">
+
+        <input
+          id="transactionId"
+          type="hidden"
+        >
+
+
+        <div class="type-buttons">
+
+          <button
+            type="button"
+            class="type-button active income"
+            data-transaction-type="income"
+          >
+            Receita
+          </button>
+
+
+          <button
+            type="button"
+            class="type-button expense"
+            data-transaction-type="expense"
+          >
+            Despesa
+          </button>
+
+        </div>
+
+
+        <input
+          id="transactionType"
+          type="hidden"
+          value="income"
+        >
+
+
+        <label for="transactionDescription">
+          Descrição
+        </label>
+
+        <input
+          id="transactionDescription"
+          type="text"
+          placeholder="Ex.: Salário"
+          required
+        >
+
+
+        <label for="transactionAmount">
+          Valor
+        </label>
+
+        <input
+          id="transactionAmount"
+          type="number"
+          step="0.01"
+          min="0.01"
+          inputmode="decimal"
+          placeholder="0,00"
+          required
+        >
+
+
+        <label for="transactionDate">
+          Data do lançamento
+        </label>
+
+        <input
+          id="transactionDate"
+          type="date"
+          required
+        >
+
+
+        <div
+          id="receivableDateGroup"
+          class="receivable-date-group"
+        >
+
+          <label for="transactionReceivableDate">
+            Data de recebimento
+          </label>
+
+          <input
+            id="transactionReceivableDate"
+            type="date"
+          >
+
+          <small>
+            Se a receita só será recebida no futuro,
+            ela ficará em <strong>A Receber</strong> e
+            não entrará no saldo atual.
+          </small>
+
+        </div>
+
+
+        <label for="transactionCategory">
+          Categoria
+        </label>
+
+        <select
+          id="transactionCategory"
+          required
+        ></select>
+
+
+        <label for="transactionNotes">
+          Observações
+        </label>
+
+        <textarea
+          id="transactionNotes"
+          rows="3"
+          placeholder="Opcional"
+        ></textarea>
+
+
+        <div
+          id="transactionMessage"
+          class="form-message"
+          role="alert"
+          aria-live="polite"
+        ></div>
+
+
+        <button
+          id="saveTransactionBtn"
+          class="btn btn-primary btn-large"
+          type="submit"
+        >
+          Salvar lançamento
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MODAL — CATEGORIA
+  ====================================================== -->
+
+  <div
+    id="categoryModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="categoryModalTitle"
+    >
+
+      <button
+        class="modal-close"
+        data-close-modal
+        type="button"
+        aria-label="Fechar"
+      >
+        ×
+      </button>
+
+
+      <h2 id="categoryModalTitle">
+        Nova categoria
+      </h2>
+
+      <p>
+        Crie uma categoria personalizada.
+      </p>
+
+
+      <form id="categoryForm">
+
+        <label for="categoryName">
+          Nome
+        </label>
+
+        <input
+          id="categoryName"
+          type="text"
+          placeholder="Ex.: Viagem"
+          required
+        >
+
+
+        <label for="categoryType">
+          Tipo
+        </label>
+
+        <select id="categoryType">
+
+          <option value="expense">
+            Despesa
+          </option>
+
+          <option value="income">
+            Receita
+          </option>
+
+        </select>
+
+
+        <div
+          id="categoryMessage"
+          class="form-message"
+          role="alert"
+          aria-live="polite"
+        ></div>
+
+
+        <button
+          class="btn btn-primary btn-large"
+          type="submit"
+        >
+          Salvar categoria
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MODAL — META
+  ====================================================== -->
+
+  <div
+    id="goalModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="goalModalTitle"
+    >
+
+      <button
+        class="modal-close"
+        data-close-modal
+        type="button"
+        aria-label="Fechar"
+      >
+        ×
+      </button>
+
+
+      <h2 id="goalModalTitle">
+        Nova meta
+      </h2>
+
+      <p>
+        Defina um objetivo financeiro.
+      </p>
+
+
+      <form id="goalForm">
+
+        <label for="goalName">
+          Nome da meta
+        </label>
+
+        <input
+          id="goalName"
+          type="text"
+          placeholder="Ex.: Viagem"
+          required
+        >
+
+
+        <label for="goalTarget">
+          Valor da meta
+        </label>
+
+        <input
+          id="goalTarget"
+          type="number"
+          step="0.01"
+          min="0.01"
+          inputmode="decimal"
+          placeholder="0,00"
+          required
+        >
+
+
+        <label for="goalCurrent">
+          Valor já guardado
+        </label>
+
+        <input
+          id="goalCurrent"
+          type="number"
+          step="0.01"
+          min="0"
+          value="0"
+          inputmode="decimal"
+          placeholder="0,00"
+        >
+
+
+        <label for="goalDeadline">
+          Prazo
+        </label>
+
+        <input
+          id="goalDeadline"
+          type="date"
+        >
+
+
+        <div
+          id="goalMessage"
+          class="form-message"
+          role="alert"
+          aria-live="polite"
+        ></div>
+
+
+        <button
+          class="btn btn-primary btn-large"
+          type="submit"
+        >
+          Criar meta
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MODAL — PREMIUM
+  ====================================================== -->
+
+  <div
+    id="premiumModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-card premium-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="premiumModalTitle"
+    >
+
+      <button
+        class="modal-close"
+        data-close-modal
+        type="button"
+        aria-label="Fechar"
+      >
+        ×
+      </button>
+
+
+      <div class="premium-icon">
+        ★
+      </div>
+
+
+      <h2 id="premiumModalTitle">
+        Ativar Premium
+      </h2>
+
+
+      <p>
+        Durante os testes, o Premium será ativado por 7 dias.
+        A cobrança real será integrada posteriormente.
+      </p>
+
+
+      <div class="trial-box">
+
+        <strong>
+          7 dias
+        </strong>
+
+        <span>
+          de período de teste
+        </span>
+
+      </div>
+
+
+      <div
+        id="premiumMessage"
+        class="form-message"
+        role="alert"
+        aria-live="polite"
+      ></div>
+
+
+      <button
+        id="confirmPremiumBtn"
+        class="btn btn-premium btn-large"
+        type="button"
+      >
+        Confirmar ativação
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
+
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+  ></div>
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+  <script src="app.js"></script>
+
+</body>
+</html>
