@@ -6472,11 +6472,17 @@ document.addEventListener(
 
 /* =========================================================
    CONTROLES — ACESSO PREMIUM
-   Plano gratuito: adicionar receita e adicionar despesa.
-   Demais recursos financeiros: Premium.
+   GRÁTIS:
+   - Adicionar receita
+   - Adicionar despesa
+
+   PREMIUM:
+   - Todo o restante
    ========================================================= */
 
+
 function openPremiumAccess() {
+
     closeMobileMenu();
 
     showToast(
@@ -6489,7 +6495,10 @@ function openPremiumAccess() {
 
 
 function applyPremiumAccess() {
-    const premium = isPremiumActive();
+
+    const premium =
+        isPremiumActive();
+
 
     document.body.classList.toggle(
         "free-plan",
@@ -6501,7 +6510,11 @@ function applyPremiumAccess() {
         premium
     );
 
-    /* Menus financeiros bloqueados no plano gratuito. */
+
+    /* =====================================================
+       MENUS PREMIUM
+       ===================================================== */
+
     const blockedSections = [
         "transactions",
         "receivable",
@@ -6509,63 +6522,94 @@ function applyPremiumAccess() {
         "reports"
     ];
 
+
     document
-        .querySelectorAll(".nav-item[data-section]")
+        .querySelectorAll(
+            ".nav-item[data-section]"
+        )
         .forEach(button => {
-            const section = button.dataset.section;
+
+            const section =
+                button.dataset.section;
+
             const locked =
                 !premium &&
-                blockedSections.includes(section);
+                blockedSections.includes(
+                    section
+                );
+
 
             button.classList.toggle(
                 "premium-locked",
                 locked
             );
 
+
             if (locked) {
+
                 button.setAttribute(
                     "data-premium-locked",
                     "true"
                 );
+
             } else {
+
                 button.removeAttribute(
                     "data-premium-locked"
                 );
             }
         });
 
-    /* Ações Premium dentro do dashboard. */
+
+    /* =====================================================
+       AÇÕES PREMIUM
+       ===================================================== */
+
     [
         "addCategoryBtn",
         "addCategoryBtn2",
         "addGoalBtn",
         "addReceivableBtn"
     ].forEach(id => {
+
         const button = $(id);
+
         if (!button) return;
+
 
         button.classList.toggle(
             "premium-locked",
             !premium
         );
 
+
+        button.classList.toggle(
+            "premium-content-hidden",
+            !premium
+        );
+
+
         if (!premium) {
+
             button.setAttribute(
                 "data-premium-locked",
                 "true"
             );
+
         } else {
+
             button.removeAttribute(
                 "data-premium-locked"
             );
         }
     });
 
-    /*
-     * No plano gratuito deixamos somente a área de entrada
-     * e os botões de adicionar receita/despesa.
-     */
-    const dashboardPremiumSelectors = [
+
+    /* =====================================================
+       CONTEÚDO PREMIUM DO DASHBOARD
+       ===================================================== */
+
+    const premiumContent = [
         "#dashboardPeriodFilter",
         "#dashboardSection > .summary-grid",
         "#receivableDashboardCard",
@@ -6573,10 +6617,13 @@ function applyPremiumAccess() {
         "#dashboardSection > .dashboard-grid"
     ];
 
-    dashboardPremiumSelectors.forEach(selector => {
+
+    premiumContent.forEach(selector => {
+
         document
             .querySelectorAll(selector)
             .forEach(element => {
+
                 element.classList.toggle(
                     "premium-content-hidden",
                     !premium
@@ -6584,49 +6631,93 @@ function applyPremiumAccess() {
             });
     });
 
-    /* O botão genérico de novo lançamento fica oculto no grátis,
-       mantendo os dois botões específicos livres. */
- ["addTransactionBtn", "addTransactionBtn2"]
-    .forEach(id => {
+
+    /* =====================================================
+       BOTÃO GENÉRICO NOVO LANÇAMENTO
+       FICA ESCONDIDO NO GRÁTIS
+       ===================================================== */
+
+    [
+        "addTransactionBtn",
+        "addTransactionBtn2"
+    ].forEach(id => {
+
         const button = $(id);
+
         if (!button) return;
 
-        button.classList.remove(
-            "premium-content-hidden",
-            "premium-locked"
-        );
 
-        button.removeAttribute(
-            "data-premium-locked"
+        button.classList.toggle(
+            "premium-content-hidden",
+            !premium
         );
     });
 
-    /* Categoria e meta não aparecem como ações gratuitas. */
-    ["addCategoryBtn", "addCategoryBtn2", "addGoalBtn"]
-        .forEach(id => {
-            const button = $(id);
-            if (!button) return;
-            button.classList.toggle(
+
+    /* =====================================================
+       RECEITA E DESPESA SEMPRE LIVRES
+       ===================================================== */
+
+    const quickActions =
+        document.querySelector(
+            ".quick-actions"
+        );
+
+
+    if (quickActions) {
+
+        quickActions.classList.remove(
+            "premium-content-hidden"
+        );
+
+        quickActions.style.display =
+            "grid";
+    }
+
+
+    document
+        .querySelectorAll(
+            '.quick-action[data-action="add-income"],' +
+            '.quick-action[data-action="add-expense"]'
+        )
+        .forEach(button => {
+
+            button.classList.remove(
                 "premium-content-hidden",
-                !premium
+                "premium-locked"
             );
+
+            button.removeAttribute(
+                "data-premium-locked"
+            );
+
+            button.style.display = "";
+            button.style.opacity = "1";
         });
 }
 
 
-/*
- * Intercepta cliques antes dos listeners normais do sistema.
- * Assim, o usuário gratuito não consegue abrir recursos Premium
- * por atalhos, menus ou botões internos.
- */
+/* =========================================================
+   BLOQUEIO DOS CLIQUES PREMIUM
+   ========================================================= */
+
 document.addEventListener(
     "click",
     event => {
+
+        /*
+         * Premium ativo:
+         * sistema funciona normalmente.
+         */
+
         if (isPremiumActive()) {
             return;
         }
 
-        const target = event.target;
+
+        const target =
+            event.target;
+
 
         if (
             !target ||
@@ -6635,78 +6726,129 @@ document.addEventListener(
             return;
         }
 
-        /* Receita e despesa são as duas ações gratuitas. */
-        const freeAction = target.closest(
-            '[data-action="add-income"],' +
-            '[data-action="add-expense"],' +
-            '#addIncomeBtn,' +
-            '#addExpenseBtn,' +
-            '[data-add-income],' +
-            '[data-add-expense]'
-        );
+
+        /* =================================================
+           RECEITA / DESPESA — GRÁTIS
+           ================================================= */
+
+        const freeAction =
+            target.closest(
+                '.quick-action[data-action="add-income"],' +
+                '.quick-action[data-action="add-expense"],' +
+                '#addIncomeBtn,' +
+                '#addExpenseBtn,' +
+                '[data-add-income],' +
+                '[data-add-expense]'
+            );
+
 
         if (freeAction) {
+
             event.preventDefault();
+
+            /*
+             * Impede os listeners antigos
+             * de executarem novamente o clique.
+             */
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
 
             const isIncome =
                 freeAction.matches(
-                    '[data-action="add-income"],#addIncomeBtn,[data-add-income]'
+                    '.quick-action[data-action="add-income"],' +
+                    '#addIncomeBtn,' +
+                    '[data-add-income]'
                 );
 
+
             openTransactionModal(
-                isIncome ? "income" : "expense"
+                isIncome
+                    ? "income"
+                    : "expense"
             );
+
 
             return;
         }
 
-        /* A página Premium precisa continuar acessível. */
-        const premiumPage = target.closest(
-            '[data-section="premium"]'
-        );
+
+        /* =================================================
+           PREMIUM CONTINUA ACESSÍVEL
+           ================================================= */
+
+        const premiumPage =
+            target.closest(
+                '[data-section="premium"]'
+            );
+
 
         if (premiumPage) {
             return;
         }
 
-        const blockedSectionButton = target.closest(
-            '[data-section="transactions"],' +
-            '[data-section="receivable"],' +
-            '[data-section="categories"],' +
-            '[data-section="reports"]'
-        );
 
-        const blockedAction = target.closest(
-            '[data-premium-locked="true"],' +
-            '#addCategoryBtn,' +
-            '#addCategoryBtn2,' +
-            '#addGoalBtn,' +
-            '#addReceivableBtn,' +
-            '[data-edit-transaction],' +
-            '[data-delete-transaction],' +
-            '[data-receivable-id],' +
-            '[data-delete-category],' +
-            '#exportTransactionsBtn,' +
-            '[data-export-transactions]'
-        );
+        /* =================================================
+           SEÇÕES BLOQUEADAS
+           ================================================= */
+
+        const blockedSection =
+            target.closest(
+                '[data-section="transactions"],' +
+                '[data-section="receivable"],' +
+                '[data-section="categories"],' +
+                '[data-section="reports"]'
+            );
+
+
+        /* =================================================
+           AÇÕES BLOQUEADAS
+           ================================================= */
+
+        const blockedAction =
+            target.closest(
+                '[data-premium-locked="true"],' +
+                '#addCategoryBtn,' +
+                '#addCategoryBtn2,' +
+                '#addGoalBtn,' +
+                '#addReceivableBtn,' +
+                '[data-edit-transaction],' +
+                '[data-delete-transaction],' +
+                '[data-receivable-id],' +
+                '[data-delete-category],' +
+                '#exportTransactionsBtn,' +
+                '[data-export-transactions]'
+            );
+
 
         if (
-            blockedSectionButton ||
+            blockedSection ||
             blockedAction
         ) {
+
             event.preventDefault();
+
             event.stopPropagation();
+
             event.stopImmediatePropagation();
 
+
             openPremiumAccess();
+
+            return;
         }
+
     },
     true
 );
 
 
-/* Estilos injetados pelo JS para não exigir alteração no app.css. */
+/* =========================================================
+   ESTILO PREMIUM
+   ========================================================= */
+
 (function createPremiumAccessStyles() {
+
     if (
         document.getElementById(
             "controlesPremiumAccessStyles"
@@ -6715,54 +6857,89 @@ document.addEventListener(
         return;
     }
 
-    const style = document.createElement("style");
-    style.id = "controlesPremiumAccessStyles";
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+
+    style.id =
+        "controlesPremiumAccessStyles";
+
 
     style.textContent = `
+
         .premium-content-hidden {
             display: none !important;
         }
+
 
         .premium-locked {
             position: relative;
             opacity: .68;
         }
 
-        .free-plan .nav-item.premium-locked::after {
+
+        .free-plan
+        .nav-item.premium-locked::after {
             content: "🔒";
             margin-left: auto;
             font-size: 11px;
         }
 
+
         .free-plan .quick-actions {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            display: grid !important;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
         }
 
-        .free-plan .quick-action[data-action="add-income"],
-        .free-plan .quick-action[data-action="add-expense"] {
-            opacity: 1;
+
+        .free-plan
+        .quick-action[data-action="add-income"],
+
+        .free-plan
+        .quick-action[data-action="add-expense"] {
+
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
+
 
         @media screen and (max-width: 400px) {
+
             .free-plan .quick-actions {
-                grid-template-columns: 1fr;
+
+                grid-template-columns:
+                    1fr;
             }
         }
     `;
 
-    document.head.appendChild(style);
+
+    document.head.appendChild(
+        style
+    );
+
 })();
 
+
+/* =========================================================
+   ATUALIZAR ACESSO AO VOLTAR PARA A TELA
+   ========================================================= */
 
 window.addEventListener(
     "focus",
     () => {
+
         if (currentUser) {
+
             applyPremiumAccess();
         }
     }
 );
-
 
 /* =========================================================
    FIM DO APP.JS
