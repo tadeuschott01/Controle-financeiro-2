@@ -211,7 +211,7 @@ function normalizeTransactionType(type) {
 
 
 function databaseTransactionType(type) {
-    return normalizeTransactionType(type);
+    return normalizeTransactionType(type) === "income" ? "receita" : "despesa";
 }
 
 
