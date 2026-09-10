@@ -6586,15 +6586,20 @@ function applyPremiumAccess() {
 
     /* O botão genérico de novo lançamento fica oculto no grátis,
        mantendo os dois botões específicos livres. */
-    ["addTransactionBtn", "addTransactionBtn2"]
-        .forEach(id => {
-            const button = $(id);
-            if (!button) return;
-            button.classList.toggle(
-                "premium-content-hidden",
-                !premium
-            );
-        });
+ ["addTransactionBtn", "addTransactionBtn2"]
+    .forEach(id => {
+        const button = $(id);
+        if (!button) return;
+
+        button.classList.remove(
+            "premium-content-hidden",
+            "premium-locked"
+        );
+
+        button.removeAttribute(
+            "data-premium-locked"
+        );
+    });
 
     /* Categoria e meta não aparecem como ações gratuitas. */
     ["addCategoryBtn", "addCategoryBtn2", "addGoalBtn"]
