@@ -6609,14 +6609,12 @@ function applyPremiumAccess() {
        CONTEÚDO PREMIUM DO DASHBOARD
        ===================================================== */
 
-    const premiumContent = [
-        "#dashboardPeriodFilter",
-        "#dashboardSection > .summary-grid",
-        "#receivableDashboardCard",
-        "#premiumDashboardContent",
-        "#dashboardSection > .dashboard-grid"
-    ];
-
+const premiumContent = [
+    "#dashboardPeriodFilter",
+    "#receivableDashboardCard",
+    "#premiumDashboardContent",
+    "#dashboardSection > .dashboard-grid"
+];
 
     premiumContent.forEach(selector => {
 
