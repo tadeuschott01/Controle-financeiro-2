@@ -2370,6 +2370,24 @@ function updateDashboard() {
     const totals =
         getTotals();
 
+   /* VALORES PRINCIPAIS — TAMBÉM VISÍVEIS NO PLANO GRÁTIS */
+
+const freeIncome = $("incomeValue");
+const freeExpense = $("expenseValue");
+const freeBalance = $("balanceValue");
+
+if (freeIncome) {
+    freeIncome.textContent = formatCurrency(totals.income);
+}
+
+if (freeExpense) {
+    freeExpense.textContent = formatCurrency(totals.expense);
+}
+
+if (freeBalance) {
+    freeBalance.textContent = formatCurrency(totals.balance);
+}
+
 
     const incomeElements = [
         "totalIncome",
