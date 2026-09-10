@@ -6631,9 +6631,8 @@ const premiumContent = [
     "#dashboardPeriodFilter",
     "#receivableDashboardCard",
     "#premiumDashboardContent",
-    "#dashboardSection > .dashboard-grid"
+    "#dashboardSection > .dashboard-grid > article:first-child"
 ];
-
     premiumContent.forEach(selector => {
 
         document
