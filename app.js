@@ -1,2627 +1,1544 @@
-/* =========================================================
-   CONTROLES 1.0 — APP.JS
-   =========================================================
-   Funcionalidades:
-   - Login / Cadastro / Logout
-   - Supabase
-   - Tema claro / escuro
-   - Dashboard
-   - Lançamentos
-   - A Receber
-   - Categorias
-   - Relatórios
-   - Premium / teste
-   - Metas
-   - Cofrinho mensal
-   - Resumo mensal
-   - Ranking de gastos
-   - Gráficos
-   - Filtro por período
-   - Menu mobile corrigido
-   ========================================================= */
+    /* =========================================================
+       CONTROLES 1.0 — APP.JS
+       =========================================================
+       Funcionalidades:
+       - Login / Cadastro / Logout
+       - Supabase
+       - Tema claro / escuro
+       - Dashboard
+       - Lançamentos
+       - A Receber
+       - Categorias
+       - Relatórios
+       - Premium / teste
+       - Metas
+       - Cofrinho mensal
+       - Resumo mensal
+       - Ranking de gastos
+       - Gráficos
+       - Filtro por período
+       - Menu mobile corrigido
+       ========================================================= */
 
 
-/* =========================================================
-   SUPABASE
-   ========================================================= */
+    /* =========================================================
+       SUPABASE
+       ========================================================= */
 
-const SUPABASE_URL =
-    "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
+    const SUPABASE_URL =
+        "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
 
-const SUPABASE_KEY =
-    "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
+    const SUPABASE_KEY =
+        "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
 
-let supabaseClient = null;
-
-
-/* =========================================================
-   ESTADO
-   ========================================================= */
-
-let currentUser = null;
-let currentProfile = null;
-
-let transactions = [];
-let goals = [];
-let budgets = [];
-
-let subscription = null;
-let customCategories = [];
-
-let financeChart = null;
-let categoryChart = null;
-
-let selectedTransactionType = "expense";
-let editingTransactionId = null;
-
-let toastTimer = null;
-let authInitialized = false;
-let enteringApp = false;
-
-let eventsBound = false;
+    let supabaseClient = null;
 
 
-/* =========================================================
-   API PYTHON — ANÁLISE INTELIGENTE
-   ========================================================= */
+    /* =========================================================
+       ESTADO
+       ========================================================= */
 
-const CONTROLES_PYTHON_API =
-    "https://controles-api.onrender.com";
+    let currentUser = null;
+    let currentProfile = null;
 
+    let transactions = [];
+    let goals = [];
+    let budgets = [];
 
-/* =========================================================
-   CATEGORIAS PADRÃO
-   ========================================================= */
+    let subscription = null;
+    let customCategories = [];
 
-const DEFAULT_CATEGORIES = [
-    "Alimentação",
-    "Moradia",
-    "Transporte",
-    "Saúde",
-    "Educação",
-    "Lazer",
-    "Compras",
-    "Contas",
-    "Salário",
-    "Investimentos",
-    "Outros"
-];
+    let financeChart = null;
+    let categoryChart = null;
 
+    let selectedTransactionType = "expense";
+    let editingTransactionId = null;
 
-/* =========================================================
-   TÍTULOS DAS SEÇÕES
-   ========================================================= */
+    let toastTimer = null;
+    let authInitialized = false;
+    let enteringApp = false;
 
-const SECTION_TITLES = {
-    dashboard: "Dashboard",
-    transactions: "Lançamentos",
-    receivable: "A Receber",
-    categories: "Categorias",
-    reports: "Relatórios",
-    premium: "Premium"
-};
+    let eventsBound = false;
 
 
-/* =========================================================
-   HELPERS
-   ========================================================= */
+    /* =========================================================
+       API PYTHON — ANÁLISE INTELIGENTE
+       ========================================================= */
 
-function $(id) {
-    return document.getElementById(id);
-}
-
-
-function valueOf(id) {
-    const element = $(id);
-    return element ? element.value : "";
-}
+    const CONTROLES_PYTHON_API =
+        "https://controles-api.onrender.com";
 
 
-function firstExisting(...ids) {
-    for (const id of ids) {
+    /* =========================================================
+       CATEGORIAS PADRÃO
+       ========================================================= */
+
+    const DEFAULT_CATEGORIES = [
+        "Alimentação",
+        "Moradia",
+        "Transporte",
+        "Saúde",
+        "Educação",
+        "Lazer",
+        "Compras",
+        "Contas",
+        "Salário",
+        "Investimentos",
+        "Outros"
+    ];
+
+
+    /* =========================================================
+       TÍTULOS DAS SEÇÕES
+       ========================================================= */
+
+    const SECTION_TITLES = {
+        dashboard: "Dashboard",
+        transactions: "Lançamentos",
+        receivable: "A Receber",
+        categories: "Categorias",
+        reports: "Relatórios",
+        premium: "Premium"
+    };
+
+
+    /* =========================================================
+       HELPERS
+       ========================================================= */
+
+    function $(id) {
+        return document.getElementById(id);
+    }
+
+
+    function valueOf(id) {
         const element = $(id);
-        if (element) return element;
+        return element ? element.value : "";
     }
 
-    return null;
-}
 
-
-function formatCurrency(value) {
-    const number = Number(value) || 0;
-
-    return number.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-    });
-}
-
-
-function formatDateBR(dateString) {
-    if (!dateString) return "";
-
-    const date = String(dateString).split("T")[0];
-    const parts = date.split("-");
-
-    if (parts.length !== 3) {
-        return dateString;
-    }
-
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-}
-
-
-function todayISO() {
-    const date = new Date();
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-}
-
-
-function changeDate(dateString, days) {
-    const date = new Date(`${dateString}T00:00:00`);
-
-    date.setDate(date.getDate() + days);
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-}
-
-
-function getFirstDayOfCurrentMonth() {
-    const date = new Date();
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-
-    return `${year}-${month}-01`;
-}
-
-
-function escapeHTML(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-/* =========================================================
-   TIPO DE TRANSAÇÃO
-   ========================================================= */
-
-function normalizeTransactionType(type) {
-    const value = String(type || "")
-        .toLowerCase()
-        .trim();
-
-    if (
-        value === "income" ||
-        value === "receita" ||
-        value === "entrada" ||
-        value === "credito" ||
-        value === "crédito"
-    ) {
-        return "income";
-    }
-
-    return "expense";
-}
-
-
-function databaseTransactionType(type) {
-    return normalizeTransactionType(type) === "income" ? "receita" : "despesa";
-}
-
-
-/* =========================================================
-   TOAST
-   ========================================================= */
-
-function showToast(message, type = "info") {
-    const toast =
-        $("toast") ||
-        document.querySelector(".toast");
-
-    if (!toast) {
-        console.log(message);
-        return;
-    }
-
-    toast.textContent = message;
-
-    toast.classList.remove(
-        "success",
-        "error",
-        "warning",
-        "info",
-        "show"
-    );
-
-    toast.classList.add(type);
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer = setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3000);
-}
-
-
-function setupSmartAnalysisEvents() {
-    const analysisButton =
-        $("smartAnalysisBtn");
-
-    const closeButton =
-        $("closeSmartAnalysisBtn");
-
-    const modal =
-        $("smartAnalysisModal");
-
-    if (analysisButton &&
-        !analysisButton.dataset.analysisBound) {
-
-        analysisButton.addEventListener(
-            "click",
-            analyzeFinancesWithPython
-        );
-
-        analysisButton.dataset.analysisBound =
-            "true";
-    }
-
-    if (closeButton &&
-        !closeButton.dataset.analysisBound) {
-
-        closeButton.addEventListener(
-            "click",
-            closeSmartAnalysisModal
-        );
-
-        closeButton.dataset.analysisBound =
-            "true";
-    }
-
-    if (modal &&
-        !modal.dataset.analysisBound) {
-
-        modal.addEventListener(
-            "click",
-            event => {
-                if (event.target === modal) {
-                    closeSmartAnalysisModal();
-                }
-            }
-        );
-
-        modal.dataset.analysisBound =
-            "true";
-    }
-}
-
-
-/* =========================================================
-   DOM READY
-   ========================================================= */
-
-document.addEventListener("DOMContentLoaded", async () => {
-
-    setupEvents();
-
-    setupSmartAnalysisEvents();
-
-    setCurrentDate();
-    setDefaultDate();
-
-    loadTheme();
-    loadLocalCategories();
-
-    initializePeriodFilter();
-    setupPeriodEvents();
-
-    initializeSupabase();
-
-    await checkSession();
-});
-
-
-/* =========================================================
-   SUPABASE
-   ========================================================= */
-
-function initializeSupabase() {
-
-    if (
-        typeof window.supabase === "undefined" ||
-        !window.supabase.createClient
-    ) {
-        console.error("Supabase não foi carregado.");
-
-        showToast(
-            "Erro ao carregar o sistema.",
-            "error"
-        );
-
-        return;
-    }
-
-    supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-    supabaseClient.auth.onAuthStateChange(
-        async (event, session) => {
-
-            if (session?.user) {
-                currentUser = session.user;
-
-                if (
-                    event === "SIGNED_IN" &&
-                    !enteringApp
-                ) {
-                    await enterApp();
-                }
-
-            } else {
-
-                currentUser = null;
-                currentProfile = null;
-
-                if (authInitialized) {
-                    showLoginView();
-                }
-            }
-
-            authInitialized = true;
+    function firstExisting(...ids) {
+        for (const id of ids) {
+            const element = $(id);
+            if (element) return element;
         }
-    );
-}
+
+        return null;
+    }
 
 
-/* =========================================================
-   SESSÃO
-   ========================================================= */
+    function formatCurrency(value) {
+        const number = Number(value) || 0;
 
-async function checkSession() {
+        return number.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+        });
+    }
 
-    if (!supabaseClient) return;
 
-    try {
+    function formatDateBR(dateString) {
+        if (!dateString) return "";
 
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.getSession();
+        const date = String(dateString).split("T")[0];
+        const parts = date.split("-");
 
-        if (error) {
-            console.error(error);
-            showLoginView();
+        if (parts.length !== 3) {
+            return dateString;
+        }
+
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+
+    function todayISO() {
+        const date = new Date();
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+
+    function changeDate(dateString, days) {
+        const date = new Date(`${dateString}T00:00:00`);
+
+        date.setDate(date.getDate() + days);
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+
+    function getFirstDayOfCurrentMonth() {
+        const date = new Date();
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+
+        return `${year}-${month}-01`;
+    }
+
+
+    function escapeHTML(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    /* =========================================================
+       TIPO DE TRANSAÇÃO
+       ========================================================= */
+
+    function normalizeTransactionType(type) {
+        const value = String(type || "")
+            .toLowerCase()
+            .trim();
+
+        if (
+            value === "income" ||
+            value === "receita" ||
+            value === "entrada" ||
+            value === "credito" ||
+            value === "crédito"
+        ) {
+            return "income";
+        }
+
+        return "expense";
+    }
+
+
+    function databaseTransactionType(type) {
+        return normalizeTransactionType(type) === "income" ? "receita" : "despesa";
+    }
+
+
+    /* =========================================================
+       TOAST
+       ========================================================= */
+
+    function showToast(message, type = "info") {
+        const toast =
+            $("toast") ||
+            document.querySelector(".toast");
+
+        if (!toast) {
+            console.log(message);
             return;
         }
 
-        if (data?.session?.user) {
+        toast.textContent = message;
 
-            currentUser = data.session.user;
+        toast.classList.remove(
+            "success",
+            "error",
+            "warning",
+            "info",
+            "show"
+        );
 
-            await enterApp();
+        toast.classList.add(type);
+        toast.classList.add("show");
 
-        } else {
+        clearTimeout(toastTimer);
+
+        toastTimer = setTimeout(() => {
+            toast.classList.remove("show");
+        }, 3000);
+    }
+
+
+    function setupSmartAnalysisEvents() {
+        const analysisButton =
+            $("smartAnalysisBtn");
+
+        const closeButton =
+            $("closeSmartAnalysisBtn");
+
+        const modal =
+            $("smartAnalysisModal");
+
+        if (analysisButton &&
+            !analysisButton.dataset.analysisBound) {
+
+            analysisButton.addEventListener(
+                "click",
+                analyzeFinancesWithPython
+            );
+
+            analysisButton.dataset.analysisBound =
+                "true";
+        }
+
+        if (closeButton &&
+            !closeButton.dataset.analysisBound) {
+
+            closeButton.addEventListener(
+                "click",
+                closeSmartAnalysisModal
+            );
+
+            closeButton.dataset.analysisBound =
+                "true";
+        }
+
+        if (modal &&
+            !modal.dataset.analysisBound) {
+
+            modal.addEventListener(
+                "click",
+                event => {
+                    if (event.target === modal) {
+                        closeSmartAnalysisModal();
+                    }
+                }
+            );
+
+            modal.dataset.analysisBound =
+                "true";
+        }
+    }
+
+
+    /* =========================================================
+       DOM READY
+       ========================================================= */
+
+    document.addEventListener("DOMContentLoaded", async () => {
+
+        setupEvents();
+
+        setupSmartAnalysisEvents();
+
+        setCurrentDate();
+        setDefaultDate();
+
+        loadTheme();
+        loadLocalCategories();
+
+        initializePeriodFilter();
+        setupPeriodEvents();
+
+        initializeSupabase();
+
+        await checkSession();
+    });
+
+
+    /* =========================================================
+       SUPABASE
+       ========================================================= */
+
+    function initializeSupabase() {
+
+        if (
+            typeof window.supabase === "undefined" ||
+            !window.supabase.createClient
+        ) {
+            console.error("Supabase não foi carregado.");
+
+            showToast(
+                "Erro ao carregar o sistema.",
+                "error"
+            );
+
+            return;
+        }
+
+        supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+        supabaseClient.auth.onAuthStateChange(
+            async (event, session) => {
+
+                if (session?.user) {
+                    currentUser = session.user;
+
+                    if (
+                        event === "SIGNED_IN" &&
+                        !enteringApp
+                    ) {
+                        await enterApp();
+                    }
+
+                } else {
+
+                    currentUser = null;
+                    currentProfile = null;
+
+                    if (authInitialized) {
+                        showLoginView();
+                    }
+                }
+
+                authInitialized = true;
+            }
+        );
+    }
+
+
+    /* =========================================================
+       SESSÃO
+       ========================================================= */
+
+    async function checkSession() {
+
+        if (!supabaseClient) return;
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient.auth.getSession();
+
+            if (error) {
+                console.error(error);
+                showLoginView();
+                return;
+            }
+
+            if (data?.session?.user) {
+
+                currentUser = data.session.user;
+
+                await enterApp();
+
+            } else {
+
+                showLoginView();
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao verificar sessão:",
+                error
+            );
 
             showLoginView();
         }
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao verificar sessão:",
-            error
-        );
-
-        showLoginView();
-    }
-}
-
-
-/* =========================================================
-   LOGIN
-   ========================================================= */
-
-async function handleLogin(event) {
-
-    event.preventDefault();
-
-    if (!supabaseClient) {
-        showToast(
-            "Sistema de login indisponível.",
-            "error"
-        );
-
-        return;
     }
 
-    const email =
-        valueOf("loginEmail").trim();
 
-    const password =
-        valueOf("loginPassword");
+    /* =========================================================
+       LOGIN
+       ========================================================= */
 
-    if (!email || !password) {
-        showToast(
-            "Preencha e-mail e senha.",
-            "warning"
-        );
+    async function handleLogin(event) {
 
-        return;
-    }
+        event.preventDefault();
 
-    const button =
-        firstExisting(
-            "loginBtn",
-            "submitLoginBtn"
-        );
+        if (!supabaseClient) {
+            showToast(
+                "Sistema de login indisponível.",
+                "error"
+            );
 
-    if (button) {
-        button.disabled = true;
-    }
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.signInWithPassword({
-            email,
-            password
-        });
-
-        if (error) {
-            throw error;
+            return;
         }
 
-        currentUser = data.user;
+        const email =
+            valueOf("loginEmail").trim();
 
-        await enterApp();
+        const password =
+            valueOf("loginPassword");
 
-    } catch (error) {
+        if (!email || !password) {
+            showToast(
+                "Preencha e-mail e senha.",
+                "warning"
+            );
 
-        console.error(error);
+            return;
+        }
 
-        showToast(
-            error.message ||
-            "Não foi possível entrar.",
-            "error"
-        );
-
-    } finally {
+        const button =
+            firstExisting(
+                "loginBtn",
+                "submitLoginBtn"
+            );
 
         if (button) {
-            button.disabled = false;
+            button.disabled = true;
         }
-    }
-}
 
+        try {
 
-/* =========================================================
-   CADASTRO
-   ========================================================= */
+            const {
+                data,
+                error
+            } = await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+            });
 
-async function handleRegister(event) {
-
-    event.preventDefault();
-
-    if (!supabaseClient) {
-        showToast(
-            "Sistema de cadastro indisponível.",
-            "error"
-        );
-
-        return;
-    }
-
-    const name =
-        valueOf("registerName").trim();
-
-    const email =
-        valueOf("registerEmail").trim();
-
-    const password =
-        valueOf("registerPassword");
-
-    const passwordConfirm =
-        valueOf("registerPasswordConfirm") ||
-        valueOf("registerConfirmPassword");
-
-    if (!name || !email || !password) {
-
-        showToast(
-            "Preencha todos os campos.",
-            "warning"
-        );
-
-        return;
-    }
-
-    if (
-        passwordConfirm &&
-        password !== passwordConfirm
-    ) {
-
-        showToast(
-            "As senhas não coincidem.",
-            "warning"
-        );
-
-        return;
-    }
-
-    if (password.length < 6) {
-
-        showToast(
-            "A senha deve ter pelo menos 6 caracteres.",
-            "warning"
-        );
-
-        return;
-    }
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: {
-                data: {
-                    name
-                }
+            if (error) {
+                throw error;
             }
-        });
-
-        if (error) {
-            throw error;
-        }
-
-        if (data?.user) {
 
             currentUser = data.user;
 
-            await createProfileIfNeeded(name);
+            await enterApp();
+
+        } catch (error) {
+
+            console.error(error);
 
             showToast(
-                "Cadastro realizado com sucesso!",
-                "success"
+                error.message ||
+                "Não foi possível entrar.",
+                "error"
             );
 
-            if (data.session) {
-                await enterApp();
-            } else {
-                showToast(
-                    "Verifique seu e-mail para confirmar o cadastro.",
-                    "info"
-                );
+        } finally {
 
-                showLoginView();
-
-                const loginEmailField =
-                    $("loginEmail");
-
-                if (loginEmailField) {
-                    loginEmailField.value = email;
-                }
+            if (button) {
+                button.disabled = false;
             }
         }
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Não foi possível realizar o cadastro.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   PERFIL
-   ========================================================= */
-
-async function createProfileIfNeeded(name = "") {
-
-    if (!supabaseClient || !currentUser) {
-        return;
     }
 
-    try {
 
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("profiles")
-            .select("*")
-            .eq("id", currentUser.id)
-            .maybeSingle();
+    /* =========================================================
+       CADASTRO
+       ========================================================= */
 
-        if (error) {
-            console.warn(
-                "Não foi possível consultar perfil:",
-                error
+    async function handleRegister(event) {
+
+        event.preventDefault();
+
+        if (!supabaseClient) {
+            showToast(
+                "Sistema de cadastro indisponível.",
+                "error"
             );
 
             return;
         }
 
-        if (!data) {
+        const name =
+            valueOf("registerName").trim();
+
+        const email =
+            valueOf("registerEmail").trim();
+
+        const password =
+            valueOf("registerPassword");
+
+        const passwordConfirm =
+            valueOf("registerPasswordConfirm") ||
+            valueOf("registerConfirmPassword");
+
+        if (!name || !email || !password) {
+
+            showToast(
+                "Preencha todos os campos.",
+                "warning"
+            );
+
+            return;
+        }
+
+        if (
+            passwordConfirm &&
+            password !== passwordConfirm
+        ) {
+
+            showToast(
+                "As senhas não coincidem.",
+                "warning"
+            );
+
+            return;
+        }
+
+        if (password.length < 6) {
+
+            showToast(
+                "A senha deve ter pelo menos 6 caracteres.",
+                "warning"
+            );
+
+            return;
+        }
+
+        try {
 
             const {
-                error: insertError
-            } = await supabaseClient
-                .from("profiles")
-                .insert({
-                    id: currentUser.id,
-                    name:
-                        name ||
-                        currentUser.user_metadata?.name ||
-                        currentUser.email?.split("@")[0]
-                });
-
-            if (insertError) {
-                console.warn(
-                    "Não foi possível criar perfil:",
-                    insertError
-                );
-            }
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "Erro ao criar perfil:",
-            error
-        );
-    }
-}
-
-
-async function loadProfile() {
-
-    if (!supabaseClient || !currentUser) {
-        return;
-    }
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("profiles")
-            .select("*")
-            .eq("id", currentUser.id)
-            .maybeSingle();
-
-        if (!error && data) {
-            currentProfile = data;
-        } else {
-
-            currentProfile = {
-                id: currentUser.id,
-                name:
-                    currentUser.user_metadata?.name ||
-                    currentUser.email?.split("@")[0] ||
-                    "Usuário"
-            };
-
-            await createProfileIfNeeded(
-                currentProfile.name
-            );
-        }
-
-        updateUserInterface();
-
-    } catch (error) {
-
-        console.warn(
-            "Erro ao carregar perfil:",
-            error
-        );
-    }
-}
-
-
-function updateUserInterface() {
-
-    const name =
-        currentProfile?.name ||
-        currentUser?.user_metadata?.name ||
-        currentUser?.email?.split("@")[0] ||
-        "Usuário";
-
-    const email =
-        currentUser?.email || "";
-
-    const elements = [
-        "userName",
-        "profileName",
-        "dashboardUserName",
-        "welcomeUserName"
-    ];
-
-    elements.forEach(id => {
-
-        const element = $(id);
-
-        if (element) {
-            element.textContent = name;
-        }
-    });
-
-    const emailElements = [
-        "userEmail",
-        "profileEmail"
-    ];
-
-    emailElements.forEach(id => {
-
-        const element = $(id);
-
-        if (element) {
-            element.textContent = email;
-        }
-    });
-
-    const initials =
-        name
-            .split(" ")
-            .filter(Boolean)
-            .slice(0, 2)
-            .map(part => part.charAt(0))
-            .join("")
-            .toUpperCase();
-
-    const avatar =
-        firstExisting(
-            "userAvatar",
-            "profileAvatar"
-        );
-
-    if (avatar) {
-        avatar.textContent = initials || "U";
-    }
-}
-
-
-/* =========================================================
-   ENTRAR NO APP
-   ========================================================= */
-
-async function enterApp() {
-
-    if (enteringApp) return;
-
-    enteringApp = true;
-
-    try {
-
-        closeMobileMenu();
-
-        showAppView();
-
-        await loadProfile();
-
-        await Promise.all([
-            loadTransactions(),
-            loadGoals(),
-            loadBudgets(),
-            loadSubscription()
-        ]);
-
-        updateCategories();
-
-        updateDashboard();
-
-        renderTransactions();
-
-        renderReceivables();
-
-        updateReceivableDashboard();
-
-        renderPremium();
-
-        updatePeriodSummary();
-
-        applyPremiumAccess();
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao carregar aplicativo:",
-            error
-        );
-
-        showToast(
-            "Alguns dados não puderam ser carregados.",
-            "warning"
-        );
-
-    } finally {
-
-        enteringApp = false;
-    }
-}
-
-
-/* =========================================================
-   VIEWS
-   ========================================================= */
-
-function showLoginView() {
-
-    closeMobileMenu();
-
-    const login =
-        firstExisting(
-            "loginView",
-            "authView"
-        );
-
-    const register =
-        $("registerView");
-
-    const app =
-        firstExisting(
-            "appView",
-            "mainApp"
-        );
-
-    if (login) {
-        login.classList.remove("hidden");
-        login.style.display = "";
-    }
-
-    if (register) {
-        register.classList.add("hidden");
-    }
-
-    if (app) {
-        app.classList.add("hidden");
-    }
-}
-
-
-function showRegisterView() {
-
-    closeMobileMenu();
-
-    const login =
-        firstExisting(
-            "loginView",
-            "authView"
-        );
-
-    const register =
-        $("registerView");
-
-    const app =
-        firstExisting(
-            "appView",
-            "mainApp"
-        );
-
-    if (login) {
-        login.classList.add("hidden");
-    }
-
-    if (register) {
-        register.classList.remove("hidden");
-        register.style.display = "";
-    }
-
-    if (app) {
-        app.classList.add("hidden");
-    }
-}
-
-
-function showAppView() {
-
-    const login =
-        firstExisting(
-            "loginView",
-            "authView"
-        );
-
-    const register =
-        $("registerView");
-
-    const app =
-        firstExisting(
-            "appView",
-            "mainApp"
-        );
-
-    if (login) {
-        login.classList.add("hidden");
-    }
-
-    if (register) {
-        register.classList.add("hidden");
-    }
-
-    if (app) {
-        app.classList.remove("hidden");
-        app.style.display = "";
-    }
-}
-
-
-/* =========================================================
-   LOGOUT
-   ========================================================= */
-
-async function handleLogout() {
-
-    closeMobileMenu();
-
-    try {
-
-        if (supabaseClient) {
-            await supabaseClient.auth.signOut();
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao sair:",
-            error
-        );
-
-    } finally {
-
-        currentUser = null;
-        currentProfile = null;
-
-        transactions = [];
-        goals = [];
-        budgets = [];
-        subscription = null;
-
-        if (financeChart) {
-            financeChart.destroy();
-            financeChart = null;
-        }
-
-        if (categoryChart) {
-            categoryChart.destroy();
-            categoryChart = null;
-        }
-
-        showLoginView();
-
-        showToast(
-            "Você saiu da sua conta.",
-            "success"
-        );
-    }
-}
-
-
-/* =========================================================
-   TEMA
-   ========================================================= */
-
-function loadTheme() {
-
-    const savedTheme =
-        localStorage.getItem("controles-theme");
-
-    const theme =
-        savedTheme === "dark"
-            ? "dark"
-            : "light";
-
-    document.documentElement.setAttribute(
-        "data-theme",
-        theme
-    );
-
-    document.body.classList.toggle(
-        "dark-mode",
-        theme === "dark"
-    );
-
-    updateThemeButton();
-}
-
-
-function toggleTheme() {
-
-    const current =
-        document.documentElement.getAttribute(
-            "data-theme"
-        ) || "light";
-
-    const next =
-        current === "dark"
-            ? "light"
-            : "dark";
-
-    document.documentElement.setAttribute(
-        "data-theme",
-        next
-    );
-
-    document.body.classList.toggle(
-        "dark-mode",
-        next === "dark"
-    );
-
-    localStorage.setItem(
-        "controles-theme",
-        next
-    );
-
-    updateThemeButton();
-}
-
-
-function updateThemeButton() {
-
-    const button =
-        firstExisting(
-            "themeBtn",
-            "themeToggle"
-        );
-
-    if (!button) return;
-
-    const theme =
-        document.documentElement.getAttribute(
-            "data-theme"
-        );
-
-    const icon =
-        button.querySelector(
-            ".theme-icon"
-        );
-
-    if (icon) {
-        icon.textContent =
-            theme === "dark"
-                ? "☀"
-                : "☾";
-    }
-}
-
-
-/* =========================================================
-   MOSTRAR / OCULTAR SENHA
-   ========================================================= */
-
-function togglePasswordVisibility(button) {
-
-    const targetId =
-        button.dataset.passwordToggle;
-
-    const input =
-        targetId ? $(targetId) : null;
-
-    if (!input) return;
-
-    const isHidden =
-        input.type === "password";
-
-    input.type =
-        isHidden ? "text" : "password";
-
-    button.setAttribute(
-        "aria-pressed",
-        isHidden ? "true" : "false"
-    );
-
-    button.setAttribute(
-        "aria-label",
-        isHidden ? "Ocultar senha" : "Mostrar senha"
-    );
-
-    button.textContent =
-        isHidden ? "○" : "◉";
-}
-
-
-/* =========================================================
-   DATA
-   ========================================================= */
-
-function setCurrentDate() {
-
-    const element =
-        firstExisting(
-            "currentDate",
-            "todayDate"
-        );
-
-    if (!element) return;
-
-    const date = new Date();
-
-    element.textContent =
-        date.toLocaleDateString(
-            "pt-BR",
-            {
-                weekday: "long",
-                day: "2-digit",
-                month: "long",
-                year: "numeric"
-            }
-        );
-}
-
-
-function setDefaultDate() {
-
-    const input =
-        firstExisting(
-            "transactionDate",
-            "date"
-        );
-
-    if (
-        input &&
-        !input.value
-    ) {
-        input.value = todayISO();
-    }
-}
-
-
-/* =========================================================
-   MENU MOBILE — CORRIGIDO
-   ========================================================= */
-
-function getMobileOverlay() {
-
-    let overlay = $("mobileOverlay");
-
-    if (!overlay) {
-
-        overlay =
-            document.querySelector(
-                ".mobile-overlay"
-            );
-    }
-
-    return overlay;
-}
-
-
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || "")
-        || window.matchMedia?.("(pointer: coarse)")?.matches === true;
-}
-
-function isMobileViewport() {
-    return window.innerWidth <= 720 || isMobileDevice();
-}
-
-// Alguns celulares podem estar com “Site para computador” ativado.
-// Nesse caso o navegador informa uma largura de desktop, mas ainda é um celular.
-// Marcamos o documento para o CSS manter o layout mobile correto.
-function applyDeviceLayout() {
-    document.documentElement.toggleAttribute("data-mobile-device", isMobileDevice());
-}
-
-applyDeviceLayout();
-
-
-function openMobileMenu() {
-
-    const sidebar =
-        $("sidebar");
-
-    const button =
-        $("mobileMenuBtn");
-
-    const overlay =
-        getMobileOverlay();
-
-    if (!sidebar || !isMobileViewport()) {
-        return;
-    }
-
-    sidebar.classList.add(
-        "mobile-open"
-    );
-
-    if (overlay) {
-
-        overlay.classList.remove(
-            "hidden"
-        );
-
-        overlay.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-    }
-
-    document.body.classList.add(
-        "menu-open"
-    );
-
-    if (button) {
-
-        button.setAttribute(
-            "aria-expanded",
-            "true"
-        );
-    }
-}
-
-
-function closeMobileMenu() {
-
-    const sidebar =
-        $("sidebar");
-
-    const button =
-        $("mobileMenuBtn");
-
-    const overlay =
-        getMobileOverlay();
-
-    if (sidebar) {
-
-        sidebar.classList.remove(
-            "mobile-open"
-        );
-    }
-
-    if (overlay) {
-
-        overlay.classList.add(
-            "hidden"
-        );
-
-        overlay.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-    }
-
-    document.body.classList.remove(
-        "menu-open"
-    );
-
-    if (button) {
-
-        button.setAttribute(
-            "aria-expanded",
-            "false"
-        );
-    }
-}
-
-
-function toggleMobileMenu() {
-
-    const sidebar =
-        $("sidebar");
-
-    if (!sidebar) return;
-
-    if (
-        sidebar.classList.contains(
-            "mobile-open"
-        )
-    ) {
-
-        closeMobileMenu();
-
-    } else {
-
-        openMobileMenu();
-    }
-}
-
-
-/* =========================================================
-   SEÇÕES
-   ========================================================= */
-
-function showSection(sectionName) {
-
-    if (!sectionName) return;
-
-    const sections =
-        document.querySelectorAll(
-            ".content-section"
-        );
-
-    sections.forEach(section => {
-
-        const isActive =
-            section.id === sectionName ||
-            section.id === `${sectionName}Section`;
-
-        section.classList.toggle(
-            "active",
-            isActive
-        );
-
-        section.classList.toggle(
-            "hidden",
-            !isActive
-        );
-    });
-
-
-    const navItems =
-        document.querySelectorAll(
-            ".nav-item"
-        );
-
-    navItems.forEach(item => {
-
-        item.classList.toggle(
-            "active",
-            item.dataset.section === sectionName
-        );
-    });
-
-
-    const title =
-        firstExisting(
-            "sectionTitle",
-            "pageTitle",
-            "mainTitle"
-        );
-
-    if (title) {
-
-        title.textContent =
-            SECTION_TITLES[sectionName] ||
-            title.textContent;
-    }
-
-
-    closeMobileMenu();
-
-
-    switch (sectionName) {
-
-        case "dashboard":
-            updateDashboard();
-            break;
-
-        case "transactions":
-            renderTransactions();
-            break;
-
-        case "receivable":
-            renderReceivables();
-            break;
-
-        case "categories":
-            updateCategories();
-            break;
-
-        case "reports":
-            renderReports();
-            break;
-
-        case "premium":
-            renderPremium();
-            break;
-    }
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
-
-
-/* =========================================================
-   TRANSAÇÕES — CARREGAR
-   ========================================================= */
-
-async function loadTransactions() {
-
-    if (!supabaseClient || !currentUser) {
-        return;
-    }
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("transactions")
-            .select("*")
-            .eq("user_id", currentUser.id)
-            .order("date", {
-                ascending: false
+                data,
+                error
+            } = await supabaseClient.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        name
+                    }
+                }
             });
 
-        if (error) {
-            throw error;
-        }
-
-        transactions =
-            Array.isArray(data)
-                ? data
-                : [];
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao carregar transações:",
-            error
-        );
-
-        transactions = [];
-    }
-}
-
-
-/* =========================================================
-   TRANSAÇÕES — CAMPOS
-   ========================================================= */
-
-function getTransactionAmount(transaction) {
-
-    return Number(
-        transaction.amount ??
-        transaction.valor ??
-        transaction.value ??
-        0
-    ) || 0;
-}
-
-
-function getTransactionDate(transaction) {
-
-    return (
-        transaction.date ||
-        transaction.data ||
-        transaction.created_at?.split("T")[0] ||
-        ""
-    );
-}
-
-
-function getTransactionDescription(transaction) {
-
-    return (
-        transaction.description ||
-        transaction.descricao ||
-        transaction.title ||
-        transaction.nome ||
-        "Lançamento"
-    );
-}
-
-
-function getTransactionCategory(transaction) {
-
-    return (
-        transaction.category ||
-        transaction.categoria ||
-        "Outros"
-    );
-}
-
-
-/* =========================================================
-   TRANSAÇÃO RECEBIDA
-   ========================================================= */
-
-function isIncomeReceived(
-    transaction,
-    referenceDate = todayISO()
-) {
-
-    const type =
-        normalizeTransactionType(
-            transaction.type ||
-            transaction.tipo ||
-            transaction.transaction_type
-        );
-
-    if (type !== "income") {
-        return false;
-    }
-
-    const date =
-        getTransactionDate(transaction);
-
-    if (!date) return true;
-
-    return date <= referenceDate;
-}
-
-
-function isFutureReceivable(transaction) {
-
-    const type =
-        normalizeTransactionType(
-            transaction.type ||
-            transaction.tipo ||
-            transaction.transaction_type
-        );
-
-    if (type !== "income") {
-        return false;
-    }
-
-    const date =
-        getTransactionDate(transaction);
-
-    if (!date) return false;
-
-    return date > todayISO();
-}
-
-
-/* =========================================================
-   A RECEBER
-   ========================================================= */
-
-function getReceivableTransactions() {
-
-    return transactions.filter(
-        transaction =>
-            isFutureReceivable(transaction)
-    );
-}
-
-
-function getReceivableSummary() {
-
-    const receivables =
-        getReceivableTransactions();
-
-    const total =
-        receivables.reduce(
-            (sum, transaction) =>
-                sum +
-                getTransactionAmount(transaction),
-            0
-        );
-
-    const dates =
-        receivables
-            .map(getTransactionDate)
-            .filter(Boolean)
-            .sort();
-
-    return {
-        total,
-        count: receivables.length,
-        nextDate: dates[0] || null
-    };
-}
-
-
-function renderReceivables() {
-
-    const list =
-        firstExisting(
-            "receivableList",
-            "receivablesList"
-        );
-
-    const empty =
-        firstExisting(
-            "receivableEmpty",
-            "receivablesEmpty"
-        );
-
-    if (!list) return;
-
-    const receivables =
-        getReceivableTransactions();
-
-    if (!receivables.length) {
-
-        list.innerHTML = "";
-
-        if (empty) {
-            empty.classList.remove("hidden");
-        }
-
-        return;
-    }
-
-    if (empty) {
-        empty.classList.add("hidden");
-    }
-
-    list.innerHTML =
-        receivables
-            .map(transaction => {
-
-                const amount =
-                    getTransactionAmount(
-                        transaction
-                    );
-
-                return `
-                    <div class="transaction-item receivable-item">
-                        <div>
-                            <strong>
-                                ${escapeHTML(
-                                    getTransactionDescription(transaction)
-                                )}
-                            </strong>
-
-                            <small>
-                                ${escapeHTML(
-                                    getTransactionCategory(transaction)
-                                )}
-                                •
-                                ${formatDateBR(
-                                    getTransactionDate(transaction)
-                                )}
-                            </small>
-                        </div>
-
-                        <div>
-                            <strong class="income-value">
-                                + ${formatCurrency(amount)}
-                            </strong>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="btn btn-small mark-received-btn"
-                            data-receivable-id="${transaction.id}"
-                        >
-                            Recebido
-                        </button>
-                    </div>
-                `;
-            })
-            .join("");
-}
-
-
-function updateReceivableDashboard() {
-
-    const summary =
-        getReceivableSummary();
-
-    const total =
-        firstExisting(
-            "receivableTotal",
-            "dashboardReceivableTotal"
-        );
-
-    const nextDate =
-        firstExisting(
-            "receivableNextDate",
-            "dashboardReceivableNextDate"
-        );
-
-    const count =
-        firstExisting(
-            "receivableCount",
-            "dashboardReceivableCount"
-        );
-
-    if (total) {
-        total.textContent =
-            formatCurrency(summary.total);
-    }
-
-    if (nextDate) {
-
-        nextDate.textContent =
-            summary.nextDate
-                ? formatDateBR(summary.nextDate)
-                : "Nenhum";
-    }
-
-    if (count) {
-        count.textContent =
-            summary.count;
-    }
-}
-
-
-function openNewReceivable() {
-
-    openTransactionModal("income");
-
-    const date =
-        firstExisting(
-            "transactionDate",
-            "date"
-        );
-
-    if (date) {
-        date.value = "";
-    }
-
-    const received =
-        firstExisting(
-            "transactionReceived",
-            "received",
-            "isReceived"
-        );
-
-    if (received) {
-        received.checked = false;
-    }
-}
-
-
-async function markTransactionAsReceived(id) {
-
-    if (!supabaseClient || !currentUser) {
-        return;
-    }
-
-    try {
-
-        const {
-            error
-        } = await supabaseClient
-            .from("transactions")
-            .update({
-                date: todayISO()
-            })
-            .eq("id", id)
-            .eq("user_id", currentUser.id);
-
-        if (error) {
-            throw error;
-        }
-
-        showToast(
-            "Receita marcada como recebida.",
-            "success"
-        );
-
-        await loadTransactions();
-
-        updateDashboard();
-        renderTransactions();
-        renderReceivables();
-        updateReceivableDashboard();
-        updatePeriodSummary();
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            "Não foi possível marcar como recebida.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   TRANSAÇÕES — MODAL
-   ========================================================= */
-
-function openTransactionModal(type = "expense", transaction = null) {
-
-    const modal =
-        firstExisting(
-            "transactionModal",
-            "launchModal"
-        );
-
-    if (!modal) return;
-
-    editingTransactionId =
-        transaction?.id || null;
-
-    selectedTransactionType =
-        normalizeTransactionType(type);
-
-    const title =
-        firstExisting(
-            "transactionModalTitle",
-            "modalTitle"
-        );
-
-    if (title) {
-
-        title.textContent =
-            editingTransactionId
-                ? "Editar lançamento"
-                : selectedTransactionType === "income"
-                    ? "Nova receita"
-                    : "Nova despesa";
-    }
-
-
-    setTransactionType(
-        selectedTransactionType
-    );
-
-
-    const description =
-        firstExisting(
-            "transactionDescription",
-            "description",
-            "transactionName"
-        );
-
-    const amount =
-        firstExisting(
-            "transactionAmount",
-            "amount",
-            "value"
-        );
-
-    const date =
-        firstExisting(
-            "transactionDate",
-            "date"
-        );
-
-    const category =
-        firstExisting(
-            "transactionCategory",
-            "category"
-        );
-
-    const received =
-        firstExisting(
-            "transactionReceived",
-            "received",
-            "isReceived"
-        );
-
-
-    if (transaction) {
-
-        if (description) {
-            description.value =
-                getTransactionDescription(
-                    transaction
-                );
-        }
-
-        if (amount) {
-            amount.value =
-                getTransactionAmount(
-                    transaction
-                );
-        }
-
-        if (date) {
-            date.value =
-                getTransactionDate(
-                    transaction
-                );
-        }
-
-        if (category) {
-            category.value =
-                getTransactionCategory(
-                    transaction
-                );
-        }
-
-        if (received) {
-
-            received.checked =
-                isIncomeReceived(
-                    transaction
-                );
-        }
-
-    } else {
-
-        if (description) {
-            description.value = "";
-        }
-
-        if (amount) {
-            amount.value = "";
-        }
-
-        if (date) {
-            date.value = todayISO();
-        }
-
-        if (category) {
-            category.value =
-                selectedTransactionType === "income"
-                    ? "Salário"
-                    : "Alimentação";
-        }
-
-        if (received) {
-
-            received.checked =
-                selectedTransactionType === "expense";
-        }
-    }
-
-
-    modal.classList.remove("hidden");
-}
-
-
-function closeTransactionModal() {
-
-    const modal =
-        firstExisting(
-            "transactionModal",
-            "launchModal"
-        );
-
-    if (modal) {
-        modal.classList.add("hidden");
-    }
-
-    editingTransactionId = null;
-}
-
-
-function setTransactionType(type) {
-
-    selectedTransactionType =
-        normalizeTransactionType(type);
-
-    const buttons =
-        document.querySelectorAll(
-            "[data-transaction-type]"
-        );
-
-    buttons.forEach(button => {
-
-        button.classList.toggle(
-            "active",
-            normalizeTransactionType(
-                button.dataset.transactionType
-            ) === selectedTransactionType
-        );
-    });
-
-    const typeInput =
-        firstExisting(
-            "transactionType",
-            "type"
-        );
-
-    if (typeInput) {
-        typeInput.value =
-            selectedTransactionType;
-    }
-
-
-    const receivedContainer =
-        firstExisting(
-            "receivedContainer",
-            "transactionReceivedContainer"
-        );
-
-    if (receivedContainer) {
-
-        receivedContainer.style.display =
-            selectedTransactionType === "income"
-                ? ""
-                : "none";
-    }
-}
-
-
-/* =========================================================
-   SALVAR TRANSAÇÃO
-   ========================================================= */
-
-async function saveTransaction(event) {
-
-    if (event) {
-        event.preventDefault();
-    }
-
-    if (!supabaseClient || !currentUser) {
-        showToast(
-            "Faça login novamente.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    const description =
-        valueOf(
-            "transactionDescription"
-        ).trim() ||
-        valueOf("description").trim();
-
-
-    const amountRaw =
-        valueOf(
-            "transactionAmount"
-        ) ||
-        valueOf("amount") ||
-        valueOf("value");
-
-
-    const amount =
-        Number(
-            String(amountRaw)
-                .replace(/\./g, "")
-                .replace(",", ".")
-        );
-
-
-    const date =
-        valueOf(
-            "transactionDate"
-        ) ||
-        valueOf("date");
-
-
-    const category =
-        valueOf(
-            "transactionCategory"
-        ) ||
-        valueOf("category") ||
-        "Outros";
-
-
-    const receivedElement =
-        firstExisting(
-            "transactionReceived",
-            "received",
-            "isReceived"
-        );
-
-
-    if (!description) {
-
-        showToast(
-            "Informe uma descrição.",
-            "warning"
-        );
-
-        return;
-    }
-
-
-    if (
-        !Number.isFinite(amount) ||
-        amount <= 0
-    ) {
-
-        showToast(
-            "Informe um valor válido.",
-            "warning"
-        );
-
-        return;
-    }
-
-
-    if (!date) {
-
-        showToast(
-            "Informe a data.",
-            "warning"
-        );
-
-        return;
-    }
-
-
-    const type =
-        databaseTransactionType(
-            selectedTransactionType
-        );
-
-
-    const received =
-        type === "income"
-            ? (
-                receivedElement
-                    ? receivedElement.checked
-                    : date <= todayISO()
-            )
-            : true;
-
-
-    /*
-     * A tabela transactions do projeto não possui as colunas
-     * received / is_received. O estado de recebido é calculado
-     * pela data: receita com data futura = A Receber; receita
-     * com data de hoje/passada = recebida.
-     */
-    const payload = {
-        user_id: currentUser.id,
-        description,
-        amount,
-        date,
-        category,
-        type
-    };
-
-
-    try {
-
-        if (editingTransactionId) {
-
-            const {
-                error
-            } = await supabaseClient
-                .from("transactions")
-                .update(payload)
-                .eq(
-                    "id",
-                    editingTransactionId
-                )
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
-
             if (error) {
                 throw error;
             }
 
+            if (data?.user) {
+
+                currentUser = data.user;
+
+                await createProfileIfNeeded(name);
+
+                showToast(
+                    "Cadastro realizado com sucesso!",
+                    "success"
+                );
+
+                if (data.session) {
+                    await enterApp();
+                } else {
+                    showToast(
+                        "Verifique seu e-mail para confirmar o cadastro.",
+                        "info"
+                    );
+
+                    showLoginView();
+
+                    const loginEmailField =
+                        $("loginEmail");
+
+                    if (loginEmailField) {
+                        loginEmailField.value = email;
+                    }
+                }
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
             showToast(
-                "Lançamento atualizado.",
+                error.message ||
+                "Não foi possível realizar o cadastro.",
+                "error"
+            );
+        }
+    }
+
+
+    /* =========================================================
+       PERFIL
+       ========================================================= */
+
+    async function createProfileIfNeeded(name = "") {
+
+        if (!supabaseClient || !currentUser) {
+            return;
+        }
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("profiles")
+                .select("*")
+                .eq("id", currentUser.id)
+                .maybeSingle();
+
+            if (error) {
+                console.warn(
+                    "Não foi possível consultar perfil:",
+                    error
+                );
+
+                return;
+            }
+
+            if (!data) {
+
+                const {
+                    error: insertError
+                } = await supabaseClient
+                    .from("profiles")
+                    .insert({
+                        id: currentUser.id,
+                        name:
+                            name ||
+                            currentUser.user_metadata?.name ||
+                            currentUser.email?.split("@")[0]
+                    });
+
+                if (insertError) {
+                    console.warn(
+                        "Não foi possível criar perfil:",
+                        insertError
+                    );
+                }
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Erro ao criar perfil:",
+                error
+            );
+        }
+    }
+
+
+    async function loadProfile() {
+
+        if (!supabaseClient || !currentUser) {
+            return;
+        }
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("profiles")
+                .select("*")
+                .eq("id", currentUser.id)
+                .maybeSingle();
+
+            if (!error && data) {
+                currentProfile = data;
+            } else {
+
+                currentProfile = {
+                    id: currentUser.id,
+                    name:
+                        currentUser.user_metadata?.name ||
+                        currentUser.email?.split("@")[0] ||
+                        "Usuário"
+                };
+
+                await createProfileIfNeeded(
+                    currentProfile.name
+                );
+            }
+
+            updateUserInterface();
+
+        } catch (error) {
+
+            console.warn(
+                "Erro ao carregar perfil:",
+                error
+            );
+        }
+    }
+
+
+    function updateUserInterface() {
+
+        const name =
+            currentProfile?.name ||
+            currentUser?.user_metadata?.name ||
+            currentUser?.email?.split("@")[0] ||
+            "Usuário";
+
+        const email =
+            currentUser?.email || "";
+
+        const elements = [
+            "userName",
+            "profileName",
+            "dashboardUserName",
+            "welcomeUserName"
+        ];
+
+        elements.forEach(id => {
+
+            const element = $(id);
+
+            if (element) {
+                element.textContent = name;
+            }
+        });
+
+        const emailElements = [
+            "userEmail",
+            "profileEmail"
+        ];
+
+        emailElements.forEach(id => {
+
+            const element = $(id);
+
+            if (element) {
+                element.textContent = email;
+            }
+        });
+
+        const initials =
+            name
+                .split(" ")
+                .filter(Boolean)
+                .slice(0, 2)
+                .map(part => part.charAt(0))
+                .join("")
+                .toUpperCase();
+
+        const avatar =
+            firstExisting(
+                "userAvatar",
+                "profileAvatar"
+            );
+
+        if (avatar) {
+            avatar.textContent = initials || "U";
+        }
+    }
+
+
+    /* =========================================================
+       ENTRAR NO APP
+       ========================================================= */
+
+    async function enterApp() {
+
+        if (enteringApp) return;
+
+        enteringApp = true;
+
+        try {
+
+            closeMobileMenu();
+
+            showAppView();
+
+            await loadProfile();
+
+            await Promise.all([
+                loadTransactions(),
+                loadGoals(),
+                loadBudgets(),
+                loadSubscription()
+            ]);
+
+            updateCategories();
+
+            updateDashboard();
+
+            renderTransactions();
+
+            renderReceivables();
+
+            updateReceivableDashboard();
+
+            renderPremium();
+
+            updatePeriodSummary();
+
+            applyPremiumAccess();
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao carregar aplicativo:",
+                error
+            );
+
+            showToast(
+                "Alguns dados não puderam ser carregados.",
+                "warning"
+            );
+
+        } finally {
+
+            enteringApp = false;
+        }
+    }
+
+
+    /* =========================================================
+       VIEWS
+       ========================================================= */
+
+    function showLoginView() {
+
+        closeMobileMenu();
+
+        const login =
+            firstExisting(
+                "loginView",
+                "authView"
+            );
+
+        const register =
+            $("registerView");
+
+        const app =
+            firstExisting(
+                "appView",
+                "mainApp"
+            );
+
+        if (login) {
+            login.classList.remove("hidden");
+            login.style.display = "";
+        }
+
+        if (register) {
+            register.classList.add("hidden");
+        }
+
+        if (app) {
+            app.classList.add("hidden");
+        }
+    }
+
+
+    function showRegisterView() {
+
+        closeMobileMenu();
+
+        const login =
+            firstExisting(
+                "loginView",
+                "authView"
+            );
+
+        const register =
+            $("registerView");
+
+        const app =
+            firstExisting(
+                "appView",
+                "mainApp"
+            );
+
+        if (login) {
+            login.classList.add("hidden");
+        }
+
+        if (register) {
+            register.classList.remove("hidden");
+            register.style.display = "";
+        }
+
+        if (app) {
+            app.classList.add("hidden");
+        }
+    }
+
+
+    function showAppView() {
+
+        const login =
+            firstExisting(
+                "loginView",
+                "authView"
+            );
+
+        const register =
+            $("registerView");
+
+        const app =
+            firstExisting(
+                "appView",
+                "mainApp"
+            );
+
+        if (login) {
+            login.classList.add("hidden");
+        }
+
+        if (register) {
+            register.classList.add("hidden");
+        }
+
+        if (app) {
+            app.classList.remove("hidden");
+            app.style.display = "";
+        }
+    }
+
+
+    /* =========================================================
+       LOGOUT
+       ========================================================= */
+
+    async function handleLogout() {
+
+        closeMobileMenu();
+
+        try {
+
+            if (supabaseClient) {
+                await supabaseClient.auth.signOut();
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao sair:",
+                error
+            );
+
+        } finally {
+
+            currentUser = null;
+            currentProfile = null;
+
+            transactions = [];
+            goals = [];
+            budgets = [];
+            subscription = null;
+
+            if (financeChart) {
+                financeChart.destroy();
+                financeChart = null;
+            }
+
+            if (categoryChart) {
+                categoryChart.destroy();
+                categoryChart = null;
+            }
+
+            showLoginView();
+
+            showToast(
+                "Você saiu da sua conta.",
                 "success"
             );
+        }
+    }
+
+
+    /* =========================================================
+       TEMA
+       ========================================================= */
+
+    function loadTheme() {
+
+        const savedTheme =
+            localStorage.getItem("controles-theme");
+
+        const theme =
+            savedTheme === "dark"
+                ? "dark"
+                : "light";
+
+        document.documentElement.setAttribute(
+            "data-theme",
+            theme
+        );
+
+        document.body.classList.toggle(
+            "dark-mode",
+            theme === "dark"
+        );
+
+        updateThemeButton();
+    }
+
+
+    function toggleTheme() {
+
+        const current =
+            document.documentElement.getAttribute(
+                "data-theme"
+            ) || "light";
+
+        const next =
+            current === "dark"
+                ? "light"
+                : "dark";
+
+        document.documentElement.setAttribute(
+            "data-theme",
+            next
+        );
+
+        document.body.classList.toggle(
+            "dark-mode",
+            next === "dark"
+        );
+
+        localStorage.setItem(
+            "controles-theme",
+            next
+        );
+
+        updateThemeButton();
+    }
+
+
+    function updateThemeButton() {
+
+        const button =
+            firstExisting(
+                "themeBtn",
+                "themeToggle"
+            );
+
+        if (!button) return;
+
+        const theme =
+            document.documentElement.getAttribute(
+                "data-theme"
+            );
+
+        const icon =
+            button.querySelector(
+                ".theme-icon"
+            );
+
+        if (icon) {
+            icon.textContent =
+                theme === "dark"
+                    ? "☀"
+                    : "☾";
+        }
+    }
+
+
+    /* =========================================================
+       MOSTRAR / OCULTAR SENHA
+       ========================================================= */
+
+    function togglePasswordVisibility(button) {
+
+        const targetId =
+            button.dataset.passwordToggle;
+
+        const input =
+            targetId ? $(targetId) : null;
+
+        if (!input) return;
+
+        const isHidden =
+            input.type === "password";
+
+        input.type =
+            isHidden ? "text" : "password";
+
+        button.setAttribute(
+            "aria-pressed",
+            isHidden ? "true" : "false"
+        );
+
+        button.setAttribute(
+            "aria-label",
+            isHidden ? "Ocultar senha" : "Mostrar senha"
+        );
+
+        button.textContent =
+            isHidden ? "○" : "◉";
+    }
+
+
+    /* =========================================================
+       DATA
+       ========================================================= */
+
+    function setCurrentDate() {
+
+        const element =
+            firstExisting(
+                "currentDate",
+                "todayDate"
+            );
+
+        if (!element) return;
+
+        const date = new Date();
+
+        element.textContent =
+            date.toLocaleDateString(
+                "pt-BR",
+                {
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric"
+                }
+            );
+    }
+
+
+    function setDefaultDate() {
+
+        const input =
+            firstExisting(
+                "transactionDate",
+                "date"
+            );
+
+        if (
+            input &&
+            !input.value
+        ) {
+            input.value = todayISO();
+        }
+    }
+
+
+    /* =========================================================
+       MENU MOBILE — CORRIGIDO
+       ========================================================= */
+
+    function getMobileOverlay() {
+
+        let overlay = $("mobileOverlay");
+
+        if (!overlay) {
+
+            overlay =
+                document.querySelector(
+                    ".mobile-overlay"
+                );
+        }
+
+        return overlay;
+    }
+
+
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || "")
+            || window.matchMedia?.("(pointer: coarse)")?.matches === true;
+    }
+
+    function isMobileViewport() {
+        return window.innerWidth <= 720 || isMobileDevice();
+    }
+
+    // Alguns celulares podem estar com “Site para computador” ativado.
+    // Nesse caso o navegador informa uma largura de desktop, mas ainda é um celular.
+    // Marcamos o documento para o CSS manter o layout mobile correto.
+    function applyDeviceLayout() {
+        document.documentElement.toggleAttribute("data-mobile-device", isMobileDevice());
+    }
+
+    applyDeviceLayout();
+
+
+    function openMobileMenu() {
+
+        const sidebar =
+            $("sidebar");
+
+        const button =
+            $("mobileMenuBtn");
+
+        const overlay =
+            getMobileOverlay();
+
+        if (!sidebar || !isMobileViewport()) {
+            return;
+        }
+
+        sidebar.classList.add(
+            "mobile-open"
+        );
+
+        if (overlay) {
+
+            overlay.classList.remove(
+                "hidden"
+            );
+
+            overlay.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+        }
+
+        document.body.classList.add(
+            "menu-open"
+        );
+
+        if (button) {
+
+            button.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+        }
+    }
+
+
+    function closeMobileMenu() {
+
+        const sidebar =
+            $("sidebar");
+
+        const button =
+            $("mobileMenuBtn");
+
+        const overlay =
+            getMobileOverlay();
+
+        if (sidebar) {
+
+            sidebar.classList.remove(
+                "mobile-open"
+            );
+        }
+
+        if (overlay) {
+
+            overlay.classList.add(
+                "hidden"
+            );
+
+            overlay.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+        }
+
+        document.body.classList.remove(
+            "menu-open"
+        );
+
+        if (button) {
+
+            button.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+        }
+    }
+
+
+    function toggleMobileMenu() {
+
+        const sidebar =
+            $("sidebar");
+
+        if (!sidebar) return;
+
+        if (
+            sidebar.classList.contains(
+                "mobile-open"
+            )
+        ) {
+
+            closeMobileMenu();
 
         } else {
 
+            openMobileMenu();
+        }
+    }
+
+
+    /* =========================================================
+       SEÇÕES
+       ========================================================= */
+
+    function showSection(sectionName) {
+
+        if (!sectionName) return;
+
+        const sections =
+            document.querySelectorAll(
+                ".content-section"
+            );
+
+        sections.forEach(section => {
+
+            const isActive =
+                section.id === sectionName ||
+                section.id === `${sectionName}Section`;
+
+            section.classList.toggle(
+                "active",
+                isActive
+            );
+
+            section.classList.toggle(
+                "hidden",
+                !isActive
+            );
+        });
+
+
+        const navItems =
+            document.querySelectorAll(
+                ".nav-item"
+            );
+
+        navItems.forEach(item => {
+
+            item.classList.toggle(
+                "active",
+                item.dataset.section === sectionName
+            );
+        });
+
+
+        const title =
+            firstExisting(
+                "sectionTitle",
+                "pageTitle",
+                "mainTitle"
+            );
+
+        if (title) {
+
+            title.textContent =
+                SECTION_TITLES[sectionName] ||
+                title.textContent;
+        }
+
+
+        closeMobileMenu();
+
+
+        switch (sectionName) {
+
+            case "dashboard":
+                updateDashboard();
+                break;
+
+            case "transactions":
+                renderTransactions();
+                break;
+
+            case "receivable":
+                renderReceivables();
+                break;
+
+            case "categories":
+                updateCategories();
+                break;
+
+            case "reports":
+                renderReports();
+                break;
+
+            case "premium":
+                renderPremium();
+                break;
+        }
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+
+    /* =========================================================
+       TRANSAÇÕES — CARREGAR
+       ========================================================= */
+
+    async function loadTransactions() {
+
+        if (!supabaseClient || !currentUser) {
+            return;
+        }
+
+        try {
+
             const {
+                data,
                 error
             } = await supabaseClient
                 .from("transactions")
-                .insert(payload);
+                .select("*")
+                .eq("user_id", currentUser.id)
+                .order("date", {
+                    ascending: false
+                });
 
             if (error) {
                 throw error;
             }
 
-            showToast(
-                "Lançamento adicionado.",
-                "success"
+            transactions =
+                Array.isArray(data)
+                    ? data
+                    : [];
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao carregar transações:",
+                error
             );
+
+            transactions = [];
         }
+    }
 
 
-        closeTransactionModal();
+    /* =========================================================
+       TRANSAÇÕES — CAMPOS
+       ========================================================= */
 
-        await loadTransactions();
+    function getTransactionAmount(transaction) {
 
-        updateDashboard();
+        return Number(
+            transaction.amount ??
+            transaction.valor ??
+            transaction.value ??
+            0
+        ) || 0;
+    }
 
-        renderTransactions();
 
-        renderReceivables();
+    function getTransactionDate(transaction) {
 
-        updateReceivableDashboard();
-
-        updatePeriodSummary();
-
-        renderReports();
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            error.message ||
-            "Não foi possível salvar o lançamento.",
-            "error"
+        return (
+            transaction.date ||
+            transaction.data ||
+            transaction.created_at?.split("T")[0] ||
+            ""
         );
     }
-}
 
 
-/* =========================================================
-   EXCLUIR TRANSAÇÃO
-   ========================================================= */
+    function getTransactionDescription(transaction) {
 
-async function deleteTransaction(id) {
-
-    if (!supabaseClient || !currentUser) {
-        return;
+        return (
+            transaction.description ||
+            transaction.descricao ||
+            transaction.title ||
+            transaction.nome ||
+            "Lançamento"
+        );
     }
 
-    if (
-        !confirm(
-            "Deseja realmente excluir este lançamento?"
-        )
+
+    function getTransactionCategory(transaction) {
+
+        return (
+            transaction.category ||
+            transaction.categoria ||
+            "Outros"
+        );
+    }
+
+
+    /* =========================================================
+       TRANSAÇÃO RECEBIDA
+       ========================================================= */
+
+    function isIncomeReceived(
+        transaction,
+        referenceDate = todayISO()
     ) {
-        return;
-    }
-
-    try {
-
-        const {
-            error
-        } = await supabaseClient
-            .from("transactions")
-            .delete()
-            .eq("id", id)
-            .eq("user_id", currentUser.id);
-
-        if (error) {
-            throw error;
-        }
-
-        showToast(
-            "Lançamento excluído.",
-            "success"
-        );
-
-        await loadTransactions();
-
-        updateDashboard();
-        renderTransactions();
-        renderReceivables();
-        updateReceivableDashboard();
-        updatePeriodSummary();
-        renderReports();
-
-    } catch (error) {
-
-        console.error(error);
-
-        showToast(
-            "Não foi possível excluir.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   RENDER TRANSAÇÕES
-   ========================================================= */
-
-function getTransactionFilterState() {
-    const search = valueOf("transactionSearch").toLowerCase().trim();
-    const type = valueOf("transactionFilter") || valueOf("transactionTypeFilter") || "all";
-    const category = valueOf("categoryFilter") || valueOf("transactionCategoryFilter") || "all";
-    const from = valueOf("transactionDateFrom");
-    const to = valueOf("transactionDateTo");
-    return { search, type, category, from, to };
-}
-
-function getFilteredTransactions() {
-    const f = getTransactionFilterState();
-    return [...transactions].filter(transaction => {
-        const description = getTransactionDescription(transaction);
-        const category = getTransactionCategory(transaction);
-        const date = getTransactionDate(transaction);
-        const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
-        const haystack = `${description} ${category}`.toLowerCase();
-        if (f.search && !haystack.includes(f.search)) return false;
-        if (f.type && f.type !== "all" && type !== f.type) return false;
-        if (f.category && f.category !== "all" && category !== f.category) return false;
-        if (f.from && date < f.from) return false;
-        if (f.to && date > f.to) return false;
-        return true;
-    });
-}
-
-function renderTransactions() {
-    const list = firstExisting("transactionsList", "transactionList", "launchesList");
-    const empty = $("transactionsEmpty");
-    const countLabel = $("transactionsCountLabel");
-    if (!list) return;
-
-    const filtered = getFilteredTransactions();
-    if (countLabel) countLabel.textContent = `${filtered.length} lançamento${filtered.length === 1 ? "" : "s"} encontrado${filtered.length === 1 ? "" : "s"}`;
-    if (empty) empty.classList.toggle("hidden", filtered.length > 0);
-
-    if (!filtered.length) { list.innerHTML = ""; updateTransactionFilterSummary(0); return; }
-
-    list.innerHTML = filtered.map(transaction => {
-        const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
-        const amount = getTransactionAmount(transaction);
-        const isIncome = type === "income";
-        return `<article class="transaction-item" data-transaction-id="${escapeHTML(transaction.id)}">
-            <div class="transaction-info"><strong>${escapeHTML(getTransactionDescription(transaction))}</strong><small>${escapeHTML(getTransactionCategory(transaction))} • ${formatDateBR(getTransactionDate(transaction))}</small></div>
-            <strong class="${isIncome ? "income-value" : "expense-value"}">${isIncome ? "+" : "-"} ${formatCurrency(amount)}</strong>
-            <div class="transaction-actions"><button type="button" class="edit-transaction-btn" data-edit-transaction="${escapeHTML(transaction.id)}" title="Editar">✎</button><button type="button" class="delete-transaction-btn" data-delete-transaction="${escapeHTML(transaction.id)}" title="Excluir">×</button></div>
-        </article>`;
-    }).join("");
-    updateTransactionFilterSummary(filtered.length);
-}
-
-function updateTransactionFilterSummary(count) {
-    const el = $("transactionFilterSummary");
-    if (!el) return;
-    const f = getTransactionFilterState();
-    const active = [];
-    if (f.search) active.push(`busca: “${f.search}”`);
-    if (f.type !== "all") active.push(f.type === "income" ? "receitas" : "despesas");
-    if (f.category !== "all") active.push(f.category);
-    if (f.from || f.to) active.push(`${formatDateBR(f.from || f.to)}${f.from && f.to ? " até " + formatDateBR(f.to) : ""}`);
-    el.textContent = active.length ? `Filtros ativos: ${active.join(" • ")} — ${count} resultado${count === 1 ? "" : "s"}.` : `Mostrando todos os lançamentos — ${count} resultado${count === 1 ? "" : "s"}.`;
-}
-
-
-/* =========================================================
-   ANÁLISE INTELIGENTE — PYTHON
-   ========================================================= */
-
-function openSmartAnalysisModal() {
-    const modal = $("smartAnalysisModal");
-
-    if (!modal) {
-        showToast(
-            "A janela de análise não foi encontrada.",
-            "error"
-        );
-        return;
-    }
-
-    const loading = $("smartAnalysisLoading");
-    const result = $("smartAnalysisResult");
-    const errorBox = $("smartAnalysisError");
-
-    if (loading) loading.classList.add("hidden");
-    if (result) result.classList.add("hidden");
-    if (errorBox) errorBox.classList.add("hidden");
-
-    modal.classList.remove("hidden");
-    modal.setAttribute("aria-hidden", "false");
-}
-
-
-function closeSmartAnalysisModal() {
-    const modal = $("smartAnalysisModal");
-
-    if (!modal) return;
-
-    modal.classList.add("hidden");
-    modal.setAttribute("aria-hidden", "true");
-}
-
-
-function setSmartAnalysisLoading(isLoading) {
-    const loading = $("smartAnalysisLoading");
-    const result = $("smartAnalysisResult");
-    const errorBox = $("smartAnalysisError");
-
-    if (loading) {
-        loading.classList.toggle(
-            "hidden",
-            !isLoading
-        );
-    }
-
-    if (isLoading) {
-        if (result) result.classList.add("hidden");
-        if (errorBox) errorBox.classList.add("hidden");
-    }
-}
-
-
-function showSmartAnalysisError(message) {
-    const loading = $("smartAnalysisLoading");
-    const result = $("smartAnalysisResult");
-    const errorBox = $("smartAnalysisError");
-
-    if (loading) loading.classList.add("hidden");
-    if (result) result.classList.add("hidden");
-
-    if (errorBox) {
-        errorBox.textContent =
-            message ||
-            "Não foi possível realizar a análise. Tente novamente.";
-
-        errorBox.classList.remove("hidden");
-    }
-}
-
-
-function renderSmartAnalysis(data) {
-    const loading = $("smartAnalysisLoading");
-    const result = $("smartAnalysisResult");
-    const errorBox = $("smartAnalysisError");
-
-    const income = $("analysisIncome");
-    const expense = $("analysisExpense");
-    const balance = $("analysisBalance");
-    const topCategory = $("analysisTopCategory");
-    const topCategoryValue = $("analysisTopCategoryValue");
-    const transactionCount = $("analysisTransactionCount");
-
-    if (income) {
-        income.textContent =
-            formatCurrency(data?.receitas);
-    }
-
-    if (expense) {
-        expense.textContent =
-            formatCurrency(data?.despesas);
-    }
-
-    if (balance) {
-        const value =
-            Number(data?.saldo) || 0;
-
-        balance.textContent =
-            formatCurrency(value);
-
-        balance.classList.remove(
-            "positive",
-            "negative"
-        );
-
-        balance.classList.add(
-            value < 0
-                ? "negative"
-                : "positive"
-        );
-    }
-
-    if (topCategory) {
-        topCategory.textContent =
-            data?.maior_categoria ||
-            "Nenhuma despesa";
-    }
-
-    if (topCategoryValue) {
-        topCategoryValue.textContent =
-            formatCurrency(
-                data?.maior_categoria_valor
-            );
-    }
-
-    if (transactionCount) {
-        transactionCount.textContent =
-            Number(
-                data?.quantidade_transacoes
-            ) || 0;
-    }
-
-    if (loading) loading.classList.add("hidden");
-    if (errorBox) errorBox.classList.add("hidden");
-    if (result) result.classList.remove("hidden");
-}
-
-
-async function analyzeFinancesWithPython() {
-    const button = $("smartAnalysisBtn");
-
-    if (!Array.isArray(transactions) ||
-        transactions.length === 0) {
-
-        showToast(
-            "Adicione pelo menos um lançamento para analisar.",
-            "warning"
-        );
-
-        return;
-    }
-
-    openSmartAnalysisModal();
-    setSmartAnalysisLoading(true);
-
-    if (button) {
-        button.disabled = true;
-    }
-
-    const payload = {
-        transactions:
-            transactions.map(transaction => ({
-                type:
-                    normalizeTransactionType(
-                        transaction.type ||
-                        transaction.tipo ||
-                        transaction.transaction_type
-                    ),
-
-                amount:
-                    getTransactionAmount(
-                        transaction
-                    ),
-
-                category:
-                    getTransactionCategory(
-                        transaction
-                    )
-            }))
-    };
-
-    try {
-        const response = await fetch(
-            `${CONTROLES_PYTHON_API}/analisar`,
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify(payload)
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error(
-                `API retornou ${response.status}`
-            );
-        }
-
-        const data =
-            await response.json();
-
-        renderSmartAnalysis(data);
-
-        showToast(
-            "Análise concluída com sucesso.",
-            "success"
-        );
-
-    } catch (error) {
-        console.error(
-            "Erro na análise Python:",
-            error
-        );
-
-        showSmartAnalysisError(
-            "Não foi possível conectar ao motor de análise. Tente novamente em alguns instantes."
-        );
-
-        showToast(
-            "Falha ao realizar a análise.",
-            "error"
-        );
-
-    } finally {
-        if (button) {
-            button.disabled = false;
-        }
-    }
-}
-
-
-/* =========================================================
-   TOTAIS
-   ========================================================= */
-
-function getTotals() {
-
-    let income = 0;
-    let expense = 0;
-
-    const today =
-        todayISO();
-
-
-    transactions.forEach(transaction => {
 
         const type =
             normalizeTransactionType(
@@ -2630,410 +1547,1848 @@ function getTotals() {
                 transaction.transaction_type
             );
 
+        if (type !== "income") {
+            return false;
+        }
+
+        const date =
+            getTransactionDate(transaction);
+
+        if (!date) return true;
+
+        return date <= referenceDate;
+    }
+
+
+    function isFutureReceivable(transaction) {
+
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo ||
+                transaction.transaction_type
+            );
+
+        if (type !== "income") {
+            return false;
+        }
+
+        const date =
+            getTransactionDate(transaction);
+
+        if (!date) return false;
+
+        return date > todayISO();
+    }
+
+
+    /* =========================================================
+       A RECEBER
+       ========================================================= */
+
+    function getReceivableTransactions() {
+
+        return transactions.filter(
+            transaction =>
+                isFutureReceivable(transaction)
+        );
+    }
+
+
+    function getReceivableSummary() {
+
+        const receivables =
+            getReceivableTransactions();
+
+        const total =
+            receivables.reduce(
+                (sum, transaction) =>
+                    sum +
+                    getTransactionAmount(transaction),
+                0
+            );
+
+        const dates =
+            receivables
+                .map(getTransactionDate)
+                .filter(Boolean)
+                .sort();
+
+        return {
+            total,
+            count: receivables.length,
+            nextDate: dates[0] || null
+        };
+    }
+
+
+    function renderReceivables() {
+
+        const list =
+            firstExisting(
+                "receivableList",
+                "receivablesList"
+            );
+
+        const empty =
+            firstExisting(
+                "receivableEmpty",
+                "receivablesEmpty"
+            );
+
+        if (!list) return;
+
+        const receivables =
+            getReceivableTransactions();
+
+        if (!receivables.length) {
+
+            list.innerHTML = "";
+
+            if (empty) {
+                empty.classList.remove("hidden");
+            }
+
+            return;
+        }
+
+        if (empty) {
+            empty.classList.add("hidden");
+        }
+
+        list.innerHTML =
+            receivables
+                .map(transaction => {
+
+                    const amount =
+                        getTransactionAmount(
+                            transaction
+                        );
+
+                    return `
+                        <div class="transaction-item receivable-item">
+                            <div>
+                                <strong>
+                                    ${escapeHTML(
+                                        getTransactionDescription(transaction)
+                                    )}
+                                </strong>
+
+                                <small>
+                                    ${escapeHTML(
+                                        getTransactionCategory(transaction)
+                                    )}
+                                    •
+                                    ${formatDateBR(
+                                        getTransactionDate(transaction)
+                                    )}
+                                </small>
+                            </div>
+
+                            <div>
+                                <strong class="income-value">
+                                    + ${formatCurrency(amount)}
+                                </strong>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-small mark-received-btn"
+                                data-receivable-id="${transaction.id}"
+                            >
+                                Recebido
+                            </button>
+                        </div>
+                    `;
+                })
+                .join("");
+    }
+
+
+    function updateReceivableDashboard() {
+
+        const summary =
+            getReceivableSummary();
+
+        const total =
+            firstExisting(
+                "receivableTotal",
+                "dashboardReceivableTotal"
+            );
+
+        const nextDate =
+            firstExisting(
+                "receivableNextDate",
+                "dashboardReceivableNextDate"
+            );
+
+        const count =
+            firstExisting(
+                "receivableCount",
+                "dashboardReceivableCount"
+            );
+
+        if (total) {
+            total.textContent =
+                formatCurrency(summary.total);
+        }
+
+        if (nextDate) {
+
+            nextDate.textContent =
+                summary.nextDate
+                    ? formatDateBR(summary.nextDate)
+                    : "Nenhum";
+        }
+
+        if (count) {
+            count.textContent =
+                summary.count;
+        }
+    }
+
+
+    function openNewReceivable() {
+
+        openTransactionModal("income");
+
+        const date =
+            firstExisting(
+                "transactionDate",
+                "date"
+            );
+
+        if (date) {
+            date.value = "";
+        }
+
+        const received =
+            firstExisting(
+                "transactionReceived",
+                "received",
+                "isReceived"
+            );
+
+        if (received) {
+            received.checked = false;
+        }
+    }
+
+
+    async function markTransactionAsReceived(id) {
+
+        if (!supabaseClient || !currentUser) {
+            return;
+        }
+
+        try {
+
+            const {
+                error
+            } = await supabaseClient
+                .from("transactions")
+                .update({
+                    date: todayISO()
+                })
+                .eq("id", id)
+                .eq("user_id", currentUser.id);
+
+            if (error) {
+                throw error;
+            }
+
+            showToast(
+                "Receita marcada como recebida.",
+                "success"
+            );
+
+            await loadTransactions();
+
+            updateDashboard();
+            renderTransactions();
+            renderReceivables();
+            updateReceivableDashboard();
+            updatePeriodSummary();
+
+        } catch (error) {
+
+            console.error(error);
+
+            showToast(
+                "Não foi possível marcar como recebida.",
+                "error"
+            );
+        }
+    }
+
+
+    /* =========================================================
+       TRANSAÇÕES — MODAL
+       ========================================================= */
+
+    function openTransactionModal(type = "expense", transaction = null) {
+
+        const modal =
+            firstExisting(
+                "transactionModal",
+                "launchModal"
+            );
+
+        if (!modal) return;
+
+        editingTransactionId =
+            transaction?.id || null;
+
+        selectedTransactionType =
+            normalizeTransactionType(type);
+
+        const title =
+            firstExisting(
+                "transactionModalTitle",
+                "modalTitle"
+            );
+
+        if (title) {
+
+            title.textContent =
+                editingTransactionId
+                    ? "Editar lançamento"
+                    : selectedTransactionType === "income"
+                        ? "Nova receita"
+                        : "Nova despesa";
+        }
+
+
+        setTransactionType(
+            selectedTransactionType
+        );
+
+
+        const description =
+            firstExisting(
+                "transactionDescription",
+                "description",
+                "transactionName"
+            );
 
         const amount =
-            getTransactionAmount(
-                transaction
+            firstExisting(
+                "transactionAmount",
+                "amount",
+                "value"
+            );
+
+        const date =
+            firstExisting(
+                "transactionDate",
+                "date"
+            );
+
+        const category =
+            firstExisting(
+                "transactionCategory",
+                "category"
+            );
+
+        const received =
+            firstExisting(
+                "transactionReceived",
+                "received",
+                "isReceived"
             );
 
 
-        if (type === "income") {
+        if (transaction) {
 
-            if (
-                isIncomeReceived(
-                    transaction,
-                    today
-                )
-            ) {
-                income += amount;
+            if (description) {
+                description.value =
+                    getTransactionDescription(
+                        transaction
+                    );
+            }
+
+            if (amount) {
+                amount.value =
+                    getTransactionAmount(
+                        transaction
+                    );
+            }
+
+            if (date) {
+                date.value =
+                    getTransactionDate(
+                        transaction
+                    );
+            }
+
+            if (category) {
+                category.value =
+                    getTransactionCategory(
+                        transaction
+                    );
+            }
+
+            if (received) {
+
+                received.checked =
+                    isIncomeReceived(
+                        transaction
+                    );
             }
 
         } else {
 
-            expense += amount;
+            if (description) {
+                description.value = "";
+            }
+
+            if (amount) {
+                amount.value = "";
+            }
+
+            if (date) {
+                date.value = todayISO();
+            }
+
+            if (category) {
+                category.value =
+                    selectedTransactionType === "income"
+                        ? "Salário"
+                        : "Alimentação";
+            }
+
+            if (received) {
+
+                received.checked =
+                    selectedTransactionType === "expense";
+            }
         }
-    });
 
 
-    return {
-        income,
-        expense,
-        balance: income - expense
-    };
-}
-
-
-/* =========================================================
-   DASHBOARD
-   ========================================================= */
-
-function updateDashboard() {
-
-    const totals =
-        getTotals();
-
-   /* VALORES PRINCIPAIS — TAMBÉM VISÍVEIS NO PLANO GRÁTIS */
-
-const freeIncome = $("incomeValue");
-const freeExpense = $("expenseValue");
-const freeBalance = $("balanceValue");
-
-if (freeIncome) {
-    freeIncome.textContent = formatCurrency(totals.income);
-}
-
-if (freeExpense) {
-    freeExpense.textContent = formatCurrency(totals.expense);
-}
-
-if (freeBalance) {
-    freeBalance.textContent = formatCurrency(totals.balance);
-}
-
-
-    const incomeElements = [
-        "totalIncome",
-        "dashboardIncome",
-        "monthIncome",
-        "monthlyIncome"
-    ];
-
-
-    incomeElements.forEach(id => {
-
-        const element = $(id);
-
-        if (element) {
-            element.textContent =
-                formatCurrency(
-                    totals.income
-                );
-        }
-    });
-
-
-    const expenseElements = [
-        "totalExpense",
-        "dashboardExpense",
-        "monthExpense",
-        "monthlyExpense"
-    ];
-
-
-    expenseElements.forEach(id => {
-
-        const element = $(id);
-
-        if (element) {
-            element.textContent =
-                formatCurrency(
-                    totals.expense
-                );
-        }
-    });
-
-
-    const balanceElements = [
-        "totalBalance",
-        "dashboardBalance",
-        "monthBalance",
-        "monthlyBalance"
-    ];
-
-
-    balanceElements.forEach(id => {
-
-        const element = $(id);
-
-        if (element) {
-            element.textContent =
-                formatCurrency(
-                    totals.balance
-                );
-        }
-    });
-
-
-    updatePeriodSummary();
-
-    updateReceivableDashboard();
-
-    updateMonthlySummary();
-
-    updateExpenseRanking();
-
-    updatePiggyBank();
-    updatePremiumDashboard();
-
-    renderRecentTransactions();
-
-    renderFinanceChart();
-}
-
-
-/* =========================================================
-   LANÇAMENTOS RECENTES
-   ========================================================= */
-
-function renderRecentTransactions() {
-
-    const list =
-        firstExisting(
-            "recentTransactions",
-            "recentTransactionsList",
-            "dashboardTransactions"
-        );
-
-    if (!list) return;
-
-
-    const recent =
-        [...transactions]
-            .sort(
-                (a, b) =>
-                    getTransactionDate(b)
-                        .localeCompare(
-                            getTransactionDate(a)
-                        )
-            )
-            .slice(0, 5);
-
-
-    if (!recent.length) {
-
-        list.innerHTML = `
-            <div class="empty-state">
-                Nenhum lançamento recente.
-            </div>
-        `;
-
-        return;
+        modal.classList.remove("hidden");
     }
 
 
-    list.innerHTML =
-        recent
-            .map(transaction => {
+    function closeTransactionModal() {
 
-                const type =
-                    normalizeTransactionType(
-                        transaction.type ||
-                        transaction.tipo
-                    );
+        const modal =
+            firstExisting(
+                "transactionModal",
+                "launchModal"
+            );
 
-                const amount =
-                    getTransactionAmount(
-                        transaction
-                    );
+        if (modal) {
+            modal.classList.add("hidden");
+        }
 
-                return `
-                    <div class="recent-transaction">
-
-                        <div>
-
-                            <strong>
-                                ${escapeHTML(
-                                    getTransactionDescription(transaction)
-                                )}
-                            </strong>
-
-                            <small>
-                                ${escapeHTML(
-                                    getTransactionCategory(transaction)
-                                )}
-                                •
-                                ${formatDateBR(
-                                    getTransactionDate(transaction)
-                                )}
-                            </small>
-
-                        </div>
-
-                        <strong
-                            class="${
-                                type === "income"
-                                    ? "income-value"
-                                    : "expense-value"
-                            }"
-                        >
-                            ${
-                                type === "income"
-                                    ? "+"
-                                    : "-"
-                            }
-                            ${formatCurrency(amount)}
-                        </strong>
-
-                    </div>
-                `;
-            })
-            .join("");
-}
-
-
-/* =========================================================
-   PERÍODO FINANCEIRO — CORRIGIDO
-   ========================================================= */
-
-function getPeriodElements() {
-    return {
-        select: firstExisting("dashboardPeriod", "periodFilter") || document.querySelector("[data-period-filter]"),
-        apply: firstExisting("applyPeriodBtn", "applyPeriod", "btnApplyPeriod") || document.querySelector("[data-apply-period]"),
-        clear: firstExisting("clearPeriodBtn"),
-        customFields: firstExisting("customPeriodFields", "periodCustomFields", "customDateRange"),
-        start: firstExisting("periodStartDate", "periodStart", "customStartDate", "startDate") || document.querySelector("[data-period-start]"),
-        end: firstExisting("periodEndDate", "periodEnd", "customEndDate", "endDate") || document.querySelector("[data-period-end]"),
-        income: firstExisting("incomeValue", "periodIncome", "periodIncomeValue", "periodEarnedValue") || document.querySelector("[data-period-income]"),
-        expense: firstExisting("expenseValue", "periodExpense", "periodExpenseValue", "periodSpentValue") || document.querySelector("[data-period-expense]"),
-        balance: firstExisting("balanceValue", "periodBalance", "periodBalanceValue") || document.querySelector("[data-period-balance]"),
-        label: firstExisting("activePeriodLabel", "periodLabel") || document.querySelector("[data-period-label]")
-    };
-}
-
-
-/* =========================================================
-   INICIALIZAR FILTRO
-   ========================================================= */
-
-function initializePeriodFilter() {
-
-    const {
-        select,
-        customFields,
-        start,
-        end
-    } = getPeriodElements();
-
-    if (!select) return;
-
-    /*
-     * Se o HTML já tiver as opções,
-     * preservamos o que existe.
-     *
-     * Se estiver vazio, criamos as opções
-     * oficiais do ControleS.
-     */
-
-    if (select.options.length === 0) {
-
-        select.innerHTML = `
-            <option value="today">
-                Hoje
-            </option>
-
-            <option value="yesterday">
-                Ontem
-            </option>
-
-            <option value="7days">
-                Últimos 7 dias
-            </option>
-
-            <option value="30days">
-                Últimos 30 dias
-            </option>
-
-            <option value="month">
-                Este mês
-            </option>
-
-            <option value="previousMonth">
-                Mês anterior
-            </option>
-
-            <option value="all">
-                Todo o período
-            </option>
-
-            <option value="custom">
-                Personalizado
-            </option>
-        `;
+        editingTransactionId = null;
     }
 
-    /*
-     * Caso o HTML já tenha opções antigas,
-     * normalizamos os valores sem destruir
-     * o texto visual existente.
-     */
 
-    const optionMap = {
-        week: "7days",
-        "1week": "7days",
-        "7": "7days",
+    function setTransactionType(type) {
 
-        month: "month",
-        "1month": "30days",
+        selectedTransactionType =
+            normalizeTransactionType(type);
 
-        all: "all",
-        everything: "all",
+        const buttons =
+            document.querySelectorAll(
+                "[data-transaction-type]"
+            );
 
-        custom: "custom"
-    };
+        buttons.forEach(button => {
 
-    Array.from(select.options).forEach(option => {
+            button.classList.toggle(
+                "active",
+                normalizeTransactionType(
+                    button.dataset.transactionType
+                ) === selectedTransactionType
+            );
+        });
 
-        const value =
-            String(option.value || "")
-                .trim()
-                .toLowerCase();
+        const typeInput =
+            firstExisting(
+                "transactionType",
+                "type"
+            );
 
-        if (optionMap[value]) {
-            option.value = optionMap[value];
+        if (typeInput) {
+            typeInput.value =
+                selectedTransactionType;
         }
-    });
 
 
-    /*
-     * Garante que as opções necessárias
-     * existam mesmo que o HTML esteja com
-     * uma versão antiga.
-     */
+        const receivedContainer =
+            firstExisting(
+                "receivedContainer",
+                "transactionReceivedContainer"
+            );
 
-    const requiredOptions = [
-        ["today", "Hoje"],
-        ["yesterday", "Ontem"],
-        ["7days", "Últimos 7 dias"],
-        ["30days", "Últimos 30 dias"],
-        ["month", "Este mês"],
-        ["previousMonth", "Mês anterior"],
-        ["all", "Todo o período"],
-        ["custom", "Personalizado"]
-    ];
+        if (receivedContainer) {
+
+            receivedContainer.style.display =
+                selectedTransactionType === "income"
+                    ? ""
+                    : "none";
+        }
+    }
 
 
-    requiredOptions.forEach(([value, text]) => {
+    /* =========================================================
+       SALVAR TRANSAÇÃO
+       ========================================================= */
 
-        const exists =
-            Array.from(select.options)
-                .some(option =>
-                    option.value === value
+    async function saveTransaction(event) {
+
+        if (event) {
+            event.preventDefault();
+        }
+
+        if (!supabaseClient || !currentUser) {
+            showToast(
+                "Faça login novamente.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const description =
+            valueOf(
+                "transactionDescription"
+            ).trim() ||
+            valueOf("description").trim();
+
+
+        const amountRaw =
+            valueOf(
+                "transactionAmount"
+            ) ||
+            valueOf("amount") ||
+            valueOf("value");
+
+
+        const amount =
+            Number(
+                String(amountRaw)
+                    .replace(/\./g, "")
+                    .replace(",", ".")
+            );
+
+
+        const date =
+            valueOf(
+                "transactionDate"
+            ) ||
+            valueOf("date");
+
+
+        const category =
+            valueOf(
+                "transactionCategory"
+            ) ||
+            valueOf("category") ||
+            "Outros";
+
+
+        const receivedElement =
+            firstExisting(
+                "transactionReceived",
+                "received",
+                "isReceived"
+            );
+
+
+        if (!description) {
+
+            showToast(
+                "Informe uma descrição.",
+                "warning"
+            );
+
+            return;
+        }
+
+
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ) {
+
+            showToast(
+                "Informe um valor válido.",
+                "warning"
+            );
+
+            return;
+        }
+
+
+        if (!date) {
+
+            showToast(
+                "Informe a data.",
+                "warning"
+            );
+
+            return;
+        }
+
+
+        const type =
+            databaseTransactionType(
+                selectedTransactionType
+            );
+
+
+        const received =
+            type === "income"
+                ? (
+                    receivedElement
+                        ? receivedElement.checked
+                        : date <= todayISO()
+                )
+                : true;
+
+
+        /*
+         * A tabela transactions do projeto não possui as colunas
+         * received / is_received. O estado de recebido é calculado
+         * pela data: receita com data futura = A Receber; receita
+         * com data de hoje/passada = recebida.
+         */
+        const payload = {
+            user_id: currentUser.id,
+            description,
+            amount,
+            date,
+            category,
+            type
+        };
+
+
+        try {
+
+            if (editingTransactionId) {
+
+                const {
+                    error
+                } = await supabaseClient
+                    .from("transactions")
+                    .update(payload)
+                    .eq(
+                        "id",
+                        editingTransactionId
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    );
+
+                if (error) {
+                    throw error;
+                }
+
+                showToast(
+                    "Lançamento atualizado.",
+                    "success"
                 );
 
-        if (!exists) {
+            } else {
 
-            select.add(
-                new Option(text, value)
+                const {
+                    error
+                } = await supabaseClient
+                    .from("transactions")
+                    .insert(payload);
+
+                if (error) {
+                    throw error;
+                }
+
+                showToast(
+                    "Lançamento adicionado.",
+                    "success"
+                );
+            }
+
+
+            closeTransactionModal();
+
+            await loadTransactions();
+
+            updateDashboard();
+
+            renderTransactions();
+
+            renderReceivables();
+
+            updateReceivableDashboard();
+
+            updatePeriodSummary();
+
+            renderReports();
+
+        } catch (error) {
+
+            console.error(error);
+
+            showToast(
+                error.message ||
+                "Não foi possível salvar o lançamento.",
+                "error"
             );
         }
-    });
-
-
-    /*
-     * Período inicial:
-     * Hoje
-     */
-
-    if (!select.value) {
-        select.value = "today";
     }
 
 
-    /*
-     * Datas personalizadas começam escondidas.
-     */
+    /* =========================================================
+       EXCLUIR TRANSAÇÃO
+       ========================================================= */
 
-    if (customFields) {
+    async function deleteTransaction(id) {
+
+        if (!supabaseClient || !currentUser) {
+            return;
+        }
+
+        if (
+            !confirm(
+                "Deseja realmente excluir este lançamento?"
+            )
+        ) {
+            return;
+        }
+
+        try {
+
+            const {
+                error
+            } = await supabaseClient
+                .from("transactions")
+                .delete()
+                .eq("id", id)
+                .eq("user_id", currentUser.id);
+
+            if (error) {
+                throw error;
+            }
+
+            showToast(
+                "Lançamento excluído.",
+                "success"
+            );
+
+            await loadTransactions();
+
+            updateDashboard();
+            renderTransactions();
+            renderReceivables();
+            updateReceivableDashboard();
+            updatePeriodSummary();
+            renderReports();
+
+        } catch (error) {
+
+            console.error(error);
+
+            showToast(
+                "Não foi possível excluir.",
+                "error"
+            );
+        }
+    }
+
+
+    /* =========================================================
+       RENDER TRANSAÇÕES
+       ========================================================= */
+
+    function getTransactionFilterState() {
+        const search = valueOf("transactionSearch").toLowerCase().trim();
+        const type = valueOf("transactionFilter") || valueOf("transactionTypeFilter") || "all";
+        const category = valueOf("categoryFilter") || valueOf("transactionCategoryFilter") || "all";
+        const from = valueOf("transactionDateFrom");
+        const to = valueOf("transactionDateTo");
+        return { search, type, category, from, to };
+    }
+
+    function getFilteredTransactions() {
+        const f = getTransactionFilterState();
+        return [...transactions].filter(transaction => {
+            const description = getTransactionDescription(transaction);
+            const category = getTransactionCategory(transaction);
+            const date = getTransactionDate(transaction);
+            const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
+            const haystack = `${description} ${category}`.toLowerCase();
+            if (f.search && !haystack.includes(f.search)) return false;
+            if (f.type && f.type !== "all" && type !== f.type) return false;
+            if (f.category && f.category !== "all" && category !== f.category) return false;
+            if (f.from && date < f.from) return false;
+            if (f.to && date > f.to) return false;
+            return true;
+        });
+    }
+
+    function renderTransactions() {
+        const list = firstExisting("transactionsList", "transactionList", "launchesList");
+        const empty = $("transactionsEmpty");
+        const countLabel = $("transactionsCountLabel");
+        if (!list) return;
+
+        const filtered = getFilteredTransactions();
+        if (countLabel) countLabel.textContent = `${filtered.length} lançamento${filtered.length === 1 ? "" : "s"} encontrado${filtered.length === 1 ? "" : "s"}`;
+        if (empty) empty.classList.toggle("hidden", filtered.length > 0);
+
+        if (!filtered.length) { list.innerHTML = ""; updateTransactionFilterSummary(0); return; }
+
+        list.innerHTML = filtered.map(transaction => {
+            const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
+            const amount = getTransactionAmount(transaction);
+            const isIncome = type === "income";
+            return `<article class="transaction-item" data-transaction-id="${escapeHTML(transaction.id)}">
+                <div class="transaction-info"><strong>${escapeHTML(getTransactionDescription(transaction))}</strong><small>${escapeHTML(getTransactionCategory(transaction))} • ${formatDateBR(getTransactionDate(transaction))}</small></div>
+                <strong class="${isIncome ? "income-value" : "expense-value"}">${isIncome ? "+" : "-"} ${formatCurrency(amount)}</strong>
+                <div class="transaction-actions"><button type="button" class="edit-transaction-btn" data-edit-transaction="${escapeHTML(transaction.id)}" title="Editar">✎</button><button type="button" class="delete-transaction-btn" data-delete-transaction="${escapeHTML(transaction.id)}" title="Excluir">×</button></div>
+            </article>`;
+        }).join("");
+        updateTransactionFilterSummary(filtered.length);
+    }
+
+    function updateTransactionFilterSummary(count) {
+        const el = $("transactionFilterSummary");
+        if (!el) return;
+        const f = getTransactionFilterState();
+        const active = [];
+        if (f.search) active.push(`busca: “${f.search}”`);
+        if (f.type !== "all") active.push(f.type === "income" ? "receitas" : "despesas");
+        if (f.category !== "all") active.push(f.category);
+        if (f.from || f.to) active.push(`${formatDateBR(f.from || f.to)}${f.from && f.to ? " até " + formatDateBR(f.to) : ""}`);
+        el.textContent = active.length ? `Filtros ativos: ${active.join(" • ")} — ${count} resultado${count === 1 ? "" : "s"}.` : `Mostrando todos os lançamentos — ${count} resultado${count === 1 ? "" : "s"}.`;
+    }
+
+
+    /* =========================================================
+       ANÁLISE INTELIGENTE — PYTHON
+       ========================================================= */
+
+    function openSmartAnalysisModal() {
+        ensureSmartAnalysisV2Styles();
+
+        const modal = $("smartAnalysisModal");
+
+        if (!modal) {
+            showToast(
+                "A janela de análise não foi encontrada.",
+                "error"
+            );
+            return;
+        }
+
+        const loading = $("smartAnalysisLoading");
+        const result = $("smartAnalysisResult");
+        const errorBox = $("smartAnalysisError");
+
+        if (loading) loading.classList.add("hidden");
+        if (result) result.classList.add("hidden");
+        if (errorBox) errorBox.classList.add("hidden");
+
+        modal.classList.remove("hidden");
+        modal.setAttribute("aria-hidden", "false");
+    }
+
+
+    function closeSmartAnalysisModal() {
+        const modal = $("smartAnalysisModal");
+
+        if (!modal) return;
+
+        modal.classList.add("hidden");
+        modal.setAttribute("aria-hidden", "true");
+    }
+
+
+    function setSmartAnalysisLoading(isLoading) {
+        const loading = $("smartAnalysisLoading");
+        const result = $("smartAnalysisResult");
+        const errorBox = $("smartAnalysisError");
+
+        if (loading) {
+            loading.classList.toggle(
+                "hidden",
+                !isLoading
+            );
+        }
+
+        if (isLoading) {
+            if (result) result.classList.add("hidden");
+            if (errorBox) errorBox.classList.add("hidden");
+        }
+    }
+
+
+    function showSmartAnalysisError(message) {
+        const loading = $("smartAnalysisLoading");
+        const result = $("smartAnalysisResult");
+        const errorBox = $("smartAnalysisError");
+
+        if (loading) loading.classList.add("hidden");
+        if (result) result.classList.add("hidden");
+
+        if (errorBox) {
+            errorBox.textContent =
+                message ||
+                "Não foi possível realizar a análise. Tente novamente.";
+
+            errorBox.classList.remove("hidden");
+        }
+    }
+
+
+    function ensureSmartAnalysisV2Styles() {
+        if ($("smartAnalysisV2Styles")) return;
+
+        const style =
+            document.createElement("style");
+
+        style.id =
+            "smartAnalysisV2Styles";
+
+        style.textContent = `
+            .smart-analysis-modal .summary-card strong {
+                white-space: nowrap;
+                overflow-wrap: normal;
+                word-break: normal;
+            }
+
+            .smart-analysis-diagnostic {
+                margin-top: 16px;
+            }
+
+            .analysis-metrics-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 12px;
+                margin: 14px 0;
+            }
+
+            .analysis-metric {
+                padding: 14px;
+                border: 1px solid var(--border, #e5e7eb);
+                border-radius: 14px;
+                background: var(--surface, #ffffff);
+            }
+
+            .analysis-metric span,
+            .analysis-metric strong {
+                display: block;
+            }
+
+            .analysis-metric span {
+                font-size: 12px;
+                opacity: .72;
+                margin-bottom: 6px;
+            }
+
+            .analysis-metric strong {
+                font-size: 16px;
+                overflow-wrap: anywhere;
+            }
+
+            .analysis-text {
+                line-height: 1.6;
+                margin-top: 12px;
+            }
+
+            .analysis-insights {
+                margin-top: 14px;
+                line-height: 1.55;
+            }
+
+            .analysis-insights ul {
+                margin: 8px 0 0;
+                padding-left: 20px;
+            }
+
+            .analysis-insights li + li {
+                margin-top: 6px;
+            }
+
+            @media (max-width: 640px) {
+                .analysis-metrics-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .smart-analysis-modal .summary-card strong {
+                    font-size: 18px;
+                }
+            }
+        `;
+
+        document.head.appendChild(style);
+    }
+
+
+    function renderSmartAnalysis(data) {
+        const loading = $("smartAnalysisLoading");
+        const result = $("smartAnalysisResult");
+        const errorBox = $("smartAnalysisError");
+
+        const income = $("analysisIncome");
+        const expense = $("analysisExpense");
+        const balance = $("analysisBalance");
+        const topCategory = $("analysisTopCategory");
+        const topCategoryValue = $("analysisTopCategoryValue");
+        const transactionCount = $("analysisTransactionCount");
+
+        if (income) {
+            income.textContent =
+                formatCurrency(data?.receitas);
+        }
+
+        if (expense) {
+            expense.textContent =
+                formatCurrency(data?.despesas);
+        }
+
+        if (balance) {
+            const value =
+                Number(data?.saldo) || 0;
+
+            balance.textContent =
+                formatCurrency(value);
+
+            balance.classList.remove(
+                "positive",
+                "negative"
+            );
+
+            balance.classList.add(
+                value < 0
+                    ? "negative"
+                    : "positive"
+            );
+        }
+
+        if (topCategory) {
+            topCategory.textContent =
+                data?.maior_categoria ||
+                "Nenhuma despesa";
+        }
+
+        if (topCategoryValue) {
+            topCategoryValue.textContent =
+                formatCurrency(
+                    data?.maior_categoria_valor
+                );
+        }
+
+        if (transactionCount) {
+            transactionCount.textContent =
+                Number(
+                    data?.quantidade_transacoes
+                ) || 0;
+        }
+
+        /*
+         * ANÁLISE INTELIGENTE 2.0
+         * O bloco abaixo é criado pelo JavaScript para manter
+         * compatibilidade com o HTML atual do ControleS.
+         */
+        if (result) {
+            let diagnostic =
+                $("smartAnalysisDiagnostic");
+
+            if (!diagnostic) {
+                diagnostic =
+                    document.createElement("article");
+
+                diagnostic.id =
+                    "smartAnalysisDiagnostic";
+
+                diagnostic.className =
+                    "panel smart-analysis-diagnostic";
+
+                const header =
+                    document.createElement("div");
+
+                header.className =
+                    "panel-header";
+
+                const headerText =
+                    document.createElement("div");
+
+                const title =
+                    document.createElement("h3");
+
+                title.textContent =
+                    "💡 Diagnóstico financeiro";
+
+                const subtitle =
+                    document.createElement("p");
+
+                subtitle.textContent =
+                    "Indicadores calculados pelo motor Python do ControleS.";
+
+                headerText.appendChild(title);
+                headerText.appendChild(subtitle);
+                header.appendChild(headerText);
+
+                const metrics =
+                    document.createElement("div");
+
+                metrics.className =
+                    "analysis-metrics-grid";
+
+                const createMetric = (
+                    label,
+                    id
+                ) => {
+                    const box =
+                        document.createElement("div");
+
+                    box.className =
+                        "analysis-metric";
+
+                    const span =
+                        document.createElement("span");
+
+                    span.textContent = label;
+
+                    const strong =
+                        document.createElement("strong");
+
+                    strong.id = id;
+                    strong.textContent = "—";
+
+                    box.appendChild(span);
+                    box.appendChild(strong);
+
+                    return box;
+                };
+
+                metrics.appendChild(
+                    createMetric(
+                        "Renda utilizada",
+                        "analysisSpentPercent"
+                    )
+                );
+
+                metrics.appendChild(
+                    createMetric(
+                        "Taxa de economia",
+                        "analysisSavingsRate"
+                    )
+                );
+
+                metrics.appendChild(
+                    createMetric(
+                        "Situação",
+                        "analysisSituation"
+                    )
+                );
+
+                const analysisText =
+                    document.createElement("p");
+
+                analysisText.id =
+                    "analysisText";
+
+                analysisText.className =
+                    "analysis-text";
+
+                const insights =
+                    document.createElement("div");
+
+                insights.id =
+                    "analysisInsights";
+
+                insights.className =
+                    "analysis-insights";
+
+                diagnostic.appendChild(header);
+                diagnostic.appendChild(metrics);
+                diagnostic.appendChild(analysisText);
+                diagnostic.appendChild(insights);
+
+                result.appendChild(diagnostic);
+            }
+
+            const spentPercent =
+                $("analysisSpentPercent");
+
+            const savingsRate =
+                $("analysisSavingsRate");
+
+            const situation =
+                $("analysisSituation");
+
+            const analysisText =
+                $("analysisText");
+
+            const insights =
+                $("analysisInsights");
+
+            const percentualGasto =
+                Number(data?.percentual_gasto) || 0;
+
+            const taxaEconomia =
+                Number(data?.taxa_economia) || 0;
+
+            if (spentPercent) {
+                spentPercent.textContent =
+                    `${percentualGasto
+                        .toFixed(1)
+                        .replace(".", ",")}%`;
+            }
+
+            if (savingsRate) {
+                savingsRate.textContent =
+                    `${taxaEconomia
+                        .toFixed(1)
+                        .replace(".", ",")}%`;
+
+                savingsRate.classList.remove(
+                    "positive",
+                    "negative"
+                );
+
+                savingsRate.classList.add(
+                    taxaEconomia < 0
+                        ? "negative"
+                        : "positive"
+                );
+            }
+
+            if (situation) {
+                situation.textContent =
+                    data?.situacao || "—";
+            }
+
+            if (analysisText) {
+                analysisText.textContent =
+                    data?.analise || "";
+            }
+
+            if (insights) {
+                insights.replaceChildren();
+
+                const items =
+                    Array.isArray(data?.insights)
+                        ? data.insights
+                        : [];
+
+                if (items.length) {
+                    const heading =
+                        document.createElement("strong");
+
+                    heading.textContent =
+                        "Insights";
+
+                    insights.appendChild(heading);
+
+                    const list =
+                        document.createElement("ul");
+
+                    items.forEach(item => {
+                        const li =
+                            document.createElement("li");
+
+                        li.textContent =
+                            String(item);
+
+                        list.appendChild(li);
+                    });
+
+                    insights.appendChild(list);
+                }
+            }
+        }
+
+        if (loading) loading.classList.add("hidden");
+        if (errorBox) errorBox.classList.add("hidden");
+        if (result) result.classList.remove("hidden");
+    }
+
+
+    async function analyzeFinancesWithPython() {
+        const button = $("smartAnalysisBtn");
+
+        if (!Array.isArray(transactions) ||
+            transactions.length === 0) {
+
+            showToast(
+                "Adicione pelo menos um lançamento para analisar.",
+                "warning"
+            );
+
+            return;
+        }
+
+        openSmartAnalysisModal();
+        setSmartAnalysisLoading(true);
+
+        if (button) {
+            button.disabled = true;
+        }
+
+        const payload = {
+            transactions:
+                transactions.map(transaction => ({
+                    type:
+                        normalizeTransactionType(
+                            transaction.type ||
+                            transaction.tipo ||
+                            transaction.transaction_type
+                        ),
+
+                    amount:
+                        getTransactionAmount(
+                            transaction
+                        ),
+
+                    category:
+                        getTransactionCategory(
+                            transaction
+                        ),
+
+                    date:
+                        getTransactionDate(
+                            transaction
+                        ),
+
+                    description:
+                        getTransactionDescription(
+                            transaction
+                        )
+                }))
+        };
+
+        try {
+            const response = await fetch(
+                `${CONTROLES_PYTHON_API}/analisar`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(payload)
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `API retornou ${response.status}`
+                );
+            }
+
+            const data =
+                await response.json();
+
+            renderSmartAnalysis(data);
+
+            showToast(
+                "Análise concluída com sucesso.",
+                "success"
+            );
+
+        } catch (error) {
+            console.error(
+                "Erro na análise Python:",
+                error
+            );
+
+            showSmartAnalysisError(
+                "Não foi possível conectar ao motor de análise. Tente novamente em alguns instantes."
+            );
+
+            showToast(
+                "Falha ao realizar a análise.",
+                "error"
+            );
+
+        } finally {
+            if (button) {
+                button.disabled = false;
+            }
+        }
+    }
+
+
+    /* =========================================================
+       TOTAIS
+       ========================================================= */
+
+    function getTotals() {
+
+        let income = 0;
+        let expense = 0;
+
+        const today =
+            todayISO();
+
+
+        transactions.forEach(transaction => {
+
+            const type =
+                normalizeTransactionType(
+                    transaction.type ||
+                    transaction.tipo ||
+                    transaction.transaction_type
+                );
+
+
+            const amount =
+                getTransactionAmount(
+                    transaction
+                );
+
+
+            if (type === "income") {
+
+                if (
+                    isIncomeReceived(
+                        transaction,
+                        today
+                    )
+                ) {
+                    income += amount;
+                }
+
+            } else {
+
+                expense += amount;
+            }
+        });
+
+
+        return {
+            income,
+            expense,
+            balance: income - expense
+        };
+    }
+
+
+    /* =========================================================
+       DASHBOARD
+       ========================================================= */
+
+    function updateDashboard() {
+
+        const totals =
+            getTotals();
+
+       /* VALORES PRINCIPAIS — TAMBÉM VISÍVEIS NO PLANO GRÁTIS */
+
+    const freeIncome = $("incomeValue");
+    const freeExpense = $("expenseValue");
+    const freeBalance = $("balanceValue");
+
+    if (freeIncome) {
+        freeIncome.textContent = formatCurrency(totals.income);
+    }
+
+    if (freeExpense) {
+        freeExpense.textContent = formatCurrency(totals.expense);
+    }
+
+    if (freeBalance) {
+        freeBalance.textContent = formatCurrency(totals.balance);
+    }
+
+
+        const incomeElements = [
+            "totalIncome",
+            "dashboardIncome",
+            "monthIncome",
+            "monthlyIncome"
+        ];
+
+
+        incomeElements.forEach(id => {
+
+            const element = $(id);
+
+            if (element) {
+                element.textContent =
+                    formatCurrency(
+                        totals.income
+                    );
+            }
+        });
+
+
+        const expenseElements = [
+            "totalExpense",
+            "dashboardExpense",
+            "monthExpense",
+            "monthlyExpense"
+        ];
+
+
+        expenseElements.forEach(id => {
+
+            const element = $(id);
+
+            if (element) {
+                element.textContent =
+                    formatCurrency(
+                        totals.expense
+                    );
+            }
+        });
+
+
+        const balanceElements = [
+            "totalBalance",
+            "dashboardBalance",
+            "monthBalance",
+            "monthlyBalance"
+        ];
+
+
+        balanceElements.forEach(id => {
+
+            const element = $(id);
+
+            if (element) {
+                element.textContent =
+                    formatCurrency(
+                        totals.balance
+                    );
+            }
+        });
+
+
+        updatePeriodSummary();
+
+        updateReceivableDashboard();
+
+        updateMonthlySummary();
+
+        updateExpenseRanking();
+
+        updatePiggyBank();
+        updatePremiumDashboard();
+
+        renderRecentTransactions();
+
+        renderFinanceChart();
+    }
+
+
+    /* =========================================================
+       LANÇAMENTOS RECENTES
+       ========================================================= */
+
+    function renderRecentTransactions() {
+
+        const list =
+            firstExisting(
+                "recentTransactions",
+                "recentTransactionsList",
+                "dashboardTransactions"
+            );
+
+        if (!list) return;
+
+
+        const recent =
+            [...transactions]
+                .sort(
+                    (a, b) =>
+                        getTransactionDate(b)
+                            .localeCompare(
+                                getTransactionDate(a)
+                            )
+                )
+                .slice(0, 5);
+
+
+        if (!recent.length) {
+
+            list.innerHTML = `
+                <div class="empty-state">
+                    Nenhum lançamento recente.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        list.innerHTML =
+            recent
+                .map(transaction => {
+
+                    const type =
+                        normalizeTransactionType(
+                            transaction.type ||
+                            transaction.tipo
+                        );
+
+                    const amount =
+                        getTransactionAmount(
+                            transaction
+                        );
+
+                    return `
+                        <div class="recent-transaction">
+
+                            <div>
+
+                                <strong>
+                                    ${escapeHTML(
+                                        getTransactionDescription(transaction)
+                                    )}
+                                </strong>
+
+                                <small>
+                                    ${escapeHTML(
+                                        getTransactionCategory(transaction)
+                                    )}
+                                    •
+                                    ${formatDateBR(
+                                        getTransactionDate(transaction)
+                                    )}
+                                </small>
+
+                            </div>
+
+                            <strong
+                                class="${
+                                    type === "income"
+                                        ? "income-value"
+                                        : "expense-value"
+                                }"
+                            >
+                                ${
+                                    type === "income"
+                                        ? "+"
+                                        : "-"
+                                }
+                                ${formatCurrency(amount)}
+                            </strong>
+
+                        </div>
+                    `;
+                })
+                .join("");
+    }
+
+
+    /* =========================================================
+       PERÍODO FINANCEIRO — CORRIGIDO
+       ========================================================= */
+
+    function getPeriodElements() {
+        return {
+            select: firstExisting("dashboardPeriod", "periodFilter") || document.querySelector("[data-period-filter]"),
+            apply: firstExisting("applyPeriodBtn", "applyPeriod", "btnApplyPeriod") || document.querySelector("[data-apply-period]"),
+            clear: firstExisting("clearPeriodBtn"),
+            customFields: firstExisting("customPeriodFields", "periodCustomFields", "customDateRange"),
+            start: firstExisting("periodStartDate", "periodStart", "customStartDate", "startDate") || document.querySelector("[data-period-start]"),
+            end: firstExisting("periodEndDate", "periodEnd", "customEndDate", "endDate") || document.querySelector("[data-period-end]"),
+            income: firstExisting("incomeValue", "periodIncome", "periodIncomeValue", "periodEarnedValue") || document.querySelector("[data-period-income]"),
+            expense: firstExisting("expenseValue", "periodExpense", "periodExpenseValue", "periodSpentValue") || document.querySelector("[data-period-expense]"),
+            balance: firstExisting("balanceValue", "periodBalance", "periodBalanceValue") || document.querySelector("[data-period-balance]"),
+            label: firstExisting("activePeriodLabel", "periodLabel") || document.querySelector("[data-period-label]")
+        };
+    }
+
+
+    /* =========================================================
+       INICIALIZAR FILTRO
+       ========================================================= */
+
+    function initializePeriodFilter() {
+
+        const {
+            select,
+            customFields,
+            start,
+            end
+        } = getPeriodElements();
+
+        if (!select) return;
+
+        /*
+         * Se o HTML já tiver as opções,
+         * preservamos o que existe.
+         *
+         * Se estiver vazio, criamos as opções
+         * oficiais do ControleS.
+         */
+
+        if (select.options.length === 0) {
+
+            select.innerHTML = `
+                <option value="today">
+                    Hoje
+                </option>
+
+                <option value="yesterday">
+                    Ontem
+                </option>
+
+                <option value="7days">
+                    Últimos 7 dias
+                </option>
+
+                <option value="30days">
+                    Últimos 30 dias
+                </option>
+
+                <option value="month">
+                    Este mês
+                </option>
+
+                <option value="previousMonth">
+                    Mês anterior
+                </option>
+
+                <option value="all">
+                    Todo o período
+                </option>
+
+                <option value="custom">
+                    Personalizado
+                </option>
+            `;
+        }
+
+        /*
+         * Caso o HTML já tenha opções antigas,
+         * normalizamos os valores sem destruir
+         * o texto visual existente.
+         */
+
+        const optionMap = {
+            week: "7days",
+            "1week": "7days",
+            "7": "7days",
+
+            month: "month",
+            "1month": "30days",
+
+            all: "all",
+            everything: "all",
+
+            custom: "custom"
+        };
+
+        Array.from(select.options).forEach(option => {
+
+            const value =
+                String(option.value || "")
+                    .trim()
+                    .toLowerCase();
+
+            if (optionMap[value]) {
+                option.value = optionMap[value];
+            }
+        });
+
+
+        /*
+         * Garante que as opções necessárias
+         * existam mesmo que o HTML esteja com
+         * uma versão antiga.
+         */
+
+        const requiredOptions = [
+            ["today", "Hoje"],
+            ["yesterday", "Ontem"],
+            ["7days", "Últimos 7 dias"],
+            ["30days", "Últimos 30 dias"],
+            ["month", "Este mês"],
+            ["previousMonth", "Mês anterior"],
+            ["all", "Todo o período"],
+            ["custom", "Personalizado"]
+        ];
+
+
+        requiredOptions.forEach(([value, text]) => {
+
+            const exists =
+                Array.from(select.options)
+                    .some(option =>
+                        option.value === value
+                    );
+
+            if (!exists) {
+
+                select.add(
+                    new Option(text, value)
+                );
+            }
+        });
+
+
+        /*
+         * Período inicial:
+         * Hoje
+         */
+
+        if (!select.value) {
+            select.value = "today";
+        }
+
+
+        /*
+         * Datas personalizadas começam escondidas.
+         */
+
+        if (customFields) {
+
+            const isCustom =
+                select.value === "custom";
+
+            customFields.classList.toggle(
+                "hidden",
+                !isCustom
+            );
+
+            customFields.style.display =
+                isCustom
+                    ? "flex"
+                    : "none";
+        }
+
+
+        /*
+         * Limites dos campos de data.
+         */
+
+        if (start) {
+            start.max = todayISO();
+        }
+
+        if (end) {
+            end.max = todayISO();
+        }
+    }
+
+
+    /* =========================================================
+       MOSTRAR / ESCONDER PERSONALIZADO
+       ========================================================= */
+
+    function toggleCustomPeriodFields() {
+
+        const {
+            select,
+            customFields
+        } = getPeriodElements();
+
+        if (!select || !customFields) {
+            return;
+        }
 
         const isCustom =
             select.value === "custom";
@@ -3050,481 +3405,923 @@ function initializePeriodFilter() {
     }
 
 
-    /*
-     * Limites dos campos de data.
-     */
+    /* =========================================================
+       PRIMEIRO DIA DO MÊS
+       ========================================================= */
 
-    if (start) {
-        start.max = todayISO();
-    }
+    function getFirstDayOfMonth(year, month) {
 
-    if (end) {
-        end.max = todayISO();
-    }
-}
+        const date =
+            new Date(
+                year,
+                month,
+                1
+            );
 
+        const y =
+            date.getFullYear();
 
-/* =========================================================
-   MOSTRAR / ESCONDER PERSONALIZADO
-   ========================================================= */
+        const m =
+            String(
+                date.getMonth() + 1
+            ).padStart(2, "0");
 
-function toggleCustomPeriodFields() {
-
-    const {
-        select,
-        customFields
-    } = getPeriodElements();
-
-    if (!select || !customFields) {
-        return;
-    }
-
-    const isCustom =
-        select.value === "custom";
-
-    customFields.classList.toggle(
-        "hidden",
-        !isCustom
-    );
-
-    customFields.style.display =
-        isCustom
-            ? "flex"
-            : "none";
-}
-
-
-/* =========================================================
-   PRIMEIRO DIA DO MÊS
-   ========================================================= */
-
-function getFirstDayOfMonth(year, month) {
-
-    const date =
-        new Date(
-            year,
-            month,
-            1
-        );
-
-    const y =
-        date.getFullYear();
-
-    const m =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-    return `${y}-${m}-01`;
-}
-
-
-/* =========================================================
-   ÚLTIMO DIA DO MÊS
-   ========================================================= */
-
-function getLastDayOfMonth(year, month) {
-
-    const date =
-        new Date(
-            year,
-            month + 1,
-            0
-        );
-
-    const y =
-        date.getFullYear();
-
-    const m =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-    const d =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
-
-    return `${y}-${m}-${d}`;
-}
-
-
-/* =========================================================
-   PERÍODO SELECIONADO
-   ========================================================= */
-
-function getSelectedPeriod() {
-    const { select, start, end } = getPeriodElements();
-    if (!select || !select.value) return null;
-    const today = todayISO();
-    switch (select.value) {
-        case "today": return { start: today, end: today, label: "Hoje" };
-        case "yesterday": { const d=changeDate(today,-1); return { start:d,end:d,label:"Ontem" }; }
-        case "7": return { start:changeDate(today,-6), end:today, label:"Últimos 7 dias" };
-        case "30": return { start:changeDate(today,-29), end:today, label:"Últimos 30 dias" };
-        case "week": return { start:changeDate(today,-6), end:today, label:"Última semana" };
-        case "month": return { start:getFirstDayOfCurrentMonth(), end:today, label:"Este mês" };
-        case "previous-month": { const first=new Date(new Date().getFullYear(),new Date().getMonth()-1,1); const last=new Date(new Date().getFullYear(),new Date().getMonth(),0); const f=`${first.getFullYear()}-${String(first.getMonth()+1).padStart(2,"0")}-01`; const l=`${last.getFullYear()}-${String(last.getMonth()+1).padStart(2,"0")}-${String(last.getDate()).padStart(2,"0")}`; return {start:f,end:l,label:"Mês anterior"}; }
-        case "all": return { start:null, end:null, label:"Todo o período" };
-        case "custom": { let a=start?.value||"", b=end?.value||""; if(!a&&!b) return null; if(!a)a=b; if(!b)b=a; if(a>b)[a,b]=[b,a]; return {start:a,end:b,label:`${formatDateBR(a)} até ${formatDateBR(b)}`}; }
-        default: return null;
-    }
-}
-
-
-/* =========================================================
-   TRANSAÇÃO DENTRO DO PERÍODO
-   ========================================================= */
-
-function transactionIsInPeriod(
-    transaction,
-    period
-) {
-
-    if (!period) {
-        return false;
-    }
-
-    const date =
-        String(
-            getTransactionDate(
-                transaction
-            ) || ""
-        ).split("T")[0];
-
-
-    if (!date) {
-        return false;
+        return `${y}-${m}-01`;
     }
 
 
-    /*
-     * Todo o período.
-     */
+    /* =========================================================
+       ÚLTIMO DIA DO MÊS
+       ========================================================= */
 
-    if (
-        !period.start &&
-        !period.end
+    function getLastDayOfMonth(year, month) {
+
+        const date =
+            new Date(
+                year,
+                month + 1,
+                0
+            );
+
+        const y =
+            date.getFullYear();
+
+        const m =
+            String(
+                date.getMonth() + 1
+            ).padStart(2, "0");
+
+        const d =
+            String(
+                date.getDate()
+            ).padStart(2, "0");
+
+        return `${y}-${m}-${d}`;
+    }
+
+
+    /* =========================================================
+       PERÍODO SELECIONADO
+       ========================================================= */
+
+    function getSelectedPeriod() {
+        const { select, start, end } = getPeriodElements();
+        if (!select || !select.value) return null;
+        const today = todayISO();
+        switch (select.value) {
+            case "today": return { start: today, end: today, label: "Hoje" };
+            case "yesterday": { const d=changeDate(today,-1); return { start:d,end:d,label:"Ontem" }; }
+            case "7": return { start:changeDate(today,-6), end:today, label:"Últimos 7 dias" };
+            case "30": return { start:changeDate(today,-29), end:today, label:"Últimos 30 dias" };
+            case "week": return { start:changeDate(today,-6), end:today, label:"Última semana" };
+            case "month": return { start:getFirstDayOfCurrentMonth(), end:today, label:"Este mês" };
+            case "previous-month": { const first=new Date(new Date().getFullYear(),new Date().getMonth()-1,1); const last=new Date(new Date().getFullYear(),new Date().getMonth(),0); const f=`${first.getFullYear()}-${String(first.getMonth()+1).padStart(2,"0")}-01`; const l=`${last.getFullYear()}-${String(last.getMonth()+1).padStart(2,"0")}-${String(last.getDate()).padStart(2,"0")}`; return {start:f,end:l,label:"Mês anterior"}; }
+            case "all": return { start:null, end:null, label:"Todo o período" };
+            case "custom": { let a=start?.value||"", b=end?.value||""; if(!a&&!b) return null; if(!a)a=b; if(!b)b=a; if(a>b)[a,b]=[b,a]; return {start:a,end:b,label:`${formatDateBR(a)} até ${formatDateBR(b)}`}; }
+            default: return null;
+        }
+    }
+
+
+    /* =========================================================
+       TRANSAÇÃO DENTRO DO PERÍODO
+       ========================================================= */
+
+    function transactionIsInPeriod(
+        transaction,
+        period
     ) {
+
+        if (!period) {
+            return false;
+        }
+
+        const date =
+            String(
+                getTransactionDate(
+                    transaction
+                ) || ""
+            ).split("T")[0];
+
+
+        if (!date) {
+            return false;
+        }
+
+
+        /*
+         * Todo o período.
+         */
+
+        if (
+            !period.start &&
+            !period.end
+        ) {
+            return true;
+        }
+
+
+        if (
+            period.start &&
+            date < period.start
+        ) {
+            return false;
+        }
+
+
+        if (
+            period.end &&
+            date > period.end
+        ) {
+            return false;
+        }
+
+
         return true;
     }
 
 
-    if (
-        period.start &&
-        date < period.start
-    ) {
-        return false;
-    }
+    /* =========================================================
+       CALCULAR RESUMO DO PERÍODO
+       ========================================================= */
+
+    function calculatePeriodSummary(period) {
+
+        let income = 0;
+        let expense = 0;
 
 
-    if (
-        period.end &&
-        date > period.end
-    ) {
-        return false;
-    }
+        if (!Array.isArray(transactions)) {
+
+            return {
+                income: 0,
+                expense: 0,
+                balance: 0
+            };
+        }
 
 
-    return true;
-}
+        transactions.forEach(transaction => {
+
+            if (
+                !transactionIsInPeriod(
+                    transaction,
+                    period
+                )
+            ) {
+                return;
+            }
 
 
-/* =========================================================
-   CALCULAR RESUMO DO PERÍODO
-   ========================================================= */
-
-function calculatePeriodSummary(period) {
-
-    let income = 0;
-    let expense = 0;
+            const type =
+                normalizeTransactionType(
+                    transaction.type ||
+                    transaction.tipo ||
+                    transaction.transaction_type
+                );
 
 
-    if (!Array.isArray(transactions)) {
+            const amount =
+                getTransactionAmount(
+                    transaction
+                );
+
+
+            if (
+                !Number.isFinite(amount) ||
+                amount <= 0
+            ) {
+                return;
+            }
+
+
+            if (type === "income") {
+
+                /*
+                 * Receita futura não entra
+                 * como dinheiro recebido.
+                 */
+
+                if (
+                    isIncomeReceived(
+                        transaction
+                    )
+                ) {
+                    income += amount;
+                }
+
+            } else {
+
+                expense += amount;
+            }
+        });
+
 
         return {
-            income: 0,
-            expense: 0,
-            balance: 0
+
+            income,
+
+            expense,
+
+            balance:
+                income - expense
         };
     }
 
 
-    transactions.forEach(transaction => {
+    /* =========================================================
+       ATUALIZAR CARDS DO PERÍODO
+       ========================================================= */
 
-        if (
-            !transactionIsInPeriod(
-                transaction,
-                period
-            )
-        ) {
+    function updatePeriodSummary() {
+
+        const elements =
+            getPeriodElements();
+
+        const period =
+            getSelectedPeriod();
+
+
+        /*
+         * Se ainda não houver período,
+         * limpamos os cards.
+         */
+
+        if (!period) {
+
+            if (elements.income) {
+                elements.income.textContent =
+                    formatCurrency(0);
+            }
+
+            if (elements.expense) {
+                elements.expense.textContent =
+                    formatCurrency(0);
+            }
+
+            if (elements.balance) {
+                elements.balance.textContent =
+                    formatCurrency(0);
+            }
+
+            if (elements.label) {
+                elements.label.textContent =
+                    "Escolha um período";
+            }
+
             return;
         }
 
 
-        const type =
-            normalizeTransactionType(
-                transaction.type ||
-                transaction.tipo ||
-                transaction.transaction_type
+        const summary =
+            calculatePeriodSummary(
+                period
             );
 
 
-        const amount =
-            getTransactionAmount(
+        if (elements.income) {
+
+            elements.income.textContent =
+                formatCurrency(
+                    summary.income
+                );
+        }
+
+
+        if (elements.expense) {
+
+            elements.expense.textContent =
+                formatCurrency(
+                    summary.expense
+                );
+        }
+
+
+        if (elements.balance) {
+
+            elements.balance.textContent =
+                formatCurrency(
+                    summary.balance
+                );
+        }
+
+
+        if (elements.label) {
+
+            elements.label.textContent =
+                period.label;
+        }
+    }
+
+
+    /* =========================================================
+       APLICAR PERÍODO
+       ========================================================= */
+
+    function applySelectedPeriod() {
+
+        const {
+            select,
+            start,
+            end
+        } = getPeriodElements();
+
+
+        if (!select || !select.value) {
+
+            showToast(
+                "Escolha um período primeiro.",
+                "warning"
+            );
+
+            return;
+        }
+
+
+        /*
+         * Validação do personalizado.
+         */
+
+        if (
+            select.value === "custom"
+        ) {
+
+            if (
+                !start?.value &&
+                !end?.value
+            ) {
+
+                showToast(
+                    "Escolha pelo menos uma data.",
+                    "warning"
+                );
+
+                return;
+            }
+
+
+            if (
+                start?.value &&
+                end?.value &&
+                start.value > end.value
+            ) {
+
+                showToast(
+                    "A data inicial não pode ser maior que a final.",
+                    "warning"
+                );
+
+                return;
+            }
+        }
+
+
+        updatePeriodSummary();
+
+
+        /*
+         * Atualiza também os relatórios
+         * e dashboard caso estejam presentes.
+         */
+
+        updateDashboard();
+
+        renderTransactions();
+
+        renderReports();
+
+
+        showToast(
+            `Período "${getSelectedPeriod()?.label || ""}" aplicado.`,
+            "success"
+        );
+    }
+
+
+    /* =========================================================
+       EVENTOS DO PERÍODO
+       ========================================================= */
+
+    function setupPeriodEvents() {
+
+        const elements =
+            getPeriodElements();
+
+        if (elements.clear && elements.clear.dataset.periodBound !== "true") {
+            elements.clear.dataset.periodBound = "true";
+            elements.clear.addEventListener("click", event => {
+                event.preventDefault();
+                if (elements.select) elements.select.value = "30";
+                if (elements.start) elements.start.value = "";
+                if (elements.end) elements.end.value = "";
+                toggleCustomPeriodFields();
+                updatePeriodSummary();
+                showToast("Filtro de período limpo.", "success");
+            });
+        }
+
+
+        if (elements.select) {
+
+            /*
+             * Evita listeners duplicados caso
+             * essa função seja chamada novamente.
+             */
+
+            if (
+                elements.select.dataset.periodBound !==
+                "true"
+            ) {
+
+                elements.select.dataset.periodBound =
+                    "true";
+
+
+                elements.select.addEventListener(
+                    "change",
+                    () => {
+
+                        toggleCustomPeriodFields();
+
+                        /*
+                         * Para os períodos prontos,
+                         * atualizamos imediatamente.
+                         *
+                         * Personalizado espera o botão
+                         * Aplicar.
+                         */
+
+                        if (
+                            elements.select.value !==
+                            "custom"
+                        ) {
+                            updatePeriodSummary();
+                        }
+                    }
+                );
+            }
+        }
+
+
+        if (elements.apply) {
+
+            if (
+                elements.apply.dataset.periodBound !==
+                "true"
+            ) {
+
+                elements.apply.dataset.periodBound =
+                    "true";
+
+
+                elements.apply.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        applySelectedPeriod();
+                    }
+                );
+            }
+        }
+
+
+        /*
+         * Atualiza ao alterar as datas personalizadas.
+         */
+
+        [elements.start, elements.end]
+            .filter(Boolean)
+            .forEach(input => {
+
+                if (
+                    input.dataset.periodDateBound ===
+                    "true"
+                ) {
+                    return;
+                }
+
+                input.dataset.periodDateBound =
+                    "true";
+
+
+                input.addEventListener(
+                    "change",
+                    () => {
+
+                        if (
+                            elements.select?.value ===
+                            "custom"
+                        ) {
+                            updatePeriodSummary();
+                        }
+                    }
+                );
+            });
+    }
+
+
+    /* =========================================================
+       INICIALIZA FILTRO
+       ========================================================= */
+
+    function initializePeriodFilter() {
+
+        const {
+            select,
+            customFields,
+            start,
+            end
+        } = getPeriodElements();
+
+
+        if (!select) return;
+
+
+        /*
+         * Só preenche se o select estiver vazio.
+         * Assim não destrói o design/opções que já
+         * existem no HTML.
+         */
+
+        if (select.options.length === 0) {
+
+            select.innerHTML = `
+                <option value="">
+                    Escolher período
+                </option>
+
+                <option value="week">
+                    1 semana
+                </option>
+
+                <option value="month">
+                    1 mês
+                </option>
+
+                <option value="custom">
+                    Personalizado
+                </option>
+
+                <option value="all">
+                    Tudo
+                </option>
+            `;
+        }
+
+
+        if (customFields) {
+
+            customFields.classList.add(
+                "hidden"
+            );
+
+            customFields.style.display =
+                "none";
+        }
+
+
+        if (start) {
+            start.max = todayISO();
+        }
+
+        if (end) {
+            end.max = todayISO();
+        }
+    }
+
+
+    /* =========================================================
+       MOSTRAR DATAS PERSONALIZADAS
+       ========================================================= */
+
+    function toggleCustomPeriodFields() {
+
+        const {
+            select,
+            customFields
+        } = getPeriodElements();
+
+
+        if (!select || !customFields) {
+            return;
+        }
+
+
+        const isCustom =
+            select.value === "custom";
+
+
+        customFields.classList.toggle(
+            "hidden",
+            !isCustom
+        );
+
+
+        customFields.style.display =
+            isCustom
+                ? "flex"
+                : "none";
+    }
+
+
+    /* =========================================================
+       PERÍODO SELECIONADO
+       ========================================================= */
+
+    function getSelectedPeriod() {
+        const { select, start, end } = getPeriodElements();
+        if (!select || !select.value) return null;
+        const today = todayISO();
+        switch (select.value) {
+            case "today": return { start: today, end: today, label: "Hoje" };
+            case "yesterday": { const d=changeDate(today,-1); return { start:d,end:d,label:"Ontem" }; }
+            case "7": return { start:changeDate(today,-6), end:today, label:"Últimos 7 dias" };
+            case "30": return { start:changeDate(today,-29), end:today, label:"Últimos 30 dias" };
+            case "week": return { start:changeDate(today,-6), end:today, label:"Última semana" };
+            case "month": return { start:getFirstDayOfCurrentMonth(), end:today, label:"Este mês" };
+            case "previous-month": { const first=new Date(new Date().getFullYear(),new Date().getMonth()-1,1); const last=new Date(new Date().getFullYear(),new Date().getMonth(),0); const f=`${first.getFullYear()}-${String(first.getMonth()+1).padStart(2,"0")}-01`; const l=`${last.getFullYear()}-${String(last.getMonth()+1).padStart(2,"0")}-${String(last.getDate()).padStart(2,"0")}`; return {start:f,end:l,label:"Mês anterior"}; }
+            case "all": return { start:null, end:null, label:"Todo o período" };
+            case "custom": { let a=start?.value||"", b=end?.value||""; if(!a&&!b) return null; if(!a)a=b; if(!b)b=a; if(a>b)[a,b]=[b,a]; return {start:a,end:b,label:`${formatDateBR(a)} até ${formatDateBR(b)}`}; }
+            default: return null;
+        }
+    }
+
+
+    /* =========================================================
+       TRANSAÇÃO DENTRO DO PERÍODO
+       ========================================================= */
+
+    function transactionIsInPeriod(
+        transaction,
+        period
+    ) {
+
+        if (!period) {
+            return false;
+        }
+
+
+        const date =
+            getTransactionDate(
                 transaction
             );
 
 
-        if (
-            !Number.isFinite(amount) ||
-            amount <= 0
-        ) {
-            return;
+        if (!date) {
+            return false;
         }
 
 
-        if (type === "income") {
+        if (
+            period.start &&
+            date < period.start
+        ) {
+            return false;
+        }
 
-            /*
-             * Receita futura não entra
-             * como dinheiro recebido.
-             */
+
+        if (
+            period.end &&
+            date > period.end
+        ) {
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+    /* =========================================================
+       CALCULAR PERÍODO
+       ========================================================= */
+
+    function calculatePeriodSummary(period) {
+
+        let income = 0;
+        let expense = 0;
+
+
+        if (!Array.isArray(transactions)) {
+
+            return {
+                income: 0,
+                expense: 0,
+                balance: 0
+            };
+        }
+
+
+        transactions.forEach(transaction => {
 
             if (
-                isIncomeReceived(
-                    transaction
+                !transactionIsInPeriod(
+                    transaction,
+                    period
                 )
             ) {
-                income += amount;
+                return;
             }
 
-        } else {
 
-            expense += amount;
+            const type =
+                normalizeTransactionType(
+                    transaction.type ||
+                    transaction.tipo ||
+                    transaction.transaction_type
+                );
+
+
+            const amount =
+                getTransactionAmount(
+                    transaction
+                );
+
+
+            if (
+                !Number.isFinite(amount) ||
+                amount <= 0
+            ) {
+                return;
+            }
+
+
+            if (type === "income") {
+
+                /*
+                 * Receita futura não é considerada
+                 * dinheiro ganho.
+                 */
+
+                if (
+                    isIncomeReceived(
+                        transaction
+                    )
+                ) {
+
+                    income += amount;
+                }
+
+            } else {
+
+                expense += amount;
+            }
+        });
+
+
+        return {
+
+            income,
+
+            expense,
+
+            balance:
+                income - expense
+        };
+    }
+
+
+    /* =========================================================
+       ATUALIZAR CARDS DO PERÍODO
+       ========================================================= */
+
+    function updatePeriodSummary() {
+
+        const elements =
+            getPeriodElements();
+
+
+        const period =
+            getSelectedPeriod();
+
+
+        if (!period) {
+            return;
         }
-    });
 
 
-    return {
+        const summary =
+            calculatePeriodSummary(
+                period
+            );
 
-        income,
-
-        expense,
-
-        balance:
-            income - expense
-    };
-}
-
-
-/* =========================================================
-   ATUALIZAR CARDS DO PERÍODO
-   ========================================================= */
-
-function updatePeriodSummary() {
-
-    const elements =
-        getPeriodElements();
-
-    const period =
-        getSelectedPeriod();
-
-
-    /*
-     * Se ainda não houver período,
-     * limpamos os cards.
-     */
-
-    if (!period) {
 
         if (elements.income) {
+
             elements.income.textContent =
-                formatCurrency(0);
+                formatCurrency(
+                    summary.income
+                );
         }
+
 
         if (elements.expense) {
+
             elements.expense.textContent =
-                formatCurrency(0);
+                formatCurrency(
+                    summary.expense
+                );
         }
+
 
         if (elements.balance) {
+
             elements.balance.textContent =
-                formatCurrency(0);
+                formatCurrency(
+                    summary.balance
+                );
         }
+
 
         if (elements.label) {
+
             elements.label.textContent =
-                "Escolha um período";
+                period.label;
+        }
+    }
+
+
+    /* =========================================================
+       APLICAR PERÍODO
+       ========================================================= */
+
+    function applySelectedPeriod() {
+
+        const {
+            select,
+            start,
+            end
+        } = getPeriodElements();
+
+
+        if (!select || !select.value) {
+
+            showToast(
+                "Escolha um período primeiro.",
+                "warning"
+            );
+
+            return;
         }
 
-        return;
-    }
+
+        if (
+            select.value === "custom"
+        ) {
+
+            if (
+                !start?.value &&
+                !end?.value
+            ) {
+
+                showToast(
+                    "Escolha a data inicial e a data final.",
+                    "warning"
+                );
+
+                return;
+            }
 
 
-    const summary =
-        calculatePeriodSummary(
-            period
-        );
+            if (
+                start?.value &&
+                end?.value &&
+                start.value > end.value
+            ) {
+
+                showToast(
+                    "A data inicial não pode ser maior que a final.",
+                    "warning"
+                );
+
+                return;
+            }
+        }
 
 
-    if (elements.income) {
+        updatePeriodSummary();
 
-        elements.income.textContent =
-            formatCurrency(
-                summary.income
-            );
-    }
-
-
-    if (elements.expense) {
-
-        elements.expense.textContent =
-            formatCurrency(
-                summary.expense
-            );
-    }
-
-
-    if (elements.balance) {
-
-        elements.balance.textContent =
-            formatCurrency(
-                summary.balance
-            );
-    }
-
-
-    if (elements.label) {
-
-        elements.label.textContent =
-            period.label;
-    }
-}
-
-
-/* =========================================================
-   APLICAR PERÍODO
-   ========================================================= */
-
-function applySelectedPeriod() {
-
-    const {
-        select,
-        start,
-        end
-    } = getPeriodElements();
-
-
-    if (!select || !select.value) {
 
         showToast(
-            "Escolha um período primeiro.",
-            "warning"
+            "Período aplicado com sucesso.",
+            "success"
         );
-
-        return;
     }
 
 
-    /*
-     * Validação do personalizado.
-     */
+    /* =========================================================
+       EVENTOS DO PERÍODO
+       ========================================================= */
 
-    if (
-        select.value === "custom"
-    ) {
+    function setupPeriodEvents() {
 
-        if (
-            !start?.value &&
-            !end?.value
-        ) {
-
-            showToast(
-                "Escolha pelo menos uma data.",
-                "warning"
-            );
-
-            return;
-        }
+        const elements =
+            getPeriodElements();
 
 
-        if (
-            start?.value &&
-            end?.value &&
-            start.value > end.value
-        ) {
-
-            showToast(
-                "A data inicial não pode ser maior que a final.",
-                "warning"
-            );
-
-            return;
-        }
-    }
-
-
-    updatePeriodSummary();
-
-
-    /*
-     * Atualiza também os relatórios
-     * e dashboard caso estejam presentes.
-     */
-
-    updateDashboard();
-
-    renderTransactions();
-
-    renderReports();
-
-
-    showToast(
-        `Período "${getSelectedPeriod()?.label || ""}" aplicado.`,
-        "success"
-    );
-}
-
-
-/* =========================================================
-   EVENTOS DO PERÍODO
-   ========================================================= */
-
-function setupPeriodEvents() {
-
-    const elements =
-        getPeriodElements();
-
-    if (elements.clear && elements.clear.dataset.periodBound !== "true") {
-        elements.clear.dataset.periodBound = "true";
-        elements.clear.addEventListener("click", event => {
-            event.preventDefault();
-            if (elements.select) elements.select.value = "30";
-            if (elements.start) elements.start.value = "";
-            if (elements.end) elements.end.value = "";
-            toggleCustomPeriodFields();
-            updatePeriodSummary();
-            showToast("Filtro de período limpo.", "success");
-        });
-    }
-
-
-    if (elements.select) {
-
-        /*
-         * Evita listeners duplicados caso
-         * essa função seja chamada novamente.
-         */
-
-        if (
-            elements.select.dataset.periodBound !==
-            "true"
-        ) {
-
-            elements.select.dataset.periodBound =
-                "true";
-
+        if (elements.select) {
 
             elements.select.addEventListener(
                 "change",
@@ -3533,1008 +4330,36 @@ function setupPeriodEvents() {
                     toggleCustomPeriodFields();
 
                     /*
-                     * Para os períodos prontos,
-                     * atualizamos imediatamente.
-                     *
-                     * Personalizado espera o botão
-                     * Aplicar.
+                     * Não aplica automaticamente.
+                     * O usuário escolhe e aperta
+                     * Aplicar período.
                      */
-
-                    if (
-                        elements.select.value !==
-                        "custom"
-                    ) {
-                        updatePeriodSummary();
-                    }
                 }
             );
         }
-    }
 
 
-    if (elements.apply) {
-
-        if (
-            elements.apply.dataset.periodBound !==
-            "true"
-        ) {
-
-            elements.apply.dataset.periodBound =
-                "true";
-
+        if (elements.apply) {
 
             elements.apply.addEventListener(
                 "click",
-                event => {
-
-                    event.preventDefault();
-
-                    applySelectedPeriod();
-                }
+                applySelectedPeriod
             );
         }
     }
 
 
-    /*
-     * Atualiza ao alterar as datas personalizadas.
-     */
+    /* =========================================================
+       RESUMO MENSAL
+       ========================================================= */
 
-    [elements.start, elements.end]
-        .filter(Boolean)
-        .forEach(input => {
+    function updateMonthlySummary() {
 
-            if (
-                input.dataset.periodDateBound ===
-                "true"
-            ) {
-                return;
-            }
+        const month =
+            new Date().getMonth();
 
-            input.dataset.periodDateBound =
-                "true";
-
-
-            input.addEventListener(
-                "change",
-                () => {
-
-                    if (
-                        elements.select?.value ===
-                        "custom"
-                    ) {
-                        updatePeriodSummary();
-                    }
-                }
-            );
-        });
-}
-
-
-/* =========================================================
-   INICIALIZA FILTRO
-   ========================================================= */
-
-function initializePeriodFilter() {
-
-    const {
-        select,
-        customFields,
-        start,
-        end
-    } = getPeriodElements();
-
-
-    if (!select) return;
-
-
-    /*
-     * Só preenche se o select estiver vazio.
-     * Assim não destrói o design/opções que já
-     * existem no HTML.
-     */
-
-    if (select.options.length === 0) {
-
-        select.innerHTML = `
-            <option value="">
-                Escolher período
-            </option>
-
-            <option value="week">
-                1 semana
-            </option>
-
-            <option value="month">
-                1 mês
-            </option>
-
-            <option value="custom">
-                Personalizado
-            </option>
-
-            <option value="all">
-                Tudo
-            </option>
-        `;
-    }
-
-
-    if (customFields) {
-
-        customFields.classList.add(
-            "hidden"
-        );
-
-        customFields.style.display =
-            "none";
-    }
-
-
-    if (start) {
-        start.max = todayISO();
-    }
-
-    if (end) {
-        end.max = todayISO();
-    }
-}
-
-
-/* =========================================================
-   MOSTRAR DATAS PERSONALIZADAS
-   ========================================================= */
-
-function toggleCustomPeriodFields() {
-
-    const {
-        select,
-        customFields
-    } = getPeriodElements();
-
-
-    if (!select || !customFields) {
-        return;
-    }
-
-
-    const isCustom =
-        select.value === "custom";
-
-
-    customFields.classList.toggle(
-        "hidden",
-        !isCustom
-    );
-
-
-    customFields.style.display =
-        isCustom
-            ? "flex"
-            : "none";
-}
-
-
-/* =========================================================
-   PERÍODO SELECIONADO
-   ========================================================= */
-
-function getSelectedPeriod() {
-    const { select, start, end } = getPeriodElements();
-    if (!select || !select.value) return null;
-    const today = todayISO();
-    switch (select.value) {
-        case "today": return { start: today, end: today, label: "Hoje" };
-        case "yesterday": { const d=changeDate(today,-1); return { start:d,end:d,label:"Ontem" }; }
-        case "7": return { start:changeDate(today,-6), end:today, label:"Últimos 7 dias" };
-        case "30": return { start:changeDate(today,-29), end:today, label:"Últimos 30 dias" };
-        case "week": return { start:changeDate(today,-6), end:today, label:"Última semana" };
-        case "month": return { start:getFirstDayOfCurrentMonth(), end:today, label:"Este mês" };
-        case "previous-month": { const first=new Date(new Date().getFullYear(),new Date().getMonth()-1,1); const last=new Date(new Date().getFullYear(),new Date().getMonth(),0); const f=`${first.getFullYear()}-${String(first.getMonth()+1).padStart(2,"0")}-01`; const l=`${last.getFullYear()}-${String(last.getMonth()+1).padStart(2,"0")}-${String(last.getDate()).padStart(2,"0")}`; return {start:f,end:l,label:"Mês anterior"}; }
-        case "all": return { start:null, end:null, label:"Todo o período" };
-        case "custom": { let a=start?.value||"", b=end?.value||""; if(!a&&!b) return null; if(!a)a=b; if(!b)b=a; if(a>b)[a,b]=[b,a]; return {start:a,end:b,label:`${formatDateBR(a)} até ${formatDateBR(b)}`}; }
-        default: return null;
-    }
-}
-
-
-/* =========================================================
-   TRANSAÇÃO DENTRO DO PERÍODO
-   ========================================================= */
-
-function transactionIsInPeriod(
-    transaction,
-    period
-) {
-
-    if (!period) {
-        return false;
-    }
-
-
-    const date =
-        getTransactionDate(
-            transaction
-        );
-
-
-    if (!date) {
-        return false;
-    }
-
-
-    if (
-        period.start &&
-        date < period.start
-    ) {
-        return false;
-    }
-
-
-    if (
-        period.end &&
-        date > period.end
-    ) {
-        return false;
-    }
-
-
-    return true;
-}
-
-
-/* =========================================================
-   CALCULAR PERÍODO
-   ========================================================= */
-
-function calculatePeriodSummary(period) {
-
-    let income = 0;
-    let expense = 0;
-
-
-    if (!Array.isArray(transactions)) {
-
-        return {
-            income: 0,
-            expense: 0,
-            balance: 0
-        };
-    }
-
-
-    transactions.forEach(transaction => {
-
-        if (
-            !transactionIsInPeriod(
-                transaction,
-                period
-            )
-        ) {
-            return;
-        }
-
-
-        const type =
-            normalizeTransactionType(
-                transaction.type ||
-                transaction.tipo ||
-                transaction.transaction_type
-            );
-
-
-        const amount =
-            getTransactionAmount(
-                transaction
-            );
-
-
-        if (
-            !Number.isFinite(amount) ||
-            amount <= 0
-        ) {
-            return;
-        }
-
-
-        if (type === "income") {
-
-            /*
-             * Receita futura não é considerada
-             * dinheiro ganho.
-             */
-
-            if (
-                isIncomeReceived(
-                    transaction
-                )
-            ) {
-
-                income += amount;
-            }
-
-        } else {
-
-            expense += amount;
-        }
-    });
-
-
-    return {
-
-        income,
-
-        expense,
-
-        balance:
-            income - expense
-    };
-}
-
-
-/* =========================================================
-   ATUALIZAR CARDS DO PERÍODO
-   ========================================================= */
-
-function updatePeriodSummary() {
-
-    const elements =
-        getPeriodElements();
-
-
-    const period =
-        getSelectedPeriod();
-
-
-    if (!period) {
-        return;
-    }
-
-
-    const summary =
-        calculatePeriodSummary(
-            period
-        );
-
-
-    if (elements.income) {
-
-        elements.income.textContent =
-            formatCurrency(
-                summary.income
-            );
-    }
-
-
-    if (elements.expense) {
-
-        elements.expense.textContent =
-            formatCurrency(
-                summary.expense
-            );
-    }
-
-
-    if (elements.balance) {
-
-        elements.balance.textContent =
-            formatCurrency(
-                summary.balance
-            );
-    }
-
-
-    if (elements.label) {
-
-        elements.label.textContent =
-            period.label;
-    }
-}
-
-
-/* =========================================================
-   APLICAR PERÍODO
-   ========================================================= */
-
-function applySelectedPeriod() {
-
-    const {
-        select,
-        start,
-        end
-    } = getPeriodElements();
-
-
-    if (!select || !select.value) {
-
-        showToast(
-            "Escolha um período primeiro.",
-            "warning"
-        );
-
-        return;
-    }
-
-
-    if (
-        select.value === "custom"
-    ) {
-
-        if (
-            !start?.value &&
-            !end?.value
-        ) {
-
-            showToast(
-                "Escolha a data inicial e a data final.",
-                "warning"
-            );
-
-            return;
-        }
-
-
-        if (
-            start?.value &&
-            end?.value &&
-            start.value > end.value
-        ) {
-
-            showToast(
-                "A data inicial não pode ser maior que a final.",
-                "warning"
-            );
-
-            return;
-        }
-    }
-
-
-    updatePeriodSummary();
-
-
-    showToast(
-        "Período aplicado com sucesso.",
-        "success"
-    );
-}
-
-
-/* =========================================================
-   EVENTOS DO PERÍODO
-   ========================================================= */
-
-function setupPeriodEvents() {
-
-    const elements =
-        getPeriodElements();
-
-
-    if (elements.select) {
-
-        elements.select.addEventListener(
-            "change",
-            () => {
-
-                toggleCustomPeriodFields();
-
-                /*
-                 * Não aplica automaticamente.
-                 * O usuário escolhe e aperta
-                 * Aplicar período.
-                 */
-            }
-        );
-    }
-
-
-    if (elements.apply) {
-
-        elements.apply.addEventListener(
-            "click",
-            applySelectedPeriod
-        );
-    }
-}
-
-
-/* =========================================================
-   RESUMO MENSAL
-   ========================================================= */
-
-function updateMonthlySummary() {
-
-    const month =
-        new Date().getMonth();
-
-    const year =
-        new Date().getFullYear();
-
-
-    let income = 0;
-    let expense = 0;
-
-
-    transactions.forEach(transaction => {
-
-        const dateString =
-            getTransactionDate(
-                transaction
-            );
-
-        if (!dateString) return;
-
-
-        const date =
-            new Date(
-                `${dateString}T00:00:00`
-            );
-
-
-        if (
-            date.getMonth() !== month ||
-            date.getFullYear() !== year
-        ) {
-            return;
-        }
-
-
-        const amount =
-            getTransactionAmount(
-                transaction
-            );
-
-
-        const type =
-            normalizeTransactionType(
-                transaction.type ||
-                transaction.tipo
-            );
-
-
-        if (type === "income") {
-
-            if (
-                isIncomeReceived(
-                    transaction
-                )
-            ) {
-                income += amount;
-            }
-
-        } else {
-
-            expense += amount;
-        }
-    });
-
-
-    const balance =
-        income - expense;
-
-
-    const incomeElement =
-        firstExisting(
-            "monthlyIncomeSummary",
-            "summaryIncome",
-            "monthIncomeSummary"
-        );
-
-    const expenseElement =
-        firstExisting(
-            "monthlyExpenseSummary",
-            "summaryExpense",
-            "monthExpenseSummary"
-        );
-
-    const balanceElement =
-        firstExisting(
-            "monthlyBalanceSummary",
-            "summaryBalance",
-            "monthBalanceSummary"
-        );
-
-
-    if (incomeElement) {
-        incomeElement.textContent =
-            formatCurrency(income);
-    }
-
-
-    if (expenseElement) {
-        expenseElement.textContent =
-            formatCurrency(expense);
-    }
-
-
-    if (balanceElement) {
-        balanceElement.textContent =
-            formatCurrency(balance);
-    }
-}
-
-
-/* =========================================================
-   RANKING DE GASTOS
-   ========================================================= */
-
-function updateExpenseRanking() {
-
-    const container =
-        firstExisting(
-            "expenseRanking",
-            "rankingExpenses",
-            "expenseRankingList"
-        );
-
-
-    if (!container) return;
-
-
-    const currentMonth =
-        new Date().getMonth();
-
-    const currentYear =
-        new Date().getFullYear();
-
-
-    const ranking = {};
-
-
-    transactions.forEach(transaction => {
-
-        const type =
-            normalizeTransactionType(
-                transaction.type ||
-                transaction.tipo
-            );
-
-
-        if (type !== "expense") {
-            return;
-        }
-
-
-        const dateString =
-            getTransactionDate(
-                transaction
-            );
-
-
-        if (!dateString) return;
-
-
-        const date =
-            new Date(
-                `${dateString}T00:00:00`
-            );
-
-
-        if (
-            date.getMonth() !== currentMonth ||
-            date.getFullYear() !== currentYear
-        ) {
-            return;
-        }
-
-
-        const category =
-            getTransactionCategory(
-                transaction
-            );
-
-
-        const amount =
-            getTransactionAmount(
-                transaction
-            );
-
-
-        ranking[category] =
-            (ranking[category] || 0) +
-            amount;
-    });
-
-
-    const items =
-        Object.entries(ranking)
-            .sort(
-                (a, b) =>
-                    b[1] - a[1]
-            )
-            .slice(0, 5);
-
-
-    const total =
-        items.reduce(
-            (sum, item) =>
-                sum + item[1],
-            0
-        );
-
-
-    if (!items.length) {
-
-        container.innerHTML =
-            "<p>Nenhum gasto neste mês.</p>";
-
-        return;
-    }
-
-
-    container.innerHTML =
-        items
-            .map(
-                ([category, amount], index) => {
-
-                    const percentage =
-                        total > 0
-                            ? (
-                                amount /
-                                total *
-                                100
-                            )
-                            : 0;
-
-
-                    return `
-                        <div class="ranking-item">
-
-                            <div class="ranking-position">
-                                ${index + 1}
-                            </div>
-
-                            <div class="ranking-info">
-
-                                <strong>
-                                    ${escapeHTML(category)}
-                                </strong>
-
-                                <span>
-                                    ${formatCurrency(amount)}
-                                </span>
-
-                                <small>
-                                    ${percentage.toFixed(1)}%
-                                </small>
-
-                            </div>
-
-                        </div>
-                    `;
-                }
-            )
-            .join("");
-}
-
-
-/* =========================================================
-   RESUMO / COFRINHO / RANKING NO DASHBOARD
-   ========================================================= */
-
-function updatePremiumDashboard() {
-    const now = new Date();
-    const month = now.getMonth();
-    const year = now.getFullYear();
-
-    let income = 0;
-    let expense = 0;
-    const ranking = {};
-
-    transactions.forEach(transaction => {
-        const dateString = getTransactionDate(transaction);
-        if (!dateString) return;
-
-        const date = new Date(`${dateString}T00:00:00`);
-        if (date.getMonth() !== month || date.getFullYear() !== year) return;
-
-        const amount = getTransactionAmount(transaction);
-        if (!Number.isFinite(amount) || amount <= 0) return;
-
-        const type = normalizeTransactionType(
-            transaction.type || transaction.tipo || transaction.transaction_type
-        );
-
-        if (type === "income") {
-            if (isIncomeReceived(transaction)) income += amount;
-        } else {
-            expense += amount;
-            const category = getTransactionCategory(transaction);
-            ranking[category] = (ranking[category] || 0) + amount;
-        }
-    });
-
-    const balance = income - expense;
-
-    const savings = firstExisting("monthlySavingsValue", "piggyBankAmount", "cofrinhoAmount");
-    if (savings) savings.textContent = formatCurrency(Math.max(0, balance));
-
-    const savingsText = $("monthlySavingsText");
-    if (savingsText) {
-        savingsText.textContent = balance >= 0
-            ? "Quanto sobrou no mês"
-            : "Despesas acima das receitas";
-    }
-
-    const incomeEl = $("monthlyIncomeValue");
-    const expenseEl = $("monthlyExpenseValue");
-    const balanceEl = $("monthlyBalanceValue");
-    if (incomeEl) incomeEl.textContent = formatCurrency(income);
-    if (expenseEl) expenseEl.textContent = formatCurrency(expense);
-    if (balanceEl) balanceEl.textContent = formatCurrency(balance);
-
-    const entries = Object.entries(ranking).sort((a,b) => b[1] - a[1]).slice(0, 5);
-
-    const topCategory = $("topCategoryValue");
-    const topCategoryText = $("topCategoryText");
-    if (topCategory) topCategory.textContent = entries.length ? formatCurrency(entries[0][1]) : "—";
-    if (topCategoryText) topCategoryText.textContent = entries.length ? entries[0][0] : "Nenhuma despesa registrada";
-
-    const rankingEl = $("expenseRanking");
-    if (rankingEl) {
-        rankingEl.innerHTML = entries.length
-            ? entries.map(([category, amount], index) => {
-                const percent = expense > 0 ? (amount / expense) * 100 : 0;
-                return `<div class="expense-ranking-item">
-                    <div class="expense-ranking-main">
-                        <strong>${index + 1}. ${escapeHTML(category)}</strong>
-                        <span>${formatCurrency(amount)}</span>
-                    </div>
-                    <div class="expense-ranking-bar"><span style="width:${Math.min(100, percent)}%"></span></div>
-                    <small>${percent.toFixed(1)}% das despesas</small>
-                </div>`;
-            }).join("")
-            : `<div class="empty-state">Nenhum gasto registrado neste mês.</div>`;
-    }
-}
-
-
-/* =========================================================
-   COFRINHO
-   ========================================================= */
-
-function updatePiggyBank() {
-
-    const currentMonth =
-        new Date().getMonth();
-
-    const currentYear =
-        new Date().getFullYear();
-
-
-    let income = 0;
-    let expense = 0;
-
-
-    transactions.forEach(transaction => {
-
-        const dateString =
-            getTransactionDate(
-                transaction
-            );
-
-
-        if (!dateString) return;
-
-
-        const date =
-            new Date(
-                `${dateString}T00:00:00`
-            );
-
-
-        if (
-            date.getMonth() !== currentMonth ||
-            date.getFullYear() !== currentYear
-        ) {
-            return;
-        }
-
-
-        const amount =
-            getTransactionAmount(
-                transaction
-            );
-
-
-        const type =
-            normalizeTransactionType(
-                transaction.type ||
-                transaction.tipo
-            );
-
-
-        if (type === "income") {
-
-            if (
-                isIncomeReceived(
-                    transaction
-                )
-            ) {
-                income += amount;
-            }
-
-        } else {
-
-            expense += amount;
-        }
-    });
-
-
-    const saved =
-        income - expense;
-
-
-    const element =
-        firstExisting(
-            "piggyBankAmount",
-            "cofrinhoAmount",
-            "monthlyPiggyBank"
-        );
-
-
-    if (element) {
-
-        element.textContent =
-            formatCurrency(
-                Math.max(0, saved)
-            );
-    }
-}
-
-
-/* =========================================================
-   GRÁFICO FINANCEIRO
-   ========================================================= */
-
-function renderFinanceChart() {
-
-    const canvas =
-        firstExisting(
-            "financeChart",
-            "financialChart"
-        );
-
-
-    if (!canvas) return;
-
-
-    if (
-        typeof Chart === "undefined"
-    ) {
-        return;
-    }
-
-
-    const ctx =
-        canvas.getContext("2d");
-
-
-    if (financeChart) {
-
-        financeChart.destroy();
-
-        financeChart = null;
-    }
-
-
-    const labels = [];
-    const incomes = [];
-    const expenses = [];
-
-
-    for (let i = 6; i >= 0; i--) {
-
-        const date =
-            changeDate(
-                todayISO(),
-                -i
-            );
-
-
-        labels.push(
-            formatDateBR(date)
-        );
+        const year =
+            new Date().getFullYear();
 
 
         let income = 0;
@@ -4543,10 +4368,23 @@ function renderFinanceChart() {
 
         transactions.forEach(transaction => {
 
-            if (
+            const dateString =
                 getTransactionDate(
                     transaction
-                ) !== date
+                );
+
+            if (!dateString) return;
+
+
+            const date =
+                new Date(
+                    `${dateString}T00:00:00`
+                );
+
+
+            if (
+                date.getMonth() !== month ||
+                date.getFullYear() !== year
             ) {
                 return;
             }
@@ -4582,1199 +4420,2273 @@ function renderFinanceChart() {
         });
 
 
-        incomes.push(income);
-        expenses.push(expense);
-    }
+        const balance =
+            income - expense;
 
 
-    financeChart =
-        new Chart(
-            ctx,
-            {
-                type: "bar",
+        const incomeElement =
+            firstExisting(
+                "monthlyIncomeSummary",
+                "summaryIncome",
+                "monthIncomeSummary"
+            );
 
-                data: {
-                    labels,
+        const expenseElement =
+            firstExisting(
+                "monthlyExpenseSummary",
+                "summaryExpense",
+                "monthExpenseSummary"
+            );
 
-                    datasets: [
-                        {
-                            label: "Receitas",
-                            data: incomes
-                        },
-                        {
-                            label: "Despesas",
-                            data: expenses
-                        }
-                    ]
-                },
-
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-
-                    plugins: {
-                        legend: {
-                            display: true
-                        }
-                    },
-
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            }
-        );
-}
-
-
-/* =========================================================
-   GRÁFICO DE CATEGORIAS
-   ========================================================= */
-
-function renderCategoryChart() {
-
-    const canvas =
-        firstExisting(
-            "categoryChart",
-            "categoriesChart"
-        );
-
-
-    if (
-        !canvas ||
-        typeof Chart === "undefined"
-    ) {
-        return;
-    }
-
-
-    if (categoryChart) {
-
-        categoryChart.destroy();
-
-        categoryChart = null;
-    }
-
-
-    const categories = {};
-
-
-    transactions.forEach(transaction => {
-
-        const type =
-            normalizeTransactionType(
-                transaction.type ||
-                transaction.tipo
+        const balanceElement =
+            firstExisting(
+                "monthlyBalanceSummary",
+                "summaryBalance",
+                "monthBalanceSummary"
             );
 
 
-        if (type !== "expense") {
+        if (incomeElement) {
+            incomeElement.textContent =
+                formatCurrency(income);
+        }
+
+
+        if (expenseElement) {
+            expenseElement.textContent =
+                formatCurrency(expense);
+        }
+
+
+        if (balanceElement) {
+            balanceElement.textContent =
+                formatCurrency(balance);
+        }
+    }
+
+
+    /* =========================================================
+       RANKING DE GASTOS
+       ========================================================= */
+
+    function updateExpenseRanking() {
+
+        const container =
+            firstExisting(
+                "expenseRanking",
+                "rankingExpenses",
+                "expenseRankingList"
+            );
+
+
+        if (!container) return;
+
+
+        const currentMonth =
+            new Date().getMonth();
+
+        const currentYear =
+            new Date().getFullYear();
+
+
+        const ranking = {};
+
+
+        transactions.forEach(transaction => {
+
+            const type =
+                normalizeTransactionType(
+                    transaction.type ||
+                    transaction.tipo
+                );
+
+
+            if (type !== "expense") {
+                return;
+            }
+
+
+            const dateString =
+                getTransactionDate(
+                    transaction
+                );
+
+
+            if (!dateString) return;
+
+
+            const date =
+                new Date(
+                    `${dateString}T00:00:00`
+                );
+
+
+            if (
+                date.getMonth() !== currentMonth ||
+                date.getFullYear() !== currentYear
+            ) {
+                return;
+            }
+
+
+            const category =
+                getTransactionCategory(
+                    transaction
+                );
+
+
+            const amount =
+                getTransactionAmount(
+                    transaction
+                );
+
+
+            ranking[category] =
+                (ranking[category] || 0) +
+                amount;
+        });
+
+
+        const items =
+            Object.entries(ranking)
+                .sort(
+                    (a, b) =>
+                        b[1] - a[1]
+                )
+                .slice(0, 5);
+
+
+        const total =
+            items.reduce(
+                (sum, item) =>
+                    sum + item[1],
+                0
+            );
+
+
+        if (!items.length) {
+
+            container.innerHTML =
+                "<p>Nenhum gasto neste mês.</p>";
+
             return;
         }
 
 
-        const category =
-            getTransactionCategory(
-                transaction
+        container.innerHTML =
+            items
+                .map(
+                    ([category, amount], index) => {
+
+                        const percentage =
+                            total > 0
+                                ? (
+                                    amount /
+                                    total *
+                                    100
+                                )
+                                : 0;
+
+
+                        return `
+                            <div class="ranking-item">
+
+                                <div class="ranking-position">
+                                    ${index + 1}
+                                </div>
+
+                                <div class="ranking-info">
+
+                                    <strong>
+                                        ${escapeHTML(category)}
+                                    </strong>
+
+                                    <span>
+                                        ${formatCurrency(amount)}
+                                    </span>
+
+                                    <small>
+                                        ${percentage.toFixed(1)}%
+                                    </small>
+
+                                </div>
+
+                            </div>
+                        `;
+                    }
+                )
+                .join("");
+    }
+
+
+    /* =========================================================
+       RESUMO / COFRINHO / RANKING NO DASHBOARD
+       ========================================================= */
+
+    function updatePremiumDashboard() {
+        const now = new Date();
+        const month = now.getMonth();
+        const year = now.getFullYear();
+
+        let income = 0;
+        let expense = 0;
+        const ranking = {};
+
+        transactions.forEach(transaction => {
+            const dateString = getTransactionDate(transaction);
+            if (!dateString) return;
+
+            const date = new Date(`${dateString}T00:00:00`);
+            if (date.getMonth() !== month || date.getFullYear() !== year) return;
+
+            const amount = getTransactionAmount(transaction);
+            if (!Number.isFinite(amount) || amount <= 0) return;
+
+            const type = normalizeTransactionType(
+                transaction.type || transaction.tipo || transaction.transaction_type
             );
 
-
-        const amount =
-            getTransactionAmount(
-                transaction
-            );
-
-
-        categories[category] =
-            (categories[category] || 0) +
-            amount;
-    });
-
-
-    const labels =
-        Object.keys(categories);
-
-
-    const values =
-        Object.values(categories);
-
-
-    categoryChart =
-        new Chart(
-            canvas.getContext("2d"),
-            {
-                type: "doughnut",
-
-                data: {
-                    labels,
-
-                    datasets: [
-                        {
-                            data: values
-                        }
-                    ]
-                },
-
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
+            if (type === "income") {
+                if (isIncomeReceived(transaction)) income += amount;
+            } else {
+                expense += amount;
+                const category = getTransactionCategory(transaction);
+                ranking[category] = (ranking[category] || 0) + amount;
             }
-        );
-}
+        });
+
+        const balance = income - expense;
+
+        const savings = firstExisting("monthlySavingsValue", "piggyBankAmount", "cofrinhoAmount");
+        if (savings) savings.textContent = formatCurrency(Math.max(0, balance));
+
+        const savingsText = $("monthlySavingsText");
+        if (savingsText) {
+            savingsText.textContent = balance >= 0
+                ? "Quanto sobrou no mês"
+                : "Despesas acima das receitas";
+        }
+
+        const incomeEl = $("monthlyIncomeValue");
+        const expenseEl = $("monthlyExpenseValue");
+        const balanceEl = $("monthlyBalanceValue");
+        if (incomeEl) incomeEl.textContent = formatCurrency(income);
+        if (expenseEl) expenseEl.textContent = formatCurrency(expense);
+        if (balanceEl) balanceEl.textContent = formatCurrency(balance);
+
+        const entries = Object.entries(ranking).sort((a,b) => b[1] - a[1]).slice(0, 5);
+
+        const topCategory = $("topCategoryValue");
+        const topCategoryText = $("topCategoryText");
+        if (topCategory) topCategory.textContent = entries.length ? formatCurrency(entries[0][1]) : "—";
+        if (topCategoryText) topCategoryText.textContent = entries.length ? entries[0][0] : "Nenhuma despesa registrada";
+
+        const rankingEl = $("expenseRanking");
+        if (rankingEl) {
+            rankingEl.innerHTML = entries.length
+                ? entries.map(([category, amount], index) => {
+                    const percent = expense > 0 ? (amount / expense) * 100 : 0;
+                    return `<div class="expense-ranking-item">
+                        <div class="expense-ranking-main">
+                            <strong>${index + 1}. ${escapeHTML(category)}</strong>
+                            <span>${formatCurrency(amount)}</span>
+                        </div>
+                        <div class="expense-ranking-bar"><span style="width:${Math.min(100, percent)}%"></span></div>
+                        <small>${percent.toFixed(1)}% das despesas</small>
+                    </div>`;
+                }).join("")
+                : `<div class="empty-state">Nenhum gasto registrado neste mês.</div>`;
+        }
+    }
 
 
-/* =========================================================
-   CATEGORIAS
-   ========================================================= */
+    /* =========================================================
+       COFRINHO
+       ========================================================= */
 
-function loadLocalCategories() {
+    function updatePiggyBank() {
 
-    try {
+        const currentMonth =
+            new Date().getMonth();
 
-        const saved =
-            localStorage.getItem(
-                "controles-categories"
-            );
+        const currentYear =
+            new Date().getFullYear();
 
 
-        if (saved) {
+        let income = 0;
+        let expense = 0;
 
-            const parsed =
-                JSON.parse(saved);
+
+        transactions.forEach(transaction => {
+
+            const dateString =
+                getTransactionDate(
+                    transaction
+                );
+
+
+            if (!dateString) return;
+
+
+            const date =
+                new Date(
+                    `${dateString}T00:00:00`
+                );
 
 
             if (
-                Array.isArray(parsed)
+                date.getMonth() !== currentMonth ||
+                date.getFullYear() !== currentYear
             ) {
-                customCategories =
-                    parsed;
+                return;
             }
+
+
+            const amount =
+                getTransactionAmount(
+                    transaction
+                );
+
+
+            const type =
+                normalizeTransactionType(
+                    transaction.type ||
+                    transaction.tipo
+                );
+
+
+            if (type === "income") {
+
+                if (
+                    isIncomeReceived(
+                        transaction
+                    )
+                ) {
+                    income += amount;
+                }
+
+            } else {
+
+                expense += amount;
+            }
+        });
+
+
+        const saved =
+            income - expense;
+
+
+        const element =
+            firstExisting(
+                "piggyBankAmount",
+                "cofrinhoAmount",
+                "monthlyPiggyBank"
+            );
+
+
+        if (element) {
+
+            element.textContent =
+                formatCurrency(
+                    Math.max(0, saved)
+                );
         }
-
-    } catch (error) {
-
-        customCategories = [];
-    }
-}
-
-
-function saveLocalCategories() {
-
-    localStorage.setItem(
-        "controles-categories",
-        JSON.stringify(
-            customCategories
-        )
-    );
-}
-
-
-function getAllCategories() {
-
-    return [
-        ...new Set([
-            ...DEFAULT_CATEGORIES,
-            ...customCategories
-        ])
-    ];
-}
-
-
-function updateCategories() {
-    const categories = getAllCategories();
-    const select = firstExisting("transactionCategory", "category");
-    if (select) {
-        const current = select.value;
-        select.innerHTML = categories.map(category => `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`).join("");
-        if (categories.includes(current)) select.value = current;
-    }
-    const filter = firstExisting("categoryFilter", "transactionCategoryFilter");
-    if (filter) {
-        const current = filter.value;
-        filter.innerHTML = `<option value="all">Todas as categorias</option>` + categories.map(category => `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`).join("");
-        if (categories.includes(current)) filter.value = current;
-    }
-    const list = firstExisting("categoriesGrid", "categoriesList", "categoryList");
-    if (!list) return;
-    list.innerHTML = categories.map(category => `<article class="category-item"><span>◈</span><strong>${escapeHTML(category)}</strong>${DEFAULT_CATEGORIES.includes(category) ? "" : `<button type="button" class="delete-category-btn" data-delete-category="${escapeHTML(category)}">×</button>`}</article>`).join("");
-}
-
-
-function saveCategory(event) {
-
-    if (event) {
-        event.preventDefault();
     }
 
 
-    const input =
-        firstExisting(
-            "newCategory",
-            "categoryName"
-        );
+    /* =========================================================
+       GRÁFICO FINANCEIRO
+       ========================================================= */
 
+    function renderFinanceChart() {
 
-    if (!input) return;
-
-
-    const name =
-        input.value.trim();
-
-
-    if (!name) {
-
-        showToast(
-            "Digite o nome da categoria.",
-            "warning"
-        );
-
-        return;
-    }
-
-
-    const exists =
-        getAllCategories()
-            .some(
-                category =>
-                    category.toLowerCase() ===
-                    name.toLowerCase()
+        const canvas =
+            firstExisting(
+                "financeChart",
+                "financialChart"
             );
 
 
-    if (exists) {
-
-        showToast(
-            "Essa categoria já existe.",
-            "warning"
-        );
-
-        return;
-    }
-
-
-    customCategories.push(name);
-
-    saveLocalCategories();
-
-    updateCategories();
-
-
-    input.value = "";
-
-
-    closeModal(
-        "categoryModal"
-    );
-
-
-    showToast(
-        "Categoria adicionada.",
-        "success"
-    );
-}
-
-
-function deleteCategory(name) {
-
-    if (
-        !confirm(
-            `Excluir a categoria "${name}"?`
-        )
-    ) {
-        return;
-    }
-
-
-    customCategories =
-        customCategories.filter(
-            category =>
-                category !== name
-        );
-
-
-    saveLocalCategories();
-
-    updateCategories();
-
-
-    showToast(
-        "Categoria excluída.",
-        "success"
-    );
-}
-
-
-async function saveGoal(event) {
-    if (event) event.preventDefault();
-    if (!supabaseClient || !currentUser) { showToast("Faça login novamente.", "error"); return; }
-    const name = valueOf("goalName").trim();
-    const target = Number(valueOf("goalTarget"));
-    const current = Number(valueOf("goalCurrent")) || 0;
-    const deadline = valueOf("goalDeadline") || null;
-    if (!name || !Number.isFinite(target) || target <= 0 || current < 0) { showToast("Preencha os dados da meta corretamente.", "warning"); return; }
-    try {
-        const { error } = await supabaseClient.from("goals").insert({ user_id: currentUser.id, name, target_amount: target, current_amount: current, deadline });
-        if (error) throw error;
-        showToast("Meta criada com sucesso.", "success");
-        $("goalForm")?.reset();
-        closeModal("goalModal");
-        await loadGoals();
-        renderGoals();
-    } catch (error) { console.error(error); showToast(error.message || "Não foi possível criar a meta.", "error"); }
-}
-
-
-/* =========================================================
-   RELATÓRIOS
-   ========================================================= */
-
-function renderReports() {
-
-    const period = getSelectedPeriod();
-    const summary = period ? calculatePeriodSummary(period) : getTotals();
-
-    const reportPeriod = $("reportPeriodText");
-    if (reportPeriod && period) reportPeriod.textContent = period.label;
-
-    ["reportIncomeCard", "reportIncome"].forEach(id => {
-        const el = $(id);
-        if (el) el.textContent = formatCurrency(summary.income);
-    });
-    ["reportExpenseCard", "reportExpense"].forEach(id => {
-        const el = $(id);
-        if (el) el.textContent = formatCurrency(summary.expense);
-    });
-    ["reportBalanceCard", "reportBalance"].forEach(id => {
-        const el = $(id);
-        if (el) el.textContent = formatCurrency(summary.balance);
-    });
-
-    updateMonthlySummary();
-    updateExpenseRanking();
-    renderCategoryChart();
-    renderMonthlyComparison();
-    renderAutomaticAnalysis();
-}
-
-
-function getMonthlyTotals(year, month) {
-
-    let income = 0;
-    let expense = 0;
-
-
-    transactions.forEach(transaction => {
-
-        const dateString =
-            getTransactionDate(
-                transaction
-            );
-
-
-        if (!dateString) return;
-
-
-        const date =
-            new Date(
-                `${dateString}T00:00:00`
-            );
+        if (!canvas) return;
 
 
         if (
-            date.getFullYear() !== year ||
-            date.getMonth() !== month
+            typeof Chart === "undefined"
         ) {
             return;
         }
 
 
-        const amount =
-            getTransactionAmount(
-                transaction
+        const ctx =
+            canvas.getContext("2d");
+
+
+        if (financeChart) {
+
+            financeChart.destroy();
+
+            financeChart = null;
+        }
+
+
+        const labels = [];
+        const incomes = [];
+        const expenses = [];
+
+
+        for (let i = 6; i >= 0; i--) {
+
+            const date =
+                changeDate(
+                    todayISO(),
+                    -i
+                );
+
+
+            labels.push(
+                formatDateBR(date)
             );
 
 
-        const type =
-            normalizeTransactionType(
-                transaction.type ||
-                transaction.tipo
+            let income = 0;
+            let expense = 0;
+
+
+            transactions.forEach(transaction => {
+
+                if (
+                    getTransactionDate(
+                        transaction
+                    ) !== date
+                ) {
+                    return;
+                }
+
+
+                const amount =
+                    getTransactionAmount(
+                        transaction
+                    );
+
+
+                const type =
+                    normalizeTransactionType(
+                        transaction.type ||
+                        transaction.tipo
+                    );
+
+
+                if (type === "income") {
+
+                    if (
+                        isIncomeReceived(
+                            transaction
+                        )
+                    ) {
+                        income += amount;
+                    }
+
+                } else {
+
+                    expense += amount;
+                }
+            });
+
+
+            incomes.push(income);
+            expenses.push(expense);
+        }
+
+
+        financeChart =
+            new Chart(
+                ctx,
+                {
+                    type: "bar",
+
+                    data: {
+                        labels,
+
+                        datasets: [
+                            {
+                                label: "Receitas",
+                                data: incomes
+                            },
+                            {
+                                label: "Despesas",
+                                data: expenses
+                            }
+                        ]
+                    },
+
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+
+                        plugins: {
+                            legend: {
+                                display: true
+                            }
+                        },
+
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                }
+            );
+    }
+
+
+    /* =========================================================
+       GRÁFICO DE CATEGORIAS
+       ========================================================= */
+
+    function renderCategoryChart() {
+
+        const canvas =
+            firstExisting(
+                "categoryChart",
+                "categoriesChart"
             );
 
 
-        if (type === "income") {
+        if (
+            !canvas ||
+            typeof Chart === "undefined"
+        ) {
+            return;
+        }
+
+
+        if (categoryChart) {
+
+            categoryChart.destroy();
+
+            categoryChart = null;
+        }
+
+
+        const categories = {};
+
+
+        transactions.forEach(transaction => {
+
+            const type =
+                normalizeTransactionType(
+                    transaction.type ||
+                    transaction.tipo
+                );
+
+
+            if (type !== "expense") {
+                return;
+            }
+
+
+            const category =
+                getTransactionCategory(
+                    transaction
+                );
+
+
+            const amount =
+                getTransactionAmount(
+                    transaction
+                );
+
+
+            categories[category] =
+                (categories[category] || 0) +
+                amount;
+        });
+
+
+        const labels =
+            Object.keys(categories);
+
+
+        const values =
+            Object.values(categories);
+
+
+        categoryChart =
+            new Chart(
+                canvas.getContext("2d"),
+                {
+                    type: "doughnut",
+
+                    data: {
+                        labels,
+
+                        datasets: [
+                            {
+                                data: values
+                            }
+                        ]
+                    },
+
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                }
+            );
+    }
+
+
+    /* =========================================================
+       CATEGORIAS
+       ========================================================= */
+
+    function loadLocalCategories() {
+
+        try {
+
+            const saved =
+                localStorage.getItem(
+                    "controles-categories"
+                );
+
+
+            if (saved) {
+
+                const parsed =
+                    JSON.parse(saved);
+
+
+                if (
+                    Array.isArray(parsed)
+                ) {
+                    customCategories =
+                        parsed;
+                }
+            }
+
+        } catch (error) {
+
+            customCategories = [];
+        }
+    }
+
+
+    function saveLocalCategories() {
+
+        localStorage.setItem(
+            "controles-categories",
+            JSON.stringify(
+                customCategories
+            )
+        );
+    }
+
+
+    function getAllCategories() {
+
+        return [
+            ...new Set([
+                ...DEFAULT_CATEGORIES,
+                ...customCategories
+            ])
+        ];
+    }
+
+
+    function updateCategories() {
+        const categories = getAllCategories();
+        const select = firstExisting("transactionCategory", "category");
+        if (select) {
+            const current = select.value;
+            select.innerHTML = categories.map(category => `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`).join("");
+            if (categories.includes(current)) select.value = current;
+        }
+        const filter = firstExisting("categoryFilter", "transactionCategoryFilter");
+        if (filter) {
+            const current = filter.value;
+            filter.innerHTML = `<option value="all">Todas as categorias</option>` + categories.map(category => `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`).join("");
+            if (categories.includes(current)) filter.value = current;
+        }
+        const list = firstExisting("categoriesGrid", "categoriesList", "categoryList");
+        if (!list) return;
+        list.innerHTML = categories.map(category => `<article class="category-item"><span>◈</span><strong>${escapeHTML(category)}</strong>${DEFAULT_CATEGORIES.includes(category) ? "" : `<button type="button" class="delete-category-btn" data-delete-category="${escapeHTML(category)}">×</button>`}</article>`).join("");
+    }
+
+
+    function saveCategory(event) {
+
+        if (event) {
+            event.preventDefault();
+        }
+
+
+        const input =
+            firstExisting(
+                "newCategory",
+                "categoryName"
+            );
+
+
+        if (!input) return;
+
+
+        const name =
+            input.value.trim();
+
+
+        if (!name) {
+
+            showToast(
+                "Digite o nome da categoria.",
+                "warning"
+            );
+
+            return;
+        }
+
+
+        const exists =
+            getAllCategories()
+                .some(
+                    category =>
+                        category.toLowerCase() ===
+                        name.toLowerCase()
+                );
+
+
+        if (exists) {
+
+            showToast(
+                "Essa categoria já existe.",
+                "warning"
+            );
+
+            return;
+        }
+
+
+        customCategories.push(name);
+
+        saveLocalCategories();
+
+        updateCategories();
+
+
+        input.value = "";
+
+
+        closeModal(
+            "categoryModal"
+        );
+
+
+        showToast(
+            "Categoria adicionada.",
+            "success"
+        );
+    }
+
+
+    function deleteCategory(name) {
+
+        if (
+            !confirm(
+                `Excluir a categoria "${name}"?`
+            )
+        ) {
+            return;
+        }
+
+
+        customCategories =
+            customCategories.filter(
+                category =>
+                    category !== name
+            );
+
+
+        saveLocalCategories();
+
+        updateCategories();
+
+
+        showToast(
+            "Categoria excluída.",
+            "success"
+        );
+    }
+
+
+    async function saveGoal(event) {
+        if (event) event.preventDefault();
+        if (!supabaseClient || !currentUser) { showToast("Faça login novamente.", "error"); return; }
+        const name = valueOf("goalName").trim();
+        const target = Number(valueOf("goalTarget"));
+        const current = Number(valueOf("goalCurrent")) || 0;
+        const deadline = valueOf("goalDeadline") || null;
+        if (!name || !Number.isFinite(target) || target <= 0 || current < 0) { showToast("Preencha os dados da meta corretamente.", "warning"); return; }
+        try {
+            const { error } = await supabaseClient.from("goals").insert({ user_id: currentUser.id, name, target_amount: target, current_amount: current, deadline });
+            if (error) throw error;
+            showToast("Meta criada com sucesso.", "success");
+            $("goalForm")?.reset();
+            closeModal("goalModal");
+            await loadGoals();
+            renderGoals();
+        } catch (error) { console.error(error); showToast(error.message || "Não foi possível criar a meta.", "error"); }
+    }
+
+
+    /* =========================================================
+       RELATÓRIOS
+       ========================================================= */
+
+    function renderReports() {
+
+        const period = getSelectedPeriod();
+        const summary = period ? calculatePeriodSummary(period) : getTotals();
+
+        const reportPeriod = $("reportPeriodText");
+        if (reportPeriod && period) reportPeriod.textContent = period.label;
+
+        ["reportIncomeCard", "reportIncome"].forEach(id => {
+            const el = $(id);
+            if (el) el.textContent = formatCurrency(summary.income);
+        });
+        ["reportExpenseCard", "reportExpense"].forEach(id => {
+            const el = $(id);
+            if (el) el.textContent = formatCurrency(summary.expense);
+        });
+        ["reportBalanceCard", "reportBalance"].forEach(id => {
+            const el = $(id);
+            if (el) el.textContent = formatCurrency(summary.balance);
+        });
+
+        updateMonthlySummary();
+        updateExpenseRanking();
+        renderCategoryChart();
+        renderMonthlyComparison();
+        renderAutomaticAnalysis();
+    }
+
+
+    function getMonthlyTotals(year, month) {
+
+        let income = 0;
+        let expense = 0;
+
+
+        transactions.forEach(transaction => {
+
+            const dateString =
+                getTransactionDate(
+                    transaction
+                );
+
+
+            if (!dateString) return;
+
+
+            const date =
+                new Date(
+                    `${dateString}T00:00:00`
+                );
+
 
             if (
-                isIncomeReceived(
-                    transaction
-                )
+                date.getFullYear() !== year ||
+                date.getMonth() !== month
             ) {
-                income += amount;
+                return;
             }
+
+
+            const amount =
+                getTransactionAmount(
+                    transaction
+                );
+
+
+            const type =
+                normalizeTransactionType(
+                    transaction.type ||
+                    transaction.tipo
+                );
+
+
+            if (type === "income") {
+
+                if (
+                    isIncomeReceived(
+                        transaction
+                    )
+                ) {
+                    income += amount;
+                }
+
+            } else {
+
+                expense += amount;
+            }
+        });
+
+
+        return {
+            income,
+            expense,
+            balance: income - expense
+        };
+    }
+
+
+    function renderMonthlyComparison() {
+
+        const container =
+            firstExisting(
+                "monthlyComparison",
+                "comparisonChart"
+            );
+
+
+        if (!container) return;
+
+
+        const now =
+            new Date();
+
+
+        const current =
+            getMonthlyTotals(
+                now.getFullYear(),
+                now.getMonth()
+            );
+
+
+        const previousDate =
+            new Date(
+                now.getFullYear(),
+                now.getMonth() - 1,
+                1
+            );
+
+
+        const previous =
+            getMonthlyTotals(
+                previousDate.getFullYear(),
+                previousDate.getMonth()
+            );
+
+
+        container.innerHTML = `
+            <div class="comparison-item">
+
+                <strong>
+                    Este mês
+                </strong>
+
+                <span>
+                    Receitas:
+                    ${formatCurrency(current.income)}
+                </span>
+
+                <span>
+                    Despesas:
+                    ${formatCurrency(current.expense)}
+                </span>
+
+                <span>
+                    Saldo:
+                    ${formatCurrency(current.balance)}
+                </span>
+
+            </div>
+
+
+            <div class="comparison-item">
+
+                <strong>
+                    Mês anterior
+                </strong>
+
+                <span>
+                    Receitas:
+                    ${formatCurrency(previous.income)}
+                </span>
+
+                <span>
+                    Despesas:
+                    ${formatCurrency(previous.expense)}
+                </span>
+
+                <span>
+                    Saldo:
+                    ${formatCurrency(previous.balance)}
+                </span>
+
+            </div>
+        `;
+    }
+
+
+    /* =========================================================
+       ANÁLISE AUTOMÁTICA
+       ========================================================= */
+
+    function renderAutomaticAnalysis() {
+
+        const element =
+            firstExisting(
+                "automaticAnalysis",
+                "financialAnalysis",
+                "analysisText"
+            );
+
+
+        if (!element) return;
+
+
+        const totals =
+            getTotals();
+
+
+        let message = "";
+
+
+        if (
+            totals.income === 0 &&
+            totals.expense === 0
+        ) {
+
+            message =
+                "Ainda não existem dados suficientes para gerar uma análise.";
+
+        } else if (
+            totals.balance < 0
+        ) {
+
+            message =
+                "Suas despesas estão maiores que suas receitas. Vale a pena revisar os principais gastos.";
+
+        } else if (
+            totals.expense >
+            totals.income * 0.8
+        ) {
+
+            message =
+                "Seu saldo está positivo, mas grande parte da sua renda já está comprometida com despesas.";
 
         } else {
 
-            expense += amount;
-        }
-    });
-
-
-    return {
-        income,
-        expense,
-        balance: income - expense
-    };
-}
-
-
-function renderMonthlyComparison() {
-
-    const container =
-        firstExisting(
-            "monthlyComparison",
-            "comparisonChart"
-        );
-
-
-    if (!container) return;
-
-
-    const now =
-        new Date();
-
-
-    const current =
-        getMonthlyTotals(
-            now.getFullYear(),
-            now.getMonth()
-        );
-
-
-    const previousDate =
-        new Date(
-            now.getFullYear(),
-            now.getMonth() - 1,
-            1
-        );
-
-
-    const previous =
-        getMonthlyTotals(
-            previousDate.getFullYear(),
-            previousDate.getMonth()
-        );
-
-
-    container.innerHTML = `
-        <div class="comparison-item">
-
-            <strong>
-                Este mês
-            </strong>
-
-            <span>
-                Receitas:
-                ${formatCurrency(current.income)}
-            </span>
-
-            <span>
-                Despesas:
-                ${formatCurrency(current.expense)}
-            </span>
-
-            <span>
-                Saldo:
-                ${formatCurrency(current.balance)}
-            </span>
-
-        </div>
-
-
-        <div class="comparison-item">
-
-            <strong>
-                Mês anterior
-            </strong>
-
-            <span>
-                Receitas:
-                ${formatCurrency(previous.income)}
-            </span>
-
-            <span>
-                Despesas:
-                ${formatCurrency(previous.expense)}
-            </span>
-
-            <span>
-                Saldo:
-                ${formatCurrency(previous.balance)}
-            </span>
-
-        </div>
-    `;
-}
-
-
-/* =========================================================
-   ANÁLISE AUTOMÁTICA
-   ========================================================= */
-
-function renderAutomaticAnalysis() {
-
-    const element =
-        firstExisting(
-            "automaticAnalysis",
-            "financialAnalysis",
-            "analysisText"
-        );
-
-
-    if (!element) return;
-
-
-    const totals =
-        getTotals();
-
-
-    let message = "";
-
-
-    if (
-        totals.income === 0 &&
-        totals.expense === 0
-    ) {
-
-        message =
-            "Ainda não existem dados suficientes para gerar uma análise.";
-
-    } else if (
-        totals.balance < 0
-    ) {
-
-        message =
-            "Suas despesas estão maiores que suas receitas. Vale a pena revisar os principais gastos.";
-
-    } else if (
-        totals.expense >
-        totals.income * 0.8
-    ) {
-
-        message =
-            "Seu saldo está positivo, mas grande parte da sua renda já está comprometida com despesas.";
-
-    } else {
-
-        message =
-            "Sua situação financeira está positiva. Continue acompanhando seus gastos e mantendo uma reserva.";
-    }
-
-
-    element.textContent =
-        message;
-}
-
-
-/* =========================================================
-   PREMIUM
-   ========================================================= */
-
-async function loadSubscription() {
-
-    if (!supabaseClient || !currentUser) {
-        return;
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("subscriptions")
-            .select("*")
-            .eq("user_id", currentUser.id)
-            .order("created_at", {
-                ascending: false
-            })
-            .limit(1)
-            .maybeSingle();
-
-
-        if (!error) {
-            subscription = data;
+            message =
+                "Sua situação financeira está positiva. Continue acompanhando seus gastos e mantendo uma reserva.";
         }
 
-    } catch (error) {
 
-        console.warn(
-            "Erro ao carregar assinatura:",
-            error
-        );
+        element.textContent =
+            message;
     }
-}
 
 
-function isPremiumActive() {
+    /* =========================================================
+       PREMIUM
+       ========================================================= */
 
-    if (!subscription) {
+    async function loadSubscription() {
+
+        if (!supabaseClient || !currentUser) {
+            return;
+        }
+
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("subscriptions")
+                .select("*")
+                .eq("user_id", currentUser.id)
+                .order("created_at", {
+                    ascending: false
+                })
+                .limit(1)
+                .maybeSingle();
+
+
+            if (!error) {
+                subscription = data;
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Erro ao carregar assinatura:",
+                error
+            );
+        }
+    }
+
+
+    function isPremiumActive() {
+
+        if (!subscription) {
+            return false;
+        }
+
+
+        if (
+            subscription.status === "active" ||
+            subscription.status === "trialing"
+        ) {
+
+            if (
+                subscription.expires_at
+            ) {
+
+                return new Date(
+                    subscription.expires_at
+                ) > new Date();
+            }
+
+            return true;
+        }
+
+
         return false;
     }
 
 
-    if (
-        subscription.status === "active" ||
-        subscription.status === "trialing"
-    ) {
+    function renderPremium() {
+
+        const status =
+            firstExisting(
+                "premiumStatus",
+                "subscriptionStatus"
+            );
+
+
+        if (!status) return;
+
+
+        if (isPremiumActive()) {
+
+            status.textContent =
+                subscription?.status === "trialing"
+                    ? "Teste Premium ativo"
+                    : "Premium ativo";
+
+        } else {
+
+            status.textContent =
+                "Plano gratuito";
+        }
+    }
+
+
+    async function activatePremiumTrial() {
 
         if (
-            subscription.expires_at
+            !supabaseClient ||
+            !currentUser
         ) {
-
-            return new Date(
-                subscription.expires_at
-            ) > new Date();
-        }
-
-        return true;
-    }
-
-
-    return false;
-}
-
-
-function renderPremium() {
-
-    const status =
-        firstExisting(
-            "premiumStatus",
-            "subscriptionStatus"
-        );
-
-
-    if (!status) return;
-
-
-    if (isPremiumActive()) {
-
-        status.textContent =
-            subscription?.status === "trialing"
-                ? "Teste Premium ativo"
-                : "Premium ativo";
-
-    } else {
-
-        status.textContent =
-            "Plano gratuito";
-    }
-}
-
-
-async function activatePremiumTrial() {
-
-    if (
-        !supabaseClient ||
-        !currentUser
-    ) {
-        return;
-    }
-
-
-    const expires =
-        new Date();
-
-
-    expires.setDate(
-        expires.getDate() + 7
-    );
-
-
-    try {
-
-        const payload = {
-
-            user_id:
-                currentUser.id,
-
-            status:
-                "trialing",
-
-            plan:
-                "premium",
-
-            started_at:
-                new Date().toISOString(),
-
-            expires_at:
-                expires.toISOString()
-        };
-
-
-        const {
-            error
-        } = await supabaseClient
-            .from("subscriptions")
-            .insert(payload);
-
-
-        if (error) {
-            throw error;
+            return;
         }
 
 
-        await loadSubscription();
-
-        renderPremium();
-
-        applyPremiumAccess();
+        const expires =
+            new Date();
 
 
-        showToast(
-            "Teste Premium ativado por 7 dias!",
-            "success"
+        expires.setDate(
+            expires.getDate() + 7
         );
 
-    } catch (error) {
 
-        console.error(error);
+        try {
 
-        showToast(
-            "Não foi possível ativar o Premium.",
-            "error"
+            const payload = {
+
+                user_id:
+                    currentUser.id,
+
+                status:
+                    "trialing",
+
+                plan:
+                    "premium",
+
+                started_at:
+                    new Date().toISOString(),
+
+                expires_at:
+                    expires.toISOString()
+            };
+
+
+            const {
+                error
+            } = await supabaseClient
+                .from("subscriptions")
+                .insert(payload);
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            await loadSubscription();
+
+            renderPremium();
+
+            applyPremiumAccess();
+
+
+            showToast(
+                "Teste Premium ativado por 7 dias!",
+                "success"
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            showToast(
+                "Não foi possível ativar o Premium.",
+                "error"
+            );
+        }
+    }
+
+
+    /* =========================================================
+       METAS
+       ========================================================= */
+
+    async function loadGoals() {
+
+        if (!supabaseClient || !currentUser) {
+            return;
+        }
+
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("goals")
+                .select("*")
+                .eq("user_id", currentUser.id)
+                .order("created_at", {
+                    ascending: false
+                });
+
+
+            if (error) {
+                console.warn(error);
+                goals = [];
+                return;
+            }
+
+
+            goals =
+                Array.isArray(data)
+                    ? data
+                    : [];
+
+            renderGoals();
+
+        } catch (error) {
+
+            console.warn(
+                "Erro ao carregar metas:",
+                error
+            );
+        }
+    }
+
+
+    function renderGoals() {
+
+        const list =
+            firstExisting(
+                "goalsList",
+                "goalList"
+            );
+
+
+        if (!list) return;
+
+
+        if (!goals.length) {
+
+            list.innerHTML = `
+                <div class="empty-state">
+                    Nenhuma meta cadastrada.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        list.innerHTML =
+            goals
+                .map(goal => {
+
+                    const target =
+                        Number(
+                            goal.target_amount ??
+                            goal.valor_meta ??
+                            0
+                        );
+
+
+                    const current =
+                        Number(
+                            goal.current_amount ??
+                            goal.valor_atual ??
+                            0
+                        );
+
+
+                    const percentage =
+                        target > 0
+                            ? Math.min(
+                                100,
+                                current /
+                                target *
+                                100
+                            )
+                            : 0;
+
+
+                    return `
+                        <div class="goal-item">
+
+                            <strong>
+                                ${escapeHTML(
+                                    goal.name ||
+                                    goal.nome ||
+                                    "Meta"
+                                )}
+                            </strong>
+
+                            <div class="goal-progress">
+                                <div
+                                    class="goal-progress-bar"
+                                    style="width:${percentage}%"
+                                ></div>
+                            </div>
+
+                            <small>
+                                ${formatCurrency(current)}
+                                de
+                                ${formatCurrency(target)}
+                            </small>
+
+                        </div>
+                    `;
+                })
+                .join("");
+    }
+
+
+    /* =========================================================
+       ORÇAMENTOS
+       ========================================================= */
+
+    async function loadBudgets() {
+
+        if (!supabaseClient || !currentUser) {
+            return;
+        }
+
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("budgets")
+                .select("*")
+                .eq("user_id", currentUser.id);
+
+
+            if (error) {
+
+                console.warn(
+                    "Não foi possível carregar orçamentos:",
+                    error
+                );
+
+                budgets = [];
+
+                return;
+            }
+
+
+            budgets =
+                Array.isArray(data)
+                    ? data
+                    : [];
+
+        } catch (error) {
+
+            console.warn(
+                "Erro nos orçamentos:",
+                error
+            );
+        }
+    }
+
+
+    /* =========================================================
+       MODAIS
+       ========================================================= */
+
+    function openModal(id) {
+
+        const modal = $(id);
+
+        if (!modal) return;
+
+        modal.classList.remove(
+            "hidden"
         );
     }
-}
 
 
-/* =========================================================
-   METAS
-   ========================================================= */
+    function closeModal(id) {
 
-async function loadGoals() {
+        const modal = $(id);
 
-    if (!supabaseClient || !currentUser) {
-        return;
+        if (!modal) return;
+
+        modal.classList.add(
+            "hidden"
+        );
     }
 
 
-    try {
+    /* =========================================================
+       EVENTOS
+       ========================================================= */
 
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("goals")
-            .select("*")
-            .eq("user_id", currentUser.id)
-            .order("created_at", {
-                ascending: false
+    function setupEvents() {
+
+        /*
+         * Evita que setupEvents seja executado
+         * duas vezes e crie listeners duplicados.
+         */
+
+        if (eventsBound) {
+            return;
+        }
+
+        eventsBound = true;
+
+
+        /* -----------------------------------------
+           LOGIN
+           ----------------------------------------- */
+
+        const loginForm =
+            firstExisting(
+                "loginForm"
+            );
+
+        if (loginForm) {
+
+            loginForm.addEventListener(
+                "submit",
+                handleLogin
+            );
+        }
+
+
+        /* -----------------------------------------
+           CADASTRO
+           ----------------------------------------- */
+
+        const registerForm =
+            firstExisting(
+                "registerForm"
+            );
+
+        if (registerForm) {
+
+            registerForm.addEventListener(
+                "submit",
+                handleRegister
+            );
+        }
+
+
+        /* -----------------------------------------
+           TROCA LOGIN <-> CADASTRO
+           ----------------------------------------- */
+
+        const registerBtn =
+            $("registerBtn");
+
+        if (registerBtn) {
+
+            registerBtn.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    showRegisterView();
+                }
+            );
+        }
+
+
+        const backToLoginBtn =
+            $("backToLoginBtn");
+
+        if (backToLoginBtn) {
+
+            backToLoginBtn.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    showLoginView();
+                }
+            );
+        }
+
+
+        /* -----------------------------------------
+           MOSTRAR / OCULTAR SENHA
+           ----------------------------------------- */
+
+        const passwordToggles =
+            document.querySelectorAll(
+                "[data-password-toggle]"
+            );
+
+        passwordToggles.forEach(button => {
+
+            button.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    togglePasswordVisibility(button);
+                }
+            );
+        });
+
+
+        /* -----------------------------------------
+           LOGOUT
+           ----------------------------------------- */
+
+        const logoutBtn =
+            firstExisting(
+                "logoutBtn"
+            );
+
+        if (logoutBtn) {
+
+            logoutBtn.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    handleLogout();
+                }
+            );
+        }
+
+
+        /* -----------------------------------------
+           TEMA
+           ----------------------------------------- */
+
+        const themeBtn =
+            firstExisting(
+                "themeBtn",
+                "themeToggle"
+            );
+
+        if (themeBtn) {
+
+            themeBtn.addEventListener(
+                "click",
+                toggleTheme
+            );
+        }
+
+
+        /* -----------------------------------------
+           MENU MOBILE
+           ----------------------------------------- */
+
+        const mobileMenuBtn =
+            $("mobileMenuBtn");
+
+
+        if (mobileMenuBtn) {
+
+            mobileMenuBtn.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+
+            mobileMenuBtn.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    toggleMobileMenu();
+                }
+            );
+        }
+
+
+        /* -----------------------------------------
+           OVERLAY
+           ----------------------------------------- */
+
+        const overlay =
+            getMobileOverlay();
+
+
+        if (overlay) {
+
+            overlay.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    closeMobileMenu();
+                }
+            );
+        }
+
+
+        /* -----------------------------------------
+           EVENTO GLOBAL DE CLIQUES
+           ----------------------------------------- */
+
+        document.addEventListener(
+            "click",
+            event => {
+
+                const target =
+                    event.target;
+
+
+                if (
+                    !target ||
+                    typeof target.closest !==
+                    "function"
+                ) {
+                    return;
+                }
+
+
+                /* ------------------------------
+                   NAVEGAÇÃO
+                   ------------------------------ */
+
+                const nav =
+                    target.closest(
+                        ".nav-item[data-section]"
+                    );
+
+
+                if (
+                    nav &&
+                    !target.closest(".modal")
+                ) {
+
+                    event.preventDefault();
+
+                    const section =
+                        nav.dataset.section;
+
+                    if (section) {
+                        showSection(section);
+                    }
+
+                    return;
+                }
+
+
+                /* ------------------------------
+                   BOTÕES GENÉRICOS DATA-SECTION
+                   ------------------------------ */
+
+                const sectionButton =
+                    target.closest(
+                        "button[data-section]"
+                    );
+
+
+                if (
+                    sectionButton &&
+                    !target.closest(".modal")
+                ) {
+
+                    event.preventDefault();
+
+                    showSection(
+                        sectionButton.dataset.section
+                    );
+
+                    return;
+                }
+
+
+                /* ------------------------------
+                   FECHAR MENU AO CLICAR FORA
+                   ------------------------------ */
+
+                const sidebar =
+                    $("sidebar");
+
+
+                if (
+                    isMobileViewport() &&
+                    sidebar &&
+                    sidebar.classList.contains(
+                        "mobile-open"
+                    )
+                ) {
+
+                    const clickedInsideSidebar =
+                        target.closest(
+                            "#sidebar"
+                        );
+
+
+                    const clickedButton =
+                        target.closest(
+                            "#mobileMenuBtn"
+                        );
+
+
+                    const clickedOverlay =
+                        target.closest(
+                            "#mobileOverlay,.mobile-overlay"
+                        );
+
+
+                    if (
+                        !clickedInsideSidebar &&
+                        !clickedButton &&
+                        !clickedOverlay
+                    ) {
+
+                        closeMobileMenu();
+                    }
+                }
+
+
+                /* ------------------------------
+                   EDITAR
+                   ------------------------------ */
+
+                const editButton =
+                    target.closest(
+                        "[data-edit-transaction]"
+                    );
+
+
+                if (editButton) {
+
+                    const id =
+                        editButton.dataset
+                            .editTransaction;
+
+
+                    const transaction =
+                        transactions.find(
+                            item =>
+                                String(item.id) ===
+                                String(id)
+                        );
+
+
+                    if (transaction) {
+
+                        openTransactionModal(
+                            transaction.type,
+                            transaction
+                        );
+                    }
+
+                    return;
+                }
+
+
+                /* ------------------------------
+                   EXCLUIR
+                   ------------------------------ */
+
+                const deleteButton =
+                    target.closest(
+                        "[data-delete-transaction]"
+                    );
+
+
+                if (deleteButton) {
+
+                    deleteTransaction(
+                        deleteButton.dataset
+                            .deleteTransaction
+                    );
+
+                    return;
+                }
+
+
+                /* ------------------------------
+                   RECEBIDO
+                   ------------------------------ */
+
+                const receivedButton =
+                    target.closest(
+                        "[data-receivable-id]"
+                    );
+
+
+                if (receivedButton) {
+
+                    markTransactionAsReceived(
+                        receivedButton.dataset
+                            .receivableId
+                    );
+
+                    return;
+                }
+
+
+                /* ------------------------------
+                   EXCLUIR CATEGORIA
+                   ------------------------------ */
+
+                const deleteCategoryButton =
+                    target.closest(
+                        "[data-delete-category]"
+                    );
+
+
+                if (deleteCategoryButton) {
+
+                    deleteCategory(
+                        deleteCategoryButton.dataset
+                            .deleteCategory
+                    );
+
+                    return;
+                }
+            }
+        );
+
+
+        /* -----------------------------------------
+           TIPO DA TRANSAÇÃO
+           ----------------------------------------- */
+
+        document
+            .querySelectorAll(
+                "[data-transaction-type]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        setTransactionType(
+                            button.dataset
+                                .transactionType
+                        );
+                    }
+                );
             });
 
 
-        if (error) {
-            console.warn(error);
-            goals = [];
-            return;
-        }
+        /* -----------------------------------------
+           FORM TRANSAÇÃO
+           ----------------------------------------- */
 
-
-        goals =
-            Array.isArray(data)
-                ? data
-                : [];
-
-        renderGoals();
-
-    } catch (error) {
-
-        console.warn(
-            "Erro ao carregar metas:",
-            error
-        );
-    }
-}
-
-
-function renderGoals() {
-
-    const list =
-        firstExisting(
-            "goalsList",
-            "goalList"
-        );
-
-
-    if (!list) return;
-
-
-    if (!goals.length) {
-
-        list.innerHTML = `
-            <div class="empty-state">
-                Nenhuma meta cadastrada.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    list.innerHTML =
-        goals
-            .map(goal => {
-
-                const target =
-                    Number(
-                        goal.target_amount ??
-                        goal.valor_meta ??
-                        0
-                    );
-
-
-                const current =
-                    Number(
-                        goal.current_amount ??
-                        goal.valor_atual ??
-                        0
-                    );
-
-
-                const percentage =
-                    target > 0
-                        ? Math.min(
-                            100,
-                            current /
-                            target *
-                            100
-                        )
-                        : 0;
-
-
-                return `
-                    <div class="goal-item">
-
-                        <strong>
-                            ${escapeHTML(
-                                goal.name ||
-                                goal.nome ||
-                                "Meta"
-                            )}
-                        </strong>
-
-                        <div class="goal-progress">
-                            <div
-                                class="goal-progress-bar"
-                                style="width:${percentage}%"
-                            ></div>
-                        </div>
-
-                        <small>
-                            ${formatCurrency(current)}
-                            de
-                            ${formatCurrency(target)}
-                        </small>
-
-                    </div>
-                `;
-            })
-            .join("");
-}
-
-
-/* =========================================================
-   ORÇAMENTOS
-   ========================================================= */
-
-async function loadBudgets() {
-
-    if (!supabaseClient || !currentUser) {
-        return;
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient
-            .from("budgets")
-            .select("*")
-            .eq("user_id", currentUser.id);
-
-
-        if (error) {
-
-            console.warn(
-                "Não foi possível carregar orçamentos:",
-                error
+        const transactionForm =
+            firstExisting(
+                "transactionForm",
+                "launchForm"
             );
 
-            budgets = [];
 
-            return;
+        if (transactionForm) {
+
+            transactionForm.addEventListener(
+                "submit",
+                saveTransaction
+            );
         }
 
 
-        budgets =
-            Array.isArray(data)
-                ? data
-                : [];
+        /* -----------------------------------------
+           BOTÕES NOVO LANÇAMENTO
+           ----------------------------------------- */
 
-    } catch (error) {
-
-        console.warn(
-            "Erro nos orçamentos:",
-            error
-        );
-    }
-}
-
-
-/* =========================================================
-   MODAIS
-   ========================================================= */
-
-function openModal(id) {
-
-    const modal = $(id);
-
-    if (!modal) return;
-
-    modal.classList.remove(
-        "hidden"
-    );
-}
+        const newTransactionButtons =
+            document.querySelectorAll(
+                "#newTransactionBtn," +
+                "#newLaunchBtn," +
+                "#addTransactionBtn," +
+                "#addTransactionBtn2," +
+                "[data-new-transaction]"
+            );
 
 
-function closeModal(id) {
+        newTransactionButtons.forEach(
+            button => {
 
-    const modal = $(id);
+                button.addEventListener(
+                    "click",
+                    event => {
 
-    if (!modal) return;
+                        event.preventDefault();
 
-    modal.classList.add(
-        "hidden"
-    );
-}
-
-
-/* =========================================================
-   EVENTOS
-   ========================================================= */
-
-function setupEvents() {
-
-    /*
-     * Evita que setupEvents seja executado
-     * duas vezes e crie listeners duplicados.
-     */
-
-    if (eventsBound) {
-        return;
-    }
-
-    eventsBound = true;
-
-
-    /* -----------------------------------------
-       LOGIN
-       ----------------------------------------- */
-
-    const loginForm =
-        firstExisting(
-            "loginForm"
-        );
-
-    if (loginForm) {
-
-        loginForm.addEventListener(
-            "submit",
-            handleLogin
-        );
-    }
-
-
-    /* -----------------------------------------
-       CADASTRO
-       ----------------------------------------- */
-
-    const registerForm =
-        firstExisting(
-            "registerForm"
-        );
-
-    if (registerForm) {
-
-        registerForm.addEventListener(
-            "submit",
-            handleRegister
-        );
-    }
-
-
-    /* -----------------------------------------
-       TROCA LOGIN <-> CADASTRO
-       ----------------------------------------- */
-
-    const registerBtn =
-        $("registerBtn");
-
-    if (registerBtn) {
-
-        registerBtn.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-                showRegisterView();
+                        openTransactionModal(
+                            "expense"
+                        );
+                    }
+                );
             }
         );
-    }
 
 
-    const backToLoginBtn =
-        $("backToLoginBtn");
+        /* -----------------------------------------
+           NOVA RECEITA
+           ----------------------------------------- */
 
-    if (backToLoginBtn) {
+        document
+            .querySelectorAll(
+                "[data-new-income]"
+            )
+            .forEach(button => {
 
-        backToLoginBtn.addEventListener(
-            "click",
+                button.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        openTransactionModal(
+                            "income"
+                        );
+                    }
+                );
+            });
+
+
+        /* -----------------------------------------
+           NOVA DESPESA
+           ----------------------------------------- */
+
+        document
+            .querySelectorAll(
+                "[data-new-expense]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        openTransactionModal(
+                            "expense"
+                        );
+                    }
+                );
+            });
+
+
+        /* -----------------------------------------
+           NOVO A RECEBER
+           ----------------------------------------- */
+
+        document
+            .querySelectorAll(
+                "[data-new-receivable]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        openNewReceivable();
+                    }
+                );
+            });
+
+
+        /* -----------------------------------------
+           CATEGORIA
+           ----------------------------------------- */
+
+        const categoryForm =
+            firstExisting(
+                "categoryForm"
+            );
+
+
+        if (categoryForm) {
+
+            categoryForm.addEventListener(
+                "submit",
+                saveCategory
+            );
+        }
+
+
+        /* -----------------------------------------
+           PESQUISA
+           ----------------------------------------- */
+
+        const searchInput =
+            firstExisting(
+                "transactionSearch"
+            );
+
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                "input",
+                renderTransactions
+            );
+        }
+
+
+        /* -----------------------------------------
+           FILTRO TIPO
+           ----------------------------------------- */
+
+        const typeFilter =
+            firstExisting(
+                "transactionTypeFilter",
+                "transactionFilter"
+            );
+
+
+        if (typeFilter) {
+
+            typeFilter.addEventListener(
+                "change",
+                renderTransactions
+            );
+        }
+
+
+        /* -----------------------------------------
+           FILTRO CATEGORIA
+           ----------------------------------------- */
+
+        const categoryFilter =
+            firstExisting(
+                "transactionCategoryFilter",
+                "categoryFilter"
+            );
+
+
+        if (categoryFilter) {
+
+            categoryFilter.addEventListener(
+                "change",
+                renderTransactions
+            );
+        }
+
+
+        /* -----------------------------------------
+           BOTÕES DO DASHBOARD / AÇÕES
+           ----------------------------------------- */
+        ["addTransactionBtn", "addTransactionBtn2"].forEach(id => {
+            const button = $(id);
+            if (button && !button.dataset.bound) { button.dataset.bound = "true"; button.addEventListener("click", e => { e.preventDefault(); openTransactionModal("expense"); }); }
+        });
+        ["addCategoryBtn", "addCategoryBtn2"].forEach(id => {
+            const button = $(id);
+            if (button && !button.dataset.bound) { button.dataset.bound = "true"; button.addEventListener("click", e => { e.preventDefault(); openModal("categoryModal"); }); }
+        });
+        const goalButton = $("addGoalBtn");
+        if (goalButton && !goalButton.dataset.bound) { goalButton.dataset.bound = "true"; goalButton.addEventListener("click", e => { e.preventDefault(); openModal("goalModal"); }); }
+        const receivableButton = $("addReceivableBtn");
+        if (receivableButton && !receivableButton.dataset.bound) { receivableButton.dataset.bound = "true"; receivableButton.addEventListener("click", e => { e.preventDefault(); openNewReceivable(); }); }
+        const goalForm = $("goalForm");
+        if (goalForm && !goalForm.dataset.bound) { goalForm.dataset.bound = "true"; goalForm.addEventListener("submit", saveGoal); }
+        const confirmPremium = $("confirmPremiumBtn");
+        if (confirmPremium && !confirmPremium.dataset.bound) { confirmPremium.dataset.bound = "true"; confirmPremium.addEventListener("click", activatePremiumTrial); }
+        const clearFilters = $("clearTransactionFiltersBtn");
+        if (clearFilters && !clearFilters.dataset.bound) { clearFilters.dataset.bound = "true"; clearFilters.addEventListener("click", () => { ["transactionSearch","transactionFilter","categoryFilter","transactionDateFrom","transactionDateTo"].forEach(id => { const el=$(id); if(el) el.value = id === "transactionFilter" || id === "categoryFilter" ? "all" : ""; }); renderTransactions(); }); }
+        ["transactionFilter","categoryFilter","transactionDateFrom","transactionDateTo"].forEach(id => { const el=$(id); if(el && !el.dataset.bound){ el.dataset.bound="true"; el.addEventListener("change", renderTransactions); }});
+
+        /* -----------------------------------------
+           FECHAR MODAIS
+           ----------------------------------------- */
+
+        document
+            .querySelectorAll(
+                "[data-close-modal]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        closeModal(
+                            button.dataset
+                                .closeModal
+                        );
+                    }
+                );
+            });
+
+
+        /* -----------------------------------------
+           ESC
+           ----------------------------------------- */
+
+        document.addEventListener(
+            "keydown",
             event => {
 
-                event.preventDefault();
+                if (event.key !== "Escape") {
+                    return;
+                }
 
-                showLoginView();
+
+                const sidebar =
+                    $("sidebar");
+
+
+                if (
+                    sidebar &&
+                    sidebar.classList.contains(
+                        "mobile-open"
+                    )
+                ) {
+
+                    closeMobileMenu();
+
+                    return;
+                }
+
+
+                document
+                    .querySelectorAll(
+                        ".modal:not(.hidden)"
+                    )
+                    .forEach(modal => {
+
+                        modal.classList.add(
+                            "hidden"
+                        );
+                    });
             }
         );
+
+
+        /* -----------------------------------------
+           RESIZE
+           ----------------------------------------- */
+
+        window.addEventListener(
+            "resize",
+            () => {
+
+                applyDeviceLayout();
+
+                if (!isMobileViewport()) {
+                    closeMobileMenu();
+                }
+            }
+        );
+
+
+        /*
+         * Começa sempre com o menu fechado.
+         */
+
+        closeMobileMenu();
     }
 
 
-    /* -----------------------------------------
-       MOSTRAR / OCULTAR SENHA
-       ----------------------------------------- */
+    /* =========================================================
+       BOTÃO DE MOSTRAR/ESCONDER SENHA
+       ========================================================= */
 
-    const passwordToggles =
-        document.querySelectorAll(
-            "[data-password-toggle]"
-        );
+    function setupPasswordToggles() {
 
-    passwordToggles.forEach(button => {
+        document
+            .querySelectorAll(
+                "[data-toggle-password]"
+            )
+            .forEach(button => {
 
-        button.addEventListener(
-            "click",
-            event => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                event.preventDefault();
-
-                togglePasswordVisibility(button);
-            }
-        );
-    });
+                        const targetId =
+                            button.dataset
+                                .togglePassword;
 
 
-    /* -----------------------------------------
-       LOGOUT
-       ----------------------------------------- */
+                        const input =
+                            $(targetId);
 
-    const logoutBtn =
-        firstExisting(
-            "logoutBtn"
-        );
 
-    if (logoutBtn) {
+                        if (!input) return;
 
-        logoutBtn.addEventListener(
-            "click",
-            event => {
 
-                event.preventDefault();
-
-                handleLogout();
-            }
-        );
+                        input.type =
+                            input.type === "password"
+                                ? "text"
+                                : "password";
+                    }
+                );
+            });
     }
 
 
-    /* -----------------------------------------
-       TEMA
-       ----------------------------------------- */
-
-    const themeBtn =
-        firstExisting(
-            "themeBtn",
-            "themeToggle"
-        );
-
-    if (themeBtn) {
-
-        themeBtn.addEventListener(
-            "click",
-            toggleTheme
-        );
-    }
-
-
-    /* -----------------------------------------
-       MENU MOBILE
-       ----------------------------------------- */
-
-    const mobileMenuBtn =
-        $("mobileMenuBtn");
-
-
-    if (mobileMenuBtn) {
-
-        mobileMenuBtn.setAttribute(
-            "aria-expanded",
-            "false"
-        );
-
-
-        mobileMenuBtn.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                toggleMobileMenu();
-            }
-        );
-    }
-
-
-    /* -----------------------------------------
-       OVERLAY
-       ----------------------------------------- */
-
-    const overlay =
-        getMobileOverlay();
-
-
-    if (overlay) {
-
-        overlay.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                closeMobileMenu();
-            }
-        );
-    }
-
-
-    /* -----------------------------------------
-       EVENTO GLOBAL DE CLIQUES
-       ----------------------------------------- */
+    /* =========================================================
+       ABRIR MODAIS PELO ID
+       ========================================================= */
 
     document.addEventListener(
         "click",
@@ -5793,1079 +6705,522 @@ function setupEvents() {
             }
 
 
-            /* ------------------------------
-               NAVEGAÇÃO
-               ------------------------------ */
-
-            const nav =
+            const openButton =
                 target.closest(
-                    ".nav-item[data-section]"
+                    "[data-open-modal]"
                 );
 
 
-            if (
-                nav &&
-                !target.closest(".modal")
-            ) {
+            if (openButton) {
 
                 event.preventDefault();
 
-                const section =
-                    nav.dataset.section;
-
-                if (section) {
-                    showSection(section);
-                }
+                openModal(
+                    openButton.dataset
+                        .openModal
+                );
 
                 return;
             }
 
 
-            /* ------------------------------
-               BOTÕES GENÉRICOS DATA-SECTION
-               ------------------------------ */
-
-            const sectionButton =
+            const closeButton =
                 target.closest(
-                    "button[data-section]"
+                    "[data-close]"
                 );
 
 
-            if (
-                sectionButton &&
-                !target.closest(".modal")
-            ) {
+            if (closeButton) {
 
                 event.preventDefault();
 
-                showSection(
-                    sectionButton.dataset.section
+                closeModal(
+                    closeButton.dataset.close
                 );
-
-                return;
-            }
-
-
-            /* ------------------------------
-               FECHAR MENU AO CLICAR FORA
-               ------------------------------ */
-
-            const sidebar =
-                $("sidebar");
-
-
-            if (
-                isMobileViewport() &&
-                sidebar &&
-                sidebar.classList.contains(
-                    "mobile-open"
-                )
-            ) {
-
-                const clickedInsideSidebar =
-                    target.closest(
-                        "#sidebar"
-                    );
-
-
-                const clickedButton =
-                    target.closest(
-                        "#mobileMenuBtn"
-                    );
-
-
-                const clickedOverlay =
-                    target.closest(
-                        "#mobileOverlay,.mobile-overlay"
-                    );
-
-
-                if (
-                    !clickedInsideSidebar &&
-                    !clickedButton &&
-                    !clickedOverlay
-                ) {
-
-                    closeMobileMenu();
-                }
-            }
-
-
-            /* ------------------------------
-               EDITAR
-               ------------------------------ */
-
-            const editButton =
-                target.closest(
-                    "[data-edit-transaction]"
-                );
-
-
-            if (editButton) {
-
-                const id =
-                    editButton.dataset
-                        .editTransaction;
-
-
-                const transaction =
-                    transactions.find(
-                        item =>
-                            String(item.id) ===
-                            String(id)
-                    );
-
-
-                if (transaction) {
-
-                    openTransactionModal(
-                        transaction.type,
-                        transaction
-                    );
-                }
-
-                return;
-            }
-
-
-            /* ------------------------------
-               EXCLUIR
-               ------------------------------ */
-
-            const deleteButton =
-                target.closest(
-                    "[data-delete-transaction]"
-                );
-
-
-            if (deleteButton) {
-
-                deleteTransaction(
-                    deleteButton.dataset
-                        .deleteTransaction
-                );
-
-                return;
-            }
-
-
-            /* ------------------------------
-               RECEBIDO
-               ------------------------------ */
-
-            const receivedButton =
-                target.closest(
-                    "[data-receivable-id]"
-                );
-
-
-            if (receivedButton) {
-
-                markTransactionAsReceived(
-                    receivedButton.dataset
-                        .receivableId
-                );
-
-                return;
-            }
-
-
-            /* ------------------------------
-               EXCLUIR CATEGORIA
-               ------------------------------ */
-
-            const deleteCategoryButton =
-                target.closest(
-                    "[data-delete-category]"
-                );
-
-
-            if (deleteCategoryButton) {
-
-                deleteCategory(
-                    deleteCategoryButton.dataset
-                        .deleteCategory
-                );
-
-                return;
             }
         }
     );
 
 
-    /* -----------------------------------------
-       TIPO DA TRANSAÇÃO
-       ----------------------------------------- */
-
-    document
-        .querySelectorAll(
-            "[data-transaction-type]"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    setTransactionType(
-                        button.dataset
-                            .transactionType
-                    );
-                }
-            );
-        });
-
-
-    /* -----------------------------------------
-       FORM TRANSAÇÃO
-       ----------------------------------------- */
-
-    const transactionForm =
-        firstExisting(
-            "transactionForm",
-            "launchForm"
-        );
-
-
-    if (transactionForm) {
-
-        transactionForm.addEventListener(
-            "submit",
-            saveTransaction
-        );
-    }
-
-
-    /* -----------------------------------------
-       BOTÕES NOVO LANÇAMENTO
-       ----------------------------------------- */
-
-    const newTransactionButtons =
-        document.querySelectorAll(
-            "#newTransactionBtn," +
-            "#newLaunchBtn," +
-            "#addTransactionBtn," +
-            "#addTransactionBtn2," +
-            "[data-new-transaction]"
-        );
-
-
-    newTransactionButtons.forEach(
-        button => {
-
-            button.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    openTransactionModal(
-                        "expense"
-                    );
-                }
-            );
-        }
-    );
-
-
-    /* -----------------------------------------
-       NOVA RECEITA
-       ----------------------------------------- */
-
-    document
-        .querySelectorAll(
-            "[data-new-income]"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    openTransactionModal(
-                        "income"
-                    );
-                }
-            );
-        });
-
-
-    /* -----------------------------------------
-       NOVA DESPESA
-       ----------------------------------------- */
-
-    document
-        .querySelectorAll(
-            "[data-new-expense]"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    openTransactionModal(
-                        "expense"
-                    );
-                }
-            );
-        });
-
-
-    /* -----------------------------------------
-       NOVO A RECEBER
-       ----------------------------------------- */
-
-    document
-        .querySelectorAll(
-            "[data-new-receivable]"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    openNewReceivable();
-                }
-            );
-        });
-
-
-    /* -----------------------------------------
-       CATEGORIA
-       ----------------------------------------- */
-
-    const categoryForm =
-        firstExisting(
-            "categoryForm"
-        );
-
-
-    if (categoryForm) {
-
-        categoryForm.addEventListener(
-            "submit",
-            saveCategory
-        );
-    }
-
-
-    /* -----------------------------------------
-       PESQUISA
-       ----------------------------------------- */
-
-    const searchInput =
-        firstExisting(
-            "transactionSearch"
-        );
-
-
-    if (searchInput) {
-
-        searchInput.addEventListener(
-            "input",
-            renderTransactions
-        );
-    }
-
-
-    /* -----------------------------------------
-       FILTRO TIPO
-       ----------------------------------------- */
-
-    const typeFilter =
-        firstExisting(
-            "transactionTypeFilter",
-            "transactionFilter"
-        );
-
-
-    if (typeFilter) {
-
-        typeFilter.addEventListener(
-            "change",
-            renderTransactions
-        );
-    }
-
-
-    /* -----------------------------------------
-       FILTRO CATEGORIA
-       ----------------------------------------- */
-
-    const categoryFilter =
-        firstExisting(
-            "transactionCategoryFilter",
-            "categoryFilter"
-        );
-
-
-    if (categoryFilter) {
-
-        categoryFilter.addEventListener(
-            "change",
-            renderTransactions
-        );
-    }
-
-
-    /* -----------------------------------------
-       BOTÕES DO DASHBOARD / AÇÕES
-       ----------------------------------------- */
-    ["addTransactionBtn", "addTransactionBtn2"].forEach(id => {
-        const button = $(id);
-        if (button && !button.dataset.bound) { button.dataset.bound = "true"; button.addEventListener("click", e => { e.preventDefault(); openTransactionModal("expense"); }); }
-    });
-    ["addCategoryBtn", "addCategoryBtn2"].forEach(id => {
-        const button = $(id);
-        if (button && !button.dataset.bound) { button.dataset.bound = "true"; button.addEventListener("click", e => { e.preventDefault(); openModal("categoryModal"); }); }
-    });
-    const goalButton = $("addGoalBtn");
-    if (goalButton && !goalButton.dataset.bound) { goalButton.dataset.bound = "true"; goalButton.addEventListener("click", e => { e.preventDefault(); openModal("goalModal"); }); }
-    const receivableButton = $("addReceivableBtn");
-    if (receivableButton && !receivableButton.dataset.bound) { receivableButton.dataset.bound = "true"; receivableButton.addEventListener("click", e => { e.preventDefault(); openNewReceivable(); }); }
-    const goalForm = $("goalForm");
-    if (goalForm && !goalForm.dataset.bound) { goalForm.dataset.bound = "true"; goalForm.addEventListener("submit", saveGoal); }
-    const confirmPremium = $("confirmPremiumBtn");
-    if (confirmPremium && !confirmPremium.dataset.bound) { confirmPremium.dataset.bound = "true"; confirmPremium.addEventListener("click", activatePremiumTrial); }
-    const clearFilters = $("clearTransactionFiltersBtn");
-    if (clearFilters && !clearFilters.dataset.bound) { clearFilters.dataset.bound = "true"; clearFilters.addEventListener("click", () => { ["transactionSearch","transactionFilter","categoryFilter","transactionDateFrom","transactionDateTo"].forEach(id => { const el=$(id); if(el) el.value = id === "transactionFilter" || id === "categoryFilter" ? "all" : ""; }); renderTransactions(); }); }
-    ["transactionFilter","categoryFilter","transactionDateFrom","transactionDateTo"].forEach(id => { const el=$(id); if(el && !el.dataset.bound){ el.dataset.bound="true"; el.addEventListener("change", renderTransactions); }});
-
-    /* -----------------------------------------
-       FECHAR MODAIS
-       ----------------------------------------- */
-
-    document
-        .querySelectorAll(
-            "[data-close-modal]"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    closeModal(
-                        button.dataset
-                            .closeModal
-                    );
-                }
-            );
-        });
-
-
-    /* -----------------------------------------
-       ESC
-       ----------------------------------------- */
+    /* =========================================================
+       FECHAR MODAL CLICANDO NO FUNDO
+       ========================================================= */
 
     document.addEventListener(
-        "keydown",
+        "click",
         event => {
 
-            if (event.key !== "Escape") {
-                return;
-            }
-
-
-            const sidebar =
-                $("sidebar");
+            const target =
+                event.target;
 
 
             if (
-                sidebar &&
-                sidebar.classList.contains(
-                    "mobile-open"
+                target &&
+                target.classList &&
+                target.classList.contains(
+                    "modal"
                 )
             ) {
 
-                closeMobileMenu();
+                target.classList.add(
+                    "hidden"
+                );
+            }
+        }
+    );
+
+
+    /* =========================================================
+       BOTÃO ADICIONAR RECEITA / DESPESA
+       ========================================================= */
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            const target =
+                event.target;
+
+
+            if (
+                !target ||
+                typeof target.closest !==
+                "function"
+            ) {
+                return;
+            }
+
+
+            const incomeButton =
+                target.closest(
+                    "#addIncomeBtn,[data-add-income]"
+                );
+
+
+            if (incomeButton) {
+
+                event.preventDefault();
+
+                openTransactionModal(
+                    "income"
+                );
 
                 return;
             }
 
 
-            document
-                .querySelectorAll(
-                    ".modal:not(.hidden)"
-                )
-                .forEach(modal => {
-
-                    modal.classList.add(
-                        "hidden"
-                    );
-                });
-        }
-    );
+            const expenseButton =
+                target.closest(
+                    "#addExpenseBtn,[data-add-expense]"
+                );
 
 
-    /* -----------------------------------------
-       RESIZE
-       ----------------------------------------- */
+            if (expenseButton) {
 
-    window.addEventListener(
-        "resize",
-        () => {
+                event.preventDefault();
 
-            applyDeviceLayout();
-
-            if (!isMobileViewport()) {
-                closeMobileMenu();
+                openTransactionModal(
+                    "expense"
+                );
             }
         }
     );
 
 
-    /*
-     * Começa sempre com o menu fechado.
-     */
+    /* =========================================================
+       BOTÃO NOVA CATEGORIA
+       ========================================================= */
 
-    closeMobileMenu();
-}
+    document.addEventListener(
+        "click",
+        event => {
 
-
-/* =========================================================
-   BOTÃO DE MOSTRAR/ESCONDER SENHA
-   ========================================================= */
-
-function setupPasswordToggles() {
-
-    document
-        .querySelectorAll(
-            "[data-toggle-password]"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const targetId =
-                        button.dataset
-                            .togglePassword;
+            const target =
+                event.target;
 
 
-                    const input =
-                        $(targetId);
+            if (
+                !target ||
+                typeof target.closest !==
+                "function"
+            ) {
+                return;
+            }
 
 
-                    if (!input) return;
+            const button =
+                target.closest(
+                    "#newCategoryBtn,[data-new-category]"
+                );
 
 
-                    input.type =
-                        input.type === "password"
-                            ? "text"
-                            : "password";
+            if (button) {
+
+                event.preventDefault();
+
+                openModal(
+                    "categoryModal"
+                );
+            }
+        }
+    );
+
+
+    /* =========================================================
+       BOTÃO NOVA META
+       ========================================================= */
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            const target =
+                event.target;
+
+
+            if (
+                !target ||
+                typeof target.closest !==
+                "function"
+            ) {
+                return;
+            }
+
+
+            const button =
+                target.closest(
+                    "#newGoalBtn,[data-new-goal]"
+                );
+
+
+            if (button) {
+
+                event.preventDefault();
+
+                openModal(
+                    "goalModal"
+                );
+            }
+        }
+    );
+
+
+    /* =========================================================
+       PREMIUM
+       ========================================================= */
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            const target =
+                event.target;
+
+
+            if (
+                !target ||
+                typeof target.closest !==
+                "function"
+            ) {
+                return;
+            }
+
+
+            const button =
+                target.closest(
+                    "#activateTrialBtn," +
+                    "[data-activate-trial]"
+                );
+
+
+            if (button) {
+
+                event.preventDefault();
+
+                activatePremiumTrial();
+            }
+        }
+    );
+
+
+    /* =========================================================
+       EXPORTAR DADOS
+       ========================================================= */
+
+    function exportTransactionsCSV() {
+
+        if (!transactions.length) {
+
+            showToast(
+                "Não existem lançamentos para exportar.",
+                "warning"
+            );
+
+            return;
+        }
+
+
+        const rows = [
+            [
+                "Data",
+                "Descrição",
+                "Categoria",
+                "Tipo",
+                "Valor"
+            ]
+        ];
+
+
+        transactions.forEach(transaction => {
+
+            const type =
+                normalizeTransactionType(
+                    transaction.type ||
+                    transaction.tipo
+                );
+
+
+            rows.push([
+                getTransactionDate(transaction),
+
+                getTransactionDescription(
+                    transaction
+                ),
+
+                getTransactionCategory(
+                    transaction
+                ),
+
+                type === "income"
+                    ? "Receita"
+                    : "Despesa",
+
+                getTransactionAmount(
+                    transaction
+                )
+            ]);
+        });
+
+
+        const csv =
+            rows
+                .map(row =>
+                    row
+                        .map(value =>
+                            `"${String(value)
+                                .replace(/"/g, '""')}"`
+                        )
+                        .join(";")
+                )
+                .join("\n");
+
+
+        const blob =
+            new Blob(
+                [
+                    "\ufeff" + csv
+                ],
+                {
+                    type:
+                        "text/csv;charset=utf-8;"
                 }
             );
-        });
-}
 
 
-/* =========================================================
-   ABRIR MODAIS PELO ID
-   ========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const target =
-            event.target;
-
-
-        if (
-            !target ||
-            typeof target.closest !==
-            "function"
-        ) {
-            return;
-        }
-
-
-        const openButton =
-            target.closest(
-                "[data-open-modal]"
+        const url =
+            URL.createObjectURL(
+                blob
             );
 
 
-        if (openButton) {
-
-            event.preventDefault();
-
-            openModal(
-                openButton.dataset
-                    .openModal
-            );
-
-            return;
-        }
-
-
-        const closeButton =
-            target.closest(
-                "[data-close]"
+        const link =
+            document.createElement(
+                "a"
             );
 
 
-        if (closeButton) {
+        link.href = url;
 
-            event.preventDefault();
+        link.download =
+            "controles-lancamentos.csv";
 
-            closeModal(
-                closeButton.dataset.close
-            );
-        }
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+        link.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
     }
-);
 
 
-/* =========================================================
-   FECHAR MODAL CLICANDO NO FUNDO
-   ========================================================= */
+    /* =========================================================
+       EXPORTAR
+       ========================================================= */
 
-document.addEventListener(
-    "click",
-    event => {
+    document.addEventListener(
+        "click",
+        event => {
 
-        const target =
-            event.target;
+            const target =
+                event.target;
 
 
-        if (
-            target &&
-            target.classList &&
-            target.classList.contains(
-                "modal"
-            )
-        ) {
+            if (
+                !target ||
+                typeof target.closest !==
+                "function"
+            ) {
+                return;
+            }
 
-            target.classList.add(
-                "hidden"
-            );
+
+            const button =
+                target.closest(
+                    "#exportTransactionsBtn," +
+                    "[data-export-transactions]"
+                );
+
+
+            if (button) {
+
+                event.preventDefault();
+
+                exportTransactionsCSV();
+            }
         }
-    }
-);
+    );
 
 
-/* =========================================================
-   BOTÃO ADICIONAR RECEITA / DESPESA
-   ========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const target =
-            event.target;
 
 
-        if (
-            !target ||
-            typeof target.closest !==
-            "function"
-        ) {
-            return;
-        }
+    /* =========================================================
+       CONTROLES — ACESSO PREMIUM
+       GRÁTIS:
+       - Adicionar receita
+       - Adicionar despesa
+
+       PREMIUM:
+       - Todo o restante
+       ========================================================= */
 
 
-        const incomeButton =
-            target.closest(
-                "#addIncomeBtn,[data-add-income]"
-            );
+    function openPremiumAccess() {
 
-
-        if (incomeButton) {
-
-            event.preventDefault();
-
-            openTransactionModal(
-                "income"
-            );
-
-            return;
-        }
-
-
-        const expenseButton =
-            target.closest(
-                "#addExpenseBtn,[data-add-expense]"
-            );
-
-
-        if (expenseButton) {
-
-            event.preventDefault();
-
-            openTransactionModal(
-                "expense"
-            );
-        }
-    }
-);
-
-
-/* =========================================================
-   BOTÃO NOVA CATEGORIA
-   ========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const target =
-            event.target;
-
-
-        if (
-            !target ||
-            typeof target.closest !==
-            "function"
-        ) {
-            return;
-        }
-
-
-        const button =
-            target.closest(
-                "#newCategoryBtn,[data-new-category]"
-            );
-
-
-        if (button) {
-
-            event.preventDefault();
-
-            openModal(
-                "categoryModal"
-            );
-        }
-    }
-);
-
-
-/* =========================================================
-   BOTÃO NOVA META
-   ========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const target =
-            event.target;
-
-
-        if (
-            !target ||
-            typeof target.closest !==
-            "function"
-        ) {
-            return;
-        }
-
-
-        const button =
-            target.closest(
-                "#newGoalBtn,[data-new-goal]"
-            );
-
-
-        if (button) {
-
-            event.preventDefault();
-
-            openModal(
-                "goalModal"
-            );
-        }
-    }
-);
-
-
-/* =========================================================
-   PREMIUM
-   ========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const target =
-            event.target;
-
-
-        if (
-            !target ||
-            typeof target.closest !==
-            "function"
-        ) {
-            return;
-        }
-
-
-        const button =
-            target.closest(
-                "#activateTrialBtn," +
-                "[data-activate-trial]"
-            );
-
-
-        if (button) {
-
-            event.preventDefault();
-
-            activatePremiumTrial();
-        }
-    }
-);
-
-
-/* =========================================================
-   EXPORTAR DADOS
-   ========================================================= */
-
-function exportTransactionsCSV() {
-
-    if (!transactions.length) {
+        closeMobileMenu();
 
         showToast(
-            "Não existem lançamentos para exportar.",
+            "🔒 Este recurso faz parte do ControleS Premium.",
             "warning"
         );
 
-        return;
+        showSection("premium");
     }
 
 
-    const rows = [
-        [
-            "Data",
-            "Descrição",
-            "Categoria",
-            "Tipo",
-            "Valor"
-        ]
-    ];
+    function applyPremiumAccess() {
+
+        const premium =
+            isPremiumActive();
 
 
-    transactions.forEach(transaction => {
+        document.body.classList.toggle(
+            "free-plan",
+            !premium
+        );
 
-        const type =
-            normalizeTransactionType(
-                transaction.type ||
-                transaction.tipo
-            );
+        document.body.classList.toggle(
+            "premium-plan",
+            premium
+        );
 
 
-        rows.push([
-            getTransactionDate(transaction),
+        /* =====================================================
+           MENUS PREMIUM
+           ===================================================== */
 
-            getTransactionDescription(
-                transaction
-            ),
+        const blockedSections = [
+            "transactions",
+            "receivable",
+            "categories",
+            "reports"
+        ];
 
-            getTransactionCategory(
-                transaction
-            ),
 
-            type === "income"
-                ? "Receita"
-                : "Despesa",
-
-            getTransactionAmount(
-                transaction
+        document
+            .querySelectorAll(
+                ".nav-item[data-section]"
             )
-        ]);
-    });
+            .forEach(button => {
+
+                const section =
+                    button.dataset.section;
+
+                const locked =
+                    !premium &&
+                    blockedSections.includes(
+                        section
+                    );
 
 
-    const csv =
-        rows
-            .map(row =>
-                row
-                    .map(value =>
-                        `"${String(value)
-                            .replace(/"/g, '""')}"`
-                    )
-                    .join(";")
-            )
-            .join("\n");
-
-
-    const blob =
-        new Blob(
-            [
-                "\ufeff" + csv
-            ],
-            {
-                type:
-                    "text/csv;charset=utf-8;"
-            }
-        );
-
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const link =
-        document.createElement(
-            "a"
-        );
-
-
-    link.href = url;
-
-    link.download =
-        "controles-lancamentos.csv";
-
-
-    document.body.appendChild(
-        link
-    );
-
-
-    link.click();
-
-    link.remove();
-
-
-    URL.revokeObjectURL(
-        url
-    );
-}
-
-
-/* =========================================================
-   EXPORTAR
-   ========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const target =
-            event.target;
-
-
-        if (
-            !target ||
-            typeof target.closest !==
-            "function"
-        ) {
-            return;
-        }
-
-
-        const button =
-            target.closest(
-                "#exportTransactionsBtn," +
-                "[data-export-transactions]"
-            );
-
-
-        if (button) {
-
-            event.preventDefault();
-
-            exportTransactionsCSV();
-        }
-    }
-);
-
-
-
-
-/* =========================================================
-   CONTROLES — ACESSO PREMIUM
-   GRÁTIS:
-   - Adicionar receita
-   - Adicionar despesa
-
-   PREMIUM:
-   - Todo o restante
-   ========================================================= */
-
-
-function openPremiumAccess() {
-
-    closeMobileMenu();
-
-    showToast(
-        "🔒 Este recurso faz parte do ControleS Premium.",
-        "warning"
-    );
-
-    showSection("premium");
-}
-
-
-function applyPremiumAccess() {
-
-    const premium =
-        isPremiumActive();
-
-
-    document.body.classList.toggle(
-        "free-plan",
-        !premium
-    );
-
-    document.body.classList.toggle(
-        "premium-plan",
-        premium
-    );
-
-
-    /* =====================================================
-       MENUS PREMIUM
-       ===================================================== */
-
-    const blockedSections = [
-        "transactions",
-        "receivable",
-        "categories",
-        "reports"
-    ];
-
-
-    document
-        .querySelectorAll(
-            ".nav-item[data-section]"
-        )
-        .forEach(button => {
-
-            const section =
-                button.dataset.section;
-
-            const locked =
-                !premium &&
-                blockedSections.includes(
-                    section
+                button.classList.toggle(
+                    "premium-locked",
+                    locked
                 );
+
+
+                if (locked) {
+
+                    button.setAttribute(
+                        "data-premium-locked",
+                        "true"
+                    );
+
+                } else {
+
+                    button.removeAttribute(
+                        "data-premium-locked"
+                    );
+                }
+            });
+
+
+        /* =====================================================
+           AÇÕES PREMIUM
+           ===================================================== */
+
+        [
+            "addCategoryBtn",
+            "addCategoryBtn2",
+            "addGoalBtn",
+            "addReceivableBtn"
+        ].forEach(id => {
+
+            const button = $(id);
+
+            if (!button) return;
 
 
             button.classList.toggle(
                 "premium-locked",
-                locked
+                !premium
             );
 
 
-            if (locked) {
+            button.classList.toggle(
+                "premium-content-hidden",
+                !premium
+            );
+
+
+            if (!premium) {
 
                 button.setAttribute(
                     "data-premium-locked",
@@ -6881,383 +7236,339 @@ function applyPremiumAccess() {
         });
 
 
-    /* =====================================================
-       AÇÕES PREMIUM
-       ===================================================== */
+        /* =====================================================
+           CONTEÚDO PREMIUM DO DASHBOARD
+           ===================================================== */
 
-    [
-        "addCategoryBtn",
-        "addCategoryBtn2",
-        "addGoalBtn",
-        "addReceivableBtn"
-    ].forEach(id => {
+    const premiumContent = [
+        "#dashboardPeriodFilter",
+        "#receivableDashboardCard",
+        "#premiumDashboardContent",
+        "#dashboardSection > .dashboard-grid > article:first-child"
+    ];
+        premiumContent.forEach(selector => {
 
-        const button = $(id);
+            document
+                .querySelectorAll(selector)
+                .forEach(element => {
 
-        if (!button) return;
-
-
-        button.classList.toggle(
-            "premium-locked",
-            !premium
-        );
-
-
-        button.classList.toggle(
-            "premium-content-hidden",
-            !premium
-        );
+                    element.classList.toggle(
+                        "premium-content-hidden",
+                        !premium
+                    );
+                });
+        });
 
 
-        if (!premium) {
+        /* =====================================================
+           BOTÃO GENÉRICO NOVO LANÇAMENTO
+           FICA ESCONDIDO NO GRÁTIS
+           ===================================================== */
 
-            button.setAttribute(
-                "data-premium-locked",
-                "true"
+        [
+            "addTransactionBtn",
+            "addTransactionBtn2"
+        ].forEach(id => {
+
+            const button = $(id);
+
+            if (!button) return;
+
+
+            button.classList.toggle(
+                "premium-content-hidden",
+                !premium
+            );
+        });
+
+
+        /* =====================================================
+           RECEITA E DESPESA SEMPRE LIVRES
+           ===================================================== */
+
+        const quickActions =
+            document.querySelector(
+                ".quick-actions"
             );
 
-        } else {
 
-            button.removeAttribute(
-                "data-premium-locked"
+        if (quickActions) {
+
+            quickActions.classList.remove(
+                "premium-content-hidden"
             );
+
+            quickActions.style.display =
+                "grid";
         }
-    });
 
-
-    /* =====================================================
-       CONTEÚDO PREMIUM DO DASHBOARD
-       ===================================================== */
-
-const premiumContent = [
-    "#dashboardPeriodFilter",
-    "#receivableDashboardCard",
-    "#premiumDashboardContent",
-    "#dashboardSection > .dashboard-grid > article:first-child"
-];
-    premiumContent.forEach(selector => {
 
         document
-            .querySelectorAll(selector)
-            .forEach(element => {
+            .querySelectorAll(
+                '.quick-action[data-action="add-income"],' +
+                '.quick-action[data-action="add-expense"]'
+            )
+            .forEach(button => {
 
-                element.classList.toggle(
+                button.classList.remove(
                     "premium-content-hidden",
-                    !premium
+                    "premium-locked"
                 );
+
+                button.removeAttribute(
+                    "data-premium-locked"
+                );
+
+                button.style.display = "";
+                button.style.opacity = "1";
             });
-    });
-
-
-    /* =====================================================
-       BOTÃO GENÉRICO NOVO LANÇAMENTO
-       FICA ESCONDIDO NO GRÁTIS
-       ===================================================== */
-
-    [
-        "addTransactionBtn",
-        "addTransactionBtn2"
-    ].forEach(id => {
-
-        const button = $(id);
-
-        if (!button) return;
-
-
-        button.classList.toggle(
-            "premium-content-hidden",
-            !premium
-        );
-    });
-
-
-    /* =====================================================
-       RECEITA E DESPESA SEMPRE LIVRES
-       ===================================================== */
-
-    const quickActions =
-        document.querySelector(
-            ".quick-actions"
-        );
-
-
-    if (quickActions) {
-
-        quickActions.classList.remove(
-            "premium-content-hidden"
-        );
-
-        quickActions.style.display =
-            "grid";
     }
 
 
-    document
-        .querySelectorAll(
-            '.quick-action[data-action="add-income"],' +
-            '.quick-action[data-action="add-expense"]'
-        )
-        .forEach(button => {
+    /* =========================================================
+       BLOQUEIO DOS CLIQUES PREMIUM
+       ========================================================= */
 
-            button.classList.remove(
-                "premium-content-hidden",
-                "premium-locked"
-            );
-
-            button.removeAttribute(
-                "data-premium-locked"
-            );
-
-            button.style.display = "";
-            button.style.opacity = "1";
-        });
-}
-
-
-/* =========================================================
-   BLOQUEIO DOS CLIQUES PREMIUM
-   ========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        /*
-         * Premium ativo:
-         * sistema funciona normalmente.
-         */
-
-        if (isPremiumActive()) {
-            return;
-        }
-
-
-        const target =
-            event.target;
-
-
-        if (
-            !target ||
-            typeof target.closest !== "function"
-        ) {
-            return;
-        }
-
-
-        /* =================================================
-           RECEITA / DESPESA — GRÁTIS
-           ================================================= */
-
-        const freeAction =
-            target.closest(
-                '.quick-action[data-action="add-income"],' +
-                '.quick-action[data-action="add-expense"],' +
-                '#addIncomeBtn,' +
-                '#addExpenseBtn,' +
-                '[data-add-income],' +
-                '[data-add-expense]'
-            );
-
-
-        if (freeAction) {
-
-            event.preventDefault();
+    document.addEventListener(
+        "click",
+        event => {
 
             /*
-             * Impede os listeners antigos
-             * de executarem novamente o clique.
+             * Premium ativo:
+             * sistema funciona normalmente.
              */
-            event.stopPropagation();
-            event.stopImmediatePropagation();
+
+            if (isPremiumActive()) {
+                return;
+            }
 
 
-            const isIncome =
-                freeAction.matches(
+            const target =
+                event.target;
+
+
+            if (
+                !target ||
+                typeof target.closest !== "function"
+            ) {
+                return;
+            }
+
+
+            /* =================================================
+               RECEITA / DESPESA — GRÁTIS
+               ================================================= */
+
+            const freeAction =
+                target.closest(
                     '.quick-action[data-action="add-income"],' +
+                    '.quick-action[data-action="add-expense"],' +
                     '#addIncomeBtn,' +
-                    '[data-add-income]'
+                    '#addExpenseBtn,' +
+                    '[data-add-income],' +
+                    '[data-add-expense]'
                 );
 
 
-            openTransactionModal(
-                isIncome
-                    ? "income"
-                    : "expense"
-            );
+            if (freeAction) {
+
+                event.preventDefault();
+
+                /*
+                 * Impede os listeners antigos
+                 * de executarem novamente o clique.
+                 */
+                event.stopPropagation();
+                event.stopImmediatePropagation();
 
 
-            return;
-        }
+                const isIncome =
+                    freeAction.matches(
+                        '.quick-action[data-action="add-income"],' +
+                        '#addIncomeBtn,' +
+                        '[data-add-income]'
+                    );
 
 
-        /* =================================================
-           PREMIUM CONTINUA ACESSÍVEL
-           ================================================= */
-
-        const premiumPage =
-            target.closest(
-                '[data-section="premium"]'
-            );
+                openTransactionModal(
+                    isIncome
+                        ? "income"
+                        : "expense"
+                );
 
 
-        if (premiumPage) {
-            return;
-        }
-
-
-        /* =================================================
-           SEÇÕES BLOQUEADAS
-           ================================================= */
-
-        const blockedSection =
-            target.closest(
-                '[data-section="transactions"],' +
-                '[data-section="receivable"],' +
-                '[data-section="categories"],' +
-                '[data-section="reports"]'
-            );
-
-
-        /* =================================================
-           AÇÕES BLOQUEADAS
-           ================================================= */
-
-        const blockedAction =
-            target.closest(
-                '[data-premium-locked="true"],' +
-                '#addCategoryBtn,' +
-                '#addCategoryBtn2,' +
-                '#addGoalBtn,' +
-                '#addReceivableBtn,' +
-                '[data-edit-transaction],' +
-                '[data-delete-transaction],' +
-                '[data-receivable-id],' +
-                '[data-delete-category],' +
-                '#exportTransactionsBtn,' +
-                '[data-export-transactions]'
-            );
-
-
-        if (
-            blockedSection ||
-            blockedAction
-        ) {
-
-            event.preventDefault();
-
-            event.stopPropagation();
-
-            event.stopImmediatePropagation();
-
-
-            openPremiumAccess();
-
-            return;
-        }
-
-    },
-    true
-);
-
-
-/* =========================================================
-   ESTILO PREMIUM
-   ========================================================= */
-
-(function createPremiumAccessStyles() {
-
-    if (
-        document.getElementById(
-            "controlesPremiumAccessStyles"
-        )
-    ) {
-        return;
-    }
-
-
-    const style =
-        document.createElement(
-            "style"
-        );
-
-
-    style.id =
-        "controlesPremiumAccessStyles";
-
-
-    style.textContent = `
-
-        .premium-content-hidden {
-            display: none !important;
-        }
-
-
-        .premium-locked {
-            position: relative;
-            opacity: .68;
-        }
-
-
-        .free-plan
-        .nav-item.premium-locked::after {
-            content: "🔒";
-            margin-left: auto;
-            font-size: 11px;
-        }
-
-
-        .free-plan .quick-actions {
-            display: grid !important;
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
-        }
-
-
-        .free-plan
-        .quick-action[data-action="add-income"],
-
-        .free-plan
-        .quick-action[data-action="add-expense"] {
-
-            display: flex !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-
-
-        @media screen and (max-width: 400px) {
-
-            .free-plan .quick-actions {
-
-                grid-template-columns:
-                    1fr;
+                return;
             }
-        }
-    `;
 
 
-    document.head.appendChild(
-        style
+            /* =================================================
+               PREMIUM CONTINUA ACESSÍVEL
+               ================================================= */
+
+            const premiumPage =
+                target.closest(
+                    '[data-section="premium"]'
+                );
+
+
+            if (premiumPage) {
+                return;
+            }
+
+
+            /* =================================================
+               SEÇÕES BLOQUEADAS
+               ================================================= */
+
+            const blockedSection =
+                target.closest(
+                    '[data-section="transactions"],' +
+                    '[data-section="receivable"],' +
+                    '[data-section="categories"],' +
+                    '[data-section="reports"]'
+                );
+
+
+            /* =================================================
+               AÇÕES BLOQUEADAS
+               ================================================= */
+
+            const blockedAction =
+                target.closest(
+                    '[data-premium-locked="true"],' +
+                    '#addCategoryBtn,' +
+                    '#addCategoryBtn2,' +
+                    '#addGoalBtn,' +
+                    '#addReceivableBtn,' +
+                    '[data-edit-transaction],' +
+                    '[data-delete-transaction],' +
+                    '[data-receivable-id],' +
+                    '[data-delete-category],' +
+                    '#exportTransactionsBtn,' +
+                    '[data-export-transactions]'
+                );
+
+
+            if (
+                blockedSection ||
+                blockedAction
+            ) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                event.stopImmediatePropagation();
+
+
+                openPremiumAccess();
+
+                return;
+            }
+
+        },
+        true
     );
 
-})();
 
+    /* =========================================================
+       ESTILO PREMIUM
+       ========================================================= */
 
-/* =========================================================
-   ATUALIZAR ACESSO AO VOLTAR PARA A TELA
-   ========================================================= */
+    (function createPremiumAccessStyles() {
 
-window.addEventListener(
-    "focus",
-    () => {
-
-        if (currentUser) {
-
-            applyPremiumAccess();
+        if (
+            document.getElementById(
+                "controlesPremiumAccessStyles"
+            )
+        ) {
+            return;
         }
-    }
-);
 
-/* =========================================================
-   FIM DO APP.JS
-   ========================================================= */
+
+        const style =
+            document.createElement(
+                "style"
+            );
+
+
+        style.id =
+            "controlesPremiumAccessStyles";
+
+
+        style.textContent = `
+
+            .premium-content-hidden {
+                display: none !important;
+            }
+
+
+            .premium-locked {
+                position: relative;
+                opacity: .68;
+            }
+
+
+            .free-plan
+            .nav-item.premium-locked::after {
+                content: "🔒";
+                margin-left: auto;
+                font-size: 11px;
+            }
+
+
+            .free-plan .quick-actions {
+                display: grid !important;
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+
+            .free-plan
+            .quick-action[data-action="add-income"],
+
+            .free-plan
+            .quick-action[data-action="add-expense"] {
+
+                display: flex !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+
+
+            @media screen and (max-width: 400px) {
+
+                .free-plan .quick-actions {
+
+                    grid-template-columns:
+                        1fr;
+                }
+            }
+        `;
+
+
+        document.head.appendChild(
+            style
+        );
+
+    })();
+
+
+    /* =========================================================
+       ATUALIZAR ACESSO AO VOLTAR PARA A TELA
+       ========================================================= */
+
+    window.addEventListener(
+        "focus",
+        () => {
+
+            if (currentUser) {
+
+                applyPremiumAccess();
+            }
+        }
+    );
+
+    /* =========================================================
+       FIM DO APP.JS
+       ========================================================= */
