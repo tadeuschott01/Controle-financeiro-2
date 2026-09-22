@@ -62,6 +62,14 @@ let eventsBound = false;
 
 
 /* =========================================================
+   API PYTHON — ANÁLISE INTELIGENTE
+   ========================================================= */
+
+const CONTROLES_PYTHON_API =
+    "https://controles-api.onrender.com";
+
+
+/* =========================================================
    CATEGORIAS PADRÃO
    ========================================================= */
 
@@ -250,6 +258,58 @@ function showToast(message, type = "info") {
 }
 
 
+function setupSmartAnalysisEvents() {
+    const analysisButton =
+        $("smartAnalysisBtn");
+
+    const closeButton =
+        $("closeSmartAnalysisBtn");
+
+    const modal =
+        $("smartAnalysisModal");
+
+    if (analysisButton &&
+        !analysisButton.dataset.analysisBound) {
+
+        analysisButton.addEventListener(
+            "click",
+            analyzeFinancesWithPython
+        );
+
+        analysisButton.dataset.analysisBound =
+            "true";
+    }
+
+    if (closeButton &&
+        !closeButton.dataset.analysisBound) {
+
+        closeButton.addEventListener(
+            "click",
+            closeSmartAnalysisModal
+        );
+
+        closeButton.dataset.analysisBound =
+            "true";
+    }
+
+    if (modal &&
+        !modal.dataset.analysisBound) {
+
+        modal.addEventListener(
+            "click",
+            event => {
+                if (event.target === modal) {
+                    closeSmartAnalysisModal();
+                }
+            }
+        );
+
+        modal.dataset.analysisBound =
+            "true";
+    }
+}
+
+
 /* =========================================================
    DOM READY
    ========================================================= */
@@ -257,6 +317,8 @@ function showToast(message, type = "info") {
 document.addEventListener("DOMContentLoaded", async () => {
 
     setupEvents();
+
+    setupSmartAnalysisEvents();
 
     setCurrentDate();
     setDefaultDate();
@@ -2303,6 +2365,246 @@ function updateTransactionFilterSummary(count) {
     if (f.category !== "all") active.push(f.category);
     if (f.from || f.to) active.push(`${formatDateBR(f.from || f.to)}${f.from && f.to ? " até " + formatDateBR(f.to) : ""}`);
     el.textContent = active.length ? `Filtros ativos: ${active.join(" • ")} — ${count} resultado${count === 1 ? "" : "s"}.` : `Mostrando todos os lançamentos — ${count} resultado${count === 1 ? "" : "s"}.`;
+}
+
+
+/* =========================================================
+   ANÁLISE INTELIGENTE — PYTHON
+   ========================================================= */
+
+function openSmartAnalysisModal() {
+    const modal = $("smartAnalysisModal");
+
+    if (!modal) {
+        showToast(
+            "A janela de análise não foi encontrada.",
+            "error"
+        );
+        return;
+    }
+
+    const loading = $("smartAnalysisLoading");
+    const result = $("smartAnalysisResult");
+    const errorBox = $("smartAnalysisError");
+
+    if (loading) loading.classList.add("hidden");
+    if (result) result.classList.add("hidden");
+    if (errorBox) errorBox.classList.add("hidden");
+
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+}
+
+
+function closeSmartAnalysisModal() {
+    const modal = $("smartAnalysisModal");
+
+    if (!modal) return;
+
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+}
+
+
+function setSmartAnalysisLoading(isLoading) {
+    const loading = $("smartAnalysisLoading");
+    const result = $("smartAnalysisResult");
+    const errorBox = $("smartAnalysisError");
+
+    if (loading) {
+        loading.classList.toggle(
+            "hidden",
+            !isLoading
+        );
+    }
+
+    if (isLoading) {
+        if (result) result.classList.add("hidden");
+        if (errorBox) errorBox.classList.add("hidden");
+    }
+}
+
+
+function showSmartAnalysisError(message) {
+    const loading = $("smartAnalysisLoading");
+    const result = $("smartAnalysisResult");
+    const errorBox = $("smartAnalysisError");
+
+    if (loading) loading.classList.add("hidden");
+    if (result) result.classList.add("hidden");
+
+    if (errorBox) {
+        errorBox.textContent =
+            message ||
+            "Não foi possível realizar a análise. Tente novamente.";
+
+        errorBox.classList.remove("hidden");
+    }
+}
+
+
+function renderSmartAnalysis(data) {
+    const loading = $("smartAnalysisLoading");
+    const result = $("smartAnalysisResult");
+    const errorBox = $("smartAnalysisError");
+
+    const income = $("analysisIncome");
+    const expense = $("analysisExpense");
+    const balance = $("analysisBalance");
+    const topCategory = $("analysisTopCategory");
+    const topCategoryValue = $("analysisTopCategoryValue");
+    const transactionCount = $("analysisTransactionCount");
+
+    if (income) {
+        income.textContent =
+            formatCurrency(data?.receitas);
+    }
+
+    if (expense) {
+        expense.textContent =
+            formatCurrency(data?.despesas);
+    }
+
+    if (balance) {
+        const value =
+            Number(data?.saldo) || 0;
+
+        balance.textContent =
+            formatCurrency(value);
+
+        balance.classList.remove(
+            "positive",
+            "negative"
+        );
+
+        balance.classList.add(
+            value < 0
+                ? "negative"
+                : "positive"
+        );
+    }
+
+    if (topCategory) {
+        topCategory.textContent =
+            data?.maior_categoria ||
+            "Nenhuma despesa";
+    }
+
+    if (topCategoryValue) {
+        topCategoryValue.textContent =
+            formatCurrency(
+                data?.maior_categoria_valor
+            );
+    }
+
+    if (transactionCount) {
+        transactionCount.textContent =
+            Number(
+                data?.quantidade_transacoes
+            ) || 0;
+    }
+
+    if (loading) loading.classList.add("hidden");
+    if (errorBox) errorBox.classList.add("hidden");
+    if (result) result.classList.remove("hidden");
+}
+
+
+async function analyzeFinancesWithPython() {
+    const button = $("smartAnalysisBtn");
+
+    if (!Array.isArray(transactions) ||
+        transactions.length === 0) {
+
+        showToast(
+            "Adicione pelo menos um lançamento para analisar.",
+            "warning"
+        );
+
+        return;
+    }
+
+    openSmartAnalysisModal();
+    setSmartAnalysisLoading(true);
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    const payload = {
+        transactions:
+            transactions.map(transaction => ({
+                type:
+                    normalizeTransactionType(
+                        transaction.type ||
+                        transaction.tipo ||
+                        transaction.transaction_type
+                    ),
+
+                amount:
+                    getTransactionAmount(
+                        transaction
+                    ),
+
+                category:
+                    getTransactionCategory(
+                        transaction
+                    )
+            }))
+    };
+
+    try {
+        const response = await fetch(
+            `${CONTROLES_PYTHON_API}/analisar`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(payload)
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `API retornou ${response.status}`
+            );
+        }
+
+        const data =
+            await response.json();
+
+        renderSmartAnalysis(data);
+
+        showToast(
+            "Análise concluída com sucesso.",
+            "success"
+        );
+
+    } catch (error) {
+        console.error(
+            "Erro na análise Python:",
+            error
+        );
+
+        showSmartAnalysisError(
+            "Não foi possível conectar ao motor de análise. Tente novamente em alguns instantes."
+        );
+
+        showToast(
+            "Falha ao realizar a análise.",
+            "error"
+        );
+
+    } finally {
+        if (button) {
+            button.disabled = false;
+        }
+    }
 }
 
 
