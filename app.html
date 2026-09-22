@@ -2439,132 +2439,378 @@
   <!-- =====================================================
        MODAL — ANÁLISE INTELIGENTE / PYTHON
   ====================================================== -->
+ <!-- =====================================================
+     MODAL — ANÁLISE INTELIGENTE 2.0 / PYTHON
+====================================================== -->
+
+<div
+  id="smartAnalysisModal"
+  class="modal hidden"
+  aria-hidden="true"
+>
   <div
-    id="smartAnalysisModal"
-    class="modal hidden"
-    aria-hidden="true"
+    class="modal-card smart-analysis-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="smartAnalysisTitle"
   >
+
+    <!-- FECHAR -->
+    <button
+      id="closeSmartAnalysisBtn"
+      class="modal-close"
+      type="button"
+      aria-label="Fechar análise inteligente"
+    >
+      ×
+    </button>
+
+
+    <!-- CABEÇALHO -->
+    <span class="eyebrow">
+      CONTROLES INTELIGENTE
+    </span>
+
+    <h2 id="smartAnalysisTitle">
+      ✨ Análise financeira
+    </h2>
+
+    <p>
+      Análise dos seus lançamentos processada
+      pelo motor Python do ControleS.
+    </p>
+
+
+    <!-- CARREGAMENTO -->
     <div
-      class="modal-card smart-analysis-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="smartAnalysisTitle"
+      id="smartAnalysisLoading"
+      class="hidden"
+      aria-live="polite"
+    >
+      <p>
+        Analisando suas finanças...
+      </p>
+    </div>
+
+
+    <!-- RESULTADO -->
+    <div
+      id="smartAnalysisResult"
+      class="hidden"
+      aria-live="polite"
     >
 
-      <button
-        id="closeSmartAnalysisBtn"
-        class="modal-close"
-        type="button"
-        aria-label="Fechar análise inteligente"
-      >
-        ×
-      </button>
 
-      <span class="eyebrow">
-        CONTROLES INTELIGENTE
-      </span>
+      <!-- =========================================
+           RESUMO FINANCEIRO
+      ========================================== -->
 
-      <h2 id="smartAnalysisTitle">
-        ✨ Análise financeira
-      </h2>
+      <div class="summary-grid">
 
-      <p>
-        Análise dos seus lançamentos processada pelo motor Python do ControleS.
-      </p>
+        <article class="summary-card">
 
-      <div
-        id="smartAnalysisLoading"
-        class="hidden"
-        aria-live="polite"
-      >
-        <p>Analisando suas finanças...</p>
+          <span>
+            Receitas
+          </span>
+
+          <strong
+            id="analysisIncome"
+            class="positive"
+          >
+            R$ 0,00
+          </strong>
+
+        </article>
+
+
+        <article class="summary-card">
+
+          <span>
+            Despesas
+          </span>
+
+          <strong
+            id="analysisExpense"
+            class="negative"
+          >
+            R$ 0,00
+          </strong>
+
+        </article>
+
+
+        <article class="summary-card balance-card">
+
+          <span>
+            Saldo
+          </span>
+
+          <strong id="analysisBalance">
+            R$ 0,00
+          </strong>
+
+        </article>
+
       </div>
 
-      <div
-        id="smartAnalysisResult"
-        class="hidden"
-        aria-live="polite"
-      >
 
-        <div class="summary-grid">
+      <!-- =========================================
+           INDICADORES FINANCEIROS
+      ========================================== -->
 
-          <article class="summary-card">
-            <span>Receitas</span>
-            <strong
-              id="analysisIncome"
-              class="positive"
-            >
-              R$ 0,00
-            </strong>
-          </article>
+      <article class="panel">
 
-          <article class="summary-card">
-            <span>Despesas</span>
-            <strong
-              id="analysisExpense"
-              class="negative"
-            >
-              R$ 0,00
-            </strong>
-          </article>
+        <div class="panel-header">
 
-          <article class="summary-card balance-card">
-            <span>Saldo</span>
-            <strong id="analysisBalance">
-              R$ 0,00
-            </strong>
-          </article>
+          <div>
+
+            <h3>
+              📊 Indicadores financeiros
+            </h3>
+
+            <p>
+              Leitura automática dos seus lançamentos.
+            </p>
+
+          </div>
 
         </div>
 
-        <article class="panel">
-          <div class="panel-header">
-            <div>
-              <h3>🏆 Maior gasto</h3>
-              <p>Categoria com maior volume de despesas.</p>
-            </div>
+
+        <div
+          class="premium-summary-grid smart-analysis-indicators"
+        >
+
+          <div class="premium-summary-item">
+
+            <span>
+              Renda utilizada
+            </span>
+
+            <strong id="analysisSpentPercentage">
+              0%
+            </strong>
+
           </div>
 
-          <div class="premium-value-box">
-            <strong id="analysisTopCategory">
+
+          <div class="premium-summary-item">
+
+            <span>
+              Taxa de economia
+            </span>
+
+            <strong id="analysisSavingsRate">
+              0%
+            </strong>
+
+          </div>
+
+
+          <div class="premium-summary-item">
+
+            <span>
+              Situação
+            </span>
+
+            <strong id="analysisSituation">
               —
             </strong>
 
-            <small id="analysisTopCategoryValue">
-              R$ 0,00
-            </small>
-          </div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-header">
-            <div>
-              <h3>📊 Lançamentos analisados</h3>
-              <p>Quantidade de movimentações enviadas para análise.</p>
-            </div>
           </div>
 
-          <div class="premium-value-box">
-            <strong id="analysisTransactionCount">
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           MAIOR GASTO
+      ========================================== -->
+
+      <article class="panel">
+
+        <div class="panel-header">
+
+          <div>
+
+            <h3>
+              🏆 Maior gasto
+            </h3>
+
+            <p>
+              Categoria com maior volume de despesas.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="premium-value-box">
+
+          <strong id="analysisTopCategory">
+            —
+          </strong>
+
+          <small id="analysisTopCategoryValue">
+            R$ 0,00
+          </small>
+
+          <small id="analysisTopCategoryPercentage">
+            0% das despesas
+          </small>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           ANÁLISE AUTOMÁTICA
+      ========================================== -->
+
+      <article class="panel">
+
+        <div class="panel-header">
+
+          <div>
+
+            <h3>
+              🧠 Análise do ControleS
+            </h3>
+
+            <p>
+              Resumo gerado pelo motor financeiro Python.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="analysisAutomaticText"
+          class="report-analysis"
+        >
+
+          <p>
+            Adicione lançamentos para gerar sua análise.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           INSIGHTS
+      ========================================== -->
+
+      <article class="panel">
+
+        <div class="panel-header">
+
+          <div>
+
+            <h3>
+              💡 Insights
+            </h3>
+
+            <p>
+              Informações encontradas nos seus
+              dados financeiros.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="analysisInsights"
+          class="report-analysis"
+        >
+
+          <p>
+            Nenhum insight disponível.
+          </p>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           LANÇAMENTOS ANALISADOS
+      ========================================== -->
+
+      <article class="panel">
+
+        <div class="panel-header">
+
+          <div>
+
+            <h3>
+              📊 Lançamentos analisados
+            </h3>
+
+            <p>
+              Quantidade de movimentações enviadas
+              para análise.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="premium-value-box">
+
+          <strong id="analysisTransactionCount">
+            0
+          </strong>
+
+          <small>
+
+            <span id="analysisIncomeCount">
               0
-            </strong>
-          </div>
-        </article>
+            </span>
 
-      </div>
+            receitas ·
 
-      <div
-        id="smartAnalysisError"
-        class="form-message hidden"
-        role="alert"
-        aria-live="assertive"
-      >
-        Não foi possível realizar a análise. Tente novamente.
-      </div>
+            <span id="analysisExpenseCount">
+              0
+            </span>
+
+            despesas
+
+          </small>
+
+        </div>
+
+      </article>
 
     </div>
-  </div>
 
+
+    <!-- =========================================
+         ERRO
+    ========================================== -->
+
+    <div
+      id="smartAnalysisError"
+      class="form-message hidden"
+      role="alert"
+      aria-live="assertive"
+    >
+      Não foi possível realizar a análise.
+      Tente novamente.
+    </div>
+
+
+  </div>
+</div>
   <!-- =====================================================
        TOAST
   ====================================================== -->  <div
