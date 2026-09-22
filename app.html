@@ -746,6 +746,15 @@
         Nova meta
       </button>
 
+      <button
+        id="smartAnalysisBtn"
+        class="quick-action"
+        type="button"
+      >
+        <span>✨</span>
+        Análise inteligente
+      </button>
+
     </div>
 
 
@@ -2425,7 +2434,138 @@
 
 </div>
 
-  </div>  <!-- =====================================================
+  </div>
+
+  <!-- =====================================================
+       MODAL — ANÁLISE INTELIGENTE / PYTHON
+  ====================================================== -->
+  <div
+    id="smartAnalysisModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
+    <div
+      class="modal-card smart-analysis-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="smartAnalysisTitle"
+    >
+
+      <button
+        id="closeSmartAnalysisBtn"
+        class="modal-close"
+        type="button"
+        aria-label="Fechar análise inteligente"
+      >
+        ×
+      </button>
+
+      <span class="eyebrow">
+        CONTROLES INTELIGENTE
+      </span>
+
+      <h2 id="smartAnalysisTitle">
+        ✨ Análise financeira
+      </h2>
+
+      <p>
+        Análise dos seus lançamentos processada pelo motor Python do ControleS.
+      </p>
+
+      <div
+        id="smartAnalysisLoading"
+        class="hidden"
+        aria-live="polite"
+      >
+        <p>Analisando suas finanças...</p>
+      </div>
+
+      <div
+        id="smartAnalysisResult"
+        class="hidden"
+        aria-live="polite"
+      >
+
+        <div class="summary-grid">
+
+          <article class="summary-card">
+            <span>Receitas</span>
+            <strong
+              id="analysisIncome"
+              class="positive"
+            >
+              R$ 0,00
+            </strong>
+          </article>
+
+          <article class="summary-card">
+            <span>Despesas</span>
+            <strong
+              id="analysisExpense"
+              class="negative"
+            >
+              R$ 0,00
+            </strong>
+          </article>
+
+          <article class="summary-card balance-card">
+            <span>Saldo</span>
+            <strong id="analysisBalance">
+              R$ 0,00
+            </strong>
+          </article>
+
+        </div>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>🏆 Maior gasto</h3>
+              <p>Categoria com maior volume de despesas.</p>
+            </div>
+          </div>
+
+          <div class="premium-value-box">
+            <strong id="analysisTopCategory">
+              —
+            </strong>
+
+            <small id="analysisTopCategoryValue">
+              R$ 0,00
+            </small>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>📊 Lançamentos analisados</h3>
+              <p>Quantidade de movimentações enviadas para análise.</p>
+            </div>
+          </div>
+
+          <div class="premium-value-box">
+            <strong id="analysisTransactionCount">
+              0
+            </strong>
+          </div>
+        </article>
+
+      </div>
+
+      <div
+        id="smartAnalysisError"
+        class="form-message hidden"
+        role="alert"
+        aria-live="assertive"
+      >
+        Não foi possível realizar a análise. Tente novamente.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =====================================================
        TOAST
   ====================================================== -->  <div
     id="toast"
