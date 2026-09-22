@@ -2971,3 +2971,210 @@ html[data-mobile-device] .transaction-actions {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* =========================================================
+   CONTROLES — ANÁLISE INTELIGENTE / PYTHON
+   ========================================================= */
+
+/* Botão da análise no dashboard */
+#smartAnalysisBtn {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(239, 138, 44, 0.35);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(239, 138, 44, 0.10),
+      rgba(232, 242, 238, 0.70)
+    );
+  color: var(--green-900);
+}
+
+#smartAnalysisBtn span {
+  color: var(--orange);
+}
+
+#smartAnalysisBtn:hover {
+  border-color: rgba(239, 138, 44, 0.60);
+  box-shadow: 0 8px 22px rgba(239, 138, 44, 0.12);
+}
+
+#smartAnalysisBtn:disabled {
+  transform: none;
+  cursor: wait;
+}
+
+/* Modal */
+.smart-analysis-modal {
+  max-width: 720px;
+}
+
+.smart-analysis-modal > .eyebrow {
+  padding-right: 45px;
+}
+
+.smart-analysis-modal > h2 {
+  padding-right: 45px;
+}
+
+.smart-analysis-modal .summary-grid {
+  margin-top: 20px;
+  margin-bottom: 16px;
+}
+
+.smart-analysis-modal .panel {
+  margin-top: 14px;
+}
+
+.smart-analysis-modal .premium-value-box {
+  padding: 18px 20px;
+}
+
+/* Carregamento */
+#smartAnalysisLoading {
+  margin-top: 18px;
+  padding: 24px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--green-100);
+  color: var(--green-900);
+  text-align: center;
+}
+
+#smartAnalysisLoading p {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#smartAnalysisLoading p::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border: 2px solid rgba(11, 63, 45, 0.20);
+  border-top-color: var(--green-900);
+  border-radius: 50%;
+  animation: controles-analysis-spin 0.8s linear infinite;
+}
+
+@keyframes controles-analysis-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Resultado */
+#smartAnalysisResult {
+  margin-top: 4px;
+}
+
+#smartAnalysisResult .summary-card {
+  box-shadow: none;
+}
+
+#analysisIncome,
+#analysisExpense,
+#analysisBalance,
+#analysisTopCategory,
+#analysisTopCategoryValue,
+#analysisTransactionCount {
+  overflow-wrap: anywhere;
+}
+
+#analysisTopCategory {
+  color: var(--green-900);
+}
+
+#analysisTopCategoryValue {
+  color: var(--muted);
+}
+
+#analysisTransactionCount {
+  color: var(--green-900);
+}
+
+/* Erro */
+#smartAnalysisError {
+  min-height: 0;
+  margin: 18px 0 0;
+  padding: 13px 15px;
+  border: 1px solid rgba(216, 75, 75, 0.25);
+  border-radius: 11px;
+  background: rgba(216, 75, 75, 0.08);
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* Responsividade */
+@media screen and (max-width: 720px) {
+  .smart-analysis-modal {
+    max-width: 100%;
+  }
+
+  .smart-analysis-modal .summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  #smartAnalysisLoading {
+    padding: 20px 15px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .smart-analysis-modal > h2 {
+    font-size: 20px;
+  }
+
+  .smart-analysis-modal .premium-value-box {
+    padding: 16px;
+  }
+}
+
+/* Tema escuro */
+body.dark #smartAnalysisBtn {
+  border-color: rgba(239, 138, 44, 0.30);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(239, 138, 44, 0.12),
+      rgba(18, 32, 26, 0.92)
+    );
+  color: var(--text);
+}
+
+body.dark #smartAnalysisBtn span {
+  color: #f3a65e;
+}
+
+body.dark #smartAnalysisLoading {
+  border-color: var(--border);
+  background: #17251f;
+  color: var(--text);
+}
+
+body.dark #smartAnalysisLoading p::before {
+  border-color: rgba(255, 255, 255, 0.18);
+  border-top-color: var(--orange);
+}
+
+body.dark #analysisTopCategory,
+body.dark #analysisTransactionCount {
+  color: var(--text);
+}
+
+body.dark #smartAnalysisError {
+  background: rgba(216, 75, 75, 0.10);
+  border-color: rgba(216, 75, 75, 0.30);
+}
+
+/* Respeita a preferência do usuário por menos animações */
+@media (prefers-reduced-motion: reduce) {
+  #smartAnalysisLoading p::before {
+    animation-duration: 1.8s;
+  }
+}
+
