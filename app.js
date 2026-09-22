@@ -2786,6 +2786,7 @@
         result.classList.remove("hidden");
     }
 }
+    async function analyzeFinancesWithPython() {
         const button = $("smartAnalysisBtn");
 
         if (!Array.isArray(transactions) ||
