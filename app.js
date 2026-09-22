@@ -2529,289 +2529,263 @@
     }
 
 
-    function renderSmartAnalysis(data) {
-        const loading = $("smartAnalysisLoading");
-        const result = $("smartAnalysisResult");
-        const errorBox = $("smartAnalysisError");
+   function renderSmartAnalysis(data) {
+    const loading = $("smartAnalysisLoading");
+    const result = $("smartAnalysisResult");
+    const errorBox = $("smartAnalysisError");
 
-        const income = $("analysisIncome");
-        const expense = $("analysisExpense");
-        const balance = $("analysisBalance");
-        const topCategory = $("analysisTopCategory");
-        const topCategoryValue = $("analysisTopCategoryValue");
-        const transactionCount = $("analysisTransactionCount");
+    const income = $("analysisIncome");
+    const expense = $("analysisExpense");
+    const balance = $("analysisBalance");
 
-        if (income) {
-            income.textContent =
-                formatCurrency(data?.receitas);
-        }
+    const spentPercentage =
+        $("analysisSpentPercentage");
 
-        if (expense) {
-            expense.textContent =
-                formatCurrency(data?.despesas);
-        }
+    const savingsRate =
+        $("analysisSavingsRate");
 
-        if (balance) {
-            const value =
-                Number(data?.saldo) || 0;
+    const situation =
+        $("analysisSituation");
 
-            balance.textContent =
-                formatCurrency(value);
+    const topCategory =
+        $("analysisTopCategory");
 
-            balance.classList.remove(
-                "positive",
-                "negative"
+    const topCategoryValue =
+        $("analysisTopCategoryValue");
+
+    const topCategoryPercentage =
+        $("analysisTopCategoryPercentage");
+
+    const automaticText =
+        $("analysisAutomaticText");
+
+    const insights =
+        $("analysisInsights");
+
+    const transactionCount =
+        $("analysisTransactionCount");
+
+    const incomeCount =
+        $("analysisIncomeCount");
+
+    const expenseCount =
+        $("analysisExpenseCount");
+
+
+    // RECEITAS
+    if (income) {
+        income.textContent =
+            formatCurrency(
+                Number(data?.receitas) || 0
             );
-
-            balance.classList.add(
-                value < 0
-                    ? "negative"
-                    : "positive"
-            );
-        }
-
-        if (topCategory) {
-            topCategory.textContent =
-                data?.maior_categoria ||
-                "Nenhuma despesa";
-        }
-
-        if (topCategoryValue) {
-            topCategoryValue.textContent =
-                formatCurrency(
-                    data?.maior_categoria_valor
-                );
-        }
-
-        if (transactionCount) {
-            transactionCount.textContent =
-                Number(
-                    data?.quantidade_transacoes
-                ) || 0;
-        }
-
-        /*
-         * ANÁLISE INTELIGENTE 2.0
-         * O bloco abaixo é criado pelo JavaScript para manter
-         * compatibilidade com o HTML atual do ControleS.
-         */
-        if (result) {
-            let diagnostic =
-                $("smartAnalysisDiagnostic");
-
-            if (!diagnostic) {
-                diagnostic =
-                    document.createElement("article");
-
-                diagnostic.id =
-                    "smartAnalysisDiagnostic";
-
-                diagnostic.className =
-                    "panel smart-analysis-diagnostic";
-
-                const header =
-                    document.createElement("div");
-
-                header.className =
-                    "panel-header";
-
-                const headerText =
-                    document.createElement("div");
-
-                const title =
-                    document.createElement("h3");
-
-                title.textContent =
-                    "💡 Diagnóstico financeiro";
-
-                const subtitle =
-                    document.createElement("p");
-
-                subtitle.textContent =
-                    "Indicadores calculados pelo motor Python do ControleS.";
-
-                headerText.appendChild(title);
-                headerText.appendChild(subtitle);
-                header.appendChild(headerText);
-
-                const metrics =
-                    document.createElement("div");
-
-                metrics.className =
-                    "analysis-metrics-grid";
-
-                const createMetric = (
-                    label,
-                    id
-                ) => {
-                    const box =
-                        document.createElement("div");
-
-                    box.className =
-                        "analysis-metric";
-
-                    const span =
-                        document.createElement("span");
-
-                    span.textContent = label;
-
-                    const strong =
-                        document.createElement("strong");
-
-                    strong.id = id;
-                    strong.textContent = "—";
-
-                    box.appendChild(span);
-                    box.appendChild(strong);
-
-                    return box;
-                };
-
-                metrics.appendChild(
-                    createMetric(
-                        "Renda utilizada",
-                        "analysisSpentPercent"
-                    )
-                );
-
-                metrics.appendChild(
-                    createMetric(
-                        "Taxa de economia",
-                        "analysisSavingsRate"
-                    )
-                );
-
-                metrics.appendChild(
-                    createMetric(
-                        "Situação",
-                        "analysisSituation"
-                    )
-                );
-
-                const analysisText =
-                    document.createElement("p");
-
-                analysisText.id =
-                    "analysisText";
-
-                analysisText.className =
-                    "analysis-text";
-
-                const insights =
-                    document.createElement("div");
-
-                insights.id =
-                    "analysisInsights";
-
-                insights.className =
-                    "analysis-insights";
-
-                diagnostic.appendChild(header);
-                diagnostic.appendChild(metrics);
-                diagnostic.appendChild(analysisText);
-                diagnostic.appendChild(insights);
-
-                result.appendChild(diagnostic);
-            }
-
-            const spentPercent =
-                $("analysisSpentPercent");
-
-            const savingsRate =
-                $("analysisSavingsRate");
-
-            const situation =
-                $("analysisSituation");
-
-            const analysisText =
-                $("analysisText");
-
-            const insights =
-                $("analysisInsights");
-
-            const percentualGasto =
-                Number(data?.percentual_gasto) || 0;
-
-            const taxaEconomia =
-                Number(data?.taxa_economia) || 0;
-
-            if (spentPercent) {
-                spentPercent.textContent =
-                    `${percentualGasto
-                        .toFixed(1)
-                        .replace(".", ",")}%`;
-            }
-
-            if (savingsRate) {
-                savingsRate.textContent =
-                    `${taxaEconomia
-                        .toFixed(1)
-                        .replace(".", ",")}%`;
-
-                savingsRate.classList.remove(
-                    "positive",
-                    "negative"
-                );
-
-                savingsRate.classList.add(
-                    taxaEconomia < 0
-                        ? "negative"
-                        : "positive"
-                );
-            }
-
-            if (situation) {
-                situation.textContent =
-                    data?.situacao || "—";
-            }
-
-            if (analysisText) {
-                analysisText.textContent =
-                    data?.analise || "";
-            }
-
-            if (insights) {
-                insights.replaceChildren();
-
-                const items =
-                    Array.isArray(data?.insights)
-                        ? data.insights
-                        : [];
-
-                if (items.length) {
-                    const heading =
-                        document.createElement("strong");
-
-                    heading.textContent =
-                        "Insights";
-
-                    insights.appendChild(heading);
-
-                    const list =
-                        document.createElement("ul");
-
-                    items.forEach(item => {
-                        const li =
-                            document.createElement("li");
-
-                        li.textContent =
-                            String(item);
-
-                        list.appendChild(li);
-                    });
-
-                    insights.appendChild(list);
-                }
-            }
-        }
-
-        if (loading) loading.classList.add("hidden");
-        if (errorBox) errorBox.classList.add("hidden");
-        if (result) result.classList.remove("hidden");
     }
 
 
-    async function analyzeFinancesWithPython() {
+    // DESPESAS
+    if (expense) {
+        expense.textContent =
+            formatCurrency(
+                Number(data?.despesas) || 0
+            );
+    }
+
+
+    // SALDO
+    if (balance) {
+        const value =
+            Number(data?.saldo) || 0;
+
+        balance.textContent =
+            formatCurrency(value);
+
+        balance.classList.remove(
+            "positive",
+            "negative"
+        );
+
+        balance.classList.add(
+            value < 0
+                ? "negative"
+                : "positive"
+        );
+    }
+
+
+    // PERCENTUAL DA RENDA UTILIZADO
+    if (spentPercentage) {
+        const value =
+            Number(
+                data?.percentual_gasto
+            ) || 0;
+
+        spentPercentage.textContent =
+            `${value
+                .toFixed(1)
+                .replace(".", ",")}%`;
+    }
+
+
+    // TAXA DE ECONOMIA
+    if (savingsRate) {
+        const value =
+            Number(
+                data?.taxa_economia
+            ) || 0;
+
+        savingsRate.textContent =
+            `${value
+                .toFixed(1)
+                .replace(".", ",")}%`;
+
+        savingsRate.classList.remove(
+            "positive",
+            "negative"
+        );
+
+        savingsRate.classList.add(
+            value < 0
+                ? "negative"
+                : "positive"
+        );
+    }
+
+
+    // SITUAÇÃO FINANCEIRA
+    if (situation) {
+        situation.textContent =
+            data?.situacao || "—";
+    }
+
+
+    // MAIOR CATEGORIA
+    if (topCategory) {
+        topCategory.textContent =
+            data?.maior_categoria ||
+            "Nenhuma despesa";
+    }
+
+
+    // VALOR DA MAIOR CATEGORIA
+    if (topCategoryValue) {
+        topCategoryValue.textContent =
+            formatCurrency(
+                Number(
+                    data?.maior_categoria_valor
+                ) || 0
+            );
+    }
+
+
+    // PERCENTUAL DA MAIOR CATEGORIA
+    if (topCategoryPercentage) {
+        const value =
+            Number(
+                data?.percentual_maior_categoria
+            ) || 0;
+
+        topCategoryPercentage.textContent =
+            `${value
+                .toFixed(1)
+                .replace(".", ",")}% das despesas`;
+    }
+
+
+    // TEXTO DA ANÁLISE AUTOMÁTICA
+    if (automaticText) {
+        automaticText.replaceChildren();
+
+        const paragraph =
+            document.createElement("p");
+
+        paragraph.textContent =
+            data?.analise ||
+            "Não foi possível gerar uma análise.";
+
+        automaticText.appendChild(
+            paragraph
+        );
+    }
+
+
+    // INSIGHTS
+    if (insights) {
+        insights.replaceChildren();
+
+        const items =
+            Array.isArray(data?.insights)
+                ? data.insights
+                : [];
+
+        if (items.length > 0) {
+
+            items.forEach(item => {
+
+                const paragraph =
+                    document.createElement("p");
+
+                paragraph.textContent =
+                    `💡 ${String(item)}`;
+
+                insights.appendChild(
+                    paragraph
+                );
+            });
+
+        } else {
+
+            const paragraph =
+                document.createElement("p");
+
+            paragraph.textContent =
+                "Nenhum insight disponível.";
+
+            insights.appendChild(
+                paragraph
+            );
+        }
+    }
+
+
+    // TOTAL DE LANÇAMENTOS
+    if (transactionCount) {
+        transactionCount.textContent =
+            Number(
+                data?.quantidade_transacoes
+            ) || 0;
+    }
+
+
+    // QUANTIDADE DE RECEITAS
+    if (incomeCount) {
+        incomeCount.textContent =
+            Number(
+                data?.quantidade_receitas
+            ) || 0;
+    }
+
+
+    // QUANTIDADE DE DESPESAS
+    if (expenseCount) {
+        expenseCount.textContent =
+            Number(
+                data?.quantidade_despesas
+            ) || 0;
+    }
+
+
+    // FINALIZA O CARREGAMENTO
+    if (loading) {
+        loading.classList.add("hidden");
+    }
+
+    if (errorBox) {
+        errorBox.classList.add("hidden");
+    }
+
+    if (result) {
+        result.classList.remove("hidden");
+    }
+}
         const button = $("smartAnalysisBtn");
 
         if (!Array.isArray(transactions) ||
