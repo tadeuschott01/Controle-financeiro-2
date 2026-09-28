@@ -2252,6 +2252,122 @@ async function deleteTransaction(id) {
 
 
 /* =========================================================
+   LIMPAR LANÇAMENTOS — HOJE / MÊS / TODOS
+   ========================================================= */
+
+function openClearTransactionsModal() {
+    const modal = $("clearTransactionsModal");
+
+    if (!modal) {
+        showToast("Atualize também o HTML com o botão Limpar lançamentos.", "warning");
+        return;
+    }
+
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+}
+
+function closeClearTransactionsModal() {
+    const modal = $("clearTransactionsModal");
+    if (!modal) return;
+
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+}
+
+function getTransactionsToClear(period) {
+    const today = todayISO();
+    const currentMonth = today.slice(0, 7);
+
+    return transactions.filter(transaction => {
+        // Protege A Receber: receitas futuras nunca entram na limpeza.
+        if (isFutureReceivable(transaction)) return false;
+
+        const date = getTransactionDate(transaction);
+
+        if (!date) return period === "all";
+        if (period === "today") return date === today;
+        if (period === "month") return date.slice(0, 7) === currentMonth;
+        if (period === "all") return true;
+
+        return false;
+    });
+}
+
+async function clearTransactionsByPeriod(period) {
+    if (!supabaseClient || !currentUser) {
+        showToast("Faça login novamente.", "error");
+        return;
+    }
+
+    const labels = {
+        today: "os lançamentos de hoje",
+        month: "os lançamentos deste mês",
+        all: "todos os lançamentos"
+    };
+
+    if (!labels[period]) return;
+
+    const items = getTransactionsToClear(period);
+
+    if (!items.length) {
+        showToast("Não há lançamentos para apagar nesse período.", "info");
+        closeClearTransactionsModal();
+        return;
+    }
+
+    const confirmed = confirm(
+        `Tem certeza que deseja apagar ${labels[period]}?\n\n` +
+        `${items.length} lançamento(s) será(ão) excluído(s).\n` +
+        `A Receber não será apagado.\n\n` +
+        `Essa ação não poderá ser desfeita.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const ids = items.map(transaction => transaction.id).filter(Boolean);
+
+        if (!ids.length) {
+            throw new Error("Nenhum lançamento válido foi encontrado.");
+        }
+
+        const { error } = await supabaseClient
+            .from("transactions")
+            .delete()
+            .eq("user_id", currentUser.id)
+            .in("id", ids);
+
+        if (error) throw error;
+
+        closeClearTransactionsModal();
+
+        showToast(
+            `${items.length} lançamento(s) apagado(s) com sucesso.`,
+            "success"
+        );
+
+        await loadTransactions();
+
+        updateDashboard();
+        renderTransactions();
+        renderReceivables();
+        updateReceivableDashboard();
+        updatePeriodSummary();
+        renderReports();
+
+    } catch (error) {
+        console.error("Erro ao limpar lançamentos:", error);
+
+        showToast(
+            error.message || "Não foi possível apagar os lançamentos.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
    RENDER TRANSAÇÕES
    ========================================================= */
 
@@ -6002,6 +6118,38 @@ function setupEvents() {
                             editingTransactionId = null;
                         }
                     }
+                }
+            );
+        });
+
+
+    /* -----------------------------------------
+       LIMPAR LANÇAMENTOS
+       ----------------------------------------- */
+
+    const clearTransactionsBtn = $("clearTransactionsBtn");
+
+    if (clearTransactionsBtn) {
+        clearTransactionsBtn.addEventListener(
+            "click",
+            event => {
+                event.preventDefault();
+                openClearTransactionsModal();
+            }
+        );
+    }
+
+    document
+        .querySelectorAll("[data-clear-transactions]")
+        .forEach(button => {
+            button.addEventListener(
+                "click",
+                async event => {
+                    event.preventDefault();
+
+                    await clearTransactionsByPeriod(
+                        button.dataset.clearTransactions
+                    );
                 }
             );
         });
