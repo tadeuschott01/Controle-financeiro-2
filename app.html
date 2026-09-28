@@ -1352,13 +1352,27 @@
           </div>
 
 
-          <button
-            id="addTransactionBtn2"
-            class="btn btn-primary"
-            type="button"
-          >
-            + Novo lançamento
-          </button>
+          <div class="transaction-heading-actions">
+
+            <button
+              id="clearTransactionsBtn"
+              class="btn btn-secondary"
+              type="button"
+              aria-haspopup="dialog"
+              aria-controls="clearTransactionsModal"
+            >
+              🗑 Limpar lançamentos
+            </button>
+
+            <button
+              id="addTransactionBtn2"
+              class="btn btn-primary"
+              type="button"
+            >
+              + Novo lançamento
+            </button>
+
+          </div>
 
         </div>
 
@@ -2321,6 +2335,78 @@
 
 
     </main>
+
+  </div>
+
+
+  <!-- =====================================================
+       MODAL — LIMPAR LANÇAMENTOS
+  ====================================================== -->
+
+  <div
+    id="clearTransactionsModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="clearTransactionsModalTitle"
+    >
+
+      <button
+        class="modal-close"
+        data-close-modal
+        type="button"
+        aria-label="Fechar"
+      >
+        ×
+      </button>
+
+      <h2 id="clearTransactionsModalTitle">
+        Limpar lançamentos
+      </h2>
+
+      <p>
+        Escolha quais lançamentos deseja apagar. Os valores de
+        <strong>A Receber</strong> não serão apagados.
+      </p>
+
+      <div class="clear-transactions-options">
+
+        <button
+          class="btn btn-secondary btn-large"
+          type="button"
+          data-clear-transactions="today"
+        >
+          Apagar lançamentos de hoje
+        </button>
+
+        <button
+          class="btn btn-secondary btn-large"
+          type="button"
+          data-clear-transactions="month"
+        >
+          Apagar lançamentos deste mês
+        </button>
+
+        <button
+          class="btn btn-danger btn-large"
+          type="button"
+          data-clear-transactions="all"
+        >
+          Apagar todos os lançamentos
+        </button>
+
+      </div>
+
+      <small>
+        Você deverá confirmar antes da exclusão.
+      </small>
+
+    </div>
 
   </div>
 
