@@ -1,12 +1,24 @@
-from fastapi import FastAPI
+import os
+
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 
+
+# =========================================================
+# CONTROLES API
+# =========================================================
+
 app = FastAPI(
     title="ControleS API",
-    version="2.0.0"
+    version="2.1.0"
 )
+
+
+# =========================================================
+# CORS
+# =========================================================
 
 # Permite que o app ControleS converse com esta API
 app.add_middleware(
@@ -18,6 +30,10 @@ app.add_middleware(
 )
 
 
+# =========================================================
+# MODELOS
+# =========================================================
+
 class Transacao(BaseModel):
     type: str
     amount: float
@@ -27,6 +43,10 @@ class Transacao(BaseModel):
 class AnaliseRequest(BaseModel):
     transactions: List[Transacao]
 
+
+# =========================================================
+# FUNÇÕES AUXILIARES
+# =========================================================
 
 def dinheiro(valor):
     return f"R$ {valor:,.2f}".replace(
@@ -38,15 +58,23 @@ def dinheiro(valor):
     )
 
 
+# =========================================================
+# ROTA PRINCIPAL
+# =========================================================
+
 @app.get("/")
 def inicio():
     return {
         "status": "online",
         "app": "ControleS",
-        "versao": "2.0.0",
+        "versao": "2.1.0",
         "mensagem": "Motor financeiro Python funcionando!"
     }
 
+
+# =========================================================
+# ANÁLISE FINANCEIRA
+# =========================================================
 
 @app.post("/analisar")
 def analisar_financas(dados: AnaliseRequest):
@@ -59,9 +87,9 @@ def analisar_financas(dados: AnaliseRequest):
     quantidade_receitas = 0
     quantidade_despesas = 0
 
-    # ---------------------------------------------
+    # -----------------------------------------------------
     # ANALISAR TRANSAÇÕES
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     for transacao in dados.transactions:
 
@@ -96,15 +124,15 @@ def analisar_financas(dados: AnaliseRequest):
                 + valor
             )
 
-    # ---------------------------------------------
+    # -----------------------------------------------------
     # SALDO
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     saldo = receitas - despesas
 
-    # ---------------------------------------------
+    # -----------------------------------------------------
     # MAIOR CATEGORIA DE GASTOS
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     maior_categoria = None
     maior_categoria_valor = 0.0
@@ -120,9 +148,9 @@ def analisar_financas(dados: AnaliseRequest):
             categorias[maior_categoria]
         )
 
-    # ---------------------------------------------
+    # -----------------------------------------------------
     # PERCENTUAL DA RENDA GASTO
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     if receitas > 0:
 
@@ -139,9 +167,9 @@ def analisar_financas(dados: AnaliseRequest):
         percentual_gasto = 0
         taxa_economia = 0
 
-    # ---------------------------------------------
+    # -----------------------------------------------------
     # PESO DA MAIOR CATEGORIA
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     if despesas > 0:
 
@@ -154,9 +182,9 @@ def analisar_financas(dados: AnaliseRequest):
 
         percentual_maior_categoria = 0
 
-    # ---------------------------------------------
+    # -----------------------------------------------------
     # SITUAÇÃO FINANCEIRA
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     if receitas <= 0 and despesas > 0:
 
@@ -182,9 +210,9 @@ def analisar_financas(dados: AnaliseRequest):
 
         situacao = "Saldo confortável"
 
-    # ---------------------------------------------
+    # -----------------------------------------------------
     # ANÁLISE AUTOMÁTICA
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     analises = []
 
@@ -248,9 +276,9 @@ def analisar_financas(dados: AnaliseRequest):
             f"das despesas."
         )
 
-    # ---------------------------------------------
+    # -----------------------------------------------------
     # INSIGHTS
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     insights = []
 
@@ -290,9 +318,9 @@ def analisar_financas(dados: AnaliseRequest):
             f"dos gastos registrados."
         )
 
-    # ---------------------------------------------
+    # -----------------------------------------------------
     # RESPOSTA DA API
-    # ---------------------------------------------
+    # -----------------------------------------------------
 
     return {
 
@@ -309,7 +337,6 @@ def analisar_financas(dados: AnaliseRequest):
         "quantidade_transacoes":
             len(dados.transactions),
 
-        # Novos dados da versão 2
         "quantidade_receitas":
             quantidade_receitas,
 
@@ -343,4 +370,211 @@ def analisar_financas(dados: AnaliseRequest):
                 for categoria, valor
                 in categorias.items()
             }
+    }
+
+
+# =========================================================
+# WHATSAPP
+# =========================================================
+
+# Esse token será usado pela Meta para verificar
+# se o webhook realmente pertence ao ControleS.
+#
+# Quando hospedarmos o backend, criaremos a variável:
+#
+# WHATSAPP_VERIFY_TOKEN
+#
+# Evite colocar tokens reais da Meta diretamente
+# dentro do código do GitHub.
+
+VERIFY_TOKEN = os.getenv(
+    "WHATSAPP_VERIFY_TOKEN",
+    "controles_webhook_2026"
+)
+
+
+# =========================================================
+# VERIFICAÇÃO DO WEBHOOK
+# =========================================================
+
+@app.get("/webhook")
+async def verificar_webhook(request: Request):
+
+    mode = request.query_params.get(
+        "hub.mode"
+    )
+
+    token = request.query_params.get(
+        "hub.verify_token"
+    )
+
+    challenge = request.query_params.get(
+        "hub.challenge"
+    )
+
+    # A Meta envia esses dados quando clicamos
+    # em "Verificar e salvar".
+    if (
+        mode == "subscribe"
+        and token == VERIFY_TOKEN
+        and challenge
+    ):
+
+        print(
+            "Webhook do WhatsApp verificado."
+        )
+
+        return Response(
+            content=challenge,
+            media_type="text/plain",
+            status_code=200
+        )
+
+    print(
+        "Falha na verificação do webhook."
+    )
+
+    return Response(
+        content="Token de verificação inválido",
+        status_code=403
+    )
+
+
+# =========================================================
+# RECEBER MENSAGENS DO WHATSAPP
+# =========================================================
+
+@app.post("/webhook")
+async def receber_webhook(request: Request):
+
+    try:
+
+        dados = await request.json()
+
+        print(
+            "===================================="
+        )
+
+        print(
+            "EVENTO RECEBIDO DO WHATSAPP"
+        )
+
+        print(
+            "===================================="
+        )
+
+        print(dados)
+
+        # -------------------------------------------------
+        # TENTAR IDENTIFICAR UMA MENSAGEM RECEBIDA
+        # -------------------------------------------------
+
+        try:
+
+            entry = dados.get(
+                "entry",
+                []
+            )
+
+            if entry:
+
+                changes = entry[0].get(
+                    "changes",
+                    []
+                )
+
+                if changes:
+
+                    value = changes[0].get(
+                        "value",
+                        {}
+                    )
+
+                    messages = value.get(
+                        "messages",
+                        []
+                    )
+
+                    if messages:
+
+                        mensagem = messages[0]
+
+                        numero_usuario = mensagem.get(
+                            "from"
+                        )
+
+                        tipo_mensagem = mensagem.get(
+                            "type"
+                        )
+
+                        texto = ""
+
+                        if tipo_mensagem == "text":
+
+                            texto = mensagem.get(
+                                "text",
+                                {}
+                            ).get(
+                                "body",
+                                ""
+                            )
+
+                        print(
+                            "Número:",
+                            numero_usuario
+                        )
+
+                        print(
+                            "Tipo:",
+                            tipo_mensagem
+                        )
+
+                        print(
+                            "Mensagem:",
+                            texto
+                        )
+
+        except Exception as erro_mensagem:
+
+            print(
+                "Não foi possível interpretar "
+                "a mensagem:",
+                erro_mensagem
+            )
+
+        # A Meta precisa receber HTTP 200
+        # rapidamente para saber que recebemos
+        # o evento.
+
+        return {
+            "status": "ok"
+        }
+
+    except Exception as erro:
+
+        print(
+            "Erro ao processar webhook:",
+            erro
+        )
+
+        # Mesmo em caso de payload inesperado,
+        # mantemos uma resposta controlada.
+
+        return {
+            "status": "erro",
+            "mensagem": "Evento recebido"
+        }
+
+
+# =========================================================
+# STATUS DO WHATSAPP
+# =========================================================
+
+@app.get("/whatsapp/status")
+def whatsapp_status():
+
+    return {
+        "status": "online",
+        "servico": "WhatsApp ControleS",
+        "webhook": "/webhook"
     }
