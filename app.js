@@ -6873,10 +6873,10 @@ document.addEventListener(
 
         const blockedSection =
             target.closest(
-                '[data-section="transactions"],' +
-                '[data-section="receivable"],' +
                 '[data-section="categories"],' +
-                '[data-section="reports"]'
+                '[data-section="reports"],' +
+                '[data-section="whatsapp"],' +
+                '[data-section="ai-report"]'
             );
 
 
@@ -6889,11 +6889,6 @@ document.addEventListener(
                 '[data-premium-locked="true"],' +
                 '#addCategoryBtn,' +
                 '#addCategoryBtn2,' +
-                '#addGoalBtn,' +
-                '#addReceivableBtn,' +
-                '[data-edit-transaction],' +
-                '[data-delete-transaction],' +
-                '[data-receivable-id],' +
                 '[data-delete-category],' +
                 '#exportTransactionsBtn,' +
                 '[data-export-transactions]'
@@ -6960,11 +6955,11 @@ document.addEventListener(
         }
 
 
+        /* O cadeado visual já existe no HTML.
+           Não adicionamos outro via CSS para evitar cadeado duplicado. */
         .free-plan
         .nav-item.premium-locked::after {
-            content: "🔒";
-            margin-left: auto;
-            font-size: 11px;
+            content: none;
         }
 
 
