@@ -539,7 +539,8 @@ async function handleRegister(event) {
             options: {
                 data: {
                     name
-                }
+                },
+                emailRedirectTo: window.location.origin + window.location.pathname
             }
         });
 
