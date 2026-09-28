@@ -5075,14 +5075,24 @@ async function loadSubscription() {
 }
 
 
-function isPremiumActive() {
-    if (!subscription || subscription.status !== "active") return false;
+const PREMIUM_ADMIN_EMAIL = "controlesfinanceirossuport@gmail.com";
 
-    if (subscription.expires_at) {
-        return new Date(subscription.expires_at) > new Date();
+function isPremiumActive() {
+    const email = String(currentUser?.email || "").trim().toLowerCase();
+
+    // Conta administrativa/teste: Premium sempre liberado.
+    if (email === PREMIUM_ADMIN_EMAIL) {
+        return true;
     }
 
-    return true;
+    // Demais contas seguem a assinatura normal já carregada pelo app.
+    const status = String(subscription?.status || "").trim().toLowerCase();
+
+    return (
+        status === "active" ||
+        status === "trial" ||
+        status === "premium"
+    );
 }
 
 
