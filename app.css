@@ -3141,3 +3141,318 @@ body.premium-plan #normalReportContent {
         border-radius: 26px !important;
     }
 }
+
+
+/* =========================================================
+   CONTROLES — VISUAL FINAL BASEADO NO MOCKUP APROVADO
+   30/09/2026
+   ========================================================= */
+
+:root{
+  --c-final-bg:#03271f;
+  --c-final-bg-2:#064b38;
+  --c-final-card:#073b2f;
+  --c-final-card-2:#0a4939;
+  --c-final-green:#0ed68f;
+  --c-final-green-2:#05ad78;
+  --c-final-orange:#ff7a18;
+  --c-final-white:#f8fffc;
+  --c-final-muted:#a9beb6;
+  --c-final-line:rgba(93,235,181,.17);
+}
+
+/* Fundo geral no mesmo clima do mockup */
+body{
+  background:
+    radial-gradient(circle at 50% -12%,rgba(13,112,79,.68),transparent 38%),
+    linear-gradient(180deg,#04382b 0%,#03271f 52%,#021d17 100%) fixed!important;
+}
+
+/* =========================================================
+   LOGO — GRANDE, SEM O QUADRADO "ENGOLINDO"
+   ========================================================= */
+.welcome-logo,
+.brand-logo{
+  width:142px!important;
+  height:142px!important;
+  padding:7px!important;
+  margin:8px auto 28px!important;
+  border-radius:34px!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  background:linear-gradient(145deg,rgba(7,105,76,.88),rgba(3,52,41,.94))!important;
+  border:1px solid rgba(67,239,174,.38)!important;
+  box-shadow:
+    0 22px 52px rgba(0,0,0,.24),
+    0 0 38px rgba(12,216,143,.10)!important;
+}
+
+.welcome-logo img,
+.brand-logo img{
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  padding:0!important;
+  margin:0!important;
+  object-fit:cover!important;
+  border-radius:27px!important;
+  display:block!important;
+}
+
+/* Entrada e login mais próximos da referência */
+.welcome-brand{
+  padding-top:4vh!important;
+  text-align:center!important;
+}
+
+.welcome-brand h1{
+  max-width:420px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+
+.welcome-brand p{
+  margin-left:auto!important;
+  margin-right:auto!important;
+  text-align:center!important;
+}
+
+.auth-card .brand-block{
+  text-align:center!important;
+}
+
+.auth-page:not(.welcome-page) .auth-card{
+  border:1px solid rgba(91,231,178,.13)!important;
+  border-radius:32px!important;
+  background:linear-gradient(180deg,rgba(4,55,42,.34),rgba(2,34,27,.18))!important;
+  box-shadow:0 26px 70px rgba(0,0,0,.16)!important;
+}
+
+/* =========================================================
+   DASHBOARD — ÁREA CIRCULADA
+   ========================================================= */
+#dashboardSection .welcome-row{
+  margin-bottom:22px!important;
+}
+
+#dashboardSection .welcome-row h2{
+  font-size:clamp(31px,8.5vw,43px)!important;
+  line-height:1.02!important;
+  letter-spacing:-.052em!important;
+  color:var(--c-final-white)!important;
+}
+
+#dashboardSection .welcome-row p{
+  color:var(--c-final-muted)!important;
+  margin-top:8px!important;
+}
+
+/* Período: compacto, elegante e com ícone verde */
+#dashboardSection .period-quick-btn{
+  min-height:78px!important;
+  padding:13px 17px!important;
+  margin-bottom:16px!important;
+  border-radius:21px!important;
+  background:linear-gradient(145deg,rgba(16,79,62,.96),rgba(7,57,45,.98))!important;
+  border:1px solid rgba(113,240,192,.20)!important;
+  box-shadow:0 14px 32px rgba(0,0,0,.14)!important;
+}
+
+#dashboardSection .period-quick-icon{
+  width:48px!important;
+  height:48px!important;
+  border-radius:15px!important;
+  background:linear-gradient(145deg,#12dc94,#07ad79)!important;
+  color:white!important;
+  box-shadow:0 8px 22px rgba(7,202,135,.20)!important;
+}
+
+#dashboardSection .period-quick-btn small{
+  color:#9db7ad!important;
+  font-size:11px!important;
+}
+
+#dashboardSection .period-quick-btn strong{
+  color:#fff!important;
+  font-size:18px!important;
+  letter-spacing:-.025em!important;
+}
+
+/* Carrossel de resumo */
+#dashboardSection .summary-grid{
+  gap:12px!important;
+  padding:2px 2px 13px!important;
+  margin-bottom:16px!important;
+}
+
+#dashboardSection .summary-grid .summary-card{
+  flex:0 0 88%!important;
+  min-height:240px!important;
+  padding:25px!important;
+  border-radius:28px!important;
+  scroll-snap-align:center!important;
+}
+
+#dashboardSection .summary-grid .balance-card{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  background:
+    radial-gradient(circle at 88% 13%,rgba(255,255,255,.17),transparent 24%),
+    linear-gradient(135deg,#28dc9b 0%,#0cc887 43%,#078e65 100%)!important;
+  border:1px solid rgba(190,255,229,.34)!important;
+  box-shadow:0 22px 48px rgba(0,175,117,.22)!important;
+}
+
+#dashboardSection .summary-grid .balance-card span{
+  color:#e8fff6!important;
+  font-size:13px!important;
+  font-weight:650!important;
+}
+
+#dashboardSection .summary-grid .balance-card strong{
+  margin:12px 0!important;
+  color:white!important;
+  font-size:clamp(39px,10.5vw,55px)!important;
+  line-height:1!important;
+  letter-spacing:-.065em!important;
+  white-space:nowrap!important;
+}
+
+#dashboardSection .summary-grid .balance-card small{
+  color:#d5f7e9!important;
+  font-size:11px!important;
+}
+
+/* Os cartões seguintes continuam visíveis no swipe, mas com acabamento do mockup */
+#dashboardSection .summary-grid .summary-card:not(.balance-card){
+  background:linear-gradient(145deg,#f3fbf7,#e5f4ed)!important;
+  border:1px solid #d3e8df!important;
+  color:#0a3025!important;
+  box-shadow:0 18px 42px rgba(0,0,0,.12)!important;
+}
+
+#dashboardSection .summary-grid .summary-card:not(.balance-card) span,
+#dashboardSection .summary-grid .summary-card:not(.balance-card) small{
+  color:#71877e!important;
+}
+
+/* Ações rápidas: cards escuros, ícones vivos */
+#dashboardSection .quick-actions{
+  gap:11px!important;
+}
+
+#dashboardSection .quick-action{
+  min-height:108px!important;
+  border-radius:22px!important;
+  padding:15px!important;
+  background:linear-gradient(145deg,rgba(11,68,53,.98),rgba(5,46,37,.99))!important;
+  border:1px solid rgba(98,230,178,.15)!important;
+  box-shadow:0 13px 30px rgba(0,0,0,.12)!important;
+  color:#fff!important;
+  font-size:14px!important;
+  font-weight:760!important;
+}
+
+#dashboardSection .quick-action>span{
+  width:48px!important;
+  height:48px!important;
+  border-radius:15px!important;
+  font-size:24px!important;
+}
+
+/* Receita */
+#dashboardSection .quick-action[data-action="add-income"]>span{
+  background:linear-gradient(145deg,#18dd96,#06ae78)!important;
+}
+/* Despesa */
+#dashboardSection .quick-action[data-action="add-expense"]>span{
+  background:linear-gradient(145deg,#ff6674,#ee4455)!important;
+}
+/* Meta */
+#dashboardSection #addGoalBtn>span{
+  background:linear-gradient(145deg,#45bfff,#258de9)!important;
+}
+/* A receber */
+#dashboardSection .quick-action[data-section="receivable"]>span{
+  background:linear-gradient(145deg,#ffbc48,#ff941c)!important;
+}
+
+/* =========================================================
+   BOTÃO + — CENTRALIZADO DE VERDADE
+   ========================================================= */
+.mobile-bottom-nav{
+  position:fixed!important;
+}
+
+.mobile-bottom-nav .bottom-add-button{
+  position:absolute!important;
+  left:50%!important;
+  top:0!important;
+  transform:translate(-50%,-34%)!important;
+  width:76px!important;
+  height:76px!important;
+  margin:0!important;
+  border:6px solid #063126!important;
+  border-radius:50%!important;
+  background:linear-gradient(145deg,#ff922d,#ff6f0d)!important;
+  box-shadow:
+    0 12px 32px rgba(255,116,16,.34),
+    0 0 0 2px rgba(48,213,150,.11)!important;
+  display:grid!important;
+  place-items:center!important;
+}
+
+.mobile-bottom-nav .bottom-add-button span{
+  display:block!important;
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:45px!important;
+  font-weight:300!important;
+  line-height:.82!important;
+  transform:translateY(-1px)!important;
+}
+
+.mobile-bottom-nav .bottom-add-button:active{
+  transform:translate(-50%,-34%) scale(.94)!important;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+@media(max-width:720px),(pointer:coarse){
+  .main-content{
+    padding-left:18px!important;
+    padding-right:18px!important;
+  }
+
+  .welcome-logo,
+  .brand-logo{
+    width:136px!important;
+    height:136px!important;
+    border-radius:33px!important;
+  }
+
+  .welcome-logo img,
+  .brand-logo img{
+    border-radius:26px!important;
+  }
+
+  #dashboardSection .summary-grid{
+    scroll-padding-left:0!important;
+  }
+
+  #dashboardSection .summary-grid .summary-card{
+    flex-basis:90%!important;
+  }
+
+  .mobile-bottom-nav{
+    height:92px!important;
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+}
