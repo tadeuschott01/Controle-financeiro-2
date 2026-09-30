@@ -897,61 +897,43 @@
              RESUMO
         ================================================== -->
 
-        <div class="summary-grid">
+        <div class="summary-grid dashboard-summary-single">
 
-          <article class="summary-card balance-card">
+          <article class="summary-card balance-card balance-overview-card">
 
-            <span>
-              Saldo do período
-            </span>
+            <div class="balance-overview-top">
+              <div class="balance-main-copy">
+                <span>Saldo do período</span>
+                <strong id="balanceValue">R$ 0,00</strong>
+                <small id="balancePeriodText">Receitas menos despesas</small>
+              </div>
 
-            <strong id="balanceValue">
-              R$ 0,00
-            </strong>
+              <div class="balance-chart-mark" aria-hidden="true">
+                <i></i><i></i><i></i>
+              </div>
+            </div>
 
-            <small id="balancePeriodText">
-              Receitas menos despesas
-            </small>
+            <div class="balance-breakdown">
 
-          </article>
+              <div class="balance-breakdown-item income-breakdown">
+                <span class="balance-breakdown-icon">↑</span>
+                <div>
+                  <small>Receitas</small>
+                  <strong id="incomeValue" class="positive">R$ 0,00</strong>
+                </div>
+                <span id="incomePeriodText" class="sr-only">Total recebido</span>
+              </div>
 
+              <div class="balance-breakdown-item expense-breakdown">
+                <span class="balance-breakdown-icon">↓</span>
+                <div>
+                  <small>Despesas</small>
+                  <strong id="expenseValue" class="negative">R$ 0,00</strong>
+                </div>
+                <span id="expensePeriodText" class="sr-only">Total gasto</span>
+              </div>
 
-          <article class="summary-card">
-
-            <span>
-              Quanto ganhou
-            </span>
-
-            <strong
-              id="incomeValue"
-              class="positive"
-            >
-              R$ 0,00
-            </strong>
-
-            <small id="incomePeriodText">
-              Total recebido
-            </small>
-
-          </article>
-
-
-          <article class="summary-card">
-
-            <span>
-              Quanto gastou
-            </span>
-
-            <strong
-              id="expenseValue"
-              class="negative"
-            >
-              R$ 0,00
-            </strong>
-
-            <small id="expensePeriodText">
-              Total gasto
-            </small>
+            </div>
 
           </article>
 
