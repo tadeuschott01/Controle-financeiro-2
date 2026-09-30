@@ -4935,3 +4935,141 @@ html body #appView #dashboardSection .balance-overview-card .balance-breakdown-i
   }
 }
 
+
+/* =========================================================
+   CONTROLES — CORREÇÃO DEFINITIVA DA BARRA MOBILE
+   Início | Lançamentos | + | Relatórios | Perfil
+   ========================================================= */
+@media (max-width: 720px), (pointer: coarse) {
+  .mobile-bottom-nav {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 96px !important;
+    min-height: 96px !important;
+    padding: 8px 0 max(8px, env(safe-area-inset-bottom)) !important;
+    display: block !important;
+    background: #022f24 !important;
+    overflow: visible !important;
+    z-index: 99999 !important;
+  }
+
+  .mobile-bottom-nav > .bottom-nav-item {
+    position: absolute !important;
+    top: 12px !important;
+    bottom: auto !important;
+    width: 20% !important;
+    height: 72px !important;
+    margin: 0 !important;
+    padding: 5px 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    transform: none !important;
+    translate: none !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .mobile-bottom-nav > .nav-home {
+    left: 0 !important;
+    right: auto !important;
+  }
+
+  .mobile-bottom-nav > .nav-transactions {
+    left: 20% !important;
+    right: auto !important;
+  }
+
+  .mobile-bottom-nav > .nav-reports {
+    left: 60% !important;
+    right: auto !important;
+  }
+
+  .mobile-bottom-nav > .nav-profile {
+    left: 80% !important;
+    right: auto !important;
+  }
+
+  .mobile-bottom-nav > .bottom-nav-item span {
+    position: static !important;
+    width: 100% !important;
+    height: 27px !important;
+    display: grid !important;
+    place-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    transform: none !important;
+  }
+
+  .mobile-bottom-nav > .bottom-nav-item small {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 2px !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+  }
+
+  .mobile-bottom-nav > .bottom-add-button,
+  .mobile-bottom-nav > #mobileAddButton {
+    position: absolute !important;
+    left: 50% !important;
+    right: auto !important;
+    top: -30px !important;
+    bottom: auto !important;
+    width: 84px !important;
+    height: 84px !important;
+    min-width: 84px !important;
+    min-height: 84px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    transform: translateX(-50%) !important;
+    translate: none !important;
+    border: 7px solid #073128 !important;
+    border-radius: 50% !important;
+    background: #ff7a18 !important;
+    color: #fff !important;
+    box-shadow: 0 11px 28px rgba(255,125,23,.31) !important;
+    z-index: 100002 !important;
+    overflow: hidden !important;
+  }
+
+  .mobile-bottom-nav > .bottom-add-button span,
+  .mobile-bottom-nav > #mobileAddButton span {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 0 4px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 46px !important;
+    font-weight: 300 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    transform: none !important;
+  }
+
+  .mobile-bottom-nav > .bottom-add-button:active,
+  .mobile-bottom-nav > #mobileAddButton:active {
+    transform: translateX(-50%) scale(.95) !important;
+  }
+}
