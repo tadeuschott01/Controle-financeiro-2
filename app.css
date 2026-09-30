@@ -3456,3 +3456,393 @@ body{
     padding-right:14px!important;
   }
 }
+
+
+/* =========================================================
+   CONTROLES — HOME FINAL SEM CARROSSEL
+   Card único de saldo + lançamentos claros + navegação corrigida
+   ========================================================= */
+
+.sr-only{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+
+/* ---------- RESUMO: UM ÚNICO CARD ---------- */
+#dashboardSection .dashboard-summary-single{
+  display:block!important;
+  overflow:visible!important;
+  padding:0!important;
+  margin:0 0 18px!important;
+  scroll-snap-type:none!important;
+}
+
+#dashboardSection .dashboard-summary-single .balance-overview-card{
+  width:100%!important;
+  max-width:none!important;
+  min-height:0!important;
+  padding:24px 22px 20px!important;
+  border-radius:30px!important;
+  overflow:hidden!important;
+  position:relative!important;
+  background:
+    radial-gradient(circle at 92% 3%,rgba(255,255,255,.19),transparent 27%),
+    radial-gradient(circle at 4% 98%,rgba(0,86,61,.15),transparent 34%),
+    linear-gradient(135deg,#27dc9a 0%,#0cc987 46%,#078a62 100%)!important;
+  border:1px solid rgba(206,255,236,.38)!important;
+  box-shadow:0 20px 46px rgba(0,150,101,.22)!important;
+}
+
+#dashboardSection .balance-overview-top{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+}
+
+#dashboardSection .balance-main-copy{
+  min-width:0!important;
+  flex:1!important;
+}
+
+#dashboardSection .balance-main-copy>span{
+  display:block!important;
+  color:#eafff6!important;
+  font-size:14px!important;
+  font-weight:700!important;
+  line-height:1.15!important;
+}
+
+#dashboardSection .balance-main-copy>strong{
+  display:block!important;
+  margin:9px 0 7px!important;
+  color:#fff!important;
+  font-size:clamp(40px,10.5vw,58px)!important;
+  line-height:.98!important;
+  letter-spacing:-.065em!important;
+  white-space:nowrap!important;
+}
+
+#dashboardSection .balance-main-copy>small{
+  color:rgba(235,255,247,.82)!important;
+  font-size:12px!important;
+}
+
+#dashboardSection .balance-chart-mark{
+  flex:0 0 76px!important;
+  width:76px!important;
+  height:76px!important;
+  border-radius:23px!important;
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  gap:6px!important;
+  padding:18px!important;
+  background:rgba(236,255,248,.84)!important;
+  border:1px solid rgba(255,255,255,.68)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75)!important;
+}
+
+#dashboardSection .balance-chart-mark i{
+  display:block!important;
+  width:9px!important;
+  border-radius:8px!important;
+  background:linear-gradient(180deg,#17d894,#079f70)!important;
+}
+#dashboardSection .balance-chart-mark i:nth-child(1){height:19px!important}
+#dashboardSection .balance-chart-mark i:nth-child(2){height:30px!important}
+#dashboardSection .balance-chart-mark i:nth-child(3){height:43px!important}
+
+#dashboardSection .balance-breakdown{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:11px!important;
+  margin-top:21px!important;
+}
+
+#dashboardSection .balance-breakdown-item{
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:11px!important;
+  padding:13px!important;
+  border-radius:20px!important;
+  background:rgba(2,71,51,.34)!important;
+  border:1px solid rgba(255,255,255,.11)!important;
+  backdrop-filter:blur(8px)!important;
+}
+
+#dashboardSection .balance-breakdown-icon{
+  flex:0 0 42px!important;
+  width:42px!important;
+  height:42px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:50%!important;
+  font-size:28px!important;
+  line-height:1!important;
+  font-weight:500!important;
+  color:#fff!important;
+}
+
+#dashboardSection .income-breakdown .balance-breakdown-icon{
+  background:linear-gradient(145deg,#16df97,#06ad78)!important;
+}
+
+#dashboardSection .expense-breakdown .balance-breakdown-icon{
+  background:linear-gradient(145deg,#ff655f,#ee3f49)!important;
+}
+
+#dashboardSection .balance-breakdown-item>div{
+  min-width:0!important;
+}
+
+#dashboardSection .balance-breakdown-item small{
+  display:block!important;
+  margin-bottom:3px!important;
+  color:#d8f3e8!important;
+  font-size:11px!important;
+  font-weight:650!important;
+}
+
+#dashboardSection .balance-breakdown-item strong{
+  display:block!important;
+  font-size:clamp(15px,4.1vw,20px)!important;
+  line-height:1.05!important;
+  letter-spacing:-.035em!important;
+  white-space:nowrap!important;
+}
+
+#dashboardSection .income-breakdown strong{color:#42f0b3!important}
+#dashboardSection .expense-breakdown strong{color:#ff7777!important}
+
+/* ---------- INSIGHT: CLARO E BEM SEPARADO ---------- */
+#dashboardSection .home-insight-card{
+  background:linear-gradient(145deg,#f5fbf8,#e8f5ef)!important;
+  border:1px solid #d4e9df!important;
+  box-shadow:0 15px 36px rgba(0,35,25,.12)!important;
+}
+
+#dashboardSection .home-insight-copy small{color:#71867d!important}
+#dashboardSection .home-insight-copy strong{color:#0a3a2c!important}
+#dashboardSection .home-insight-copy p{color:#71827b!important}
+#dashboardSection .home-insight-icon,
+#dashboardSection #homeInsightBtn{
+  background:#dff4ea!important;
+  color:#073d2e!important;
+}
+
+/* ---------- ÚLTIMOS LANÇAMENTOS: CLARO E LEGÍVEL ---------- */
+#dashboardSection .recent-transactions-panel{
+  background:linear-gradient(145deg,#f8fcfa 0%,#eaf6f0 100%)!important;
+  border:1px solid #d4e9df!important;
+  box-shadow:0 18px 42px rgba(0,35,25,.13)!important;
+  border-radius:30px!important;
+  padding:22px 20px!important;
+}
+
+#dashboardSection .recent-transactions-panel .panel-header{
+  margin-bottom:7px!important;
+}
+
+#dashboardSection .recent-transactions-panel .panel-header h3{
+  color:#08382b!important;
+  font-size:24px!important;
+  letter-spacing:-.035em!important;
+}
+
+#dashboardSection .recent-transactions-panel .panel-header p{
+  color:#72867e!important;
+}
+
+#dashboardSection .recent-transactions-panel .text-button{
+  color:#079768!important;
+  font-weight:850!important;
+}
+
+#dashboardSection .recent-list{
+  margin-top:8px!important;
+}
+
+#dashboardSection .recent-transaction{
+  display:grid!important;
+  grid-template-columns:46px minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:12px!important;
+  min-height:76px!important;
+  padding:11px 0!important;
+  border-bottom:1px solid #d7e9e1!important;
+  color:#0a3529!important;
+}
+
+#dashboardSection .recent-transaction:last-child{
+  border-bottom:0!important;
+}
+
+#dashboardSection .recent-transaction-icon{
+  width:44px!important;
+  height:44px!important;
+  border-radius:15px!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:25px!important;
+  font-weight:750!important;
+}
+
+#dashboardSection .recent-income .recent-transaction-icon{
+  color:#078e62!important;
+  background:#d5f4e7!important;
+}
+
+#dashboardSection .recent-expense .recent-transaction-icon{
+  color:#ef5b48!important;
+  background:#ffeadf!important;
+}
+
+#dashboardSection .recent-transaction-copy{
+  min-width:0!important;
+}
+
+#dashboardSection .recent-transaction-copy>strong{
+  display:block!important;
+  color:#0b382b!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+
+#dashboardSection .recent-transaction-copy>small{
+  display:block!important;
+  margin-top:4px!important;
+  color:#7a8d85!important;
+  font-size:12px!important;
+}
+
+#dashboardSection .recent-transaction>.income-value{
+  color:#079768!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+
+#dashboardSection .recent-transaction>.expense-value{
+  color:#ef4f4f!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+
+/* ---------- BOTÃO + / BARRA INFERIOR ---------- */
+.main-content,
+#dashboardSection{
+  padding-bottom:132px!important;
+}
+
+.mobile-bottom-nav{
+  z-index:10000!important;
+  overflow:visible!important;
+  background:rgba(1,38,29,.98)!important;
+  border-top:1px solid rgba(88,220,170,.12)!important;
+  box-shadow:0 -12px 32px rgba(0,0,0,.18)!important;
+}
+
+.mobile-bottom-nav .bottom-add-button{
+  z-index:10002!important;
+  left:50%!important;
+  right:auto!important;
+  top:0!important;
+  bottom:auto!important;
+  transform:translate(-50%,-38%)!important;
+  width:78px!important;
+  height:78px!important;
+  padding:0!important;
+  margin:0!important;
+  border:6px solid #063126!important;
+  border-radius:50%!important;
+  display:grid!important;
+  place-items:center!important;
+  background:linear-gradient(145deg,#ff922d,#ff6e0c)!important;
+  box-shadow:0 12px 30px rgba(255,111,13,.32)!important;
+}
+
+.mobile-bottom-nav .bottom-add-button span{
+  display:grid!important;
+  place-items:center!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:0 0 4px!important;
+  font-size:45px!important;
+  line-height:1!important;
+  font-weight:300!important;
+  transform:none!important;
+}
+
+.mobile-bottom-nav .bottom-add-button:active{
+  transform:translate(-50%,-38%) scale(.95)!important;
+}
+
+/* ---------- MOBILE ---------- */
+@media(max-width:720px),(pointer:coarse){
+  #dashboardSection .dashboard-summary-single .balance-overview-card{
+    padding:21px 17px 17px!important;
+    border-radius:27px!important;
+  }
+
+  #dashboardSection .balance-chart-mark{
+    flex-basis:66px!important;
+    width:66px!important;
+    height:66px!important;
+    padding:15px!important;
+    border-radius:20px!important;
+  }
+
+  #dashboardSection .balance-main-copy>strong{
+    font-size:clamp(36px,10.2vw,50px)!important;
+  }
+
+  #dashboardSection .balance-breakdown{
+    gap:8px!important;
+  }
+
+  #dashboardSection .balance-breakdown-item{
+    padding:11px 9px!important;
+    gap:8px!important;
+    border-radius:17px!important;
+  }
+
+  #dashboardSection .balance-breakdown-icon{
+    flex-basis:36px!important;
+    width:36px!important;
+    height:36px!important;
+    font-size:23px!important;
+  }
+
+  #dashboardSection .recent-transactions-panel{
+    padding:20px 16px!important;
+    border-radius:27px!important;
+  }
+
+  #dashboardSection .recent-transaction{
+    grid-template-columns:42px minmax(0,1fr) auto!important;
+    gap:9px!important;
+  }
+
+  #dashboardSection .recent-transaction-icon{
+    width:40px!important;
+    height:40px!important;
+    border-radius:13px!important;
+  }
+
+  #dashboardSection .recent-transaction>.income-value,
+  #dashboardSection .recent-transaction>.expense-value{
+    font-size:13px!important;
+  }
+}
