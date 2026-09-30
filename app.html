@@ -43,8 +43,187 @@
 
   <link
     rel="stylesheet"
-    href="app.css?v=4"
+    href="app.css?v=5"
   >
+
+  <!-- CORREÇÃO DA BARRA INFERIOR (fica aqui para valer mesmo que o app.css esteja em cache/antigo) -->
+  <style id="appBottomNavFix">
+/* =========================================================
+   CONTROLES — BARRA INFERIOR MOBILE (BLOCO AUTORITATIVO)
+   Início | Lançamentos | + | Relatórios | Perfil
+   Usa #appBottomNav (id) para vencer qualquer regra antiga,
+   tanto as de .mobile-bottom-nav quanto as de .controles-bottom-bar.
+   ========================================================= */
+@media (max-width: 720px), (pointer: coarse) {
+
+  #appView #appBottomNav {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    height: calc(80px + env(safe-area-inset-bottom)) !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 6px env(safe-area-inset-bottom) !important;
+    box-sizing: border-box !important;
+
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 84px 1fr 1fr !important;
+    grid-template-rows: 1fr !important;
+    align-items: center !important;
+    justify-items: stretch !important;
+    gap: 0 !important;
+
+    overflow: visible !important;
+    background: #022f24 !important;
+    border-top: 1px solid rgba(255,255,255,.08) !important;
+    box-shadow: 0 -10px 28px rgba(0,0,0,.22) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    z-index: 99999 !important;
+  }
+
+  #appView #appBottomNav > .bottom-nav-item {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    translate: none !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 66px !important;
+    margin: 0 !important;
+    padding: 6px 2px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #a9bbb3 !important;
+    text-align: center !important;
+    overflow: visible !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  #appView #appBottomNav > [data-bottom-section="dashboard"]    { grid-column: 1 !important; grid-row: 1 !important; }
+  #appView #appBottomNav > [data-bottom-section="transactions"] { grid-column: 2 !important; grid-row: 1 !important; }
+  #appView #appBottomNav > [data-bottom-section="reports"]      { grid-column: 4 !important; grid-row: 1 !important; }
+  #appView #appBottomNav > [data-bottom-section="profile"]      { grid-column: 5 !important; grid-row: 1 !important; }
+
+  #appView #appBottomNav > .bottom-nav-item span {
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    height: 26px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    color: inherit !important;
+  }
+
+  #appView #appBottomNav > .bottom-nav-item small {
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    letter-spacing: -.01em !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    color: inherit !important;
+  }
+
+  #appView #appBottomNav > .bottom-nav-item.active { color: #3ee4a4 !important; }
+  #appView #appBottomNav > [data-bottom-section="reports"].active { color: #ff922f !important; }
+
+  /* Botão +: fora do fluxo do grid, centralizado sobre a borda superior da barra */
+  #appView #appBottomNav > #mobileAddButton {
+    position: absolute !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    top: 0 !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+    translate: none !important;
+
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px !important;
+    min-height: 76px !important;
+    max-width: 76px !important;
+    max-height: 76px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border: 6px solid #073128 !important;
+    border-radius: 50% !important;
+    background: linear-gradient(145deg, #ff922c, #ff7414) !important;
+    color: #fff !important;
+    box-shadow: 0 10px 26px rgba(255,125,23,.32) !important;
+    overflow: hidden !important;
+    z-index: 100002 !important;
+  }
+
+  #appView #appBottomNav > #mobileAddButton span {
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 0 4px !important;
+    font-size: 44px !important;
+    font-weight: 300 !important;
+    line-height: 1 !important;
+    color: #fff !important;
+  }
+
+  #appView #appBottomNav > #mobileAddButton:active {
+    transform: translate(-50%, -50%) scale(.95) !important;
+  }
+
+  /* espaço para o conteúdo não ficar embaixo da barra */
+  body { padding-bottom: calc(84px + env(safe-area-inset-bottom)) !important; }
+  .main-content { padding-bottom: calc(120px + env(safe-area-inset-bottom)) !important; }
+}
+
+@media (max-width: 380px) {
+  #appView #appBottomNav { grid-template-columns: 1fr 1fr 72px 1fr 1fr !important; padding-left: 2px !important; padding-right: 2px !important; }
+  #appView #appBottomNav > .bottom-nav-item small { font-size: 9px !important; }
+  #appView #appBottomNav > #mobileAddButton { width: 68px !important; height: 68px !important; min-width: 68px !important; min-height: 68px !important; max-width: 68px !important; max-height: 68px !important; }
+}
+
+  </style>
 </head>
 
 <body>
