@@ -6674,16 +6674,12 @@ function applyPremiumAccess() {
         if (!button) return;
 
 
-        button.classList.toggle(
+               button.classList.toggle(
             "premium-locked",
             !premium
         );
 
-
-        button.classList.toggle(
-            "premium-content-hidden",
-            !premium
-        );
+        button.classList.remove("premium-content-hidden");
 
 
         if (!premium) {
