@@ -7316,3 +7316,40 @@ async function clearTransactionsByPeriod(period){
         showToast(error.message || "Não foi possível excluir os lançamentos.", "error");
     }
 }
+
+/* =========================================================
+   CONTROLES MOBILE 10 — CORREÇÕES DE AÇÕES RÁPIDAS E MODAIS
+   ========================================================= */
+(function controlesMobile10Fixes(){
+  function openCleanModal(id){
+    const modal=document.getElementById(id); if(!modal)return;
+    modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false');
+    const card=modal.querySelector('.modal-card'); if(card) card.scrollTop=0;
+  }
+  function prepareCategory(){
+    const form=document.getElementById('categoryForm'); if(form) form.reset();
+    const msg=document.getElementById('categoryMessage'); if(msg) msg.textContent='';
+    openCleanModal('categoryModal');
+    setTimeout(()=>document.getElementById('categoryName')?.focus({preventScroll:true}),120);
+  }
+  function prepareGoal(){
+    const form=document.getElementById('goalForm'); if(form) form.reset();
+    const msg=document.getElementById('goalMessage'); if(msg) msg.textContent='';
+    openCleanModal('goalModal');
+    setTimeout(()=>document.getElementById('goalName')?.focus({preventScroll:true}),120);
+  }
+  document.addEventListener('click',function(e){
+    const el=e.target.closest?.('button,a'); if(!el)return;
+    const action=el.dataset.action;
+    if(action==='add-income'){e.preventDefault();e.stopPropagation();openTransactionModal('income');return;}
+    if(action==='add-expense'){e.preventDefault();e.stopPropagation();openTransactionModal('expense');return;}
+    if(el.id==='addCategoryBtn'||el.id==='addCategoryBtn2'||el.matches('[data-new-category]')){e.preventDefault();e.stopPropagation();prepareCategory();return;}
+    if(el.id==='addGoalBtn'||el.id==='newGoalBtn'||el.matches('[data-new-goal]')){e.preventDefault();e.stopPropagation();prepareGoal();return;}
+  },true);
+  document.addEventListener('click',function(e){
+    const typeBtn=e.target.closest?.('[data-transaction-type]'); if(!typeBtn)return;
+    const type=typeBtn.dataset.transactionType; setTransactionType(type);
+    const title=document.getElementById('transactionModalTitle');
+    if(title&&!editingTransactionId) title.textContent=normalizeTransactionType(type)==='income'?'Nova receita':'Nova despesa';
+  });
+})();
