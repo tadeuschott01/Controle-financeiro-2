@@ -526,6 +526,16 @@
 
 
         <button
+          class="nav-item"
+          data-section="privacy"
+          type="button"
+        >
+          <span>⌾</span>
+          Privacidade e conta
+        </button>
+
+
+        <button
           class="nav-item premium-nav"
           data-section="premium"
           type="button"
@@ -2280,15 +2290,25 @@
           <div class="smart-feature-header">
             <div>
               <span class="smart-eyebrow">CONTROLES PREMIUM • INTELIGÊNCIA FINANCEIRA</span>
-              <h2>Relatório Inteligente</h2>
-              <p>Uma leitura automática dos seus lançamentos com comparação mensal, categoria de maior gasto, saldo, tendência e pontos de atenção.</p>
+              <h2>Inteligência Financeira</h2>
+              <p>Uma visão executiva do seu mês, com indicadores, comparação de despesas, concentração por categoria, valores a receber e recomendações baseadas nos seus próprios lançamentos.</p>
             </div>
             <div class="smart-status ai-status"><span>✦</span> Atualizado com seus dados</div>
           </div>
 
           <div class="ai-toolbar">
-            <div><small>PERÍODO ANALISADO</small><strong id="aiPeriodLabel">Mês atual</strong></div>
-            <button id="generateAIReportBtn" class="btn btn-primary" type="button">✦ Gerar nova análise</button>
+            <div class="ai-period-block"><small>PERÍODO ANALISADO</small><strong id="aiPeriodLabel">Mês atual</strong><span>Dados sincronizados com a sua conta</span></div>
+            <div class="ai-toolbar-actions">
+              <span class="ai-private-chip">🔒 Análise privada</span>
+              <button id="generateAIReportBtn" class="btn btn-primary" type="button">✦ Atualizar análise</button>
+            </div>
+          </div>
+
+          <div class="ai-executive-strip">
+            <div><span>Taxa de economia</span><strong id="aiSavingsRate">—</strong><small>do que entrou no período</small></div>
+            <div><span>Comprometimento</span><strong id="aiCommitmentRate">—</strong><small>receita usada em despesas</small></div>
+            <div><span>Maior categoria</span><strong id="aiTopCategory">—</strong><small id="aiTopCategoryNote">sem despesas registradas</small></div>
+            <div><span>Comparação mensal</span><strong id="aiMonthlyComparison">—</strong><small>vs. mês anterior</small></div>
           </div>
 
           <div class="ai-dashboard-preview">
@@ -2316,11 +2336,77 @@
                 <div><small>ÍNDICE DO PERÍODO</small><strong id="aiHealthScore">—</strong></div>
                 <p id="aiHealthText">O índice aparecerá quando houver dados financeiros no período.</p>
               </div>
-              <small class="feature-security">A análise usa os lançamentos da sua conta. Ela é informativa e não substitui orientação financeira profissional.</small>
+              <div class="ai-trust-box">
+                <b>Privacidade da análise</b>
+                <p>O relatório é calculado a partir dos lançamentos vinculados à sua conta no ControleS. Os indicadores são informativos e não constituem recomendação de investimento, crédito ou consultoria financeira.</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+
+      <!-- =================================================
+           PRIVACIDADE E CONTA
+      ================================================== -->
+      <section id="privacySection" class="content-section">
+        <div class="privacy-app-page">
+          <div class="privacy-hero-card">
+            <div>
+              <span class="smart-eyebrow">CENTRAL DE CONFIANÇA</span>
+              <h2>Privacidade e conta</h2>
+              <p>Encontre em um só lugar as informações sobre seus dados, segurança, termos, suporte e exclusão da conta.</p>
+            </div>
+            <div class="privacy-shield">✓</div>
+          </div>
+
+          <div class="privacy-status-grid">
+            <article class="privacy-status-card">
+              <span class="privacy-icon">⌁</span>
+              <div><small>SESSÃO</small><strong>Conta autenticada</strong><p>Seus dados financeiros ficam associados ao usuário conectado.</p></div>
+            </article>
+            <article class="privacy-status-card">
+              <span class="privacy-icon">◈</span>
+              <div><small>DADOS</small><strong>Controle pelo usuário</strong><p>Consulte as regras de uso e o processo para exclusão da conta e dos dados.</p></div>
+            </article>
+            <article class="privacy-status-card">
+              <span class="privacy-icon">✦</span>
+              <div><small>IA FINANCEIRA</small><strong>Análise informativa</strong><p>Os indicadores financeiros são apresentados como apoio à organização pessoal.</p></div>
+            </article>
+          </div>
+
+          <div class="privacy-content-grid">
+            <div class="privacy-main-panel">
+              <div class="privacy-panel-title">
+                <div><span class="eyebrow">TRANSPARÊNCIA</span><h3>Documentos e controles</h3></div>
+                <span class="privacy-badge">ControleS</span>
+              </div>
+
+              <a class="privacy-row" href="privacidade.html" target="_blank" rel="noopener">
+                <span class="privacy-row-icon">⌾</span>
+                <div><strong>Política de Privacidade</strong><small>Veja como o ControleS descreve o tratamento e a proteção dos dados.</small></div><b>›</b>
+              </a>
+              <a class="privacy-row" href="termos.html" target="_blank" rel="noopener">
+                <span class="privacy-row-icon">▤</span>
+                <div><strong>Termos de Uso</strong><small>Consulte as condições aplicáveis ao uso do aplicativo e dos recursos.</small></div><b>›</b>
+              </a>
+              <a class="privacy-row privacy-danger-row" href="exclusao-dados.html" target="_blank" rel="noopener">
+                <span class="privacy-row-icon">⌫</span>
+                <div><strong>Exclusão da conta e dos dados</strong><small>Acesse as orientações para solicitar a exclusão dos dados vinculados à conta.</small></div><b>›</b>
+              </a>
+            </div>
+
+            <aside class="privacy-side-panel">
+              <span class="eyebrow">SUPORTE</span>
+              <h3>Precisa de ajuda?</h3>
+              <p>Fale com o suporte do ControleS para dúvidas sobre acesso, conta, assinatura ou privacidade.</p>
+              <a class="btn btn-primary btn-large" href="mailto:controlesfinanceirossuport@gmail.com">Entrar em contato</a>
+              <div class="privacy-mini-note"><span>🔒</span><p>Nunca compartilhe sua senha. O suporte não precisa dela para atender você.</p></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
 
       <!-- =================================================
            PREMIUM
