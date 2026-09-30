@@ -1317,6 +1317,27 @@
 
         if (!sectionName) return;
 
+        const premiumOnlySections = [
+            "categories",
+            "reports",
+            "whatsapp",
+            "ai-report"
+        ];
+
+        if (
+            premiumOnlySections.includes(sectionName) &&
+            !isPremiumActive()
+        ) {
+            closeMobileMenu();
+
+            showToast(
+                "🔒 Este recurso faz parte do ControleS Premium.",
+                "warning"
+            );
+
+            sectionName = "premium";
+        }
+
         const sections =
             document.querySelectorAll(
                 ".content-section"
@@ -6758,6 +6779,22 @@
             button.classList.remove("premium-content-hidden", "premium-locked");
             button.removeAttribute("data-premium-locked");
         });
+
+
+        /* =====================================================
+           RELATÓRIOS — BLOQUEIO REAL PARA PLANO GRÁTIS
+           ===================================================== */
+
+        const premiumReportGate = $("premiumReportContent");
+        const normalReportContent = $("normalReportContent");
+
+        if (premiumReportGate) {
+            premiumReportGate.classList.toggle("hidden", premium);
+        }
+
+        if (normalReportContent) {
+            normalReportContent.classList.toggle("hidden", !premium);
+        }
 
 
         /* =====================================================
