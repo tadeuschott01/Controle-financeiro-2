@@ -1363,13 +1363,18 @@
           </div>
 
 
-          <button
-            id="addTransactionBtn2"
-            class="btn btn-primary"
-            type="button"
-          >
-            + Novo lançamento
-          </button>
+          <div class="transactions-heading-actions">
+            <button id="clearTransactionsBtn" class="btn btn-danger-soft" type="button">
+              🗑 Limpar lançamentos
+            </button>
+            <button
+              id="addTransactionBtn2"
+              class="btn btn-primary"
+              type="button"
+            >
+              + Novo lançamento
+            </button>
+          </div>
 
         </div>
 
@@ -2993,6 +2998,24 @@
 
   </div>
 
+
+  <!-- =====================================================
+       LIMPAR LANÇAMENTOS
+  ====================================================== -->
+  <div id="clearTransactionsModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card clear-transactions-modal-card" role="dialog" aria-modal="true" aria-labelledby="clearTransactionsTitle">
+      <button class="modal-close" type="button" data-close-modal="clearTransactionsModal" aria-label="Fechar">×</button>
+      <span class="eyebrow">ORGANIZAÇÃO</span>
+      <h2 id="clearTransactionsTitle">Limpar lançamentos</h2>
+      <p class="clear-transactions-description">Escolha o período que deseja apagar. Valores cadastrados em <strong>A Receber</strong> não serão excluídos.</p>
+      <div class="clear-transactions-options">
+        <button type="button" class="clear-period-option" data-clear-transactions="today"><span class="clear-option-icon">☀</span><span><strong>Hoje</strong><small>Apaga somente os lançamentos de hoje.</small></span><b>›</b></button>
+        <button type="button" class="clear-period-option" data-clear-transactions="month"><span class="clear-option-icon">▦</span><span><strong>Mês atual</strong><small>Apaga os lançamentos deste mês.</small></span><b>›</b></button>
+        <button type="button" class="clear-period-option danger" data-clear-transactions="all"><span class="clear-option-icon">⌫</span><span><strong>Todo o período</strong><small>Apaga todo o histórico de lançamentos.</small></span><b>›</b></button>
+      </div>
+      <div class="clear-warning">⚠ Você verá uma confirmação antes da exclusão. Essa ação não pode ser desfeita.</div>
+    </div>
+  </div>
 
   <!-- =====================================================
        TOAST
