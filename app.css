@@ -4291,3 +4291,164 @@ html body #appView #dashboardSection .balance-overview-card .balance-breakdown-i
   .receivable-confirm-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
 }
 \n\n/* =========================================================\n   CONTROLES — CORREÇÃO FINAL MOBILE 19\n   Premium agrupado + barra inferior perfeitamente alinhada\n   ========================================================= */\n.premium-actions-title{\n  grid-column:1 / -1;\n  display:flex;align-items:center;gap:10px;\n  margin:8px 0 0;padding:12px 14px;\n  border:1px solid rgba(255,153,64,.18);border-radius:18px;\n  background:linear-gradient(145deg,rgba(255,122,24,.10),rgba(9,62,48,.75));\n  color:#fff;\n}\n.premium-actions-title>span{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(255,122,24,.15);color:#ff9a40;font-size:18px}\n.premium-actions-title small{display:block;color:#ffab65;font-size:9px;font-weight:800;letter-spacing:.09em}\n.premium-actions-title strong{display:block;margin-top:2px;color:#fff;font-size:14px}\n#dashboardSection .premium-home-shortcut{border-color:rgba(255,153,64,.14)!important}\n#dashboardSection .premium-home-shortcut .premium-diamond{position:absolute!important;top:12px!important;right:12px!important;width:27px!important;height:27px!important;display:grid!important;place-items:center!important;border-radius:9px!important;background:#0a3128!important;font-style:normal!important;font-size:13px!important;line-height:1!important;box-shadow:0 5px 14px rgba(0,0,0,.16)!important}\n\n@media(max-width:720px),(pointer:coarse){\n  .main-content{padding-bottom:118px!important}\n  .mobile-bottom-nav{\n    position:fixed!important;left:0!important;right:0!important;bottom:0!important;\n    width:100%!important;height:94px!important;\n    padding:8px 8px max(8px,env(safe-area-inset-bottom))!important;\n    display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 82px minmax(0,1fr) minmax(0,1fr)!important;\n    grid-template-rows:1fr!important;align-items:center!important;justify-items:stretch!important;gap:0!important;\n    background:#022f24!important;border-top:1px solid rgba(255,255,255,.08)!important;\n    box-shadow:0 -12px 30px rgba(0,0,0,.18)!important;overflow:visible!important;z-index:9999!important;\n  }\n  .mobile-bottom-nav>[data-bottom-section="dashboard"]{grid-column:1!important;grid-row:1!important}\n  .mobile-bottom-nav>[data-bottom-section="transactions"]{grid-column:2!important;grid-row:1!important}\n  .mobile-bottom-nav>#mobileAddButton{grid-column:3!important;grid-row:1!important}\n  .mobile-bottom-nav>[data-bottom-section="reports"]{grid-column:4!important;grid-row:1!important}\n  .mobile-bottom-nav>[data-bottom-section="profile"]{grid-column:5!important;grid-row:1!important}\n  .mobile-bottom-nav>.bottom-nav-item{\n    position:relative!important;inset:auto!important;transform:none!important;\n    width:100%!important;min-width:0!important;height:70px!important;margin:0!important;padding:6px 1px!important;\n    display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;\n    border:0!important;background:transparent!important;text-align:center!important;overflow:visible!important;\n  }\n  .mobile-bottom-nav>.bottom-nav-item span{height:26px!important;display:grid!important;place-items:center!important;font-size:24px!important;line-height:1!important}\n  .mobile-bottom-nav>.bottom-nav-item small{display:block!important;max-width:100%!important;margin:0!important;font-size:10px!important;line-height:1.05!important;white-space:nowrap!important}\n  .mobile-bottom-nav>#mobileAddButton{\n    position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;\n    justify-self:center!important;align-self:start!important;transform:translateY(-27px)!important;\n    width:72px!important;height:72px!important;margin:0!important;padding:0!important;\n    border:7px solid #07382b!important;border-radius:50%!important;background:#ff7a18!important;color:#fff!important;\n    display:grid!important;place-items:center!important;box-shadow:0 10px 28px rgba(255,122,24,.30)!important;z-index:3!important;\n  }\n  .mobile-bottom-nav>#mobileAddButton span{font-size:42px!important;line-height:1!important;transform:translateY(-1px)!important}\n  .mobile-bottom-nav>#mobileAddButton:active{transform:translateY(-27px) scale(.95)!important}\n  .premium-actions-title{margin-top:8px!important}\n}\n
+/* =========================================================
+   CONTROLES — CORREÇÃO FINAL MOBILE 20
+   Remove título Premium quebrado + barra inferior em 1 linha
+   Início | Lançamentos | + | Relatórios | Perfil
+   ========================================================= */
+.premium-actions-title{
+  display:none!important;
+}
+
+@media (max-width:720px), (pointer:coarse){
+  .main-content{
+    padding-bottom:120px!important;
+  }
+
+  .mobile-bottom-nav{
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    width:100%!important;
+    height:94px!important;
+    padding:8px 6px max(8px,env(safe-area-inset-bottom))!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) 82px minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-rows:1fr!important;
+    align-items:center!important;
+    justify-items:stretch!important;
+    gap:0!important;
+    overflow:visible!important;
+    background:#022f24!important;
+    border-top:1px solid rgba(255,255,255,.08)!important;
+    box-shadow:0 -12px 30px rgba(0,0,0,.20)!important;
+    z-index:99999!important;
+  }
+
+  .mobile-bottom-nav > [data-bottom-section="dashboard"]{
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+  .mobile-bottom-nav > [data-bottom-section="transactions"]{
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+  .mobile-bottom-nav > #mobileAddButton{
+    grid-column:3!important;
+    grid-row:1!important;
+  }
+  .mobile-bottom-nav > [data-bottom-section="reports"]{
+    grid-column:4!important;
+    grid-row:1!important;
+  }
+  .mobile-bottom-nav > [data-bottom-section="profile"]{
+    grid-column:5!important;
+    grid-row:1!important;
+  }
+
+  .mobile-bottom-nav > .bottom-nav-item{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:70px!important;
+    margin:0!important;
+    padding:6px 0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    border:0!important;
+    background:transparent!important;
+    text-align:center!important;
+    overflow:visible!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+
+  .mobile-bottom-nav > .bottom-nav-item span{
+    width:100%!important;
+    height:26px!important;
+    display:grid!important;
+    place-items:center!important;
+    font-size:24px!important;
+    line-height:1!important;
+  }
+
+  .mobile-bottom-nav > .bottom-nav-item small{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+    font-size:9px!important;
+    line-height:1.05!important;
+    white-space:nowrap!important;
+    text-align:center!important;
+  }
+
+  .mobile-bottom-nav > #mobileAddButton{
+    position:relative!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    justify-self:center!important;
+    align-self:center!important;
+    transform:translateY(-25px)!important;
+    width:72px!important;
+    height:72px!important;
+    min-width:72px!important;
+    min-height:72px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+    border:7px solid #07382b!important;
+    border-radius:50%!important;
+    background:#ff7a18!important;
+    color:#fff!important;
+    box-shadow:0 10px 28px rgba(255,122,24,.30)!important;
+    z-index:4!important;
+  }
+
+  .mobile-bottom-nav > #mobileAddButton span{
+    display:block!important;
+    font-size:42px!important;
+    line-height:1!important;
+    transform:translateY(-1px)!important;
+  }
+
+  .mobile-bottom-nav > #mobileAddButton:active{
+    transform:translateY(-25px) scale(.95)!important;
+  }
+
+  .mobile-bottom-nav > [data-bottom-section="profile"]{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+}
+
+@media (max-width:390px){
+  .mobile-bottom-nav{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) 74px minmax(0,1fr) minmax(0,1fr)!important;
+    padding-left:3px!important;
+    padding-right:3px!important;
+  }
+  .mobile-bottom-nav > .bottom-nav-item small{
+    font-size:8px!important;
+  }
+  .mobile-bottom-nav > #mobileAddButton{
+    width:68px!important;
+    height:68px!important;
+    min-width:68px!important;
+    min-height:68px!important;
+  }
+}
