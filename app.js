@@ -1668,7 +1668,7 @@
                                         getTransactionCategory(transaction)
                                     )}
                                     •
-                                    ${formatDateBR(
+                                    Recebimento: ${formatDateBR(
                                         getTransactionDate(transaction)
                                     )}
                                 </small>
@@ -1739,27 +1739,97 @@
 
     function openNewReceivable() {
 
-        openTransactionModal("income");
+        const modal = $("receivableModal");
+        if (!modal) return;
 
-        const date =
-            firstExisting(
-                "transactionDate",
-                "date"
-            );
+        const form = $("receivableForm");
+        if (form) form.reset();
 
-        if (date) {
-            date.value = "";
+        const date = $("receivableDate");
+        if (date) date.value = "";
+
+        const category = $("receivableCategory");
+        if (category) {
+            const source = $("transactionCategory");
+            if (source && source.options.length) {
+                category.innerHTML = Array.from(source.options)
+                    .map(option => `<option value="${escapeHTML(option.value)}">${escapeHTML(option.textContent)}</option>`)
+                    .join("");
+            }
+
+            if (!category.options.length) {
+                ["Salário", "Freelance", "Vendas", "Outros"].forEach(name => {
+                    const option = document.createElement("option");
+                    option.value = name;
+                    option.textContent = name;
+                    category.appendChild(option);
+                });
+            }
         }
 
-        const received =
-            firstExisting(
-                "transactionReceived",
-                "received",
-                "isReceived"
-            );
+        modal.classList.remove("hidden");
+        modal.setAttribute("aria-hidden", "false");
+    }
 
-        if (received) {
-            received.checked = false;
+
+    async function saveReceivable(event) {
+
+        if (event) event.preventDefault();
+
+        if (!supabaseClient || !currentUser) {
+            showToast("Faça login novamente.", "error");
+            return;
+        }
+
+        const description = valueOf("receivableDescription").trim();
+        const amount = Number(valueOf("receivableAmount"));
+        const date = valueOf("receivableDate");
+        const category = valueOf("receivableCategory") || "Outros";
+
+        if (!description) {
+            showToast("Informe uma descrição.", "warning");
+            return;
+        }
+
+        if (!Number.isFinite(amount) || amount <= 0) {
+            showToast("Informe um valor válido.", "warning");
+            return;
+        }
+
+        if (!date) {
+            showToast("Informe a data de recebimento.", "warning");
+            return;
+        }
+
+        const payload = {
+            user_id: currentUser.id,
+            description,
+            amount,
+            date,
+            category,
+            type: databaseTransactionType("income")
+        };
+
+        try {
+            const { error } = await supabaseClient
+                .from("transactions")
+                .insert(payload);
+
+            if (error) throw error;
+
+            closeModal("receivableModal");
+            showToast("Valor adicionado em A Receber.", "success");
+
+            await loadTransactions();
+            updateDashboard();
+            renderTransactions();
+            renderReceivables();
+            updateReceivableDashboard();
+            updatePeriodSummary();
+
+        } catch (error) {
+            console.error(error);
+            showToast("Não foi possível adicionar o valor a receber.", "error");
         }
     }
 
@@ -6012,6 +6082,11 @@
         if (goalButton && !goalButton.dataset.bound) { goalButton.dataset.bound = "true"; goalButton.addEventListener("click", e => { e.preventDefault(); openModal("goalModal"); }); }
         const receivableButton = $("addReceivableBtn");
         if (receivableButton && !receivableButton.dataset.bound) { receivableButton.dataset.bound = "true"; receivableButton.addEventListener("click", e => { e.preventDefault(); openNewReceivable(); }); }
+        const receivableForm = $("receivableForm");
+        if (receivableForm && !receivableForm.dataset.bound) {
+            receivableForm.dataset.bound = "true";
+            receivableForm.addEventListener("submit", saveReceivable);
+        }
         const goalForm = $("goalForm");
         if (goalForm && !goalForm.dataset.bound) { goalForm.dataset.bound = "true"; goalForm.addEventListener("submit", saveGoal); }
         const confirmPremium = $("confirmPremiumBtn");
