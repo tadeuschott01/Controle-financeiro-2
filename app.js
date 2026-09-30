@@ -332,7 +332,7 @@ function initializeSupabase() {
                 currentProfile = null;
 
                 if (authInitialized) {
-                    showLoginView();
+                    showWelcomeView();
                 }
             }
 
@@ -359,7 +359,7 @@ async function checkSession() {
 
         if (error) {
             console.error(error);
-            showLoginView();
+            showWelcomeView();
             return;
         }
 
@@ -371,7 +371,7 @@ async function checkSession() {
 
         } else {
 
-            showLoginView();
+            showWelcomeView();
         }
 
     } catch (error) {
@@ -381,7 +381,7 @@ async function checkSession() {
             error
         );
 
-        showLoginView();
+        showWelcomeView();
     }
 }
 
@@ -824,9 +824,23 @@ async function enterApp() {
    VIEWS
    ========================================================= */
 
+function showWelcomeView() {
+    closeMobileMenu();
+    const welcome = $("welcomeView");
+    const login = firstExisting("loginView", "authView");
+    const register = $("registerView");
+    const app = firstExisting("appView", "mainApp");
+    if (welcome) welcome.classList.remove("hidden");
+    if (login) login.classList.add("hidden");
+    if (register) register.classList.add("hidden");
+    if (app) app.classList.add("hidden");
+}
+
 function showLoginView() {
 
     closeMobileMenu();
+    const welcome = $("welcomeView");
+    if (welcome) welcome.classList.add("hidden");
 
     const login =
         firstExisting(
@@ -861,6 +875,8 @@ function showLoginView() {
 function showRegisterView() {
 
     closeMobileMenu();
+    const welcome = $("welcomeView");
+    if (welcome) welcome.classList.add("hidden");
 
     const login =
         firstExisting(
@@ -893,6 +909,9 @@ function showRegisterView() {
 
 
 function showAppView() {
+
+    const welcome = $("welcomeView");
+    if (welcome) welcome.classList.add("hidden");
 
     const login =
         firstExisting(
@@ -965,7 +984,7 @@ async function handleLogout() {
             categoryChart = null;
         }
 
-        showLoginView();
+        showWelcomeView();
 
         showToast(
             "Você saiu da sua conta.",
@@ -4959,13 +4978,18 @@ async function loadSubscription() {
 }
 
 
-function isPremiumActive() {
-    if (!subscription || subscription.status !== "active") return false;
+const PREMIUM_ADMIN_EMAIL = "controlesfinanceirossuport@gmail.com";
 
-    if (subscription.expires_at) {
+function isPremiumActive() {
+    const email = String(currentUser?.email || "").trim().toLowerCase();
+    if (email === PREMIUM_ADMIN_EMAIL) return true;
+
+    const status = String(subscription?.status || "").trim().toLowerCase();
+    if (!["active", "trial", "premium"].includes(status)) return false;
+
+    if (subscription?.expires_at) {
         return new Date(subscription.expires_at) > new Date();
     }
-
     return true;
 }
 
@@ -7216,3 +7240,57 @@ showSection = function(sectionName) {
     if(welcome) welcome.textContent=`Olá, ${first} 👋`;
   };
 })();
+
+
+/* =========================================================
+   CONTROLES — PATCH MOBILE 7.0
+   Boas-vindas, limpeza por período e navegação
+   ========================================================= */
+(function setupMobileV7(){
+    document.addEventListener("click", async (event) => {
+        if (event.target.closest?.("#welcomeLoginBtn")) { event.preventDefault(); showLoginView(); return; }
+        if (event.target.closest?.("#welcomeRegisterBtn")) { event.preventDefault(); showRegisterView(); return; }
+        if (event.target.closest?.("#clearTransactionsBtn")) { event.preventDefault(); openClearTransactionsModal(); return; }
+        const clearButton = event.target.closest?.("[data-clear-transactions]");
+        if (clearButton) { event.preventDefault(); await clearTransactionsByPeriod(clearButton.dataset.clearTransactions); }
+    });
+})();
+
+function openClearTransactionsModal(){
+    const modal = $("clearTransactionsModal");
+    if (!modal) return;
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+}
+
+function closeClearTransactionsModal(){
+    const modal = $("clearTransactionsModal");
+    if (!modal) return;
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+}
+
+async function clearTransactionsByPeriod(period){
+    if (!supabaseClient || !currentUser) return;
+    const today = todayISO();
+    const startOfWeek = (() => { const d = new Date(); d.setDate(d.getDate()-6); return d.toISOString().slice(0,10); })();
+    const monthStart = today.slice(0,7) + "-01";
+    const labels = { today:"de hoje", week:"dos últimos 7 dias", month:"deste mês", all:"de todo o período" };
+    if (!confirm(`Excluir os lançamentos ${labels[period] || "selecionados"}? Esta ação não pode ser desfeita.`)) return;
+    try {
+        let query = supabaseClient.from("transactions").delete().eq("user_id", currentUser.id);
+        if (period === "today") query = query.eq("date", today);
+        else if (period === "week") query = query.gte("date", startOfWeek).lte("date", today);
+        else if (period === "month") query = query.gte("date", monthStart).lte("date", today);
+        else if (period !== "all") return;
+        const { error } = await query;
+        if (error) throw error;
+        closeClearTransactionsModal();
+        await loadTransactions();
+        updateDashboard(); renderTransactions(); renderReceivables(); updateReceivableDashboard(); updatePeriodSummary(); renderReports();
+        showToast("Lançamentos excluídos com sucesso.", "success");
+    } catch (error) {
+        console.error(error);
+        showToast(error.message || "Não foi possível excluir os lançamentos.", "error");
+    }
+}
