@@ -4207,3 +4207,86 @@ html body #appView #dashboardSection .balance-overview-card .balance-breakdown-i
         font-size:clamp(12px,3.8vw,16px)!important;
     }
 }
+
+
+/* =========================================================
+   CONTROLES — MOBILE APP POLISH 7.0
+   Ajustes finais solicitados
+   ========================================================= */
+@media (max-width: 768px) {
+  body { background:#07543e !important; color:#fff; }
+  .main-content { padding:28px 18px 118px !important; background:linear-gradient(180deg,#07543e 0%,#064b38 100%) !important; }
+  .content-section { padding-bottom:24px; }
+  .section-heading { align-items:flex-start !important; gap:16px !important; margin-bottom:20px !important; }
+  .section-heading h2 { font-size:30px !important; line-height:1.05 !important; color:#fff !important; letter-spacing:-1px !important; }
+  .section-heading p { color:#c5d8d0 !important; font-size:15px !important; line-height:1.45 !important; }
+  .eyebrow { color:#52dfa9 !important; font-size:11px !important; letter-spacing:1.5px !important; }
+
+  /* saldo: números sempre dentro dos cards */
+  .balance-breakdown { display:grid !important; grid-template-columns:1fr 1fr !important; gap:10px !important; width:100% !important; }
+  .balance-breakdown-item { min-width:0 !important; overflow:hidden !important; padding:14px 10px !important; gap:8px !important; }
+  .balance-breakdown-item > div { min-width:0 !important; overflow:hidden !important; }
+  .balance-breakdown-item small { font-size:12px !important; white-space:nowrap !important; }
+  .balance-breakdown-item strong { display:block !important; max-width:100% !important; font-size:clamp(18px,5.3vw,25px) !important; line-height:1.1 !important; letter-spacing:-.8px !important; white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis !important; }
+  .balance-breakdown-icon { flex:0 0 36px !important; width:36px !important; height:36px !important; }
+
+  /* atalhos */
+  .quick-actions { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:12px !important; }
+  .quick-action { min-width:0 !important; min-height:124px !important; padding:18px 14px !important; font-size:16px !important; line-height:1.18 !important; border-radius:22px !important; }
+  .quick-action .premium-diamond { top:12px !important; right:12px !important; }
+
+  /* A RECEBER com estética de app */
+  #receivableSection .section-heading { display:block !important; }
+  #receivableSection .section-heading .btn { width:100% !important; min-height:58px !important; margin-top:18px !important; border-radius:18px !important; font-size:16px !important; }
+  #receivableSection .summary-grid { display:block !important; margin:0 0 14px !important; }
+  #receivableSection .summary-grid .summary-card { display:none !important; }
+  #receivableSection .summary-grid .summary-card:first-child { display:flex !important; min-height:118px !important; padding:20px !important; border-radius:22px !important; background:#f1f8f4 !important; color:#123b2e !important; box-shadow:0 12px 30px rgba(0,0,0,.14) !important; }
+  #receivableSection .summary-card:first-child span, #receivableSection .summary-card:first-child small { color:#6c8379 !important; font-size:13px !important; }
+  #receivableSection .summary-card:first-child strong { color:#073f2e !important; font-size:28px !important; }
+  #receivableSection .table-panel { padding:18px !important; border-radius:24px !important; background:#edf7f2 !important; border:0 !important; box-shadow:0 12px 30px rgba(0,0,0,.14) !important; }
+  #receivableSection .panel-header h3 { color:#0b3529 !important; font-size:21px !important; }
+  #receivableSection .panel-header p { color:#60786d !important; font-size:13px !important; }
+  .receivable-mobile-list { display:grid !important; gap:12px !important; }
+  .receivable-item { display:grid !important; grid-template-columns:1fr auto !important; gap:10px 12px !important; align-items:center !important; padding:16px !important; border:0 !important; border-radius:18px !important; background:#fff !important; color:#113c2e !important; box-shadow:0 8px 20px rgba(5,58,42,.08) !important; }
+  .receivable-item strong { color:#123c2f !important; font-size:16px !important; }
+  .receivable-item small { color:#748b81 !important; font-size:12px !important; }
+  .receivable-item .income-value { color:#0a9d69 !important; font-size:18px !important; }
+  .receivable-item .mark-received-btn { grid-column:1/-1 !important; width:100% !important; min-height:42px !important; border:0 !important; border-radius:13px !important; background:#d9f3e7 !important; color:#087451 !important; font-weight:800 !important; }
+
+  /* modal A Receber */
+  #receivableModal .modal-card { width:calc(100% - 24px) !important; max-height:calc(100dvh - 110px) !important; overflow-y:auto !important; padding:24px 20px !important; border-radius:26px !important; background:#0c3e30 !important; }
+  #receivableModal form { display:grid !important; grid-template-columns:1fr !important; gap:8px !important; }
+  #receivableModal label { margin-top:8px !important; color:#f5fbf8 !important; font-size:13px !important; font-weight:700 !important; }
+  #receivableModal label small { color:#9eb8ad !important; font-weight:500 !important; }
+  #receivableModal input, #receivableModal select, #receivableModal textarea { width:100% !important; min-height:54px !important; padding:0 15px !important; border:1px solid rgba(255,255,255,.12) !important; border-radius:15px !important; background:#072b21 !important; color:#fff !important; font-size:16px !important; }
+  #receivableModal textarea { min-height:100px !important; padding-top:14px !important; resize:vertical; }
+
+  /* relatórios claros e legíveis */
+  #reportsSection .report-period-filter, #reportsSection .report-card, #reportsSection .panel { background:#f3f8f5 !important; border:0 !important; color:#12372c !important; box-shadow:0 10px 26px rgba(0,0,0,.13) !important; }
+  #reportsSection .report-period-filter { border-radius:22px !important; padding:20px !important; }
+  #reportsSection .report-card { border-radius:18px !important; padding:16px 12px !important; min-width:0 !important; }
+  #reportsSection .report-card span, #reportsSection .panel p, #reportsSection .report-line span, #reportsSection .report-period-status span { color:#5f776d !important; }
+  #reportsSection .report-card strong, #reportsSection .panel h3, #reportsSection .report-line strong, #reportsSection .report-period-status strong { color:#12372c !important; }
+  #reportsSection .report-cards { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:8px !important; }
+  #reportsSection .report-card strong { font-size:clamp(12px,3.4vw,17px) !important; overflow-wrap:anywhere !important; }
+  #reportsSection .reports-grid { display:grid !important; grid-template-columns:1fr !important; gap:14px !important; }
+  #reportsSection .chart-box { min-height:280px !important; }
+
+  /* últimos lançamentos claros */
+  #dashboardSection .recent-transactions, #dashboardSection .recent-card, #dashboardSection .transactions-panel { color:#12372c !important; }
+  #dashboardSection .transaction-item { color:#12372c; }
+
+  /* barra inferior perfeitamente alinhada */
+  .mobile-bottom-nav { position:fixed !important; left:0 !important; right:0 !important; bottom:0 !important; width:100% !important; height:92px !important; padding:12px 12px max(10px,env(safe-area-inset-bottom)) !important; display:grid !important; grid-template-columns:1fr 1fr 84px 1fr 1fr !important; align-items:center !important; gap:0 !important; background:#022f24 !important; border-top:1px solid rgba(255,255,255,.08) !important; z-index:9999 !important; }
+  .bottom-nav-item { width:100% !important; height:68px !important; padding:6px 2px !important; display:flex !important; flex-direction:column !important; justify-content:center !important; align-items:center !important; gap:5px !important; transform:none !important; position:relative !important; inset:auto !important; }
+  .bottom-nav-item span { height:26px !important; display:grid !important; place-items:center !important; font-size:25px !important; line-height:1 !important; }
+  .bottom-nav-item small { display:block !important; margin:0 !important; font-size:11px !important; line-height:1 !important; white-space:nowrap !important; }
+  .bottom-add-button { position:relative !important; left:auto !important; right:auto !important; top:-25px !important; bottom:auto !important; transform:none !important; justify-self:center !important; align-self:center !important; width:72px !important; height:72px !important; margin:0 !important; border:7px solid #07382b !important; border-radius:50% !important; background:#ff7a18 !important; box-shadow:0 10px 28px rgba(255,122,24,.28) !important; z-index:2 !important; }
+  .bottom-add-button span { font-size:42px !important; line-height:1 !important; }
+
+  .receivable-confirm-card { width:calc(100% - 38px) !important; max-width:390px !important; padding:28px 22px !important; text-align:center !important; border-radius:26px !important; background:#f4faf7 !important; color:#103b2d !important; }
+  .confirm-receivable-icon { width:58px; height:58px; margin:0 auto 14px; display:grid; place-items:center; border-radius:18px; background:#d8f5e8; color:#079566; font-size:28px; font-weight:900; }
+  .receivable-confirm-card h2 { color:#103b2d !important; font-size:23px !important; }
+  .receivable-confirm-card p { color:#667f74 !important; }
+  .receivable-confirm-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; }
+}
