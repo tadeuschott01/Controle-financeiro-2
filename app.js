@@ -7181,3 +7181,38 @@ showSection = function(sectionName) {
     if (sectionName === "ai-report" && isPremiumActive()) renderAIReport(false);
     if (sectionName === "whatsapp" && isPremiumActive()) updateWhatsAppPreview();
 };
+
+
+/* =========================================================
+   CONTROLES — NAVEGAÇÃO MOBILE DA DEMO / PERFIL
+   ========================================================= */
+(function setupDemoMobileNavigation(){
+  function syncBottomNav(section){
+    document.querySelectorAll('[data-bottom-section]').forEach(btn=>btn.classList.toggle('active',btn.dataset.bottomSection===section));
+  }
+  document.addEventListener('click', async function(event){
+    const bottom=event.target.closest?.('[data-bottom-section]');
+    if(bottom){event.preventDefault();const section=bottom.dataset.bottomSection;showSection(section);syncBottomNav(section);return;}
+    if(event.target.closest?.('#mobileAddButton')){event.preventDefault();openTransactionModal('expense');return;}
+    if(event.target.closest?.('#profileThemeBtn')){event.preventDefault();toggleTheme();return;}
+    if(event.target.closest?.('#profileClearTransactionsBtn')){event.preventDefault();openClearTransactionsModal();return;}
+    if(event.target.closest?.('#profileLogoutBtn')){event.preventDefault();await handleLogout();return;}
+  });
+  const originalShowSection=window.showSection;
+  if(typeof originalShowSection==='function'){
+    window.showSection=function(sectionName){originalShowSection(sectionName);syncBottomNav(sectionName);};
+  }
+})();
+
+/* Saudação mobile com o nome real da conta */
+(function enhanceMobileGreeting(){
+  const original=window.updateUserInterface;
+  if(typeof original!=='function') return;
+  window.updateUserInterface=function(){
+    original();
+    const name=currentProfile?.name||currentUser?.user_metadata?.name||currentUser?.email?.split('@')[0]||'Usuário';
+    const first=String(name).trim().split(/\s+/)[0];
+    const welcome=document.getElementById('welcomeMessage');
+    if(welcome) welcome.textContent=`Olá, ${first} 👋`;
+  };
+})();
