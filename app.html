@@ -1548,52 +1548,8 @@
           </div>
 
 
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-
-                <tr>
-
-                  <th>
-                    Descrição
-                  </th>
-
-                  <th>
-                    Categoria
-                  </th>
-
-                  <th>
-                    Lançamento
-                  </th>
-
-                  <th>
-                    Recebimento
-                  </th>
-
-                  <th>
-                    Valor
-                  </th>
-
-                  <th>
-                    Status
-                  </th>
-
-                  <th>
-                    Ações
-                  </th>
-
-                </tr>
-
-              </thead>
-
-
-              <tbody id="receivablesTableBody"></tbody>
-
-            </table>
-
-          </div>
+          <div id="receivableList" class="receivable-mobile-list"></div>
+          <div id="receivableEmpty" class="receivable-empty-state hidden"><span>◷</span><strong>Nenhum recebimento pendente</strong><small>Quando você cadastrar uma receita futura, ela aparecerá aqui.</small></div>
 
 
           <div
@@ -2238,7 +2194,7 @@
           <div class="premium-price">
 
             <strong>
-              R$ 24,99
+              R$ 29,99
             </strong>
 
             <span>
@@ -2246,6 +2202,7 @@
             </span>
 
           </div>
+          <div class="premium-trial-note"><strong>7 dias grátis</strong><span>Depois, R$ 29,99/mês. Cancele quando quiser.</span></div>
 
 
           <button
@@ -2253,7 +2210,7 @@
             class="btn btn-premium btn-large"
             type="button"
           >
-            Assinar Premium — R$ 24,99/mês
+            Experimentar 7 dias grátis
           </button>
 
           <button
@@ -2271,13 +2228,26 @@
         </div>
 
 
-        <div class="premium-features premium-features-new">
-          <article><span>✓</span><div><strong>Sem anúncios</strong><p>Use o ControleS com uma experiência limpa e sem interrupções.</p></div></article>
-          <article><span>✓</span><div><strong>Categorias personalizadas</strong><p>Crie suas próprias categorias e organize seus gastos do seu jeito.</p></div></article>
-          <article><span>✓</span><div><strong>Relatórios completos</strong><p>Veja análises detalhadas das suas receitas e despesas.</p></div></article>
-          <article><span>✓</span><div><strong>Assessor financeiro pelo WhatsApp</strong><p>Consulte gastos, saldo e valores a receber e registre movimentações pelo WhatsApp.</p></div></article>
-          <article><span>✓</span><div><strong>Relatórios automáticos com IA</strong><p>Receba resumos inteligentes e entenda melhor para onde seu dinheiro está indo.</p></div></article>
+        <div class="premium-preview-grid">
+          <article class="premium-preview-card ai-preview-card">
+            <div class="preview-card-head"><span class="preview-icon">✦</span><div><small>RELATÓRIO INTELIGENTE</small><h3>Entenda seu mês em segundos</h3></div><span class="premium-chip">PREMIUM</span></div>
+            <div class="preview-insight"><b>Seu dinheiro explicado de forma simples</b><p>Compare receitas e despesas, descubra sua maior categoria de gastos e receba pontos de atenção automaticamente.</p></div>
+            <div class="preview-blur"><span>Maior gasto do mês</span><b>Alimentação • 28%</b><i></i></div>
+            <button class="premium-preview-cta" type="button" data-premium-preview>🔒 Desbloquear análise completa</button>
+          </article>
+          <article class="premium-preview-card whatsapp-preview-card">
+            <div class="preview-card-head"><span class="preview-icon">◉</span><div><small>ASSESSOR WHATSAPP</small><h3>Seu financeiro em uma conversa</h3></div><span class="premium-chip">PREMIUM</span></div>
+            <div class="mini-chat"><div class="mini-msg user">Quanto gastei este mês?</div><div class="mini-msg bot"><b>ControleS</b><span>Você gastou R$ 1.749,50. Alimentação foi sua maior categoria.</span></div><div class="mini-msg user">Adicione R$ 45 de combustível.</div><div class="mini-msg bot"><b>ControleS</b><span>Despesa registrada ✓</span></div></div>
+            <p class="preview-caption">Consulte saldo, gastos e valores a receber e registre movimentações pelo WhatsApp.</p>
+            <button class="premium-preview-cta" type="button" data-premium-preview>🔒 Desbloquear Assessor WhatsApp</button>
+          </article>
         </div>
+        <div class="premium-features premium-features-new">
+          <article><span>✓</span><div><strong>Sem anúncios</strong><p>Experiência limpa e sem interrupções.</p></div></article>
+          <article><span>✓</span><div><strong>Categorias personalizadas</strong><p>Organize receitas e despesas do seu jeito.</p></div></article>
+          <article><span>✓</span><div><strong>Relatórios completos</strong><p>Acompanhe a evolução da sua vida financeira.</p></div></article>
+        </div>
+        <div class="premium-bottom-cta"><strong>Teste todos os recursos por 7 dias</strong><small>Depois, R$ 29,99/mês.</small><button type="button" class="btn btn-premium btn-large" data-premium-preview>Experimentar 7 dias grátis</button></div>
 
       </section>
 
@@ -2855,7 +2825,7 @@
       <div class="trial-box">
 
         <strong>
-          R$ 24,99
+          R$ 29,99
         </strong>
 
         <span>
@@ -2878,7 +2848,7 @@
         class="btn btn-premium btn-large"
         type="button"
       >
-        Assinar pela Google Play
+        Começar 7 dias grátis
       </button>
 
       <button
