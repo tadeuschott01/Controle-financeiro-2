@@ -7422,3 +7422,41 @@ document.addEventListener('click', function(e){
     });
   });
 })();
+
+/* =========================================================
+   CONTROLES MOBILE 15.1 — CADEADO PREMIUM NOS ATALHOS
+   ========================================================= */
+(function controlesPremiumShortcutLock(){
+  function syncPremiumShortcutLocks(){
+    const premium = typeof isPremiumActive === 'function' && isPremiumActive();
+    document.querySelectorAll('[data-premium-home="true"]').forEach(btn=>{
+      btn.classList.toggle('premium-locked', !premium);
+      if(!premium) btn.setAttribute('data-premium-locked','true');
+      else btn.removeAttribute('data-premium-locked');
+      const lock=btn.querySelector('.premium-diamond');
+      if(lock){
+        lock.setAttribute('aria-label', premium ? 'Premium desbloqueado' : 'Recurso Premium bloqueado');
+        lock.title=premium ? 'Premium desbloqueado' : 'Recurso Premium';
+      }
+    });
+    document.querySelectorAll('.nav-lock').forEach(lock=>{
+      lock.setAttribute('aria-label', premium ? 'Premium desbloqueado' : 'Recurso Premium bloqueado');
+      lock.title=premium ? 'Premium desbloqueado' : 'Recurso Premium';
+    });
+  }
+  document.addEventListener('click',function(e){
+    const shortcut=e.target.closest?.('[data-premium-home="true"]');
+    if(!shortcut) return;
+    const premium=typeof isPremiumActive === 'function' && isPremiumActive();
+    if(!premium){
+      e.preventDefault();e.stopImmediatePropagation();
+      if(typeof openPremiumAccess === 'function') openPremiumAccess();
+    }
+  },true);
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(syncPremiumShortcutLocks,100));
+  window.addEventListener('load',()=>setTimeout(syncPremiumShortcutLocks,250));
+  const oldApply=window.applyPremiumAccess;
+  if(typeof oldApply==='function'){
+    window.applyPremiumAccess=function(){const r=oldApply.apply(this,arguments);syncPremiumShortcutLocks();return r;};
+  }
+})();
