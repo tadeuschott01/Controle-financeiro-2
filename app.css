@@ -4675,3 +4675,82 @@ html body #appView #dashboardSection .balance-overview-card .balance-breakdown-i
     margin-top:-25px!important;
   }
 }
+
+/* =========================================================
+   AJUSTE FINAL — BARRA INFERIOR
+   Início | Lançamentos | + | Relatórios | Perfil
+   ========================================================= */
+@media (max-width: 720px), (pointer: coarse) {
+  .mobile-bottom-nav{
+    display:grid!important;
+    grid-template-columns: 1fr 1.25fr 88px 1.18fr .9fr!important;
+    align-items:center!important;
+    justify-items:center!important;
+  }
+
+  .mobile-bottom-nav > .nav-home{
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+
+  .mobile-bottom-nav > .nav-transactions{
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+
+  .mobile-bottom-nav > .nav-add,
+  .mobile-bottom-nav > #mobileAddButton{
+    grid-column:3!important;
+    grid-row:1!important;
+    justify-self:center!important;
+  }
+
+  .mobile-bottom-nav > .nav-reports{
+    grid-column:4!important;
+    grid-row:1!important;
+  }
+
+  .mobile-bottom-nav > .nav-profile{
+    grid-column:5!important;
+    grid-row:1!important;
+  }
+
+  /* Impede Relatórios e Perfil de herdarem posição absoluta/transformações antigas */
+  .mobile-bottom-nav > .nav-reports,
+  .mobile-bottom-nav > .nav-profile{
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    translate:none!important;
+    width:100%!important;
+  }
+
+  /* + perfeitamente centralizado dentro do círculo */
+  .mobile-bottom-nav > .nav-add,
+  .mobile-bottom-nav > #mobileAddButton{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+  }
+
+  .mobile-bottom-nav > .nav-add span,
+  .mobile-bottom-nav > #mobileAddButton span{
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    translate:none!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    height:100%!important;
+    margin:0!important;
+    padding:0 0 5px 0!important;
+    line-height:1!important;
+    text-align:center!important;
+  }
+}
