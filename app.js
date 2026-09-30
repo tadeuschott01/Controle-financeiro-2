@@ -6707,7 +6707,6 @@ function applyPremiumAccess() {
        ===================================================== */
 
     const premiumContent = [
-        "#dashboardPeriodFilter",
         "#receivableDashboardCard",
         "#premiumDashboardContent"
     ];
@@ -7365,3 +7364,61 @@ document.addEventListener('click', function(e){
   const modal=document.getElementById('premiumModal');
   if(modal){ modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false'); }
 });
+
+
+/* =========================================================
+   CONTROLES MOBILE 12 — INTERAÇÕES DA HOME E LOGIN
+   ========================================================= */
+(function(){
+  const $m12=id=>document.getElementById(id);
+  const filter=$m12('dashboardPeriodFilter');
+  const quick=$m12('periodQuickBtn');
+  const quickLabel=$m12('periodQuickLabel');
+  const activeLabel=$m12('activePeriodLabel');
+  function syncPeriodLabel(){
+    if(!quickLabel) return;
+    const select=$m12('dashboardPeriod');
+    const txt=select && select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : 'Últimos 30 dias';
+    quickLabel.textContent=txt;
+  }
+  function setFilter(open){
+    if(!filter||!quick) return;
+    filter.classList.toggle('period-sheet-collapsed',!open);
+    quick.setAttribute('aria-expanded',String(open));
+  }
+  quick?.addEventListener('click',()=>setFilter(filter?.classList.contains('period-sheet-collapsed')));
+  $m12('applyPeriodBtn')?.addEventListener('click',()=>{syncPeriodLabel();setTimeout(()=>setFilter(false),120);});
+  $m12('clearPeriodBtn')?.addEventListener('click',()=>{setTimeout(()=>{syncPeriodLabel();setFilter(false)},120);});
+  $m12('dashboardPeriod')?.addEventListener('change',syncPeriodLabel);
+  syncPeriodLabel();
+
+  // Insight abre a análise; o bloqueio Premium existente continua valendo.
+  $m12('homeInsightBtn')?.addEventListener('click',()=>{
+    const nav=document.querySelector('[data-section="ai-report"]');
+    if(nav) nav.click();
+  });
+
+  // Atualiza o texto do insight com os valores já calculados na Home.
+  function moneyText(id){return ($m12(id)?.textContent||'R$ 0,00').trim()}
+  function updateInsight(){
+    const title=$m12('homeInsightTitle'), text=$m12('homeInsightText');
+    if(!title||!text) return;
+    const income=moneyText('incomeValue'), expense=moneyText('expenseValue');
+    title.textContent='Resumo do período';
+    text.textContent=`Você recebeu ${income} e gastou ${expense}. Toque para ver a análise inteligente.`;
+  }
+  ['incomeValue','expenseValue'].forEach(id=>{const el=$m12(id);if(el)new MutationObserver(updateInsight).observe(el,{childList:true,subtree:true,characterData:true})});
+  updateInsight();
+
+  // Feedback moderno do olho da senha, preservando o listener original.
+  document.querySelectorAll('[data-password-toggle]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const input=$m12(btn.getAttribute('data-password-toggle'));
+      setTimeout(()=>{
+        const visible=input?.type==='text';
+        btn.setAttribute('aria-pressed',String(visible));
+        btn.setAttribute('aria-label',visible?'Ocultar senha':'Mostrar senha');
+      },0);
+    });
+  });
+})();
