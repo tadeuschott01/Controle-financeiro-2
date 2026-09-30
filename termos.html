@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0b3f2d">
+    <meta name="theme-color" content="#07130f">
 
     <title>Termos de Uso | ControleS</title>
 
@@ -15,391 +14,111 @@
             padding: 0;
         }
 
-        :root {
-            --bg: #08110e;
-            --bg-soft: #0d1814;
-            --card: #12211b;
-            --card-soft: #172a22;
-
-            --green: #18a66a;
-            --green-dark: #0b6b48;
-            --green-light: #bfe3d2;
-
-            --orange: #ef8a2c;
-
-            --white: #ffffff;
-            --text: #e8f0ec;
-            --muted: #aab9b1;
-            --border: rgba(255, 255, 255, 0.08);
-
-            --shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background:
-                radial-gradient(
-                    circle at top right,
-                    rgba(24, 166, 106, 0.12),
-                    transparent 35%
-                ),
-                var(--bg);
-
-            color: var(--text);
-            line-height: 1.75;
-            min-height: 100vh;
+            background: #07130f;
+            color: #eaf5ef;
+            line-height: 1.7;
+            padding: 40px 20px;
         }
 
-        /* =========================
-           HEADER
-        ========================= */
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-
-            background: rgba(8, 17, 14, 0.92);
-            backdrop-filter: blur(16px);
-
-            border-bottom: 1px solid var(--border);
-        }
-
-        .header-container {
-            max-width: 1100px;
-            margin: auto;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 18px 24px;
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
-
-            color: var(--white);
-            text-decoration: none;
+            gap: 14px;
+            margin-bottom: 30px;
         }
 
         .logo {
-            width: 42px;
-            height: 42px;
-
-            border-radius: 12px;
-
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: #0b6b4f;
             display: flex;
             align-items: center;
             justify-content: center;
-
             font-weight: 800;
-            font-size: 22px;
-
+            font-size: 18px;
             color: white;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    var(--green),
-                    var(--green-dark)
-                );
-
-            box-shadow:
-                0 8px 25px rgba(24, 166, 106, 0.25);
         }
 
-        .brand-name {
-            font-size: 21px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        .brand h1 {
+            font-size: 24px;
         }
 
-        .brand-name span {
-            color: var(--orange);
-        }
-
-        .back {
-            color: var(--green-light);
-            text-decoration: none;
-
+        .brand p {
+            color: #9eb7aa;
             font-size: 14px;
-            font-weight: 700;
-
-            padding: 9px 14px;
-
-            border: 1px solid var(--border);
-            border-radius: 10px;
-
-            transition: 0.2s;
         }
 
-        .back:hover {
-            background: var(--card);
-            color: white;
-        }
-
-        /* =========================
-           HERO
-        ========================= */
-
-        .hero {
-            max-width: 1000px;
-            margin: auto;
-
-            padding: 75px 24px 35px;
-        }
-
-        .badge {
-            display: inline-block;
-
-            color: var(--green-light);
-            background: rgba(24, 166, 106, 0.12);
-
-            border: 1px solid rgba(24, 166, 106, 0.25);
-            border-radius: 100px;
-
-            padding: 7px 13px;
-
-            font-size: 12px;
-            font-weight: 800;
-
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-
-            margin-bottom: 18px;
-        }
-
-        .hero h1 {
-            font-size: clamp(36px, 6vw, 58px);
-            line-height: 1.08;
-
-            letter-spacing: -2px;
-
-            color: white;
-
-            margin-bottom: 18px;
-        }
-
-        .hero h1 span {
-            color: var(--green);
-        }
-
-        .hero-description {
-            max-width: 720px;
-
-            color: var(--muted);
-
-            font-size: 17px;
-
-            margin-bottom: 20px;
-        }
-
-        .updated {
-            color: var(--orange);
-
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        /* =========================
-           CONTENT
-        ========================= */
-
-        main {
-            max-width: 1000px;
-
-            margin: auto;
-
-            padding: 20px 24px 80px;
-        }
-
-        .document {
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(255, 255, 255, 0.025),
-                    transparent
-                ),
-                var(--card);
-
-            border: 1px solid var(--border);
-
+        .card {
+            background: #102019;
+            border: 1px solid #1d382d;
             border-radius: 24px;
-
-            padding: 50px;
-
-            box-shadow: var(--shadow);
-        }
-
-        section {
-            padding: 30px 0;
-
-            border-bottom: 1px solid var(--border);
-        }
-
-        section:first-child {
-            padding-top: 0;
-        }
-
-        section:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
+            padding: 35px;
         }
 
         h2 {
-            color: white;
-
-            font-size: 21px;
-
-            margin-bottom: 12px;
-
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 30px;
+            margin-bottom: 8px;
         }
 
-        h2::before {
-            content: "";
-
-            width: 5px;
-            height: 24px;
-
-            background: var(--orange);
-
-            border-radius: 10px;
+        h3 {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            color: #75d6aa;
+            font-size: 19px;
         }
 
         p {
-            color: var(--muted);
-
-            margin-bottom: 12px;
-        }
-
-        p:last-child {
-            margin-bottom: 0;
+            margin-bottom: 14px;
+            color: #d6e5dd;
         }
 
         ul {
             padding-left: 22px;
-
-            color: var(--muted);
+            margin-bottom: 15px;
         }
 
         li {
             margin-bottom: 8px;
+            color: #d6e5dd;
         }
 
-        li::marker {
-            color: var(--green);
+        .updated {
+            color: #91a99d;
+            font-size: 14px;
+            margin-bottom: 30px;
         }
 
         a {
-            color: var(--green-light);
+            color: #75d6aa;
         }
 
-        a:hover {
-            color: var(--orange);
-        }
-
-        /* =========================
-           CONTACT
-        ========================= */
-
-        .contact {
-            margin-top: 35px;
-
-            padding: 28px;
-
-            background: var(--card-soft);
-
-            border: 1px solid rgba(24, 166, 106, 0.18);
-
-            border-radius: 18px;
-        }
-
-        .contact strong {
-            color: white;
-        }
-
-        /* =========================
-           FOOTER
-        ========================= */
-
-        footer {
-            border-top: 1px solid var(--border);
-
+        .footer {
             text-align: center;
-
-            padding: 30px 20px;
-
-            color: var(--muted);
-
+            color: #81988c;
             font-size: 13px;
+            margin-top: 25px;
         }
 
-        footer strong {
-            color: white;
-        }
-
-        footer span {
-            color: var(--orange);
-        }
-
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 700px) {
-
-            .header-container {
-                padding: 14px 18px;
+        @media (max-width: 600px) {
+            body {
+                padding: 24px 14px;
             }
 
-            .brand-name {
-                font-size: 18px;
-            }
-
-            .logo {
-                width: 38px;
-                height: 38px;
-            }
-
-            .back {
-                font-size: 12px;
-                padding: 7px 10px;
-            }
-
-            .hero {
-                padding: 50px 20px 25px;
-            }
-
-            .hero h1 {
-                letter-spacing: -1px;
-            }
-
-            main {
-                padding: 15px 16px 55px;
-            }
-
-            .document {
-                padding: 28px 22px;
-
-                border-radius: 18px;
-            }
-
-            section {
-                padding: 24px 0;
+            .card {
+                padding: 24px 20px;
             }
 
             h2 {
-                font-size: 19px;
+                font-size: 25px;
             }
         }
     </style>
@@ -407,325 +126,248 @@
 
 <body>
 
-<header>
-    <div class="header-container">
+<div class="container">
 
-        <a href="app.html" class="brand">
-            <div class="logo">C</div>
+    <div class="brand">
+        <div class="logo">CS</div>
 
-            <div class="brand-name">
-                Controle<span>S</span>
-            </div>
-        </a>
-
-        <a href="app.html" class="back">
-            Voltar ao ControleS
-        </a>
-
-    </div>
-</header>
-
-
-<div class="hero">
-
-    <div class="badge">
-        Documento oficial
+        <div>
+            <h1>ControleS</h1>
+            <p>Seu dinheiro sob controle.</p>
+        </div>
     </div>
 
-    <h1>
-        Termos de <span>Uso</span>
-    </h1>
+    <main class="card">
 
-    <p class="hero-description">
-        Estes Termos estabelecem as condições para utilização
-        do ControleS e de seus recursos.
-    </p>
+        <h2>Termos de Uso</h2>
 
-    <div class="updated">
-        Última atualização: 29 de setembro de 2026
-    </div>
-
-</div>
-
-
-<main>
-
-<div class="document">
-
-<section>
-    <h2>1. Sobre o ControleS</h2>
-
-    <p>
-        O ControleS é uma ferramenta de organização financeira pessoal
-        destinada a auxiliar usuários no registro e acompanhamento de
-        receitas, despesas, categorias, metas, valores a receber,
-        relatórios e outros recursos relacionados à organização financeira.
-    </p>
-</section>
-
-
-<section>
-    <h2>2. Cadastro e conta</h2>
-
-    <p>
-        Algumas funcionalidades do ControleS exigem a criação de uma conta.
-        O usuário é responsável por fornecer informações corretas e manter
-        suas credenciais de acesso protegidas.
-    </p>
-
-    <p>
-        O usuário não deve compartilhar sua senha ou permitir que terceiros
-        utilizem sua conta de forma não autorizada.
-    </p>
-</section>
-
-
-<section>
-    <h2>3. Uso permitido</h2>
-
-    <p>Ao utilizar o ControleS, o usuário concorda em não:</p>
-
-    <ul>
-        <li>utilizar o serviço para atividades ilegais;</li>
-        <li>tentar acessar contas ou informações de outros usuários;</li>
-        <li>comprometer a segurança ou disponibilidade do serviço;</li>
-        <li>explorar vulnerabilidades do sistema;</li>
-        <li>utilizar automações abusivas contra a infraestrutura;</li>
-        <li>violar direitos de terceiros.</li>
-    </ul>
-</section>
-
-
-<section>
-    <h2>4. Informações financeiras</h2>
-
-    <p>
-        Os valores, categorias, receitas, despesas, metas e demais
-        informações financeiras existentes na conta são cadastrados
-        ou gerenciados pelo próprio usuário.
-    </p>
-
-    <p>
-        O usuário é responsável pela exatidão das informações inseridas.
-    </p>
-</section>
-
-
-<section>
-    <h2>5. Não constitui aconselhamento financeiro</h2>
-
-    <p>
-        O ControleS é uma ferramenta de organização e acompanhamento
-        financeiro. Informações, gráficos, relatórios, estimativas ou
-        análises apresentados possuem caráter informativo.
-    </p>
-
-    <p>
-        O ControleS não substitui orientação profissional financeira,
-        contábil, jurídica, tributária ou de investimentos.
-    </p>
-</section>
-
-
-<section>
-    <h2>6. WhatsApp</h2>
-
-    <p>
-        O ControleS poderá disponibilizar integração com o WhatsApp para
-        permitir consultas, registros, notificações e outras funcionalidades
-        relacionadas à conta do usuário.
-    </p>
-
-    <p>
-        A disponibilidade desses recursos poderá depender dos serviços
-        fornecidos pela Meta e pelo WhatsApp.
-    </p>
-</section>
-
-
-<section>
-    <h2>7. Inteligência artificial</h2>
-
-    <p>
-        Algumas funcionalidades poderão utilizar inteligência artificial
-        para auxiliar na organização, interpretação e apresentação das
-        informações financeiras cadastradas pelo usuário.
-    </p>
-
-    <p>
-        Resultados produzidos por sistemas automatizados podem conter
-        imprecisões e devem ser utilizados apenas como apoio informativo.
-    </p>
-</section>
-
-
-<section>
-    <h2>8. Plano gratuito</h2>
-
-    <p>
-        O ControleS poderá disponibilizar uma modalidade gratuita contendo
-        determinadas funcionalidades do aplicativo.
-    </p>
-
-    <p>
-        Essa modalidade poderá apresentar publicidade quando esse recurso
-        estiver implementado.
-    </p>
-</section>
-
-
-<section>
-    <h2>9. ControleS Premium</h2>
-
-    <p>
-        O ControleS poderá oferecer uma modalidade Premium com funcionalidades
-        adicionais e/ou ausência de publicidade, conforme a oferta apresentada
-        ao usuário no momento da contratação.
-    </p>
-
-    <p>
-        Preços, períodos de assinatura e funcionalidades incluídas serão
-        informados antes da confirmação da compra.
-    </p>
-</section>
-
-
-<section>
-    <h2>10. Pagamentos e assinaturas</h2>
-
-    <p>
-        Quando uma assinatura for adquirida através de uma plataforma externa,
-        como a Google Play, cobrança, renovação e gerenciamento do pagamento
-        poderão ser realizados pela respectiva plataforma.
-    </p>
-
-    <p>
-        Cancelamentos deverão observar as opções e regras disponibilizadas
-        pela plataforma responsável pela cobrança.
-    </p>
-</section>
-
-
-<section>
-    <h2>11. Serviços de terceiros</h2>
-
-    <p>
-        O ControleS poderá utilizar serviços de terceiros para banco de dados,
-        autenticação, hospedagem, pagamentos, comunicação e outros recursos
-        necessários ao funcionamento do serviço.
-    </p>
-</section>
-
-
-<section>
-    <h2>12. Disponibilidade do serviço</h2>
-
-    <p>
-        Buscamos manter o ControleS disponível e funcionando adequadamente.
-        Entretanto, não é possível garantir funcionamento ininterrupto.
-    </p>
-
-    <p>
-        O serviço poderá ficar temporariamente indisponível devido a
-        manutenção, atualizações, falhas técnicas ou fatores externos.
-    </p>
-</section>
-
-
-<section>
-    <h2>13. Alterações no ControleS</h2>
-
-    <p>
-        Funcionalidades poderão ser adicionadas, modificadas ou
-        descontinuadas conforme a evolução do serviço.
-    </p>
-</section>
-
-
-<section>
-    <h2>14. Segurança da conta</h2>
-
-    <p>
-        O usuário deve proteger suas credenciais e tomar medidas razoáveis
-        para impedir acesso não autorizado à sua conta.
-    </p>
-</section>
-
-
-<section>
-    <h2>15. Exclusão da conta</h2>
-
-    <p>
-        O usuário poderá solicitar a exclusão de sua conta e dos dados
-        associados conforme as opções disponibilizadas pelo ControleS.
-    </p>
-</section>
-
-
-<section>
-    <h2>16. Privacidade</h2>
-
-    <p>
-        O tratamento de informações pessoais relacionadas ao ControleS
-        está descrito em nossa Política de Privacidade.
-    </p>
-
-    <p>
-        <a href="privacidade.html">
-            Consultar Política de Privacidade →
-        </a>
-    </p>
-</section>
-
-
-<section>
-    <h2>17. Alterações destes Termos</h2>
-
-    <p>
-        Estes Termos poderão ser atualizados para refletir mudanças no
-        serviço, funcionalidades ou requisitos aplicáveis.
-    </p>
-
-    <p>
-        A versão atualizada será disponibilizada nesta página com sua
-        respectiva data de atualização.
-    </p>
-</section>
-
-
-<section>
-    <h2>18. Contato</h2>
-
-    <p>
-        Para dúvidas, suporte ou questões relacionadas a estes Termos:
-    </p>
-
-    <div class="contact">
-
-        <p>
-            <strong>ControleS — Suporte</strong>
+        <p class="updated">
+            Última atualização: 29 de setembro de 2026
         </p>
 
         <p>
-            <a href="mailto:controlesfinanceirossuport@gmail.com">
-                controlesfinanceirossuport@gmail.com
+            Estes Termos de Uso estabelecem as condições para utilização
+            do aplicativo ControleS.
+        </p>
+
+        <p>
+            Ao criar uma conta ou utilizar o ControleS, o usuário declara
+            estar de acordo com estes Termos e com a Política de Privacidade.
+        </p>
+
+        <h3>1. Sobre o ControleS</h3>
+
+        <p>
+            O ControleS é uma ferramenta destinada à organização e ao
+            acompanhamento das finanças pessoais do usuário.
+        </p>
+
+        <p>
+            Entre suas funcionalidades poderão estar o registro de receitas
+            e despesas, lançamentos financeiros, valores a receber,
+            categorias, gráficos, relatórios, metas e outros recursos
+            relacionados à organização financeira.
+        </p>
+
+        <h3>2. Conta do usuário</h3>
+
+        <p>
+            Algumas funcionalidades exigem a criação de uma conta.
+            O usuário é responsável por fornecer informações corretas
+            e manter suas credenciais de acesso protegidas.
+        </p>
+
+        <p>
+            O usuário não deverá fornecer sua senha a terceiros ou utilizar
+            a conta de outra pessoa sem autorização.
+        </p>
+
+        <h3>3. Informações cadastradas</h3>
+
+        <p>
+            O usuário é responsável pelas informações inseridas no
+            ControleS, incluindo valores, datas, descrições, categorias,
+            metas e demais registros financeiros.
+        </p>
+
+        <p>
+            O ControleS utiliza essas informações para apresentar
+            ferramentas de organização, cálculos, gráficos, relatórios
+            e outros recursos do aplicativo.
+        </p>
+
+        <h3>4. Natureza das informações</h3>
+
+        <p>
+            O ControleS é uma ferramenta de organização financeira e
+            não substitui orientação profissional financeira, contábil,
+            jurídica, tributária ou de investimentos.
+        </p>
+
+        <p>
+            Relatórios, projeções, análises automáticas e recursos
+            baseados em inteligência artificial, quando disponíveis,
+            possuem finalidade informativa e de organização.
+        </p>
+
+        <h3>5. Plano gratuito e Premium</h3>
+
+        <p>
+            O ControleS poderá disponibilizar recursos gratuitos e
+            funcionalidades exclusivas para usuários Premium.
+        </p>
+
+        <p>
+            As funcionalidades disponíveis em cada modalidade poderão
+            ser apresentadas diretamente no aplicativo antes da contratação.
+        </p>
+
+        <h3>6. Assinaturas e pagamentos</h3>
+
+        <p>
+            Quando o ControleS Premium for contratado pela Google Play,
+            a cobrança e o gerenciamento da assinatura estarão sujeitos
+            também às regras e condições da plataforma responsável
+            pelo pagamento.
+        </p>
+
+        <p>
+            O preço e o período da assinatura serão apresentados ao
+            usuário antes da confirmação da compra.
+        </p>
+
+        <p>
+            Cancelamentos, renovações e outras operações relacionadas
+            à assinatura poderão ser administrados através da conta
+            utilizada na loja de aplicativos.
+        </p>
+
+        <h3>7. Uso adequado</h3>
+
+        <p>
+            O usuário concorda em utilizar o ControleS de maneira
+            legítima e de acordo com estes Termos.
+        </p>
+
+        <p>
+            Não é permitido utilizar o aplicativo para tentar comprometer
+            sua segurança, acessar contas de terceiros sem autorização,
+            explorar vulnerabilidades ou prejudicar o funcionamento
+            dos serviços.
+        </p>
+
+        <h3>8. Disponibilidade</h3>
+
+        <p>
+            O ControleS poderá passar por atualizações, manutenção,
+            correções e alterações necessárias para aprimorar o serviço.
+        </p>
+
+        <p>
+            Algumas funcionalidades poderão ficar temporariamente
+            indisponíveis devido a manutenção, problemas técnicos,
+            conexão com a internet ou serviços externos utilizados
+            pelo aplicativo.
+        </p>
+
+        <h3>9. Serviços de terceiros</h3>
+
+        <p>
+            Algumas funcionalidades poderão depender de serviços
+            fornecidos por terceiros, incluindo serviços de banco
+            de dados, autenticação, hospedagem, inteligência artificial,
+            WhatsApp, Google Play e gerenciamento de assinaturas.
+        </p>
+
+        <p>
+            A utilização desses serviços também poderá estar sujeita
+            às respectivas políticas e termos dos seus fornecedores.
+        </p>
+
+        <h3>10. Responsabilidades</h3>
+
+        <p>
+            O usuário é responsável pelas decisões tomadas com base
+            nas informações registradas ou apresentadas pelo aplicativo.
+        </p>
+
+        <p>
+            O ControleS busca apresentar corretamente os dados fornecidos
+            pelo usuário, mas erros de cadastro, indisponibilidade de
+            serviços externos ou outras situações técnicas poderão
+            afetar temporariamente determinadas funcionalidades.
+        </p>
+
+        <h3>11. Propriedade intelectual</h3>
+
+        <p>
+            A identidade visual, marca, estrutura, design e demais
+            elementos próprios do ControleS são protegidos pela
+            legislação aplicável.
+        </p>
+
+        <p>
+            Estes Termos não concedem ao usuário direito de copiar,
+            distribuir ou comercializar elementos proprietários do
+            aplicativo sem autorização.
+        </p>
+
+        <h3>12. Exclusão da conta</h3>
+
+        <p>
+            O usuário poderá solicitar a exclusão de sua conta e dos
+            dados associados conforme as instruções disponibilizadas
+            na página de Exclusão de Dados.
+        </p>
+
+        <p>
+            <a href="exclusao-dados.html">
+                Consultar instruções para exclusão de dados
             </a>
         </p>
 
+        <h3>13. Privacidade</h3>
+
+        <p>
+            O tratamento de dados pessoais relacionado ao ControleS
+            é explicado na Política de Privacidade.
+        </p>
+
+        <p>
+            <a href="privacidade.html">
+                Consultar Política de Privacidade
+            </a>
+        </p>
+
+        <h3>14. Alterações dos Termos</h3>
+
+        <p>
+            Estes Termos poderão ser atualizados em razão de novas
+            funcionalidades, alterações técnicas ou mudanças legais.
+        </p>
+
+        <p>
+            A versão atualizada será disponibilizada nesta página.
+        </p>
+
+        <h3>15. Contato</h3>
+
+        <p>
+            Em caso de dúvidas relacionadas ao ControleS ou a estes
+            Termos de Uso, entre em contato:
+        </p>
+
+        <p>
+            <strong>controlesfinanceirossuport@gmail.com</strong>
+        </p>
+
+    </main>
+
+    <div class="footer">
+        © 2026 ControleS — Seu dinheiro sob controle.
     </div>
-</section>
 
 </div>
-
-</main>
-
-
-<footer>
-    <strong>Controle<span>S</span></strong>
-    — Seu dinheiro sob controle.
-    <br>
-    © 2026 ControleS.
-</footer>
 
 </body>
 </html>
