@@ -1,869 +1,290 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b3f2d">
-
-  <title>Exclusão de Dados | ControleS</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #08110e;
-      --card: #12211b;
-      --card-soft: #172a22;
-      --green: #18a66a;
-      --green-dark: #0b6b48;
-      --green-light: #bfe3d2;
-      --orange: #ef8a2c;
-      --white: #ffffff;
-      --text: #e8f0ec;
-      --muted: #aab9b1;
-      --border: rgba(255,255,255,.08);
-      --shadow: 0 20px 50px rgba(0,0,0,.28);
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-
-      background:
-        radial-gradient(
-          circle at top right,
-          rgba(24,166,106,.13),
-          transparent 35%
-        ),
-        var(--bg);
-
-      color: var(--text);
-      line-height: 1.7;
-      min-height: 100vh;
-    }
-
-    /* HEADER */
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-
-      background: rgba(8,17,14,.93);
-      backdrop-filter: blur(16px);
-
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header-container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 18px 24px;
-
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      text-decoration: none;
-      color: white;
-    }
-
-    .logo {
-      width: 42px;
-      height: 42px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border-radius: 12px;
-
-      background:
-        linear-gradient(
-          135deg,
-          var(--green),
-          var(--green-dark)
-        );
-
-      font-size: 22px;
-      font-weight: 900;
-
-      box-shadow:
-        0 8px 25px rgba(24,166,106,.25);
-    }
-
-    .brand-name {
-      font-size: 21px;
-      font-weight: 800;
-    }
-
-    .brand-name span {
-      color: var(--orange);
-    }
-
-    .back {
-      text-decoration: none;
-
-      color: var(--green-light);
-
-      border: 1px solid var(--border);
-      border-radius: 10px;
-
-      padding: 9px 14px;
-
-      font-size: 13px;
-      font-weight: 700;
-
-      transition: .2s;
-    }
-
-    .back:hover {
-      background: var(--card);
-      color: white;
-    }
-
-    /* HERO */
-
-    .hero {
-      max-width: 1000px;
-      margin: auto;
-
-      padding: 75px 24px 35px;
-    }
-
-    .badge {
-      display: inline-block;
-
-      background: rgba(24,166,106,.12);
-      border: 1px solid rgba(24,166,106,.25);
-
-      color: var(--green-light);
-
-      border-radius: 100px;
-
-      padding: 7px 13px;
-      margin-bottom: 18px;
-
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .8px;
-
-      text-transform: uppercase;
-    }
-
-    .hero h1 {
-      color: white;
-
-      font-size: clamp(36px, 6vw, 58px);
-      line-height: 1.08;
-
-      letter-spacing: -2px;
-
-      margin-bottom: 18px;
-    }
-
-    .hero h1 span {
-      color: var(--green);
-    }
-
-    .hero p {
-      max-width: 700px;
-
-      color: var(--muted);
-      font-size: 17px;
-    }
-
-    .updated {
-      margin-top: 18px;
-
-      color: var(--orange);
-
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    /* CONTEÚDO */
-
-    main {
-      max-width: 1000px;
-
-      margin: auto;
-
-      padding: 20px 24px 80px;
-    }
-
-    .document {
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.025),
-          transparent
-        ),
-        var(--card);
-
-      border: 1px solid var(--border);
-      border-radius: 24px;
-
-      padding: 50px;
-
-      box-shadow: var(--shadow);
-    }
-
-    section {
-      padding: 30px 0;
-
-      border-bottom: 1px solid var(--border);
-    }
-
-    section:first-child {
-      padding-top: 0;
-    }
-
-    section:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    h2 {
-      color: white;
-
-      font-size: 21px;
-
-      margin-bottom: 14px;
-
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    h2::before {
-      content: "";
-
-      width: 5px;
-      height: 24px;
-
-      border-radius: 10px;
-
-      background: var(--orange);
-    }
-
-    p {
-      color: var(--muted);
-
-      margin-bottom: 12px;
-    }
-
-    p:last-child {
-      margin-bottom: 0;
-    }
-
-    a {
-      color: var(--green-light);
-    }
-
-    a:hover {
-      color: var(--orange);
-    }
-
-    /* PASSOS */
-
-    .steps {
-      display: grid;
-      gap: 14px;
-
-      margin-top: 22px;
-    }
-
-    .step {
-      display: flex;
-      gap: 17px;
-      align-items: flex-start;
-
-      background: var(--card-soft);
-
-      border: 1px solid var(--border);
-      border-radius: 16px;
-
-      padding: 20px;
-    }
-
-    .step-number {
-      min-width: 38px;
-      width: 38px;
-      height: 38px;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      border-radius: 12px;
-
-      background: rgba(24,166,106,.15);
-
-      color: var(--green-light);
-
-      font-weight: 900;
-    }
-
-    .step strong {
-      display: block;
-
-      color: white;
-
-      margin-bottom: 4px;
-    }
-
-    .step p {
-      font-size: 14px;
-
-      margin: 0;
-    }
-
-    /* BOX DE SOLICITAÇÃO */
-
-    .request-box {
-      margin-top: 22px;
-
-      padding: 26px;
-
-      border-radius: 18px;
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(24,166,106,.13),
-          rgba(239,138,44,.05)
-        );
-
-      border: 1px solid rgba(24,166,106,.25);
-    }
-
-    .request-box strong {
-      color: white;
-    }
-
-    .email-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      margin-top: 18px;
-
-      padding: 13px 20px;
-
-      background: var(--green);
-
-      border-radius: 12px;
-
-      color: white;
-
-      text-decoration: none;
-      font-weight: 800;
-
-      transition: .2s;
-    }
-
-    .email-button:hover {
-      color: white;
-      transform: translateY(-1px);
-
-      background: #15965f;
-    }
-
-    /* LINKS */
-
-    .legal-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-
-      margin-top: 20px;
-    }
-
-    .legal-links a {
-      text-decoration: none;
-
-      padding: 10px 14px;
-
-      border: 1px solid var(--border);
-      border-radius: 10px;
-
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    /* FOOTER */
-
-    footer {
-      text-align: center;
-
-      border-top: 1px solid var(--border);
-
-      padding: 30px 20px;
-
-      color: var(--muted);
-
-      font-size: 13px;
-    }
-
-    footer strong {
-      color: white;
-    }
-
-    footer span {
-      color: var(--orange);
-    }
-
-    /* MOBILE */
-
-    @media (max-width: 700px) {
-
-      .header-container {
-        padding: 14px 18px;
-      }
-
-      .brand-name {
-        font-size: 18px;
-      }
-
-      .logo {
-        width: 38px;
-        height: 38px;
-      }
-
-      .back {
-        font-size: 11px;
-        padding: 7px 9px;
-      }
-
-      .hero {
-        padding: 50px 20px 25px;
-      }
-
-      .hero h1 {
-        letter-spacing: -1px;
-      }
-
-      main {
-        padding: 15px 16px 55px;
-      }
-
-      .document {
-        padding: 28px 22px;
-
-        border-radius: 18px;
-      }
-
-      section {
-        padding: 24px 0;
-      }
-
-      .step {
-        padding: 17px;
-      }
-    }
-  </style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07130f">
+
+    <title>Exclusão de Dados | ControleS</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #07130f;
+            color: #eaf5ef;
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: #0b6b4f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            color: white;
+        }
+
+        .brand h1 {
+            font-size: 24px;
+        }
+
+        .brand p {
+            color: #9eb7aa;
+            font-size: 14px;
+        }
+
+        .card {
+            background: #102019;
+            border: 1px solid #1d382d;
+            border-radius: 24px;
+            padding: 35px;
+        }
+
+        h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        h3 {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            color: #75d6aa;
+            font-size: 19px;
+        }
+
+        p {
+            margin-bottom: 14px;
+            color: #d6e5dd;
+        }
+
+        ol, ul {
+            padding-left: 24px;
+            margin-bottom: 18px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #d6e5dd;
+        }
+
+        .updated {
+            color: #91a99d;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .email-box {
+            background: #0a1813;
+            border: 1px solid #28513f;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .email-box strong {
+            color: #75d6aa;
+        }
+
+        a {
+            color: #75d6aa;
+        }
+
+        .footer {
+            text-align: center;
+            color: #81988c;
+            font-size: 13px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 24px 14px;
+            }
+
+            .card {
+                padding: 24px 20px;
+            }
+
+            h2 {
+                font-size: 25px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<header>
+<div class="container">
 
-  <div class="header-container">
+    <div class="brand">
 
-    <a href="app.html" class="brand">
+        <div class="logo">
+            CS
+        </div>
 
-      <div class="logo">
-        C
-      </div>
+        <div>
+            <h1>ControleS</h1>
+            <p>Seu dinheiro sob controle.</p>
+        </div>
 
-      <div class="brand-name">
-        Controle<span>S</span>
-      </div>
+    </div>
 
-    </a>
+    <main class="card">
 
-    <a href="app.html" class="back">
-      Voltar ao ControleS
-    </a>
+        <h2>Exclusão da Conta e dos Dados</h2>
 
-  </div>
+        <p class="updated">
+            Última atualização: 29 de setembro de 2026
+        </p>
 
-</header>
+        <p>
+            O ControleS permite que seus usuários solicitem a exclusão
+            da conta e dos dados pessoais associados ao aplicativo.
+        </p>
 
+        <h3>Como solicitar a exclusão</h3>
 
-<div class="hero">
+        <p>
+            Para solicitar a exclusão da sua conta do ControleS,
+            envie um e-mail utilizando o mesmo endereço de e-mail
+            cadastrado na sua conta.
+        </p>
 
-  <div class="badge">
-    Privacidade e dados
-  </div>
+        <div class="email-box">
 
-  <h1>
-    Exclusão de <span>Dados</span>
-  </h1>
+            <p>
+                Envie a solicitação para:
+            </p>
 
-  <p>
-    Você pode solicitar a exclusão da sua conta do ControleS
-    e dos dados associados a ela.
-  </p>
+            <p>
+                <strong>
+                    controlesfinanceirossuport@gmail.com
+                </strong>
+            </p>
 
-  <div class="updated">
-    Última atualização: 29 de setembro de 2026
-  </div>
+            <p>
+                Assunto sugerido:
+                <strong>Exclusão da conta ControleS</strong>
+            </p>
+
+        </div>
+
+        <h3>Informações da solicitação</h3>
+
+        <p>
+            No e-mail, informe que deseja excluir sua conta e os
+            dados associados ao ControleS.
+        </p>
+
+        <p>
+            Para proteger a conta contra solicitações indevidas,
+            poderá ser necessário confirmar que o endereço de e-mail
+            pertence ao titular da conta.
+        </p>
+
+        <h3>Dados que poderão ser excluídos</h3>
+
+        <p>
+            Após a confirmação da solicitação, poderão ser excluídos
+            os dados vinculados à conta, incluindo, quando existentes:
+        </p>
+
+        <ul>
+            <li>Dados do perfil;</li>
+            <li>Receitas cadastradas;</li>
+            <li>Despesas cadastradas;</li>
+            <li>Lançamentos financeiros;</li>
+            <li>Valores cadastrados como a receber;</li>
+            <li>Metas financeiras;</li>
+            <li>Orçamentos vinculados à conta;</li>
+            <li>Outros registros financeiros associados ao usuário.</li>
+        </ul>
+
+        <h3>Dados que podem precisar ser mantidos</h3>
+
+        <p>
+            Determinadas informações poderão ser mantidas pelo período
+            necessário quando houver obrigação legal, necessidade de
+            prevenção contra fraude, exercício regular de direitos ou
+            outra hipótese permitida pela legislação aplicável.
+        </p>
+
+        <h3>Assinatura Premium</h3>
+
+        <p>
+            A exclusão da conta do ControleS não necessariamente cancela
+            uma assinatura ativa realizada através da Google Play.
+        </p>
+
+        <p>
+            Caso exista uma assinatura Premium ativa, o usuário deverá
+            verificar e, quando necessário, cancelar a assinatura pela
+            própria conta da Google Play para impedir futuras renovações.
+        </p>
+
+        <h3>Prazo</h3>
+
+        <p>
+            As solicitações serão analisadas e processadas dentro de
+            prazo razoável, observando os requisitos de segurança e
+            as obrigações previstas na legislação aplicável.
+        </p>
+
+        <h3>Dúvidas</h3>
+
+        <p>
+            Para dúvidas sobre exclusão da conta, privacidade ou
+            tratamento de dados:
+        </p>
+
+        <p>
+            <strong>
+                controlesfinanceirossuport@gmail.com
+            </strong>
+        </p>
+
+        <p>
+            Consulte também nossa
+            <a href="privacidade.html">
+                Política de Privacidade
+            </a>
+            e os
+            <a href="termos.html">
+                Termos de Uso
+            </a>.
+        </p>
+
+    </main>
+
+    <div class="footer">
+        © 2026 ControleS — Seu dinheiro sob controle.
+    </div>
 
 </div>
 
-
-<main>
-
-  <div class="document">
-
-
-    <section>
-
-      <h2>1. Seu direito de solicitar a exclusão</h2>
-
-      <p>
-        O usuário do ControleS pode solicitar a exclusão de sua
-        conta e dos dados pessoais associados ao serviço,
-        observadas as hipóteses de retenção previstas em lei.
-      </p>
-
-      <p>
-        Esta página explica como realizar essa solicitação.
-      </p>
-
-    </section>
-
-
-    <section>
-
-      <h2>2. Como solicitar a exclusão</h2>
-
-      <p>
-        Para solicitar a exclusão da sua conta e dos dados
-        associados, siga os passos abaixo:
-      </p>
-
-      <div class="steps">
-
-        <div class="step">
-
-          <div class="step-number">
-            1
-          </div>
-
-          <div>
-
-            <strong>Entre em contato com o ControleS</strong>
-
-            <p>
-              Envie a solicitação utilizando o endereço de
-              e-mail cadastrado em sua conta, sempre que possível.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div class="step">
-
-          <div class="step-number">
-            2
-          </div>
-
-          <div>
-
-            <strong>Informe que deseja excluir sua conta</strong>
-
-            <p>
-              No assunto da mensagem, você pode escrever
-              “Exclusão de conta — ControleS”.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div class="step">
-
-          <div class="step-number">
-            3
-          </div>
-
-          <div>
-
-            <strong>Informe o e-mail da conta</strong>
-
-            <p>
-              Informe o endereço de e-mail associado à conta
-              que deseja excluir.
-            </p>
-
-          </div>
-
-        </div>
-
-
-        <div class="step">
-
-          <div class="step-number">
-            4
-          </div>
-
-          <div>
-
-            <strong>Aguarde a confirmação</strong>
-
-            <p>
-              Poderemos solicitar informações adicionais
-              estritamente necessárias para confirmar a
-              titularidade da conta antes da exclusão.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <section>
-
-      <h2>3. Solicitar por e-mail</h2>
-
-      <p>
-        A solicitação pode ser encaminhada para o suporte oficial
-        do ControleS.
-      </p>
-
-      <div class="request-box">
-
-        <p>
-          <strong>E-mail de suporte:</strong>
-        </p>
-
-        <p>
-          controlesfinanceirossuport@gmail.com
-        </p>
-
-        <a
-          class="email-button"
-          href="mailto:controlesfinanceirossuport@gmail.com?subject=Exclusão%20de%20conta%20-%20ControleS"
-        >
-          Solicitar exclusão da minha conta
-        </a>
-
-      </div>
-
-    </section>
-
-
-    <section>
-
-      <h2>4. Dados que poderão ser excluídos</h2>
-
-      <p>
-        Conforme os dados associados à conta e os recursos utilizados,
-        a exclusão poderá abranger informações como:
-      </p>
-
-      <div class="steps">
-
-        <div class="step">
-          <div class="step-number">✓</div>
-          <div>
-            <strong>Dados da conta</strong>
-            <p>Informações associadas ao perfil do usuário.</p>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-number">✓</div>
-          <div>
-            <strong>Registros financeiros</strong>
-            <p>
-              Receitas, despesas e outros lançamentos associados
-              à conta.
-            </p>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-number">✓</div>
-          <div>
-            <strong>Metas e categorias</strong>
-            <p>
-              Informações financeiras personalizadas cadastradas
-              pelo usuário.
-            </p>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="step-number">✓</div>
-          <div>
-            <strong>Outros dados associados</strong>
-            <p>
-              Outros registros vinculados à conta que possam ser
-              excluídos de acordo com a legislação aplicável.
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <section>
-
-      <h2>5. Dados que poderão ser mantidos</h2>
-
-      <p>
-        Determinadas informações poderão ser mantidas quando isso
-        for necessário para cumprimento de obrigação legal ou
-        regulatória, exercício regular de direitos, prevenção de
-        fraude, segurança ou outras hipóteses permitidas pela
-        legislação aplicável.
-      </p>
-
-      <p>
-        Quando aplicável, dados poderão ser anonimizados em vez
-        de mantidos associados diretamente ao usuário.
-      </p>
-
-    </section>
-
-
-    <section>
-
-      <h2>6. Assinaturas</h2>
-
-      <p>
-        A exclusão da conta do ControleS não necessariamente
-        cancela automaticamente uma assinatura contratada através
-        de uma plataforma externa.
-      </p>
-
-      <p>
-        Assinaturas realizadas pela Google Play devem ser
-        administradas ou canceladas através das opções oferecidas
-        pela própria plataforma.
-      </p>
-
-    </section>
-
-
-    <section>
-
-      <h2>7. WhatsApp</h2>
-
-      <p>
-        Caso o usuário tenha utilizado recursos do ControleS
-        através do WhatsApp, informações relacionadas à integração
-        poderão ser tratadas conforme descrito na Política de
-        Privacidade.
-      </p>
-
-      <p>
-        A solicitação de exclusão poderá abranger dados associados
-        à conta do ControleS que possam ser identificados e
-        excluídos de acordo com a legislação aplicável.
-      </p>
-
-    </section>
-
-
-    <section>
-
-      <h2>8. Privacidade</h2>
-
-      <p>
-        Para mais informações sobre como o ControleS trata dados
-        pessoais, consulte nossa Política de Privacidade.
-      </p>
-
-      <div class="legal-links">
-
-        <a href="privacidade.html">
-          Política de Privacidade
-        </a>
-
-        <a href="termos.html">
-          Termos de Uso
-        </a>
-
-      </div>
-
-    </section>
-
-
-    <section>
-
-      <h2>9. Contato</h2>
-
-      <p>
-        Em caso de dúvidas sobre exclusão de conta, privacidade
-        ou tratamento de dados:
-      </p>
-
-      <div class="request-box">
-
-        <p>
-          <strong>ControleS — Suporte</strong>
-        </p>
-
-        <p>
-          <a href="mailto:controlesfinanceirossuport@gmail.com">
-            controlesfinanceirossuport@gmail.com
-          </a>
-        </p>
-
-      </div>
-
-    </section>
-
-
-  </div>
-
-</main>
-
-
-<footer>
-
-  <strong>
-    Controle<span>S</span>
-  </strong>
-
-  — Seu dinheiro sob controle.
-
-  <br>
-
-  © 2026 ControleS.
-
-</footer>
-
 </body>
-
 </html>
