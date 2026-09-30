@@ -3038,3 +3038,106 @@ html[data-theme="dark"] body{background:#07533f!important}
 /* WhatsApp — ícone oficial no Perfil */
 .whatsapp-profile-icon{display:grid!important;place-items:center!important;background:#dcf8e8!important;color:#119b58!important}
 .whatsapp-profile-icon svg{width:25px;height:25px;display:block;fill:currentColor}
+
+
+/* =========================================================
+   CONTROLES — AJUSTES FINAIS SOLICITADOS
+   logo-nova.png + lançamentos claros + relatório Premium
+   ========================================================= */
+
+/* A logo ocupa o quadrado inteiro, evitando o efeito de
+   "quadrado pequeno dentro de outro quadrado". */
+.welcome-logo,
+.brand-logo {
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #f7fbf9 !important;
+    border: 1px solid rgba(255,255,255,.20) !important;
+}
+
+.welcome-logo img,
+.brand-logo img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    object-fit: cover !important;
+    border-radius: inherit !important;
+}
+
+/* Últimos lançamentos: visual claro para aliviar a tela inicial. */
+#dashboardSection .recent-transactions-panel {
+    background: linear-gradient(145deg, #f4faf7 0%, #e5f3ec 100%) !important;
+    border: 1px solid rgba(7, 134, 91, .14) !important;
+    box-shadow: 0 16px 38px rgba(0, 31, 22, .13) !important;
+}
+
+#dashboardSection .recent-transactions-panel .panel-header h2,
+#dashboardSection .recent-transactions-panel .panel-header h3,
+#dashboardSection .recent-transactions-panel .recent-list strong,
+#dashboardSection .recent-transactions-panel .recent-list b {
+    color: #0b392d !important;
+}
+
+#dashboardSection .recent-transactions-panel .panel-header p,
+#dashboardSection .recent-transactions-panel .recent-list p,
+#dashboardSection .recent-transactions-panel .recent-list small,
+#dashboardSection .recent-transactions-panel .recent-list span:not(.income):not(.expense) {
+    color: #6b8178 !important;
+}
+
+#dashboardSection .recent-transactions-panel .text-button {
+    color: #07865b !important;
+    font-weight: 800 !important;
+}
+
+#dashboardSection .recent-transactions-panel .transaction-item,
+#dashboardSection .recent-transactions-panel .recent-item {
+    border-color: rgba(7, 134, 91, .11) !important;
+}
+
+/* Mantém receitas e despesas fáceis de identificar. */
+#dashboardSection .recent-transactions-panel .income,
+#dashboardSection .recent-transactions-panel .positive,
+#dashboardSection .recent-transactions-panel [class*="income"] {
+    color: #07865b !important;
+}
+
+#dashboardSection .recent-transactions-panel .expense,
+#dashboardSection .recent-transactions-panel .negative,
+#dashboardSection .recent-transactions-panel [class*="expense"] {
+    color: #c94c48 !important;
+}
+
+/* No plano grátis, conteúdo real dos relatórios nunca fica visível. */
+body.free-plan #normalReportContent {
+    display: none !important;
+}
+
+body.free-plan #premiumReportContent {
+    display: flex !important;
+}
+
+body.premium-plan #premiumReportContent {
+    display: none !important;
+}
+
+body.premium-plan #normalReportContent {
+    display: block !important;
+}
+
+@media (max-width: 720px), (pointer: coarse) {
+    .welcome-logo,
+    .brand-logo {
+        width: 104px !important;
+        height: 104px !important;
+        border-radius: 27px !important;
+    }
+
+    #dashboardSection .recent-transactions-panel {
+        border-radius: 26px !important;
+    }
+}
