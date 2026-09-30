@@ -177,6 +177,8 @@
       </form>
 
 
+      <div class="auth-legal-note">Ao continuar, você concorda com os <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</div>
+
       <div class="security-note">
 
         <span>
@@ -571,6 +573,13 @@
 
         </a>
 
+
+        <div class="sidebar-legal">
+          <span>LEGAL E PRIVACIDADE</span>
+          <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>
+          <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a>
+          <a href="exclusao-dados.html" target="_blank" rel="noopener">Exclusão da conta e dos dados</a>
+        </div>
 
         <button
           id="logoutBtn"
@@ -1352,27 +1361,13 @@
           </div>
 
 
-          <div class="transaction-heading-actions">
-
-            <button
-              id="clearTransactionsBtn"
-              class="btn btn-secondary"
-              type="button"
-              aria-haspopup="dialog"
-              aria-controls="clearTransactionsModal"
-            >
-              🗑 Limpar lançamentos
-            </button>
-
-            <button
-              id="addTransactionBtn2"
-              class="btn btn-primary"
-              type="button"
-            >
-              + Novo lançamento
-            </button>
-
-          </div>
+          <button
+            id="addTransactionBtn2"
+            class="btn btn-primary"
+            type="button"
+          >
+            + Novo lançamento
+          </button>
 
         </div>
 
@@ -2226,38 +2221,52 @@
       </section>
 
 
-      <!-- ASSISTENTE WHATSAPP — DESIGN -->
+      <!-- ASSISTENTE WHATSAPP — DESIGN PROFISSIONAL -->
       <section id="whatsappSection" class="content-section">
-        <div class="feature-lock-page">
-          <div class="feature-icon whatsapp-icon">◉</div>
-          <span class="premium-pill">PREMIUM</span>
-          <h2>Assessor WhatsApp</h2>
-          <p>Converse com o ControleS pelo WhatsApp para consultar seus gastos, saldo, valores a receber e registrar movimentações.</p>
-          <div class="chat-preview">
-            <div class="chat-bubble user">Quanto eu já gastei esse mês?</div>
-            <div class="chat-bubble bot"><strong>R$ 1.847,30</strong> gastos no mês.<br><small>Alimentação é sua maior categoria.</small></div>
-            <div class="chat-bubble user">Gastei R$ 45,90 no posto hoje</div>
-            <div class="chat-bubble bot">✓ Lançamento identificado<br><strong>R$ 45,90 • Transporte</strong></div>
+        <div class="smart-feature-page whatsapp-feature-page">
+          <div class="smart-feature-header">
+            <div><span class="smart-eyebrow">CONTROLES PREMIUM</span><h2>Assessor WhatsApp</h2><p>Seu financeiro no WhatsApp. Consulte números, registre movimentações e receba respostas rápidas sem precisar abrir o app.</p></div>
+            <div class="smart-status"><span></span> Integração segura</div>
           </div>
-          <button class="btn btn-premium feature-premium-btn" data-section="premium" type="button">Desbloquear no Premium</button>
+          <div class="whatsapp-dashboard">
+            <div class="phone-mockup">
+              <div class="phone-top"><div class="phone-avatar">C</div><div><strong>ControleS</strong><small>Assistente financeiro</small></div><span class="phone-online">●</span></div>
+              <div class="phone-chat">
+                <div class="chat-time">Hoje, 19:32</div>
+                <div class="chat-bubble user">Quanto eu já gastei esse mês?</div>
+                <div class="chat-bubble bot"><span class="bot-label">CONTROLES</span><strong>R$ 1.847,30</strong> gastos no mês.<br><small>Alimentação representa a maior categoria.</small></div>
+                <div class="chat-bubble user">Gastei R$ 45,90 no posto hoje</div>
+                <div class="chat-bubble bot success-bubble">✓ Lançamento identificado<div class="mini-transaction"><b>R$ 45,90</b><span>Transporte • Hoje</span></div></div>
+              </div>
+              <div class="phone-input"><span>Digite uma mensagem...</span><b>➤</b></div>
+            </div>
+            <div class="smart-feature-side">
+              <span class="premium-pill">PREMIUM</span><h3>Resolva suas finanças em uma conversa</h3>
+              <div class="feature-benefit"><i>↗</i><div><b>Registre gastos e receitas</b><small>Envie uma mensagem e o ControleS organiza a movimentação.</small></div></div>
+              <div class="feature-benefit"><i>▥</i><div><b>Consulte seu mês</b><small>Pergunte sobre saldo, gastos, categorias e valores a receber.</small></div></div>
+              <div class="feature-benefit"><i>✦</i><div><b>Respostas inteligentes</b><small>Receba contexto financeiro de forma simples e objetiva.</small></div></div>
+              <button class="btn btn-premium feature-premium-btn" data-section="premium" type="button">Desbloquear Assessor no Premium</button>
+              <small class="feature-security">🔒 Seus dados continuam protegidos pela sua conta ControleS.</small>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- RELATÓRIO COM IA — DESIGN -->
+      <!-- RELATÓRIO COM IA — DESIGN PROFISSIONAL -->
       <section id="ai-reportSection" class="content-section">
-        <div class="feature-lock-page">
-          <div class="feature-icon">✦</div>
-          <span class="premium-pill">PREMIUM</span>
-          <h2>Relatório com IA</h2>
-          <p>Um resumo automático das suas finanças com destaques, comparações e informações importantes do período.</p>
-          <div class="ai-preview-card">
-            <span>RESUMO INTELIGENTE</span>
-            <h3>Seu mês em poucos segundos</h3>
-            <div class="ai-stat"><b>R$ 1.847,30</b><small>Total gasto</small></div>
-            <div class="ai-insight">✦ Seus gastos com alimentação foram os maiores do período.</div>
-            <div class="ai-insight">↘ Você gastou menos do que no período anterior.</div>
+        <div class="smart-feature-page ai-feature-page">
+          <div class="smart-feature-header">
+            <div><span class="smart-eyebrow">INTELIGÊNCIA FINANCEIRA</span><h2>Relatório com IA</h2><p>Transforme seus lançamentos em um resumo visual com comparações, destaques e informações úteis sobre o período.</p></div>
+            <div class="smart-status ai-status"><span>✦</span> Análise inteligente</div>
           </div>
-          <button class="btn btn-premium feature-premium-btn" data-section="premium" type="button">Desbloquear no Premium</button>
+          <div class="ai-dashboard-preview">
+            <div class="ai-main-card">
+              <div class="ai-card-head"><div><span>RESUMO INTELIGENTE</span><h3>Seu mês em poucos segundos</h3></div><div class="ai-spark">✦</div></div>
+              <div class="ai-metrics"><div><small>Total gasto</small><b>R$ 1.847,30</b><span class="metric-down">↓ 8,4% vs. período anterior</span></div><div><small>Saldo estimado</small><b>R$ 2.152,70</b><span class="metric-ok">Dentro do planejado</span></div></div>
+              <div class="ai-chart-demo"><div class="chart-head"><b>Evolução dos gastos</b><small>Últimas 4 semanas</small></div><div class="fake-bars"><i style="height:42%"></i><i style="height:68%"></i><i style="height:53%"></i><i style="height:82%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:58%"></i></div></div>
+            </div>
+            <div class="ai-insights-panel"><span class="premium-pill">PREMIUM</span><h3>Destaques encontrados pela IA</h3><div class="ai-insight-pro"><i>01</i><div><b>Alimentação lidera seus gastos</b><small>É a categoria com maior participação neste período.</small></div></div><div class="ai-insight-pro positive"><i>02</i><div><b>Seus gastos diminuíram</b><small>O total ficou abaixo do período anterior.</small></div></div><div class="ai-insight-pro"><i>03</i><div><b>Acompanhe seus compromissos</b><small>Considere também os valores cadastrados em A Receber.</small></div></div><button class="btn btn-premium feature-premium-btn" data-section="premium" type="button">Desbloquear Relatório com IA</button></div>
+          </div>
         </div>
       </section>
 
@@ -2335,78 +2344,6 @@
 
 
     </main>
-
-  </div>
-
-
-  <!-- =====================================================
-       MODAL — LIMPAR LANÇAMENTOS
-  ====================================================== -->
-
-  <div
-    id="clearTransactionsModal"
-    class="modal hidden"
-    aria-hidden="true"
-  >
-
-    <div
-      class="modal-card"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="clearTransactionsModalTitle"
-    >
-
-      <button
-        class="modal-close"
-        data-close-modal
-        type="button"
-        aria-label="Fechar"
-      >
-        ×
-      </button>
-
-      <h2 id="clearTransactionsModalTitle">
-        Limpar lançamentos
-      </h2>
-
-      <p>
-        Escolha quais lançamentos deseja apagar. Os valores de
-        <strong>A Receber</strong> não serão apagados.
-      </p>
-
-      <div class="clear-transactions-options">
-
-        <button
-          class="btn btn-secondary btn-large"
-          type="button"
-          data-clear-transactions="today"
-        >
-          Apagar lançamentos de hoje
-        </button>
-
-        <button
-          class="btn btn-secondary btn-large"
-          type="button"
-          data-clear-transactions="month"
-        >
-          Apagar lançamentos deste mês
-        </button>
-
-        <button
-          class="btn btn-danger btn-large"
-          type="button"
-          data-clear-transactions="all"
-        >
-          Apagar todos os lançamentos
-        </button>
-
-      </div>
-
-      <small>
-        Você deverá confirmar antes da exclusão.
-      </small>
-
-    </div>
 
   </div>
 
