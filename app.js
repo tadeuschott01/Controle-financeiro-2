@@ -104,7 +104,8 @@ const SECTION_TITLES = {
     categories: "Categorias",
     reports: "Relatórios",
     whatsapp: "Assessor WhatsApp",
-    "ai-report": "Relatório com IA",
+    "ai-report": "Inteligência Financeira",
+    privacy: "Privacidade e conta",
     premium: "Premium"
 };
 
@@ -1383,6 +1384,9 @@ function showSection(sectionName) {
 
         case "ai-report":
             renderAIReport();
+            break;
+
+        case "privacy":
             break;
 
         case "premium":
@@ -7340,6 +7344,38 @@ function renderAIReport() {
         : "As despesas estão consumindo uma parcela alta das receitas do período.";
 
     if ($("aiHeadline")) $("aiHeadline").textContent = now.count ? `${now.count} movimentação(ões) analisada(s)` : "Seu mês em poucos segundos";
+
+    const commitment = now.income > 0 ? (now.expense / now.income) * 100 : null;
+    const savingsRate = now.income > 0 ? ((now.income - now.expense) / now.income) * 100 : null;
+
+    if ($("aiSavingsRate")) {
+        $("aiSavingsRate").textContent = savingsRate === null
+            ? "—"
+            : `${savingsRate.toFixed(0).replace(".", ",")}%`;
+    }
+
+    if ($("aiCommitmentRate")) {
+        $("aiCommitmentRate").textContent = commitment === null
+            ? "—"
+            : `${commitment.toFixed(0).replace(".", ",")}%`;
+    }
+
+    if ($("aiTopCategory")) {
+        $("aiTopCategory").textContent = top[0]?.name || "—";
+    }
+
+    if ($("aiTopCategoryNote")) {
+        const pct = top[0] && now.expense > 0 ? (top[0].value / now.expense) * 100 : null;
+        $("aiTopCategoryNote").textContent = pct === null
+            ? "sem despesas registradas"
+            : `${pct.toFixed(0)}% das despesas`;
+    }
+
+    if ($("aiMonthlyComparison")) {
+        $("aiMonthlyComparison").textContent = change === null
+            ? "—"
+            : `${change > 0 ? "+" : ""}${change.toFixed(1).replace(".", ",")}%`;
+    }
 }
 
 document.addEventListener("click", event => {
