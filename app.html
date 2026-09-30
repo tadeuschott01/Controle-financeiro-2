@@ -1,9 +1,60 @@
 <!DOCTYPE html>
-ControleS — Seu dinheiro sob controle
+<html lang="pt-BR">
 
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0b3f2d"
+  >
+
+  <meta
+    name="description"
+    content="ControleS — Seu dinheiro sob controle."
+  >
+
+  <title>ControleS — Seu dinheiro sob controle</title>
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+  <link
+    rel="stylesheet"
+    href="app.css"
+  >
+</head>
+
+<body>
+
+
+  <!-- CONTROLES — BOAS-VINDAS MOBILE -->
+  <div id="welcomeView" class="auth-page welcome-page">
     <div class="welcome-shell">
       <div class="welcome-brand">
-        <div class="welcome-logo"><img src="logo-contoles.png" alt="ControleS"><span>C↗</span></div>
+        <div class="welcome-logo"><img src="logo.png" alt="ControleS"><span>C↗</span></div>
         <span class="welcome-kicker">CONTROLES</span>
         <h1>Seu dinheiro.<br><em>Sob controle.</em></h1>
         <p>Organize sua vida financeira de um jeito simples, visual e inteligente.</p>
@@ -14,6 +65,16 @@ ControleS — Seu dinheiro sob controle
         <small>Ao continuar, você concorda com os <a href="termos.html">Termos de Uso</a> e a <a href="privacidade.html">Política de Privacidade</a>.</small>
       </div>
     </div>
+  </div>
+
+  <!-- =====================================================
+       LOGIN
+  ====================================================== -->
+
+  <div
+    id="loginView"
+    class="auth-page hidden"
+  >
 
     <div class="auth-card">
 
@@ -22,7 +83,7 @@ ControleS — Seu dinheiro sob controle
         <div class="brand-logo">
 
           <img
-            src="logo-contoles.png"
+            src="logo.png"
             alt="ControleS"
             onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
           >
@@ -148,6 +209,18 @@ ControleS — Seu dinheiro sob controle
 
     </div>
 
+  </div>
+
+
+  <!-- =====================================================
+       CADASTRO
+  ====================================================== -->
+
+  <div
+    id="registerView"
+    class="auth-page hidden"
+  >
+
     <div class="auth-card">
 
       <div class="brand-block">
@@ -155,7 +228,7 @@ ControleS — Seu dinheiro sob controle
         <div class="brand-logo">
 
           <img
-            src="logo-contoles.png"
+            src="logo.png"
             alt="ControleS"
             onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
           >
@@ -319,9 +392,22 @@ ControleS — Seu dinheiro sob controle
 
       </div>
 
-      <div class="auth-legal-note">Ao criar sua conta, você concorda com os <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>. Para solicitar exclusão, acesse <a href="./exclusao-de-dados.html" target="_blank" rel="noopener">Exclusão de Dados</a>.</div>
+      <div class="auth-legal-note">Ao criar sua conta, você concorda com os <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>. Para solicitar exclusão, acesse <a href="exclusao-dados.html" target="_blank" rel="noopener">Exclusão de Dados</a>.</div>
 
     </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       APLICAÇÃO
+  ====================================================== -->
+
+  <div
+    id="appView"
+    class="app-shell hidden"
+  >
+
 
     <!-- =================================================
          SIDEBAR
@@ -338,7 +424,7 @@ ControleS — Seu dinheiro sob controle
         <div class="mini-logo">
 
           <img
-            src="logo-contoles.png"
+            src="logo.png"
             alt="ControleS"
             onerror="this.style.display='none'"
           >
@@ -512,7 +598,7 @@ ControleS — Seu dinheiro sob controle
           <span>LEGAL E PRIVACIDADE</span>
           <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>
           <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a>
-          <a href="./exclusao-de-dados.html" target="_blank" rel="noopener">Exclusão da conta e dos dados</a>
+          <a href="exclusao-dados.html" target="_blank" rel="noopener">Exclusão da conta e dos dados</a>
         </div>
 
         <button
@@ -811,43 +897,61 @@ ControleS — Seu dinheiro sob controle
              RESUMO
         ================================================== -->
 
-        <div class="summary-grid dashboard-summary-single">
+        <div class="summary-grid">
 
-          <article class="summary-card balance-card balance-overview-card">
+          <article class="summary-card balance-card">
 
-            <div class="balance-overview-top">
-              <div class="balance-main-copy">
-                <span>Saldo do período</span>
-                <strong id="balanceValue">R$ 0,00</strong>
-                <small id="balancePeriodText">Receitas menos despesas</small>
-              </div>
+            <span>
+              Saldo do período
+            </span>
 
-              <div class="balance-chart-mark" aria-hidden="true">
-                <i></i><i></i><i></i>
-              </div>
-            </div>
+            <strong id="balanceValue">
+              R$ 0,00
+            </strong>
 
-            <div class="balance-breakdown">
+            <small id="balancePeriodText">
+              Receitas menos despesas
+            </small>
 
-              <div class="balance-breakdown-item income-breakdown">
-                <span class="balance-breakdown-icon">↑</span>
-                <div>
-                  <small>Receitas</small>
-                  <strong id="incomeValue" class="positive">R$ 0,00</strong>
-                </div>
-                <span id="incomePeriodText" class="sr-only">Total recebido</span>
-              </div>
+          </article>
 
-              <div class="balance-breakdown-item expense-breakdown">
-                <span class="balance-breakdown-icon">↓</span>
-                <div>
-                  <small>Despesas</small>
-                  <strong id="expenseValue" class="negative">R$ 0,00</strong>
-                </div>
-                <span id="expensePeriodText" class="sr-only">Total gasto</span>
-              </div>
 
-            </div>
+          <article class="summary-card">
+
+            <span>
+              Quanto ganhou
+            </span>
+
+            <strong
+              id="incomeValue"
+              class="positive"
+            >
+              R$ 0,00
+            </strong>
+
+            <small id="incomePeriodText">
+              Total recebido
+            </small>
+
+          </article>
+
+
+          <article class="summary-card">
+
+            <span>
+              Quanto gastou
+            </span>
+
+            <strong
+              id="expenseValue"
+              class="negative"
+            >
+              R$ 0,00
+            </strong>
+
+            <small id="expensePeriodText">
+              Total gasto
+            </small>
 
           </article>
 
@@ -860,16 +964,58 @@ ControleS — Seu dinheiro sob controle
 
         <div class="quick-actions">
 
-          <button class="quick-action" data-action="add-income" type="button"><span>＋</span>Adicionar receita</button>
-          <button class="quick-action" data-action="add-expense" type="button"><span>−</span>Adicionar despesa</button>
+          <button
+            class="quick-action"
+            data-action="add-income"
+            type="button"
+          >
+
+            <span>
+              ＋
+            </span>
+
+            Adicionar receita
+
+          </button>
+
+
+          <button
+            class="quick-action"
+            data-action="add-expense"
+            type="button"
+          >
+
+            <span>
+              −
+            </span>
+
+            Adicionar despesa
+
+          </button>
+
+
+          <button
+            id="addCategoryBtn"
+            class="quick-action"
+            type="button"
+          >
+
+            <span>
+              ◈
+            </span>
+
+            Nova categoria
+
+          </button>
+
+
           <button id="addGoalBtn" class="quick-action" type="button"><span>◎</span>Nova meta</button>
           <button class="quick-action" data-section="receivable" type="button"><span>◷</span>A Receber</button>
           <button class="quick-action" data-section="transactions" type="button"><span>↔</span>Lançamentos</button>
-
-          <button id="addCategoryBtn" class="quick-action premium-home-shortcut category-premium-card" data-section="categories" data-premium-locked="true" data-premium-home="true" type="button" aria-label="Criar nova categoria — recurso Premium"><span class="category-premium-icon">◇</span>Nova categoria<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
+          <button class="quick-action premium-home-shortcut" data-section="categories" data-premium-home="true" type="button"><span>◇</span>Categorias<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
           <button class="quick-action premium-home-shortcut" data-section="reports" data-premium-home="true" type="button"><span>▥</span>Relatórios<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
           <button class="quick-action premium-home-shortcut" data-section="ai-report" data-premium-home="true" type="button"><span>✦</span>Relatório com IA<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
-          <button class="quick-action premium-home-shortcut" data-section="whatsapp" data-premium-home="true" type="button"><span class="whatsapp-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3.2a8.5 8.5 0 0 0-7.3 12.85L3.6 20.4l4.46-1.04A8.5 8.5 0 1 0 12 3.2Zm0 15.35a6.82 6.82 0 0 1-3.48-.95l-.25-.15-2.65.62.67-2.58-.17-.27A6.85 6.85 0 1 1 12 18.55Zm3.76-5.12c-.2-.1-1.2-.59-1.39-.66-.18-.07-.32-.1-.45.1-.14.21-.52.66-.64.8-.12.14-.24.16-.45.06-.2-.1-.87-.32-1.66-1.03a6.2 6.2 0 0 1-1.15-1.43c-.12-.2-.01-.31.09-.42l.3-.35c.1-.12.14-.2.2-.34.07-.14.04-.26-.01-.36-.05-.1-.46-1.1-.63-1.51-.16-.4-.33-.35-.45-.36h-.39c-.14 0-.36.05-.55.26-.18.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.13.1.14 1.45 2.21 3.51 3.1.49.21.87.34 1.17.43.49.16.94.13 1.29.08.4-.06 1.2-.49 1.37-.96.17-.47.17-.87.12-.96-.05-.08-.19-.13-.4-.23Z"/></svg></span>Assessor WhatsApp<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
+          <button class="quick-action premium-home-shortcut" data-section="whatsapp" data-premium-home="true" type="button"><span>◉</span>Assessor WhatsApp<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
         </div>
 
         <article class="home-insight-card" id="homeInsightCard">
@@ -1139,7 +1285,7 @@ ControleS — Seu dinheiro sob controle
 
         <div class="dashboard-grid">
 
-          <article class="panel finance-movement-panel">
+          <article class="panel">
 
             <div class="panel-header">
 
@@ -1167,7 +1313,7 @@ ControleS — Seu dinheiro sob controle
           </article>
 
 
-          <article class="panel recent-transactions-panel">
+          <article class="panel">
 
             <div class="panel-header">
 
@@ -1204,7 +1350,14 @@ ControleS — Seu dinheiro sob controle
 
         </div>
 
-
+        <aside class="free-ad-card" aria-label="Espaço de anúncio do plano gratuito">
+          <div>
+            <span class="ad-label">ANÚNCIO</span>
+            <strong>Plano Grátis</strong>
+            <small>Este espaço aparece apenas para usuários do plano gratuito.</small>
+          </div>
+          <span class="ad-placeholder">Publicidade</span>
+        </aside>
 
       </section>
 
@@ -1321,7 +1474,7 @@ ControleS — Seu dinheiro sob controle
             class="btn btn-primary"
             type="button"
           >
-            + Adicionar a receber
+            + Nova receita
           </button>
 
         </div>
@@ -1396,7 +1549,7 @@ ControleS — Seu dinheiro sob controle
               </h3>
 
               <p>
-                Valores com recebimento futuro que ainda não entraram no saldo.
+                Receitas lançadas que ainda não entraram no saldo.
               </p>
 
             </div>
@@ -1405,7 +1558,7 @@ ControleS — Seu dinheiro sob controle
 
 
           <div id="receivableList" class="receivable-mobile-list"></div>
-          <div id="receivableEmpty" class="receivable-empty-state hidden"><span>◷</span><strong>Nenhum recebimento pendente</strong><small>Quando você adicionar um valor a receber, ele aparecerá aqui.</small></div>
+          <div id="receivableEmpty" class="receivable-empty-state hidden"><span>◷</span><strong>Nenhum recebimento pendente</strong><small>Quando você cadastrar uma receita futura, ela aparecerá aqui.</small></div>
 
 
           <div
@@ -2000,7 +2153,7 @@ ControleS — Seu dinheiro sob controle
           <div class="profile-app-card">
             <button type="button" class="profile-row" data-section="receivable"><span class="profile-row-icon">◷</span><span><b>A Receber</b><small>Pagamentos e receitas futuras</small></span><i>›</i></button>
             <button type="button" class="profile-row" data-section="categories"><span class="profile-row-icon">◇</span><span><b>Categorias</b><small>Organize receitas e despesas</small></span><i>›</i></button>
-            <button type="button" class="profile-row" data-section="whatsapp"><span class="profile-row-icon whatsapp-profile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3.2a8.5 8.5 0 0 0-7.3 12.85L3.6 20.4l4.46-1.04A8.5 8.5 0 1 0 12 3.2Zm0 15.35a6.82 6.82 0 0 1-3.48-.95l-.25-.15-2.65.62.67-2.58-.17-.27A6.85 6.85 0 1 1 12 18.55Zm3.76-5.12c-.2-.1-1.2-.59-1.39-.66-.18-.07-.32-.1-.45.1-.14.21-.52.66-.64.8-.12.14-.24.16-.45.06-.2-.1-.87-.32-1.66-1.03a6.2 6.2 0 0 1-1.15-1.43c-.12-.2-.01-.31.09-.42l.3-.35c.1-.12.14-.2.2-.34.07-.14.04-.26-.01-.36-.05-.1-.46-1.1-.63-1.51-.16-.4-.33-.35-.45-.36h-.39c-.14 0-.36.05-.55.26-.18.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.13.1.14 1.45 2.21 3.51 3.1.49.21.87.34 1.17.43.49.16.94.13 1.29.08.4-.06 1.2-.49 1.37-.96.17-.47.17-.87.12-.96-.05-.08-.19-.13-.4-.23Z"/></svg></span><span><b>Assessor WhatsApp</b><small>Seu financeiro por conversa</small></span><i>›</i></button>
+            <button type="button" class="profile-row" data-section="whatsapp"><span class="profile-row-icon">◉</span><span><b>Assessor WhatsApp</b><small>Seu financeiro por conversa</small></span><i>›</i></button>
             <button type="button" class="profile-row" data-section="ai-report"><span class="profile-row-icon">✦</span><span><b>Relatório Inteligente</b><small>Análise automática do seu mês</small></span><i>›</i></button>
             <button type="button" class="profile-row" data-section="premium"><span class="profile-row-icon orange">★</span><span><b>ControleS Premium</b><small>Plano, assinatura e restauração</small></span><i>›</i></button>
           </div>
@@ -2014,7 +2167,7 @@ ControleS — Seu dinheiro sob controle
           <div class="profile-app-card">
             <a class="profile-row" href="privacidade.html" target="_blank" rel="noopener"><span><b>Política de Privacidade</b><small>Como seus dados são tratados</small></span><i>›</i></a>
             <a class="profile-row" href="termos.html" target="_blank" rel="noopener"><span><b>Termos de Uso</b><small>Regras de utilização do ControleS</small></span><i>›</i></a>
-            <a class="profile-row" href="./exclusao-de-dados.html" target="_blank" rel="noopener"><span><b>Exclusão da conta e dos dados</b><small>Solicite a remoção das suas informações</small></span><i>›</i></a>
+            <a class="profile-row" href="exclusao-dados.html" target="_blank" rel="noopener"><span><b>Exclusão da conta e dos dados</b><small>Solicite a remoção das suas informações</small></span><i>›</i></a>
           </div>
           <button id="profileLogoutBtn" class="profile-logout" type="button">Sair da conta</button>
           <div class="profile-signature"><strong>ControleS</strong><small>Seu dinheiro sob controle.</small></div>
@@ -2110,13 +2263,26 @@ ControleS — Seu dinheiro sob controle
 
     </main>
 
-    <nav class="controles-bottom-bar" aria-label="Navegação do aplicativo">
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-home active" data-bottom-section="dashboard"><span>⌂</span><small>Início</small></button>
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-transactions" data-bottom-section="transactions"><span>↔</span><small>Lançamentos</small></button>
-      <button type="button" class="bottom-add-button controles-fab" id="mobileAddButton" aria-label="Adicionar lançamento"><span>＋</span></button>
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-reports" data-bottom-section="reports"><span>⌁</span><small>Relatórios</small></button>
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-profile" data-bottom-section="profile"><span>♙</span><small>Perfil</small></button>
+    <nav class="mobile-bottom-nav" aria-label="Navegação do aplicativo">
+      <button type="button" class="bottom-nav-item active" data-bottom-section="dashboard"><span>⌂</span><small>Início</small></button>
+      <button type="button" class="bottom-nav-item" data-bottom-section="transactions"><span>↔</span><small>Lançamentos</small></button>
+      <button type="button" class="bottom-add-button" id="mobileAddButton" aria-label="Adicionar lançamento"><span>＋</span></button>
+      <button type="button" class="bottom-nav-item" data-bottom-section="reports"><span>⌁</span><small>Relatórios</small></button>
+      <button type="button" class="bottom-nav-item" data-bottom-section="profile"><span>♙</span><small>Perfil</small></button>
     </nav>
+
+  </div>
+
+
+  <!-- =====================================================
+       MODAL — LANÇAMENTO
+  ====================================================== -->
+
+  <div
+    id="transactionModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
 
     <div
       class="modal-card"
@@ -2260,7 +2426,7 @@ ControleS — Seu dinheiro sob controle
         <textarea
           id="transactionNotes"
           rows="3"
-          placeholder="Ex.: Detalhes sobre o recebimento"
+          placeholder="Opcional"
         ></textarea>
 
 
@@ -2283,6 +2449,19 @@ ControleS — Seu dinheiro sob controle
       </form>
 
     </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MODAL — CATEGORIA
+  ====================================================== -->
+
+  <div
+    id="categoryModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
 
     <div
       class="modal-card"
@@ -2360,6 +2539,19 @@ ControleS — Seu dinheiro sob controle
       </form>
 
     </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MODAL — META
+  ====================================================== -->
+
+  <div
+    id="goalModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
 
     <div
       class="modal-card"
@@ -2461,6 +2653,19 @@ ControleS — Seu dinheiro sob controle
 
     </div>
 
+  </div>
+
+
+  <!-- =====================================================
+       MODAL — NOVA RECEITA A RECEBER
+  ====================================================== -->
+
+  <div
+    id="receivableModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
+
     <div
       class="modal-card"
       role="dialog"
@@ -2479,7 +2684,7 @@ ControleS — Seu dinheiro sob controle
 
 
       <h2 id="receivableModalTitle">
-        Adicionar a receber
+        Nova receita a receber
       </h2>
 
 
@@ -2516,7 +2721,21 @@ ControleS — Seu dinheiro sob controle
           required
         >
 
-Data de recebimento
+
+        <label for="receivableLaunchDate">
+          Data do lançamento
+        </label>
+
+        <input
+          id="receivableLaunchDate"
+          type="date"
+          required
+        >
+
+
+        <label for="receivableDate">
+          Data de recebimento
+        </label>
 
         <input
           id="receivableDate"
@@ -2526,16 +2745,17 @@ Data de recebimento
 
 
         <label for="receivableCategory">
-          Categoria <small>(opcional)</small>
+          Categoria
         </label>
 
         <select
           id="receivableCategory"
+          required
         ></select>
 
 
         <label for="receivableNotes">
-          Observações <small>(opcional)</small>
+          Observações
         </label>
 
         <textarea
@@ -2558,22 +2778,25 @@ Data de recebimento
           class="btn btn-primary btn-large"
           type="submit"
         >
-          Adicionar a receber
+          Salvar receita
         </button>
 
       </form>
 
     </div>
 
-    <div class="modal-card receivable-confirm-card" role="dialog" aria-modal="true" aria-labelledby="receivableConfirmTitle">
-      <div class="confirm-receivable-icon">✓</div>
-      <h2 id="receivableConfirmTitle">Você recebeu este valor?</h2>
-      <p id="receivableConfirmText">Confirme para atualizar seu saldo.</p>
-      <div class="receivable-confirm-actions">
-        <button id="receivableConfirmNo" class="btn btn-secondary" type="button">Ainda não</button>
-        <button id="receivableConfirmYes" class="btn btn-primary" type="button">Sim, recebi</button>
-      </div>
-    </div>
+  </div>
+
+
+  <!-- =====================================================
+       MODAL — PREMIUM
+  ====================================================== -->
+
+  <div
+    id="premiumModal"
+    class="modal hidden"
+    aria-hidden="true"
+  >
 
     <div
       class="modal-card premium-modal"
@@ -2647,6 +2870,13 @@ Data de recebimento
 
     </div>
 
+  </div>
+
+
+  <!-- =====================================================
+       LIMPAR LANÇAMENTOS
+  ====================================================== -->
+  <div id="clearTransactionsModal" class="modal hidden" aria-hidden="true">
     <div class="modal-card clear-transactions-modal-card" role="dialog" aria-modal="true" aria-labelledby="clearTransactionsTitle">
       <button class="modal-close" type="button" data-close-modal="clearTransactionsModal" aria-label="Fechar">×</button>
       <span class="eyebrow">ORGANIZAÇÃO</span>
@@ -2660,7 +2890,9 @@ Data de recebimento
       </div>
       <div class="clear-warning">⚠ Você verá uma confirmação antes da exclusão. Essa ação não pode ser desfeita.</div>
     </div>
+  </div>
 
+  <div id="confirmDeleteModal" class="modal hidden" aria-hidden="true">
     <div class="modal-card confirm-delete-card" role="dialog" aria-modal="true" aria-labelledby="confirmDeleteTitle">
       <div class="confirm-delete-icon">!</div>
       <h2 id="confirmDeleteTitle">Confirmar exclusão</h2>
@@ -2670,3 +2902,28 @@ Data de recebimento
         <button id="confirmDeleteBtn" type="button" class="btn btn-danger">Excluir</button>
       </div>
     </div>
+  </div>
+
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
+
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+  ></div>
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+  <script src="app.js"></script>
+
+</body>
+
+</html>
+
+      
