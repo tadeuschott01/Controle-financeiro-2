@@ -104,8 +104,7 @@ const SECTION_TITLES = {
     categories: "Categorias",
     reports: "Relatórios",
     whatsapp: "Assessor WhatsApp",
-    "ai-report": "Inteligência Financeira",
-    privacy: "Privacidade e conta",
+    "ai-report": "Relatório com IA",
     premium: "Premium"
 };
 
@@ -801,8 +800,6 @@ async function enterApp() {
         updatePeriodSummary();
 
         applyPremiumAccess();
-        renderWhatsAppAssistant();
-        renderAIReport();
 
     } catch (error) {
 
@@ -1376,17 +1373,6 @@ function showSection(sectionName) {
 
         case "reports":
             renderReports();
-            break;
-
-        case "whatsapp":
-            renderWhatsAppAssistant();
-            break;
-
-        case "ai-report":
-            renderAIReport();
-            break;
-
-        case "privacy":
             break;
 
         case "premium":
@@ -2259,122 +2245,6 @@ async function deleteTransaction(id) {
 
         showToast(
             "Não foi possível excluir.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   LIMPAR LANÇAMENTOS — HOJE / MÊS / TODOS
-   ========================================================= */
-
-function openClearTransactionsModal() {
-    const modal = $("clearTransactionsModal");
-
-    if (!modal) {
-        showToast("Atualize também o HTML com o botão Limpar lançamentos.", "warning");
-        return;
-    }
-
-    modal.classList.remove("hidden");
-    modal.setAttribute("aria-hidden", "false");
-}
-
-function closeClearTransactionsModal() {
-    const modal = $("clearTransactionsModal");
-    if (!modal) return;
-
-    modal.classList.add("hidden");
-    modal.setAttribute("aria-hidden", "true");
-}
-
-function getTransactionsToClear(period) {
-    const today = todayISO();
-    const currentMonth = today.slice(0, 7);
-
-    return transactions.filter(transaction => {
-        // Protege A Receber: receitas futuras nunca entram na limpeza.
-        if (isFutureReceivable(transaction)) return false;
-
-        const date = getTransactionDate(transaction);
-
-        if (!date) return period === "all";
-        if (period === "today") return date === today;
-        if (period === "month") return date.slice(0, 7) === currentMonth;
-        if (period === "all") return true;
-
-        return false;
-    });
-}
-
-async function clearTransactionsByPeriod(period) {
-    if (!supabaseClient || !currentUser) {
-        showToast("Faça login novamente.", "error");
-        return;
-    }
-
-    const labels = {
-        today: "os lançamentos de hoje",
-        month: "os lançamentos deste mês",
-        all: "todos os lançamentos"
-    };
-
-    if (!labels[period]) return;
-
-    const items = getTransactionsToClear(period);
-
-    if (!items.length) {
-        showToast("Não há lançamentos para apagar nesse período.", "info");
-        closeClearTransactionsModal();
-        return;
-    }
-
-    const confirmed = confirm(
-        `Tem certeza que deseja apagar ${labels[period]}?\n\n` +
-        `${items.length} lançamento(s) será(ão) excluído(s).\n` +
-        `A Receber não será apagado.\n\n` +
-        `Essa ação não poderá ser desfeita.`
-    );
-
-    if (!confirmed) return;
-
-    try {
-        const ids = items.map(transaction => transaction.id).filter(Boolean);
-
-        if (!ids.length) {
-            throw new Error("Nenhum lançamento válido foi encontrado.");
-        }
-
-        const { error } = await supabaseClient
-            .from("transactions")
-            .delete()
-            .eq("user_id", currentUser.id)
-            .in("id", ids);
-
-        if (error) throw error;
-
-        closeClearTransactionsModal();
-
-        showToast(
-            `${items.length} lançamento(s) apagado(s) com sucesso.`,
-            "success"
-        );
-
-        await loadTransactions();
-
-        updateDashboard();
-        renderTransactions();
-        renderReceivables();
-        updateReceivableDashboard();
-        updatePeriodSummary();
-        renderReports();
-
-    } catch (error) {
-        console.error("Erro ao limpar lançamentos:", error);
-
-        showToast(
-            error.message || "Não foi possível apagar os lançamentos.",
             "error"
         );
     }
@@ -5089,24 +4959,14 @@ async function loadSubscription() {
 }
 
 
-const PREMIUM_ADMIN_EMAIL = "controlesfinanceirossuport@gmail.com";
-
 function isPremiumActive() {
-    const email = String(currentUser?.email || "").trim().toLowerCase();
+    if (!subscription || subscription.status !== "active") return false;
 
-    // Conta administrativa/teste: Premium sempre liberado.
-    if (email === PREMIUM_ADMIN_EMAIL) {
-        return true;
+    if (subscription.expires_at) {
+        return new Date(subscription.expires_at) > new Date();
     }
 
-    // Demais contas seguem a assinatura normal já carregada pelo app.
-    const status = String(subscription?.status || "").trim().toLowerCase();
-
-    return (
-        status === "active" ||
-        status === "trial" ||
-        status === "premium"
-    );
+    return true;
 }
 
 
@@ -6148,38 +6008,6 @@ function setupEvents() {
 
 
     /* -----------------------------------------
-       LIMPAR LANÇAMENTOS
-       ----------------------------------------- */
-
-    const clearTransactionsBtn = $("clearTransactionsBtn");
-
-    if (clearTransactionsBtn) {
-        clearTransactionsBtn.addEventListener(
-            "click",
-            event => {
-                event.preventDefault();
-                openClearTransactionsModal();
-            }
-        );
-    }
-
-    document
-        .querySelectorAll("[data-clear-transactions]")
-        .forEach(button => {
-            button.addEventListener(
-                "click",
-                async event => {
-                    event.preventDefault();
-
-                    await clearTransactionsByPeriod(
-                        button.dataset.clearTransactions
-                    );
-                }
-            );
-        });
-
-
-    /* -----------------------------------------
        ESC
        ----------------------------------------- */
 
@@ -6716,11 +6544,15 @@ document.addEventListener(
 /* =========================================================
    CONTROLES — ACESSO PREMIUM
    GRÁTIS:
-   - Adicionar receita
-   - Adicionar despesa
+   - Início
+   - Lançamentos
+   - A Receber
 
    PREMIUM:
-   - Todo o restante
+   - Categorias
+   - Relatórios
+   - Assessor WhatsApp
+   - Relatório com IA
    ========================================================= */
 
 
@@ -7040,6 +6872,39 @@ document.addEventListener(
 
 
         /* =================================================
+           LANÇAMENTOS E A RECEBER — SEMPRE GRÁTIS
+           ================================================= */
+
+        const freeSection =
+            target.closest(
+                '[data-section="transactions"],' +
+                '[data-section="receivable"]'
+            );
+
+        if (freeSection) {
+            return;
+        }
+
+
+        const freeFinancialAction =
+            target.closest(
+                '#addTransactionBtn,' +
+                '#addTransactionBtn2,' +
+                '#addReceivableBtn,' +
+                '[data-edit-transaction],' +
+                '[data-delete-transaction],' +
+                '[data-edit-receivable],' +
+                '[data-delete-receivable],' +
+                '[data-mark-received],' +
+                '[data-receivable-action]'
+            );
+
+        if (freeFinancialAction) {
+            return;
+        }
+
+
+        /* =================================================
            SEÇÕES BLOQUEADAS
            ================================================= */
 
@@ -7192,204 +7057,127 @@ window.addEventListener(
    ========================================================= */
 
 /* =========================================================
-   CONTROLES 2.0 — ASSESSOR WHATSAPP + RELATÓRIO INTELIGENTE
+   CONTROLES — RELATÓRIO INTELIGENTE / WHATSAPP — PATCH 6.0
    ========================================================= */
 
-function getCurrentMonthRange() {
+function getAIReportPeriod() {
     const now = new Date();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const last = new Date(y, now.getMonth() + 1, 0).getDate();
-    return { start: `${y}-${m}-01`, end: `${y}-${m}-${String(last).padStart(2,"0")}` };
+    const start = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-01`;
+    return { start, end: todayISO(), label: now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) };
 }
 
-function getPreviousMonthRange() {
-    const now = new Date();
-    const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const last = new Date(y, d.getMonth() + 1, 0).getDate();
-    return { start: `${y}-${m}-01`, end: `${y}-${m}-${String(last).padStart(2,"0")}` };
-}
+function buildAIReportData() {
+    const period = getAIReportPeriod();
+    const current = calculatePeriodSummary(period);
+    const previousDate = new Date();
+    previousDate.setMonth(previousDate.getMonth() - 1);
+    const previous = getMonthlyTotals(previousDate.getFullYear(), previousDate.getMonth());
+    const ranking = {};
 
-function summarizeTransactionsBetween(start, end) {
-    let income = 0, expense = 0, count = 0;
-    const categories = {};
-    transactions.forEach(t => {
-        const date = getTransactionDate(t);
-        if (!date || date < start || date > end) return;
-        const amount = getTransactionAmount(t);
-        const type = normalizeTransactionType(t.type || t.tipo || t.transaction_type);
-        count += 1;
-        if (type === "income") {
-            if (isIncomeReceived(t, end)) income += amount;
-        } else {
-            expense += amount;
-            const cat = getTransactionCategory(t) || "Outros";
-            categories[cat] = (categories[cat] || 0) + amount;
-        }
+    transactions.forEach(transaction => {
+        if (!transactionIsInPeriod(transaction, period)) return;
+        const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
+        if (type !== "expense") return;
+        const category = getTransactionCategory(transaction);
+        ranking[category] = (ranking[category] || 0) + getTransactionAmount(transaction);
     });
-    return { income, expense, balance: income - expense, count, categories };
-}
 
-function getTopExpenseCategories(categories, limit = 5) {
-    return Object.entries(categories || {})
-        .sort((a,b) => b[1] - a[1])
-        .slice(0, limit)
-        .map(([name, value]) => ({ name, value }));
-}
-
-function renderWhatsAppAssistant() {
-    const section = $("whatsappSection");
-    if (!section) return;
-    const range = getCurrentMonthRange();
-    const summary = summarizeTransactionsBetween(range.start, range.end);
+    const categories = Object.entries(ranking).sort((a,b) => b[1] - a[1]);
     const receivable = getReceivableSummary();
-    const top = getTopExpenseCategories(summary.categories, 1)[0];
-
-    const expenseEl = $("waPreviewExpense");
-    const catEl = $("waPreviewCategory");
-    const recEl = $("waPreviewReceivable");
-    const recText = $("waPreviewReceivableText");
-    if (expenseEl) expenseEl.textContent = formatCurrency(summary.expense);
-    if (catEl) catEl.textContent = top ? `${top.name} é a maior categoria, com ${formatCurrency(top.value)}.` : "Cadastre lançamentos para ver sua maior categoria.";
-    if (recEl) recEl.textContent = formatCurrency(receivable.total);
-    if (recText) recText.textContent = receivable.count ? `${receivable.count} valor(es) futuro(s) cadastrado(s).` : "Nenhum valor futuro encontrado.";
-
-    const premium = isPremiumActive();
-    const button = $("whatsappPrimaryBtn");
-    if (button) {
-        button.textContent = premium ? "Integração WhatsApp em configuração" : "Desbloquear no Premium";
-        button.onclick = () => premium
-            ? showToast("A interface está pronta. A API oficial e o webhook ainda precisam ser conectados ao backend.", "info")
-            : openPremiumAccess();
-    }
+    return { period, current, previous, categories, receivable };
 }
 
-function renderAIReport() {
-    const section = $("ai-reportSection");
-    if (!section) return;
-    const premium = isPremiumActive();
-    if (!premium) {
-        const list = $("aiInsightsList");
-        if (list) list.innerHTML = `<div class="ai-insight-pro"><i>★</i><div><b>Recurso Premium</b><small>Assine o Premium para liberar a análise inteligente dos seus lançamentos.</small></div></div>`;
-        return;
-    }
+function renderAIReport(showMessage = false) {
+    const data = buildAIReportData();
+    const { period, current, previous, categories, receivable } = data;
+    const setText = (id, text) => { const el = $(id); if (el) el.textContent = text; };
 
-    const current = getCurrentMonthRange();
-    const previous = getPreviousMonthRange();
-    const now = summarizeTransactionsBetween(current.start, current.end);
-    const prev = summarizeTransactionsBetween(previous.start, previous.end);
-    const receivable = getReceivableSummary();
-    const top = getTopExpenseCategories(now.categories, 5);
+    setText("aiPeriodLabel", period.label.charAt(0).toUpperCase() + period.label.slice(1));
+    setText("aiIncomeValue", formatCurrency(current.income));
+    setText("aiExpenseValue", formatCurrency(current.expense));
+    setText("aiBalanceValue", formatCurrency(current.balance));
+    setText("aiReceivableValue", formatCurrency(receivable.total));
 
-    const monthName = new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
-    if ($("aiPeriodLabel")) $("aiPeriodLabel").textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-    if ($("aiIncomeValue")) $("aiIncomeValue").textContent = formatCurrency(now.income);
-    if ($("aiExpenseValue")) $("aiExpenseValue").textContent = formatCurrency(now.expense);
-    if ($("aiBalanceValue")) $("aiBalanceValue").textContent = formatCurrency(now.balance);
-    if ($("aiReceivableValue")) $("aiReceivableValue").textContent = formatCurrency(receivable.total);
-    if ($("aiReceivableNote")) $("aiReceivableNote").textContent = receivable.count ? `${receivable.count} recebimento(s) futuro(s)` : "Nenhum recebimento futuro";
+    const expenseDelta = previous.expense > 0 ? ((current.expense - previous.expense) / previous.expense) * 100 : null;
+    if (expenseDelta === null) setText("aiExpenseTrend", "Sem base no mês anterior");
+    else if (expenseDelta > 0) setText("aiExpenseTrend", `↑ ${Math.abs(expenseDelta).toFixed(1)}% vs. mês anterior`);
+    else if (expenseDelta < 0) setText("aiExpenseTrend", `↓ ${Math.abs(expenseDelta).toFixed(1)}% vs. mês anterior`);
+    else setText("aiExpenseTrend", "Mesmo nível do mês anterior");
 
-    let change = null;
-    if (prev.expense > 0) change = ((now.expense - prev.expense) / prev.expense) * 100;
-    const trend = $("aiExpenseTrend");
-    if (trend) {
-        if (change === null) trend.textContent = "Sem mês anterior para comparar";
-        else if (Math.abs(change) < 0.5) trend.textContent = "Praticamente estável vs. mês anterior";
-        else trend.textContent = `${change > 0 ? "↑" : "↓"} ${Math.abs(change).toFixed(1).replace(".",",")}% vs. mês anterior`;
-        trend.className = change !== null && change <= 0 ? "metric-ok" : "metric-warning";
-    }
+    const headline = current.income === 0 && current.expense === 0
+        ? "Adicione lançamentos para começar"
+        : current.balance >= 0
+            ? "Seu mês está com saldo positivo"
+            : "Seus gastos superaram suas receitas";
+    setText("aiHeadline", headline);
 
     const bars = $("aiCategoryBars");
     if (bars) {
-        if (!top.length) bars.innerHTML = `<div class="ai-empty-mini">Adicione despesas para visualizar.</div>`;
-        else {
-            const max = top[0].value || 1;
-            bars.innerHTML = top.map(item => `<div class="ai-category-row"><div><span>${escapeHTML(item.name)}</span><b>${formatCurrency(item.value)}</b></div><div class="ai-category-track"><i style="width:${Math.max(7,(item.value/max)*100).toFixed(1)}%"></i></div></div>`).join("");
+        if (!categories.length) {
+            bars.innerHTML = '<div class="ai-empty-mini">Adicione despesas para visualizar.</div>';
+        } else {
+            const max = categories[0][1] || 1;
+            bars.innerHTML = categories.slice(0,5).map(([name, value]) => `
+                <div class="ai-category-row">
+                    <div><strong>${escapeHTML(name)}</strong><span>${formatCurrency(value)}</span></div>
+                    <div class="ai-category-track"><i style="width:${Math.max(5, (value/max)*100)}%"></i></div>
+                </div>`).join("");
         }
     }
 
     const insights = [];
-    if (!now.count) {
-        insights.push(["Sem movimentações neste mês", "Cadastre receitas e despesas para receber uma análise personalizada."]);
-    } else {
-        if (top[0]) {
-            const pct = now.expense > 0 ? (top[0].value / now.expense) * 100 : 0;
-            insights.push([`${top[0].name} lidera seus gastos`, `${formatCurrency(top[0].value)} — ${pct.toFixed(0)}% das despesas do mês.`]);
-        }
-        if (change !== null) {
-            insights.push([change <= 0 ? "Despesas menores que no mês anterior" : "Despesas acima do mês anterior", `A variação foi de ${Math.abs(change).toFixed(1).replace(".",",")}% em relação ao mês anterior.`]);
-        }
-        if (now.income > 0) {
-            const rate = (now.expense / now.income) * 100;
-            insights.push([rate <= 80 ? "Boa margem entre receitas e despesas" : rate <= 100 ? "Despesas próximas da sua receita" : "Despesas superaram as receitas", `Você comprometeu aproximadamente ${rate.toFixed(0)}% das receitas recebidas neste mês.`]);
-        }
-        if (receivable.total > 0) insights.push(["Há valores a receber", `${formatCurrency(receivable.total)} estão cadastrados para datas futuras.`]);
-    }
+    if (categories.length) insights.push(["01", `${categories[0][0]} lidera seus gastos`, `${formatCurrency(categories[0][1])} gastos nessa categoria neste mês.`]);
+    if (expenseDelta !== null) insights.push(["02", expenseDelta <= 0 ? "Seus gastos diminuíram" : "Seus gastos aumentaram", `${Math.abs(expenseDelta).toFixed(1)}% em relação ao mês anterior.`]);
+    if (receivable.total > 0) insights.push(["03", "Você tem valores a receber", `${formatCurrency(receivable.total)} previstos em ${receivable.count} lançamento(s).`]);
+    if (!insights.length && (current.income || current.expense)) insights.push(["01", "Acompanhamento iniciado", "Continue registrando movimentações para enriquecer sua análise."]);
 
     const list = $("aiInsightsList");
-    if (list) list.innerHTML = insights.slice(0,4).map((x,i) => `<div class="ai-insight-pro ${i===1 && change!==null && change<=0 ? "positive" : ""}"><i>${String(i+1).padStart(2,"0")}</i><div><b>${escapeHTML(x[0])}</b><small>${escapeHTML(x[1])}</small></div></div>`).join("");
+    if (list) {
+        list.innerHTML = insights.length ? insights.map(([n,t,d], idx) => `
+            <div class="ai-insight-pro ${idx === 1 && expenseDelta <= 0 ? "positive" : ""}">
+                <i>${n}</i><div><b>${escapeHTML(t)}</b><small>${escapeHTML(d)}</small></div>
+            </div>`).join("") : '<div class="ai-insight-pro"><i>01</i><div><b>Sem dados suficientes</b><small>Adicione lançamentos para gerar uma análise personalizada.</small></div></div>';
+    }
 
     let score = null;
-    if (now.income > 0) {
-        const ratio = now.expense / now.income;
-        score = Math.round(Math.max(0, Math.min(100, 100 - Math.max(0, ratio - .55) * 100)));
+    if (current.income > 0 || current.expense > 0) {
+        const ratio = current.income > 0 ? current.expense / current.income : 2;
+        score = Math.max(0, Math.min(100, Math.round(100 - Math.max(0, ratio - .5) * 80)));
     }
-    if ($("aiHealthScore")) $("aiHealthScore").textContent = score === null ? "—" : `${score}/100`;
-    if ($("aiHealthText")) $("aiHealthText").textContent = score === null
-        ? "Cadastre receitas recebidas para calcular o índice do período."
-        : score >= 80 ? "Receitas e despesas apresentam uma margem confortável neste período."
-        : score >= 60 ? "O período pede atenção moderada ao ritmo das despesas."
-        : "As despesas estão consumindo uma parcela alta das receitas do período.";
+    setText("aiHealthScore", score === null ? "—" : `${score}/100`);
+    setText("aiHealthText", score === null ? "O índice aparecerá quando houver dados financeiros no período." : score >= 75 ? "Boa margem entre receitas e despesas no período." : score >= 50 ? "Atenção ao peso das despesas sobre sua renda." : "As despesas estão pressionando bastante o seu orçamento.");
+    setText("aiReportBadge", "ATUALIZADO AGORA");
 
-    if ($("aiHeadline")) $("aiHeadline").textContent = now.count ? `${now.count} movimentação(ões) analisada(s)` : "Seu mês em poucos segundos";
-
-    const commitment = now.income > 0 ? (now.expense / now.income) * 100 : null;
-    const savingsRate = now.income > 0 ? ((now.income - now.expense) / now.income) * 100 : null;
-
-    if ($("aiSavingsRate")) {
-        $("aiSavingsRate").textContent = savingsRate === null
-            ? "—"
-            : `${savingsRate.toFixed(0).replace(".", ",")}%`;
-    }
-
-    if ($("aiCommitmentRate")) {
-        $("aiCommitmentRate").textContent = commitment === null
-            ? "—"
-            : `${commitment.toFixed(0).replace(".", ",")}%`;
-    }
-
-    if ($("aiTopCategory")) {
-        $("aiTopCategory").textContent = top[0]?.name || "—";
-    }
-
-    if ($("aiTopCategoryNote")) {
-        const pct = top[0] && now.expense > 0 ? (top[0].value / now.expense) * 100 : null;
-        $("aiTopCategoryNote").textContent = pct === null
-            ? "sem despesas registradas"
-            : `${pct.toFixed(0)}% das despesas`;
-    }
-
-    if ($("aiMonthlyComparison")) {
-        $("aiMonthlyComparison").textContent = change === null
-            ? "—"
-            : `${change > 0 ? "+" : ""}${change.toFixed(1).replace(".", ",")}%`;
-    }
+    if (showMessage) showToast("Análise atualizada com seus lançamentos.", "success");
 }
 
-document.addEventListener("click", event => {
-    const btn = event.target?.closest?.("#generateAIReportBtn");
-    if (!btn) return;
-    event.preventDefault();
-    if (!isPremiumActive()) { openPremiumAccess(); return; }
-    btn.disabled = true;
-    const old = btn.textContent;
-    btn.textContent = "✦ Analisando...";
-    window.setTimeout(() => {
-        renderAIReport();
-        btn.disabled = false;
-        btn.textContent = old;
-        showToast("Relatório atualizado com seus lançamentos.", "success");
-    }, 450);
-});
+function updateWhatsAppPreview() {
+    const totals = getMonthlyTotals(new Date().getFullYear(), new Date().getMonth());
+    const ranking = {};
+    transactions.forEach(t => {
+        const d = getTransactionDate(t); if (!d) return;
+        const dt = new Date(`${d}T00:00:00`); const now = new Date();
+        if (dt.getMonth() !== now.getMonth() || dt.getFullYear() !== now.getFullYear()) return;
+        if (normalizeTransactionType(t.type || t.tipo) !== "expense") return;
+        const c = getTransactionCategory(t); ranking[c] = (ranking[c] || 0) + getTransactionAmount(t);
+    });
+    const top = Object.entries(ranking).sort((a,b)=>b[1]-a[1])[0];
+    const expense = $("waPreviewExpense"); if (expense) expense.textContent = formatCurrency(totals.expense);
+    const cat = $("waPreviewCategory"); if (cat) cat.textContent = top ? `${top[0]} é sua maior categoria no mês.` : "Cadastre lançamentos para ver sua maior categoria.";
+}
+
+(function bindSmartFeatureButtons(){
+    document.addEventListener("click", event => {
+        const ai = event.target.closest?.("#generateAIReportBtn");
+        if (ai) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); renderAIReport(true); return; }
+        const wa = event.target.closest?.("#whatsappPrimaryBtn");
+        if (wa) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); updateWhatsAppPreview(); showToast("A interface está pronta. Falta conectar a API oficial do WhatsApp.", "info"); }
+    });
+})();
+
+const _showSectionControleS = showSection;
+showSection = function(sectionName) {
+    _showSectionControleS(sectionName);
+    if (sectionName === "ai-report" && isPremiumActive()) renderAIReport(false);
+    if (sectionName === "whatsapp" && isPremiumActive()) updateWhatsAppPreview();
+};
