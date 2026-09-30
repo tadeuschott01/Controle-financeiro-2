@@ -7353,3 +7353,15 @@ async function clearTransactionsByPeriod(period){
     if(title&&!editingTransactionId) title.textContent=normalizeTransactionType(type)==='income'?'Nova receita':'Nova despesa';
   });
 })();
+
+
+/* CONTROLES MOBILE 11 — CTAs de demonstração Premium */
+document.addEventListener('click', function(e){
+  const btn=e.target.closest?.('[data-premium-preview]');
+  if(!btn) return;
+  e.preventDefault();
+  const activate=document.getElementById('activatePremiumBtn');
+  if(activate){ activate.click(); return; }
+  const modal=document.getElementById('premiumModal');
+  if(modal){ modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false'); }
+});
