@@ -800,6 +800,8 @@ async function enterApp() {
         updatePeriodSummary();
 
         applyPremiumAccess();
+        renderWhatsAppAssistant();
+        renderAIReport();
 
     } catch (error) {
 
@@ -1373,6 +1375,14 @@ function showSection(sectionName) {
 
         case "reports":
             renderReports();
+            break;
+
+        case "whatsapp":
+            renderWhatsAppAssistant();
+            break;
+
+        case "ai-report":
+            renderAIReport();
             break;
 
         case "premium":
@@ -7176,3 +7186,174 @@ window.addEventListener(
 /* =========================================================
    FIM DO APP.JS
    ========================================================= */
+
+/* =========================================================
+   CONTROLES 2.0 — ASSESSOR WHATSAPP + RELATÓRIO INTELIGENTE
+   ========================================================= */
+
+function getCurrentMonthRange() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const last = new Date(y, now.getMonth() + 1, 0).getDate();
+    return { start: `${y}-${m}-01`, end: `${y}-${m}-${String(last).padStart(2,"0")}` };
+}
+
+function getPreviousMonthRange() {
+    const now = new Date();
+    const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const last = new Date(y, d.getMonth() + 1, 0).getDate();
+    return { start: `${y}-${m}-01`, end: `${y}-${m}-${String(last).padStart(2,"0")}` };
+}
+
+function summarizeTransactionsBetween(start, end) {
+    let income = 0, expense = 0, count = 0;
+    const categories = {};
+    transactions.forEach(t => {
+        const date = getTransactionDate(t);
+        if (!date || date < start || date > end) return;
+        const amount = getTransactionAmount(t);
+        const type = normalizeTransactionType(t.type || t.tipo || t.transaction_type);
+        count += 1;
+        if (type === "income") {
+            if (isIncomeReceived(t, end)) income += amount;
+        } else {
+            expense += amount;
+            const cat = getTransactionCategory(t) || "Outros";
+            categories[cat] = (categories[cat] || 0) + amount;
+        }
+    });
+    return { income, expense, balance: income - expense, count, categories };
+}
+
+function getTopExpenseCategories(categories, limit = 5) {
+    return Object.entries(categories || {})
+        .sort((a,b) => b[1] - a[1])
+        .slice(0, limit)
+        .map(([name, value]) => ({ name, value }));
+}
+
+function renderWhatsAppAssistant() {
+    const section = $("whatsappSection");
+    if (!section) return;
+    const range = getCurrentMonthRange();
+    const summary = summarizeTransactionsBetween(range.start, range.end);
+    const receivable = getReceivableSummary();
+    const top = getTopExpenseCategories(summary.categories, 1)[0];
+
+    const expenseEl = $("waPreviewExpense");
+    const catEl = $("waPreviewCategory");
+    const recEl = $("waPreviewReceivable");
+    const recText = $("waPreviewReceivableText");
+    if (expenseEl) expenseEl.textContent = formatCurrency(summary.expense);
+    if (catEl) catEl.textContent = top ? `${top.name} é a maior categoria, com ${formatCurrency(top.value)}.` : "Cadastre lançamentos para ver sua maior categoria.";
+    if (recEl) recEl.textContent = formatCurrency(receivable.total);
+    if (recText) recText.textContent = receivable.count ? `${receivable.count} valor(es) futuro(s) cadastrado(s).` : "Nenhum valor futuro encontrado.";
+
+    const premium = isPremiumActive();
+    const button = $("whatsappPrimaryBtn");
+    if (button) {
+        button.textContent = premium ? "Integração WhatsApp em configuração" : "Desbloquear no Premium";
+        button.onclick = () => premium
+            ? showToast("A interface está pronta. A API oficial e o webhook ainda precisam ser conectados ao backend.", "info")
+            : openPremiumAccess();
+    }
+}
+
+function renderAIReport() {
+    const section = $("ai-reportSection");
+    if (!section) return;
+    const premium = isPremiumActive();
+    if (!premium) {
+        const list = $("aiInsightsList");
+        if (list) list.innerHTML = `<div class="ai-insight-pro"><i>★</i><div><b>Recurso Premium</b><small>Assine o Premium para liberar a análise inteligente dos seus lançamentos.</small></div></div>`;
+        return;
+    }
+
+    const current = getCurrentMonthRange();
+    const previous = getPreviousMonthRange();
+    const now = summarizeTransactionsBetween(current.start, current.end);
+    const prev = summarizeTransactionsBetween(previous.start, previous.end);
+    const receivable = getReceivableSummary();
+    const top = getTopExpenseCategories(now.categories, 5);
+
+    const monthName = new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+    if ($("aiPeriodLabel")) $("aiPeriodLabel").textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+    if ($("aiIncomeValue")) $("aiIncomeValue").textContent = formatCurrency(now.income);
+    if ($("aiExpenseValue")) $("aiExpenseValue").textContent = formatCurrency(now.expense);
+    if ($("aiBalanceValue")) $("aiBalanceValue").textContent = formatCurrency(now.balance);
+    if ($("aiReceivableValue")) $("aiReceivableValue").textContent = formatCurrency(receivable.total);
+    if ($("aiReceivableNote")) $("aiReceivableNote").textContent = receivable.count ? `${receivable.count} recebimento(s) futuro(s)` : "Nenhum recebimento futuro";
+
+    let change = null;
+    if (prev.expense > 0) change = ((now.expense - prev.expense) / prev.expense) * 100;
+    const trend = $("aiExpenseTrend");
+    if (trend) {
+        if (change === null) trend.textContent = "Sem mês anterior para comparar";
+        else if (Math.abs(change) < 0.5) trend.textContent = "Praticamente estável vs. mês anterior";
+        else trend.textContent = `${change > 0 ? "↑" : "↓"} ${Math.abs(change).toFixed(1).replace(".",",")}% vs. mês anterior`;
+        trend.className = change !== null && change <= 0 ? "metric-ok" : "metric-warning";
+    }
+
+    const bars = $("aiCategoryBars");
+    if (bars) {
+        if (!top.length) bars.innerHTML = `<div class="ai-empty-mini">Adicione despesas para visualizar.</div>`;
+        else {
+            const max = top[0].value || 1;
+            bars.innerHTML = top.map(item => `<div class="ai-category-row"><div><span>${escapeHTML(item.name)}</span><b>${formatCurrency(item.value)}</b></div><div class="ai-category-track"><i style="width:${Math.max(7,(item.value/max)*100).toFixed(1)}%"></i></div></div>`).join("");
+        }
+    }
+
+    const insights = [];
+    if (!now.count) {
+        insights.push(["Sem movimentações neste mês", "Cadastre receitas e despesas para receber uma análise personalizada."]);
+    } else {
+        if (top[0]) {
+            const pct = now.expense > 0 ? (top[0].value / now.expense) * 100 : 0;
+            insights.push([`${top[0].name} lidera seus gastos`, `${formatCurrency(top[0].value)} — ${pct.toFixed(0)}% das despesas do mês.`]);
+        }
+        if (change !== null) {
+            insights.push([change <= 0 ? "Despesas menores que no mês anterior" : "Despesas acima do mês anterior", `A variação foi de ${Math.abs(change).toFixed(1).replace(".",",")}% em relação ao mês anterior.`]);
+        }
+        if (now.income > 0) {
+            const rate = (now.expense / now.income) * 100;
+            insights.push([rate <= 80 ? "Boa margem entre receitas e despesas" : rate <= 100 ? "Despesas próximas da sua receita" : "Despesas superaram as receitas", `Você comprometeu aproximadamente ${rate.toFixed(0)}% das receitas recebidas neste mês.`]);
+        }
+        if (receivable.total > 0) insights.push(["Há valores a receber", `${formatCurrency(receivable.total)} estão cadastrados para datas futuras.`]);
+    }
+
+    const list = $("aiInsightsList");
+    if (list) list.innerHTML = insights.slice(0,4).map((x,i) => `<div class="ai-insight-pro ${i===1 && change!==null && change<=0 ? "positive" : ""}"><i>${String(i+1).padStart(2,"0")}</i><div><b>${escapeHTML(x[0])}</b><small>${escapeHTML(x[1])}</small></div></div>`).join("");
+
+    let score = null;
+    if (now.income > 0) {
+        const ratio = now.expense / now.income;
+        score = Math.round(Math.max(0, Math.min(100, 100 - Math.max(0, ratio - .55) * 100)));
+    }
+    if ($("aiHealthScore")) $("aiHealthScore").textContent = score === null ? "—" : `${score}/100`;
+    if ($("aiHealthText")) $("aiHealthText").textContent = score === null
+        ? "Cadastre receitas recebidas para calcular o índice do período."
+        : score >= 80 ? "Receitas e despesas apresentam uma margem confortável neste período."
+        : score >= 60 ? "O período pede atenção moderada ao ritmo das despesas."
+        : "As despesas estão consumindo uma parcela alta das receitas do período.";
+
+    if ($("aiHeadline")) $("aiHeadline").textContent = now.count ? `${now.count} movimentação(ões) analisada(s)` : "Seu mês em poucos segundos";
+}
+
+document.addEventListener("click", event => {
+    const btn = event.target?.closest?.("#generateAIReportBtn");
+    if (!btn) return;
+    event.preventDefault();
+    if (!isPremiumActive()) { openPremiumAccess(); return; }
+    btn.disabled = true;
+    const old = btn.textContent;
+    btn.textContent = "✦ Analisando...";
+    window.setTimeout(() => {
+        renderAIReport();
+        btn.disabled = false;
+        btn.textContent = old;
+        showToast("Relatório atualizado com seus lançamentos.", "success");
+    }, 450);
+});
