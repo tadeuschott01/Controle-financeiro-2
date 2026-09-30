@@ -1,236 +1,731 @@
-<h1>Termos de Uso do ControleS</h1>
+<!DOCTYPE html>
+<html lang="pt-BR">
 
-<p><strong>Última atualização: 29 de setembro de 2026.</strong></p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b3f2d">
 
-<p>
-Estes Termos de Uso estabelecem as condições para utilização do ControleS.
-Ao criar uma conta ou utilizar o serviço, o usuário declara estar de acordo
-com estes termos e com a Política de Privacidade aplicável.
-</p>
+    <title>Termos de Uso | ControleS</title>
 
-<h2>1. Sobre o ControleS</h2>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<p>
-O ControleS é uma ferramenta de organização financeira pessoal destinada
-a auxiliar usuários no registro e acompanhamento de informações como
-receitas, despesas, categorias, metas, valores a receber, relatórios e
-outros recursos relacionados à organização financeira.
-</p>
+        :root {
+            --bg: #08110e;
+            --bg-soft: #0d1814;
+            --card: #12211b;
+            --card-soft: #172a22;
 
-<h2>2. Cadastro e conta</h2>
+            --green: #18a66a;
+            --green-dark: #0b6b48;
+            --green-light: #bfe3d2;
 
-<p>
-Algumas funcionalidades do ControleS exigem a criação de uma conta.
-O usuário é responsável por fornecer informações corretas e manter suas
-credenciais de acesso protegidas.
-</p>
+            --orange: #ef8a2c;
 
-<p>
-O usuário não deve compartilhar sua senha ou permitir que terceiros
-utilizem sua conta de forma não autorizada.
-</p>
+            --white: #ffffff;
+            --text: #e8f0ec;
+            --muted: #aab9b1;
+            --border: rgba(255, 255, 255, 0.08);
 
-<h2>3. Uso permitido</h2>
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+        }
 
-<p>Ao utilizar o ControleS, o usuário concorda em não:</p>
+        html {
+            scroll-behavior: smooth;
+        }
 
-<ul>
-  <li>utilizar o serviço para atividades ilegais;</li>
-  <li>tentar acessar contas ou informações de outros usuários;</li>
-  <li>tentar comprometer a segurança ou disponibilidade do serviço;</li>
-  <li>explorar vulnerabilidades do sistema;</li>
-  <li>utilizar automações abusivas contra a infraestrutura do ControleS;</li>
-  <li>utilizar o serviço de maneira que viole direitos de terceiros.</li>
-</ul>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(24, 166, 106, 0.12),
+                    transparent 35%
+                ),
+                var(--bg);
 
-<h2>4. Informações financeiras</h2>
+            color: var(--text);
+            line-height: 1.75;
+            min-height: 100vh;
+        }
 
-<p>
-Os valores, categorias, receitas, despesas, metas e demais informações
-financeiras existentes na conta são cadastrados ou gerenciados pelo
-próprio usuário.
-</p>
+        /* =========================
+           HEADER
+        ========================= */
 
-<p>
-O usuário é responsável pela exatidão das informações inseridas.
-</p>
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
 
-<h2>5. Não constitui aconselhamento financeiro</h2>
+            background: rgba(8, 17, 14, 0.92);
+            backdrop-filter: blur(16px);
 
-<p>
-O ControleS é uma ferramenta de organização e acompanhamento financeiro.
-Informações, gráficos, relatórios, estimativas ou análises apresentados
-pelo serviço possuem caráter informativo.
-</p>
+            border-bottom: 1px solid var(--border);
+        }
 
-<p>
-O ControleS não substitui orientação profissional financeira, contábil,
-jurídica, tributária ou de investimentos.
-</p>
+        .header-container {
+            max-width: 1100px;
+            margin: auto;
 
-<h2>6. WhatsApp</h2>
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
 
-<p>
-O ControleS poderá disponibilizar integração com o WhatsApp para permitir
-consultas, registros, notificações e outras funcionalidades relacionadas
-à conta do usuário.
-</p>
+            padding: 18px 24px;
+        }
 
-<p>
-A disponibilidade dessas funcionalidades poderá depender dos serviços
-fornecidos pela Meta e pelo WhatsApp.
-</p>
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
 
-<h2>7. Inteligência artificial</h2>
+            color: var(--white);
+            text-decoration: none;
+        }
 
-<p>
-Algumas funcionalidades poderão utilizar inteligência artificial para
-auxiliar na organização, interpretação e apresentação das informações
-financeiras cadastradas pelo usuário.
-</p>
+        .logo {
+            width: 42px;
+            height: 42px;
 
-<p>
-Resultados produzidos por sistemas automatizados podem conter
-imprecisões e devem ser utilizados apenas como apoio informativo.
-</p>
+            border-radius: 12px;
 
-<h2>8. Plano gratuito</h2>
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-<p>
-O ControleS poderá disponibilizar uma modalidade gratuita contendo
-determinadas funcionalidades do aplicativo.
-</p>
+            font-weight: 800;
+            font-size: 22px;
 
-<p>
-Essa modalidade poderá apresentar publicidade quando esse recurso
-estiver implementado.
-</p>
+            color: white;
 
-<h2>9. ControleS Premium</h2>
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green),
+                    var(--green-dark)
+                );
 
-<p>
-O ControleS poderá oferecer uma modalidade Premium com funcionalidades
-adicionais e/ou ausência de publicidade, conforme a oferta apresentada
-ao usuário no momento da contratação.
-</p>
+            box-shadow:
+                0 8px 25px rgba(24, 166, 106, 0.25);
+        }
 
-<p>
-Preços, períodos de assinatura e funcionalidades incluídas serão
-informados antes da confirmação da compra.
-</p>
+        .brand-name {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
 
-<h2>10. Pagamentos e assinaturas</h2>
+        .brand-name span {
+            color: var(--orange);
+        }
 
-<p>
-Quando uma assinatura for adquirida através de uma plataforma externa,
-como a Google Play, cobrança, renovação e gerenciamento do pagamento
-poderão ser realizados pela respectiva plataforma.
-</p>
+        .back {
+            color: var(--green-light);
+            text-decoration: none;
 
-<p>
-Cancelamentos de assinatura deverão observar as opções e regras
-disponibilizadas pela plataforma responsável pela cobrança.
-</p>
+            font-size: 14px;
+            font-weight: 700;
 
-<h2>11. Serviços de terceiros</h2>
+            padding: 9px 14px;
 
-<p>
-Para disponibilizar determinadas funcionalidades, o ControleS poderá
-utilizar serviços de terceiros, incluindo infraestrutura de banco de
-dados, autenticação, hospedagem, pagamentos, WhatsApp e outros serviços
-tecnológicos.
-</p>
+            border: 1px solid var(--border);
+            border-radius: 10px;
 
-<p>
-A disponibilidade de determinadas funcionalidades poderá ser afetada
-por indisponibilidade ou alterações nesses serviços externos.
-</p>
+            transition: 0.2s;
+        }
 
-<h2>12. Disponibilidade do serviço</h2>
+        .back:hover {
+            background: var(--card);
+            color: white;
+        }
 
-<p>
-Buscamos manter o ControleS disponível e funcionando adequadamente.
-Entretanto, não é possível garantir funcionamento ininterrupto.
-</p>
+        /* =========================
+           HERO
+        ========================= */
 
-<p>
-O serviço poderá ficar temporariamente indisponível devido a manutenção,
-atualizações, falhas técnicas ou fatores fora do controle do ControleS.
-</p>
+        .hero {
+            max-width: 1000px;
+            margin: auto;
 
-<h2>13. Alterações no ControleS</h2>
+            padding: 75px 24px 35px;
+        }
 
-<p>
-Funcionalidades poderão ser adicionadas, modificadas ou descontinuadas
-conforme a evolução do serviço.
-</p>
+        .badge {
+            display: inline-block;
 
-<p>
-Os planos e recursos disponíveis também poderão ser alterados, respeitando
-as condições aplicáveis às assinaturas já contratadas e as regras das
-plataformas responsáveis pela cobrança.
-</p>
+            color: var(--green-light);
+            background: rgba(24, 166, 106, 0.12);
 
-<h2>14. Segurança da conta</h2>
+            border: 1px solid rgba(24, 166, 106, 0.25);
+            border-radius: 100px;
 
-<p>
-O usuário deve utilizar uma senha segura e tomar medidas razoáveis para
-impedir acesso não autorizado à sua conta.
-</p>
+            padding: 7px 13px;
 
-<p>
-Caso identifique atividade suspeita, deverá entrar em contato com o
-suporte do ControleS.
-</p>
+            font-size: 12px;
+            font-weight: 800;
 
-<h2>15. Exclusão da conta</h2>
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
 
-<p>
-O usuário poderá solicitar a exclusão de sua conta e dos dados associados
-conforme as opções disponibilizadas pelo ControleS.
-</p>
+            margin-bottom: 18px;
+        }
 
-<p>
-Também será disponibilizada uma página específica com instruções sobre
-exclusão de dados.
-</p>
+        .hero h1 {
+            font-size: clamp(36px, 6vw, 58px);
+            line-height: 1.08;
 
-<h2>16. Privacidade</h2>
+            letter-spacing: -2px;
 
-<p>
-O tratamento de informações pessoais relacionadas ao ControleS está
-descrito na Política de Privacidade.
-</p>
+            color: white;
 
-<p>
-<a href="privacidade.html">Consultar Política de Privacidade</a>
-</p>
+            margin-bottom: 18px;
+        }
 
-<h2>17. Alterações destes Termos</h2>
+        .hero h1 span {
+            color: var(--green);
+        }
 
-<p>
-Estes Termos poderão ser atualizados para refletir mudanças no serviço,
-em funcionalidades ou em requisitos aplicáveis.
-</p>
+        .hero-description {
+            max-width: 720px;
 
-<p>
-A versão atualizada será disponibilizada nesta página juntamente com
-sua data de atualização.
-</p>
+            color: var(--muted);
 
-<h2>18. Contato</h2>
+            font-size: 17px;
 
-<p>
-Para dúvidas, suporte ou questões relacionadas a estes Termos:
-</p>
+            margin-bottom: 20px;
+        }
 
-<p>
-<strong>ControleS — Suporte</strong><br>
-<a href="mailto:controlesfinanceirossuport@gmail.com">
-controlesfinanceirossuport@gmail.com
-</a>
-</p>
+        .updated {
+            color: var(--orange);
 
-<hr>
+            font-size: 13px;
+            font-weight: 700;
+        }
 
-<p>© 2026 ControleS — Seu dinheiro sob controle.</p>
+        /* =========================
+           CONTENT
+        ========================= */
+
+        main {
+            max-width: 1000px;
+
+            margin: auto;
+
+            padding: 20px 24px 80px;
+        }
+
+        .document {
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.025),
+                    transparent
+                ),
+                var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 24px;
+
+            padding: 50px;
+
+            box-shadow: var(--shadow);
+        }
+
+        section {
+            padding: 30px 0;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        section:first-child {
+            padding-top: 0;
+        }
+
+        section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        h2 {
+            color: white;
+
+            font-size: 21px;
+
+            margin-bottom: 12px;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: "";
+
+            width: 5px;
+            height: 24px;
+
+            background: var(--orange);
+
+            border-radius: 10px;
+        }
+
+        p {
+            color: var(--muted);
+
+            margin-bottom: 12px;
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        ul {
+            padding-left: 22px;
+
+            color: var(--muted);
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        li::marker {
+            color: var(--green);
+        }
+
+        a {
+            color: var(--green-light);
+        }
+
+        a:hover {
+            color: var(--orange);
+        }
+
+        /* =========================
+           CONTACT
+        ========================= */
+
+        .contact {
+            margin-top: 35px;
+
+            padding: 28px;
+
+            background: var(--card-soft);
+
+            border: 1px solid rgba(24, 166, 106, 0.18);
+
+            border-radius: 18px;
+        }
+
+        .contact strong {
+            color: white;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            border-top: 1px solid var(--border);
+
+            text-align: center;
+
+            padding: 30px 20px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+        footer strong {
+            color: white;
+        }
+
+        footer span {
+            color: var(--orange);
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .header-container {
+                padding: 14px 18px;
+            }
+
+            .brand-name {
+                font-size: 18px;
+            }
+
+            .logo {
+                width: 38px;
+                height: 38px;
+            }
+
+            .back {
+                font-size: 12px;
+                padding: 7px 10px;
+            }
+
+            .hero {
+                padding: 50px 20px 25px;
+            }
+
+            .hero h1 {
+                letter-spacing: -1px;
+            }
+
+            main {
+                padding: 15px 16px 55px;
+            }
+
+            .document {
+                padding: 28px 22px;
+
+                border-radius: 18px;
+            }
+
+            section {
+                padding: 24px 0;
+            }
+
+            h2 {
+                font-size: 19px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-container">
+
+        <a href="app.html" class="brand">
+            <div class="logo">C</div>
+
+            <div class="brand-name">
+                Controle<span>S</span>
+            </div>
+        </a>
+
+        <a href="app.html" class="back">
+            Voltar ao ControleS
+        </a>
+
+    </div>
+</header>
+
+
+<div class="hero">
+
+    <div class="badge">
+        Documento oficial
+    </div>
+
+    <h1>
+        Termos de <span>Uso</span>
+    </h1>
+
+    <p class="hero-description">
+        Estes Termos estabelecem as condições para utilização
+        do ControleS e de seus recursos.
+    </p>
+
+    <div class="updated">
+        Última atualização: 29 de setembro de 2026
+    </div>
+
+</div>
+
+
+<main>
+
+<div class="document">
+
+<section>
+    <h2>1. Sobre o ControleS</h2>
+
+    <p>
+        O ControleS é uma ferramenta de organização financeira pessoal
+        destinada a auxiliar usuários no registro e acompanhamento de
+        receitas, despesas, categorias, metas, valores a receber,
+        relatórios e outros recursos relacionados à organização financeira.
+    </p>
+</section>
+
+
+<section>
+    <h2>2. Cadastro e conta</h2>
+
+    <p>
+        Algumas funcionalidades do ControleS exigem a criação de uma conta.
+        O usuário é responsável por fornecer informações corretas e manter
+        suas credenciais de acesso protegidas.
+    </p>
+
+    <p>
+        O usuário não deve compartilhar sua senha ou permitir que terceiros
+        utilizem sua conta de forma não autorizada.
+    </p>
+</section>
+
+
+<section>
+    <h2>3. Uso permitido</h2>
+
+    <p>Ao utilizar o ControleS, o usuário concorda em não:</p>
+
+    <ul>
+        <li>utilizar o serviço para atividades ilegais;</li>
+        <li>tentar acessar contas ou informações de outros usuários;</li>
+        <li>comprometer a segurança ou disponibilidade do serviço;</li>
+        <li>explorar vulnerabilidades do sistema;</li>
+        <li>utilizar automações abusivas contra a infraestrutura;</li>
+        <li>violar direitos de terceiros.</li>
+    </ul>
+</section>
+
+
+<section>
+    <h2>4. Informações financeiras</h2>
+
+    <p>
+        Os valores, categorias, receitas, despesas, metas e demais
+        informações financeiras existentes na conta são cadastrados
+        ou gerenciados pelo próprio usuário.
+    </p>
+
+    <p>
+        O usuário é responsável pela exatidão das informações inseridas.
+    </p>
+</section>
+
+
+<section>
+    <h2>5. Não constitui aconselhamento financeiro</h2>
+
+    <p>
+        O ControleS é uma ferramenta de organização e acompanhamento
+        financeiro. Informações, gráficos, relatórios, estimativas ou
+        análises apresentados possuem caráter informativo.
+    </p>
+
+    <p>
+        O ControleS não substitui orientação profissional financeira,
+        contábil, jurídica, tributária ou de investimentos.
+    </p>
+</section>
+
+
+<section>
+    <h2>6. WhatsApp</h2>
+
+    <p>
+        O ControleS poderá disponibilizar integração com o WhatsApp para
+        permitir consultas, registros, notificações e outras funcionalidades
+        relacionadas à conta do usuário.
+    </p>
+
+    <p>
+        A disponibilidade desses recursos poderá depender dos serviços
+        fornecidos pela Meta e pelo WhatsApp.
+    </p>
+</section>
+
+
+<section>
+    <h2>7. Inteligência artificial</h2>
+
+    <p>
+        Algumas funcionalidades poderão utilizar inteligência artificial
+        para auxiliar na organização, interpretação e apresentação das
+        informações financeiras cadastradas pelo usuário.
+    </p>
+
+    <p>
+        Resultados produzidos por sistemas automatizados podem conter
+        imprecisões e devem ser utilizados apenas como apoio informativo.
+    </p>
+</section>
+
+
+<section>
+    <h2>8. Plano gratuito</h2>
+
+    <p>
+        O ControleS poderá disponibilizar uma modalidade gratuita contendo
+        determinadas funcionalidades do aplicativo.
+    </p>
+
+    <p>
+        Essa modalidade poderá apresentar publicidade quando esse recurso
+        estiver implementado.
+    </p>
+</section>
+
+
+<section>
+    <h2>9. ControleS Premium</h2>
+
+    <p>
+        O ControleS poderá oferecer uma modalidade Premium com funcionalidades
+        adicionais e/ou ausência de publicidade, conforme a oferta apresentada
+        ao usuário no momento da contratação.
+    </p>
+
+    <p>
+        Preços, períodos de assinatura e funcionalidades incluídas serão
+        informados antes da confirmação da compra.
+    </p>
+</section>
+
+
+<section>
+    <h2>10. Pagamentos e assinaturas</h2>
+
+    <p>
+        Quando uma assinatura for adquirida através de uma plataforma externa,
+        como a Google Play, cobrança, renovação e gerenciamento do pagamento
+        poderão ser realizados pela respectiva plataforma.
+    </p>
+
+    <p>
+        Cancelamentos deverão observar as opções e regras disponibilizadas
+        pela plataforma responsável pela cobrança.
+    </p>
+</section>
+
+
+<section>
+    <h2>11. Serviços de terceiros</h2>
+
+    <p>
+        O ControleS poderá utilizar serviços de terceiros para banco de dados,
+        autenticação, hospedagem, pagamentos, comunicação e outros recursos
+        necessários ao funcionamento do serviço.
+    </p>
+</section>
+
+
+<section>
+    <h2>12. Disponibilidade do serviço</h2>
+
+    <p>
+        Buscamos manter o ControleS disponível e funcionando adequadamente.
+        Entretanto, não é possível garantir funcionamento ininterrupto.
+    </p>
+
+    <p>
+        O serviço poderá ficar temporariamente indisponível devido a
+        manutenção, atualizações, falhas técnicas ou fatores externos.
+    </p>
+</section>
+
+
+<section>
+    <h2>13. Alterações no ControleS</h2>
+
+    <p>
+        Funcionalidades poderão ser adicionadas, modificadas ou
+        descontinuadas conforme a evolução do serviço.
+    </p>
+</section>
+
+
+<section>
+    <h2>14. Segurança da conta</h2>
+
+    <p>
+        O usuário deve proteger suas credenciais e tomar medidas razoáveis
+        para impedir acesso não autorizado à sua conta.
+    </p>
+</section>
+
+
+<section>
+    <h2>15. Exclusão da conta</h2>
+
+    <p>
+        O usuário poderá solicitar a exclusão de sua conta e dos dados
+        associados conforme as opções disponibilizadas pelo ControleS.
+    </p>
+</section>
+
+
+<section>
+    <h2>16. Privacidade</h2>
+
+    <p>
+        O tratamento de informações pessoais relacionadas ao ControleS
+        está descrito em nossa Política de Privacidade.
+    </p>
+
+    <p>
+        <a href="privacidade.html">
+            Consultar Política de Privacidade →
+        </a>
+    </p>
+</section>
+
+
+<section>
+    <h2>17. Alterações destes Termos</h2>
+
+    <p>
+        Estes Termos poderão ser atualizados para refletir mudanças no
+        serviço, funcionalidades ou requisitos aplicáveis.
+    </p>
+
+    <p>
+        A versão atualizada será disponibilizada nesta página com sua
+        respectiva data de atualização.
+    </p>
+</section>
+
+
+<section>
+    <h2>18. Contato</h2>
+
+    <p>
+        Para dúvidas, suporte ou questões relacionadas a estes Termos:
+    </p>
+
+    <div class="contact">
+
+        <p>
+            <strong>ControleS — Suporte</strong>
+        </p>
+
+        <p>
+            <a href="mailto:controlesfinanceirossuport@gmail.com">
+                controlesfinanceirossuport@gmail.com
+            </a>
+        </p>
+
+    </div>
+</section>
+
+</div>
+
+</main>
+
+
+<footer>
+    <strong>Controle<span>S</span></strong>
+    — Seu dinheiro sob controle.
+    <br>
+    © 2026 ControleS.
+</footer>
+
+</body>
+</html>
