@@ -4452,3 +4452,226 @@ html body #appView #dashboardSection .balance-overview-card .balance-breakdown-i
     min-height:68px!important;
   }
 }
+
+/* =========================================================
+   CONTROLES — CORREÇÃO DEFINITIVA DA BARRA INFERIOR
+   Referência:
+   Início | Lançamentos | + | Relatórios | Perfil
+   ========================================================= */
+
+@media (max-width: 720px), (pointer: coarse) {
+
+  .mobile-bottom-nav{
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    z-index:10000!important;
+
+    width:100%!important;
+    height:96px!important;
+    min-height:96px!important;
+
+    margin:0!important;
+    padding:10px 8px max(10px, env(safe-area-inset-bottom))!important;
+
+    display:grid!important;
+    grid-template-columns:
+      minmax(0,1fr)
+      minmax(0,1.28fr)
+      88px
+      minmax(0,1.18fr)
+      minmax(0,.82fr)!important;
+    grid-template-rows:1fr!important;
+    column-gap:0!important;
+
+    align-items:center!important;
+    justify-items:stretch!important;
+
+    overflow:visible!important;
+    background:rgba(1,38,29,.985)!important;
+    border-top:1px solid rgba(88,220,170,.12)!important;
+    box-shadow:0 -12px 32px rgba(0,0,0,.18)!important;
+    backdrop-filter:blur(18px)!important;
+    -webkit-backdrop-filter:blur(18px)!important;
+  }
+
+  .mobile-bottom-nav > .bottom-nav-item{
+    position:relative!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+
+    transform:none!important;
+    translate:none!important;
+
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:72px!important;
+
+    margin:0!important;
+    padding:8px 2px 5px!important;
+
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:6px!important;
+
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+
+    color:#a9bbb3!important;
+    text-align:center!important;
+    overflow:visible!important;
+  }
+
+  .mobile-bottom-nav > .nav-home{grid-column:1!important}
+  .mobile-bottom-nav > .nav-transactions{grid-column:2!important}
+  .mobile-bottom-nav > .nav-add{grid-column:3!important}
+  .mobile-bottom-nav > .nav-reports{grid-column:4!important}
+  .mobile-bottom-nav > .nav-profile{grid-column:5!important}
+
+  .mobile-bottom-nav > .bottom-nav-item span{
+    display:block!important;
+    width:auto!important;
+    height:auto!important;
+    margin:0!important;
+    padding:0!important;
+    font-size:25px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+
+  .mobile-bottom-nav > .bottom-nav-item small{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+    font-size:10px!important;
+    font-weight:750!important;
+    line-height:1.05!important;
+    letter-spacing:-.02em!important;
+
+    text-align:center!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    color:inherit!important;
+  }
+
+  .mobile-bottom-nav > .bottom-nav-item.active{
+    color:#3ee4a4!important;
+  }
+
+  .mobile-bottom-nav > .nav-reports.active{
+    color:#ff922f!important;
+  }
+
+  .mobile-bottom-nav > .bottom-add-button,
+  .mobile-bottom-nav > #mobileAddButton{
+    position:relative!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+
+    align-self:start!important;
+    justify-self:center!important;
+
+    width:82px!important;
+    height:82px!important;
+    min-width:82px!important;
+    min-height:82px!important;
+    max-width:82px!important;
+    max-height:82px!important;
+
+    margin:-31px 0 0!important;
+    padding:0!important;
+
+    transform:none!important;
+    translate:none!important;
+
+    display:grid!important;
+    place-items:center!important;
+
+    border:7px solid #073128!important;
+    border-radius:50%!important;
+
+    background:linear-gradient(145deg,#ff922c,#ff7414)!important;
+    color:#fff!important;
+
+    box-shadow:
+      0 11px 28px rgba(255,125,23,.31),
+      0 0 0 1px rgba(41,230,155,.18)!important;
+
+    z-index:10002!important;
+    overflow:visible!important;
+  }
+
+  .mobile-bottom-nav > .bottom-add-button span,
+  .mobile-bottom-nav > #mobileAddButton span{
+    display:block!important;
+    width:auto!important;
+    height:auto!important;
+    margin:0!important;
+    padding:0!important;
+
+    color:#fff!important;
+    font-size:47px!important;
+    font-weight:300!important;
+    line-height:.82!important;
+
+    transform:translateY(-2px)!important;
+  }
+
+  .mobile-bottom-nav > .bottom-add-button:active,
+  .mobile-bottom-nav > #mobileAddButton:active{
+    transform:scale(.95)!important;
+  }
+
+  body{
+    padding-bottom:calc(96px + env(safe-area-inset-bottom))!important;
+  }
+
+  .main-content,
+  #dashboardSection{
+    padding-bottom:calc(132px + env(safe-area-inset-bottom))!important;
+  }
+}
+
+@media (max-width: 380px){
+  .mobile-bottom-nav{
+    grid-template-columns:
+      minmax(0,.92fr)
+      minmax(0,1.35fr)
+      76px
+      minmax(0,1.18fr)
+      minmax(0,.78fr)!important;
+    padding-left:4px!important;
+    padding-right:4px!important;
+  }
+
+  .mobile-bottom-nav > .bottom-nav-item small{
+    font-size:9px!important;
+  }
+
+  .mobile-bottom-nav > .bottom-add-button,
+  .mobile-bottom-nav > #mobileAddButton{
+    width:72px!important;
+    height:72px!important;
+    min-width:72px!important;
+    min-height:72px!important;
+    max-width:72px!important;
+    max-height:72px!important;
+    margin-top:-25px!important;
+  }
+}
