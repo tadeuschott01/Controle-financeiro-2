@@ -7460,3 +7460,33 @@ document.addEventListener('click', function(e){
     window.applyPremiumAccess=function(){const r=oldApply.apply(this,arguments);syncPremiumShortcutLocks();return r;};
   }
 })();
+
+/* =========================================================
+   CONTROLES MOBILE 18 — SINCRONIZAÇÃO VISUAL PREMIUM/TEMA
+   ========================================================= */
+(function controlesMobile18VisualSync(){
+  function syncLocks(){
+    const premium = typeof isPremiumActive === 'function' && isPremiumActive();
+    document.querySelectorAll('.premium-diamond,.nav-lock').forEach(lock=>{
+      lock.textContent = premium ? '🔓' : '🔒';
+      lock.setAttribute('aria-label',premium?'Premium desbloqueado':'Recurso Premium bloqueado');
+      lock.title = premium ? 'Premium desbloqueado' : 'Recurso Premium';
+    });
+  }
+  function syncThemeProfile(){
+    const theme=document.documentElement.getAttribute('data-theme')||'light';
+    const btn=document.getElementById('profileThemeBtn');
+    if(!btn)return;
+    const icon=btn.querySelector('.profile-row-icon');
+    const small=btn.querySelector('small');
+    if(icon) icon.textContent=theme==='dark'?'☀':'☾';
+    if(small) small.textContent=theme==='dark'?'Tema escuro ativo • toque para usar claro':'Tema claro ativo • toque para usar escuro';
+  }
+  document.addEventListener('click',e=>{
+    if(e.target.closest?.('#profileThemeBtn')) setTimeout(()=>{syncThemeProfile(); if(typeof showToast==='function') showToast('Aparência atualizada.','success');},30);
+  });
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{syncLocks();syncThemeProfile();},120));
+  window.addEventListener('load',()=>setTimeout(()=>{syncLocks();syncThemeProfile();},300));
+  const observer=new MutationObserver(()=>{syncLocks();syncThemeProfile();});
+  observer.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+})();
