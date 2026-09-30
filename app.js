@@ -7270,13 +7270,35 @@ function closeClearTransactionsModal(){
     modal.setAttribute("aria-hidden", "true");
 }
 
+function requestDeleteConfirmation(message){
+    return new Promise(resolve => {
+        const modal = $("confirmDeleteModal");
+        const text = $("confirmDeleteText");
+        const cancel = $("cancelDeleteBtn");
+        const confirmBtn = $("confirmDeleteBtn");
+        if (!modal || !cancel || !confirmBtn) { resolve(false); return; }
+        if (text) text.textContent = message;
+        modal.classList.remove("hidden");
+        modal.setAttribute("aria-hidden", "false");
+        const finish = value => {
+            modal.classList.add("hidden");
+            modal.setAttribute("aria-hidden", "true");
+            cancel.onclick = null; confirmBtn.onclick = null;
+            resolve(value);
+        };
+        cancel.onclick = () => finish(false);
+        confirmBtn.onclick = () => finish(true);
+    });
+}
+
 async function clearTransactionsByPeriod(period){
     if (!supabaseClient || !currentUser) return;
     const today = todayISO();
     const startOfWeek = (() => { const d = new Date(); d.setDate(d.getDate()-6); return d.toISOString().slice(0,10); })();
     const monthStart = today.slice(0,7) + "-01";
     const labels = { today:"de hoje", week:"dos últimos 7 dias", month:"deste mês", all:"de todo o período" };
-    if (!confirm(`Excluir os lançamentos ${labels[period] || "selecionados"}? Esta ação não pode ser desfeita.`)) return;
+    const confirmed = await requestDeleteConfirmation(`Excluir os lançamentos ${labels[period] || "selecionados"}? Esta ação não pode ser desfeita.`);
+    if (!confirmed) return;
     try {
         let query = supabaseClient.from("transactions").delete().eq("user_id", currentUser.id);
         if (period === "today") query = query.eq("date", today);
