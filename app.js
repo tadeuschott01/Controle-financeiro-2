@@ -2560,9 +2560,13 @@
                         );
 
                     return `
-                        <div class="recent-transaction">
+                        <div class="recent-transaction ${type === "income" ? "recent-income" : "recent-expense"}">
 
-                            <div>
+                            <span class="recent-transaction-icon" aria-hidden="true">
+                                ${type === "income" ? "↑" : "↓"}
+                            </span>
+
+                            <div class="recent-transaction-copy">
 
                                 <strong>
                                     ${escapeHTML(
