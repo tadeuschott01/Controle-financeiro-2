@@ -5401,3 +5401,176 @@ html body #appView #dashboardSection .balance-overview-card .balance-breakdown-i
     min-height:74px;
   }
 }
+
+/* =========================================================
+   CONTROLES — OVERRIDE FINAL DA BARRA INFERIOR
+   POSIÇÕES ABSOLUTAS: evita qualquer conflito de grid/flex antigo
+   Início | Lançamentos | + | Relatórios | Perfil
+   ========================================================= */
+@media (max-width: 720px), (pointer: coarse) {
+  .controles-bottom-bar {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    height: 92px !important;
+    min-height: 92px !important;
+    max-height: 92px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    background: #063126 !important;
+    border-top: 1px solid rgba(255,255,255,.07) !important;
+    box-shadow: 0 -10px 28px rgba(0,0,0,.18) !important;
+    overflow: visible !important;
+    z-index: 100000 !important;
+  }
+
+  .controles-bottom-bar > .controles-nav {
+    position: absolute !important;
+    top: 10px !important;
+    bottom: auto !important;
+    width: 20% !important;
+    height: 72px !important;
+    min-width: 0 !important;
+    max-width: 20% !important;
+    margin: 0 !important;
+    padding: 5px 1px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    transform: none !important;
+    translate: none !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: #a7bbb2 !important;
+    text-align: center !important;
+    overflow: visible !important;
+  }
+
+  .controles-bottom-bar > .controles-nav-home {
+    left: 0 !important;
+    right: auto !important;
+  }
+
+  .controles-bottom-bar > .controles-nav-transactions {
+    left: 20% !important;
+    right: auto !important;
+  }
+
+  .controles-bottom-bar > .controles-nav-reports {
+    left: 60% !important;
+    right: auto !important;
+  }
+
+  .controles-bottom-bar > .controles-nav-profile {
+    left: 80% !important;
+    right: auto !important;
+  }
+
+  .controles-bottom-bar > .controles-nav span {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transform: none !important;
+    translate: none !important;
+    color: inherit !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+  }
+
+  .controles-bottom-bar > .controles-nav small {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    transform: none !important;
+    translate: none !important;
+    color: inherit !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+  }
+
+  .controles-bottom-bar > .controles-nav.active {
+    color: #39dda1 !important;
+  }
+
+  .controles-bottom-bar > .controles-nav-reports.active {
+    color: #ff8a28 !important;
+  }
+
+  .controles-bottom-bar > .controles-fab,
+  .controles-bottom-bar > #mobileAddButton {
+    position: absolute !important;
+    left: 50% !important;
+    right: auto !important;
+    top: -31px !important;
+    bottom: auto !important;
+    width: 84px !important;
+    height: 84px !important;
+    min-width: 84px !important;
+    min-height: 84px !important;
+    max-width: 84px !important;
+    max-height: 84px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateX(-50%) !important;
+    translate: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: linear-gradient(145deg,#ff922c,#ff7414) !important;
+    color: #fff !important;
+    border: 7px solid #063126 !important;
+    border-radius: 50% !important;
+    box-shadow: 0 11px 28px rgba(255,125,23,.31) !important;
+    overflow: hidden !important;
+    z-index: 100002 !important;
+  }
+
+  .controles-bottom-bar > .controles-fab span,
+  .controles-bottom-bar > #mobileAddButton span {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 0 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transform: none !important;
+    translate: none !important;
+    color: #fff !important;
+    font-size: 46px !important;
+    font-weight: 300 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+  }
+
+  .controles-bottom-bar > .controles-fab:active,
+  .controles-bottom-bar > #mobileAddButton:active {
+    transform: translateX(-50%) scale(.95) !important;
+  }
+
+  body {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+  }
+}
