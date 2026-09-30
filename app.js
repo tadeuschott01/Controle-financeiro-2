@@ -1545,6 +1545,9 @@
 
         if (!date) return true;
 
+        const remembered = new Set(getRememberedReceivableIds().map(String));
+        if (remembered.has(String(transaction.id))) return false;
+
         return date <= referenceDate;
     }
 
@@ -1566,6 +1569,9 @@
             getTransactionDate(transaction);
 
         if (!date) return false;
+
+        const remembered = new Set(getRememberedReceivableIds().map(String));
+        if (remembered.has(String(transaction.id))) return true;
 
         return date > todayISO();
     }
@@ -1664,10 +1670,6 @@
                                 </strong>
 
                                 <small>
-                                    ${escapeHTML(
-                                        getTransactionCategory(transaction)
-                                    )}
-                                    •
                                     Recebimento: ${formatDateBR(
                                         getTransactionDate(transaction)
                                     )}
@@ -1685,7 +1687,7 @@
                                 class="btn btn-small mark-received-btn"
                                 data-receivable-id="${transaction.id}"
                             >
-                                Recebido
+                                Marcar como recebido
                             </button>
                         </div>
                     `;
@@ -1811,11 +1813,17 @@
         };
 
         try {
-            const { error } = await supabaseClient
+            const { data: insertedReceivable, error } = await supabaseClient
                 .from("transactions")
-                .insert(payload);
+                .insert(payload)
+                .select("id")
+                .single();
 
             if (error) throw error;
+
+            if (insertedReceivable?.id) {
+                rememberReceivableId(insertedReceivable.id);
+            }
 
             closeModal("receivableModal");
             showToast("Valor adicionado em A Receber.", "success");
@@ -7606,3 +7614,57 @@
       const observer=new MutationObserver(()=>{syncLocks();syncThemeProfile();});
       observer.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
     })();
+
+
+/* =========================================================
+   A RECEBER — CONFIRMAÇÃO NA DATA DE RECEBIMENTO
+   ========================================================= */
+const RECEIVABLE_IDS_KEY = "controles_receivable_ids";
+let pendingReceivableConfirmation = null;
+
+function getRememberedReceivableIds() {
+    try { return JSON.parse(localStorage.getItem(RECEIVABLE_IDS_KEY) || "[]"); }
+    catch (_) { return []; }
+}
+function rememberReceivableId(id) {
+    const ids = getRememberedReceivableIds().map(String);
+    if (!ids.includes(String(id))) ids.push(String(id));
+    localStorage.setItem(RECEIVABLE_IDS_KEY, JSON.stringify(ids));
+}
+function forgetReceivableId(id) {
+    const ids = getRememberedReceivableIds().map(String).filter(item => item !== String(id));
+    localStorage.setItem(RECEIVABLE_IDS_KEY, JSON.stringify(ids));
+}
+function getDueRememberedReceivable() {
+    const ids = new Set(getRememberedReceivableIds().map(String));
+    return transactions.find(t => ids.has(String(t.id)) && getTransactionDate(t) && getTransactionDate(t) <= todayISO());
+}
+function openDueReceivableConfirmation() {
+    const transaction = getDueRememberedReceivable();
+    if (!transaction) return;
+    pendingReceivableConfirmation = transaction;
+    const text = $("receivableConfirmText");
+    if (text) text.textContent = `${getTransactionDescription(transaction)} • ${formatCurrency(getTransactionAmount(transaction))}. Você recebeu esse valor?`;
+    openModal("receivableConfirmModal");
+}
+
+document.addEventListener("click", event => {
+    if (event.target.closest("#receivableConfirmYes")) {
+        if (pendingReceivableConfirmation) {
+            forgetReceivableId(pendingReceivableConfirmation.id);
+            showToast("Valor confirmado como recebido.", "success");
+        }
+        pendingReceivableConfirmation = null;
+        closeModal("receivableConfirmModal");
+        updateDashboard();
+        renderReceivables();
+        updateReceivableDashboard();
+        setTimeout(openDueReceivableConfirmation, 350);
+    }
+    if (event.target.closest("#receivableConfirmNo")) {
+        showToast("Tudo bem. O valor continuará aguardando confirmação.", "info");
+        closeModal("receivableConfirmModal");
+    }
+});
+
+window.addEventListener("load", () => setTimeout(openDueReceivableConfirmation, 1800));
