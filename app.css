@@ -2939,3 +2939,75 @@ body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",san
  .content-section *{box-sizing:border-box}.content-section strong,.content-section b{overflow-wrap:normal}.money,.currency,[id$="Value"]{font-variant-numeric:tabular-nums}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* =========================================================
+   CONTROLES MOBILE 18 — AJUSTES SOLICITADOS
+   Filtros destacados + relatórios claros + tema funcional
+   ========================================================= */
+
+/* FILTROS — bloco destacado, sem se misturar ao fundo */
+#transactionsSection .app-filter-card{
+  background:linear-gradient(145deg,#0b7a5a 0%,#075f49 55%,#064d3c 100%)!important;
+  border:1px solid rgba(104,255,198,.38)!important;
+  box-shadow:0 18px 42px rgba(0,38,28,.28),inset 0 1px 0 rgba(255,255,255,.08)!important;
+  border-radius:26px!important;padding:20px!important;margin-top:18px!important;
+}
+#transactionsSection .app-filter-head h3{color:#fff!important;font-size:25px!important;letter-spacing:-.035em!important}
+#transactionsSection .app-filter-head p{color:#d2eee4!important}
+#transactionsSection .app-filter-head .app-kicker{color:#6ff0be!important}
+#transactionsSection .app-filter-icon{background:#dff8ee!important;color:#087858!important;box-shadow:0 8px 22px rgba(0,0,0,.12)!important}
+#transactionsSection .filter-reset{color:#8bffd1!important;background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.10)!important;border-radius:12px!important;padding:9px 12px!important}
+#transactionsSection .app-search-field,#transactionsSection .app-select-field{
+  background:#fff!important;border:2px solid rgba(203,239,225,.95)!important;
+  box-shadow:0 9px 24px rgba(0,35,25,.15)!important;color:#123c30!important;
+}
+#transactionsSection .app-search-field input,#transactionsSection .app-select-field select{background:#fff!important;color:#123c30!important;border:0!important;box-shadow:none!important}
+#transactionsSection .app-search-field input::placeholder{color:#839a91!important}
+#transactionsSection .app-select-field>span{color:#4f7668!important}
+#transactionsSection .filter-summary{color:#c4e4d8!important}
+
+/* RELATÓRIOS — cartões claros e leitura mais limpa */
+#reportsSection .report-period-filter,#reportsSection .period-report-card,#reportsSection .report-period-card,
+#reportsSection .panel,#reportsSection .report-panel,#reportsSection .chart-panel{
+  background:linear-gradient(155deg,#f7fffb,#e6f6ef)!important;
+  border:1px solid #c9e6da!important;color:#10382d!important;
+  box-shadow:0 14px 34px rgba(0,42,30,.14)!important;
+}
+#reportsSection .report-period-filter h3,#reportsSection .panel h2,#reportsSection .panel h3,#reportsSection .panel-header h3{color:#0b3529!important}
+#reportsSection .report-period-filter p,#reportsSection .panel p,#reportsSection .panel-header p{color:#647e74!important}
+#reportsSection .report-period-status{border-top-color:#bdd9ce!important}
+#reportsSection .report-period-status span{color:#718a80!important}
+#reportsSection .report-period-status strong{color:#087b59!important}
+#reportsSection .report-card{background:#f5fffb!important;border:1px solid #c7e6da!important;box-shadow:0 10px 25px rgba(0,44,31,.10)!important}
+#reportsSection .report-card:nth-child(2){background:#fff2f0!important;border-color:#f1d1cc!important}
+#reportsSection .report-card:nth-child(3){background:#fff8e9!important;border-color:#eedfb7!important}
+#reportsSection .report-card span,#reportsSection .report-card small{color:#647e74!important}
+#reportsSection .report-card strong{color:#10382d!important}
+#reportsSection .report-card:first-child strong,#reportsSection .report-card.income strong{color:#07875f!important}
+#reportsSection .report-card.expense strong,#reportsSection .report-card:nth-child(2) strong{color:#c94f4f!important}
+#reportsSection .report-card.balance strong,#reportsSection .report-card:nth-child(3) strong{color:#9a6b13!important}
+#reportsSection .report-line,#reportsSection .report-analysis{background:#fff!important;border-color:#d6e9e1!important;color:#31584a!important}
+#reportsSection .report-line span{color:#647e74!important}#reportsSection .report-line strong{color:#10382d!important}
+
+/* PREMIUM — somente UM cadeado por atalho */
+#dashboardSection .quick-action[data-premium-locked="true"]::after,#dashboardSection .quick-action.premium-locked::after,
+.premium-diamond::after,.nav-lock::after{content:none!important;display:none!important}
+.premium-diamond,.nav-lock{font-style:normal!important;line-height:1!important}
+
+/* APARÊNCIA — tema claro realmente muda o aplicativo */
+html[data-theme="light"] body{background:#eef8f3!important;color:#12382e!important}
+html[data-theme="light"] .app-shell,html[data-theme="light"] .main-content{background:linear-gradient(180deg,#eef8f3 0%,#e4f3ec 100%)!important}
+html[data-theme="light"] .content-section>.section-heading h2{color:#10382d!important}
+html[data-theme="light"] .content-section>.section-heading p{color:#688279!important}
+html[data-theme="light"] #dashboardSection .quick-action{background:#fff!important;color:#12382e!important;border-color:#d1e7de!important;box-shadow:0 10px 28px rgba(8,67,48,.09)!important}
+html[data-theme="light"] #dashboardSection .quick-action span{color:#0a8d64!important}
+html[data-theme="light"] .transactions-app-list .transaction-item{background:#fff!important;color:#12382e!important;border-color:#d2e8df!important}
+html[data-theme="light"] .profile-card,html[data-theme="light"] .profile-group{background:#f8fffb!important;color:#12382e!important;border-color:#d0e8de!important}
+html[data-theme="light"] .profile-row b{color:#12382e!important}html[data-theme="light"] .profile-row small{color:#71887f!important}
+html[data-theme="dark"] body{background:#07533f!important}
+
+@media(max-width:520px){
+ #transactionsSection .app-filter-card{padding:17px!important;border-radius:23px!important}
+ #transactionsSection .app-filter-head{gap:12px!important}
+ #reportsSection .report-card{min-height:96px!important}
+}
