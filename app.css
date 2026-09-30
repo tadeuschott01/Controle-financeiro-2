@@ -3846,3 +3846,222 @@ body{
     font-size:13px!important;
   }
 }
+
+
+/* =========================================================
+   CONTROLES — CORREÇÕES FINAIS CONSOLIDADAS
+   ========================================================= */
+
+/* LOGO DEFINITIVA: maior e sem o quadrado engolir a imagem */
+.welcome-logo,
+.brand-logo{
+    width:148px!important;
+    height:148px!important;
+    padding:4px!important;
+    border-radius:34px!important;
+    background:rgba(5,68,51,.55)!important;
+    border:1px solid rgba(71,231,173,.28)!important;
+    overflow:hidden!important;
+}
+.welcome-logo img,
+.brand-logo img{
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    object-fit:cover!important;
+    border-radius:29px!important;
+    padding:0!important;
+}
+
+/* HOME: UM ÚNICO CARD FINANCEIRO, SEM ROLAGEM */
+#dashboardSection .dashboard-summary-single{
+    display:block!important;
+    width:100%!important;
+    overflow:visible!important;
+    padding:0!important;
+}
+#dashboardSection .balance-overview-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-height:0!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+}
+#dashboardSection .balance-overview-top{
+    min-width:0!important;
+}
+#dashboardSection .balance-main-copy{
+    min-width:0!important;
+}
+#dashboardSection .balance-main-copy>strong{
+    max-width:100%!important;
+    font-size:clamp(37px,10vw,56px)!important;
+    white-space:nowrap!important;
+}
+
+/* Receitas e despesas sempre cabem dentro dos quadrados */
+#dashboardSection .balance-breakdown{
+    width:100%!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:10px!important;
+}
+#dashboardSection .balance-breakdown-item{
+    min-width:0!important;
+    width:100%!important;
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:38px minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:8px!important;
+    padding:12px 10px!important;
+    overflow:hidden!important;
+}
+#dashboardSection .balance-breakdown-item>div{
+    min-width:0!important;
+    overflow:hidden!important;
+}
+#dashboardSection .balance-breakdown-item small{
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+}
+#dashboardSection .balance-breakdown-item strong{
+    width:100%!important;
+    max-width:100%!important;
+    font-size:clamp(13px,3.75vw,18px)!important;
+    line-height:1.08!important;
+    letter-spacing:-.035em!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+}
+#dashboardSection .balance-breakdown-icon{
+    width:36px!important;
+    height:36px!important;
+    flex:0 0 36px!important;
+    font-size:22px!important;
+}
+
+/* INSIGHT E ÚLTIMOS LANÇAMENTOS MAIS CLAROS */
+#dashboardSection .home-insight-card{
+    background:linear-gradient(145deg,#f8fcfa,#eaf7f1)!important;
+    border:1px solid #d4e9df!important;
+}
+#dashboardSection .recent-transactions-panel{
+    background:linear-gradient(145deg,#fbfdfc 0%,#edf8f3 100%)!important;
+    border:1px solid #d6eae1!important;
+    color:#0a392c!important;
+    opacity:1!important;
+}
+#dashboardSection .recent-transactions-panel *{
+    opacity:1!important;
+}
+#dashboardSection .recent-transactions-panel .panel-header h3,
+#dashboardSection .recent-transactions-panel .recent-transaction-copy>strong{
+    color:#09372b!important;
+}
+#dashboardSection .recent-transactions-panel .panel-header p,
+#dashboardSection .recent-transactions-panel .recent-transaction-copy>small{
+    color:#71867d!important;
+}
+#dashboardSection .recent-transactions-panel .income-value{
+    color:#078d62!important;
+}
+#dashboardSection .recent-transactions-panel .expense-value{
+    color:#e95050!important;
+}
+
+/* A RECEBER: sem carrossel horizontal desnecessário */
+#receivableSection>.summary-grid{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    overflow:visible!important;
+    gap:12px!important;
+}
+#receivableSection>.summary-grid .summary-card{
+    min-width:0!important;
+    width:100%!important;
+}
+
+/* BARRA INFERIOR: Início | Lançamentos | + | Relatórios | Perfil */
+.mobile-bottom-nav{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) 86px minmax(0,1fr) minmax(0,1fr)!important;
+    align-items:center!important;
+    overflow:visible!important;
+}
+.mobile-bottom-nav>.bottom-nav-item:nth-of-type(1){grid-column:1!important}
+.mobile-bottom-nav>.bottom-nav-item:nth-of-type(2){grid-column:2!important}
+.mobile-bottom-nav>.bottom-add-button{
+    grid-column:3!important;
+    grid-row:1!important;
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    margin:0 auto!important;
+    transform:translateY(-30px)!important;
+}
+.mobile-bottom-nav>.bottom-nav-item:nth-of-type(3){grid-column:4!important}
+.mobile-bottom-nav>.bottom-nav-item:nth-of-type(4){grid-column:5!important}
+.mobile-bottom-nav>.bottom-nav-item{
+    width:100%!important;
+    min-width:0!important;
+    position:relative!important;
+    z-index:1!important;
+}
+.mobile-bottom-nav>.bottom-add-button{
+    z-index:3!important;
+}
+.mobile-bottom-nav .bottom-add-button:active{
+    transform:translateY(-30px) scale(.95)!important;
+}
+
+/* A RECEBER — visual mais coerente */
+#receivableSection .section-heading .btn-primary{
+    white-space:nowrap!important;
+}
+#receivableSection .receivable-item small{
+    color:#74877f!important;
+}
+
+@media(max-width:720px),(pointer:coarse){
+    .welcome-logo,
+    .brand-logo{
+        width:142px!important;
+        height:142px!important;
+    }
+
+    #dashboardSection .balance-overview-card{
+        padding:20px 16px 17px!important;
+    }
+
+    #dashboardSection .balance-breakdown{
+        gap:8px!important;
+    }
+
+    #dashboardSection .balance-breakdown-item{
+        grid-template-columns:34px minmax(0,1fr)!important;
+        padding:11px 8px!important;
+        gap:6px!important;
+    }
+
+    #dashboardSection .balance-breakdown-icon{
+        width:34px!important;
+        height:34px!important;
+        font-size:21px!important;
+    }
+
+    #dashboardSection .balance-breakdown-item strong{
+        font-size:clamp(12px,3.55vw,16px)!important;
+    }
+
+    #receivableSection>.summary-grid{
+        grid-template-columns:1fr!important;
+    }
+
+    .mobile-bottom-nav{
+        grid-template-columns:minmax(0,1fr) minmax(0,1fr) 82px minmax(0,1fr) minmax(0,1fr)!important;
+    }
+}
