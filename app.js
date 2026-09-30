@@ -7342,18 +7342,7 @@ async function clearTransactionsByPeriod(period){
     const action=el.dataset.action;
     if(action==='add-income'){e.preventDefault();e.stopPropagation();openTransactionModal('income');return;}
     if(action==='add-expense'){e.preventDefault();e.stopPropagation();openTransactionModal('expense');return;}
-    if(el.id==='addCategoryBtn'||el.id==='addCategoryBtn2'||el.matches('[data-new-category]')){
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      const premium=typeof isPremiumActive==='function' && isPremiumActive();
-      if(!premium){
-        if(typeof openPremiumAccess==='function') openPremiumAccess();
-        else { showToast('🔒 Nova categoria é um recurso Premium.','warning'); showSection('premium'); }
-        return;
-      }
-      prepareCategory();
-      return;
-    }
+    if(el.id==='addCategoryBtn'||el.id==='addCategoryBtn2'||el.matches('[data-new-category]')){e.preventDefault();e.stopPropagation();prepareCategory();return;}
     if(el.id==='addGoalBtn'||el.id==='newGoalBtn'||el.matches('[data-new-goal]')){e.preventDefault();e.stopPropagation();prepareGoal();return;}
   },true);
   document.addEventListener('click',function(e){
