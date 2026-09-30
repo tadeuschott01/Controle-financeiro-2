@@ -1,386 +1,312 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b3f2d">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07130f">
 
-  <title>Política de Privacidade | ControleS</title>
+    <title>Política de Privacidade | ControleS</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    :root {
-      --green-950: #073425;
-      --green-900: #0b3f2d;
-      --green-800: #0d4b36;
-      --green-100: #e8f2ee;
-      --orange: #ef8a2c;
-      --text: #17211e;
-      --muted: #68746f;
-      --border: #e1e5e3;
-      --bg: #f5f7f6;
-      --white: #ffffff;
-    }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #07130f;
+            color: #eaf5ef;
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
 
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-    }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
 
-    header {
-      background: var(--green-950);
-      color: white;
-      padding: 38px 20px;
-      text-align: center;
-    }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 30px;
+        }
 
-    header h1 {
-      font-size: 30px;
-      margin-bottom: 6px;
-    }
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: #0b6b4f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            color: white;
+        }
 
-    header p {
-      opacity: .8;
-    }
+        .brand h1 {
+            font-size: 24px;
+        }
 
-    main {
-      width: min(900px, calc(100% - 32px));
-      margin: 35px auto;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 40px;
-    }
+        .brand p {
+            color: #9eb7aa;
+            font-size: 14px;
+        }
 
-    h2 {
-      color: var(--green-900);
-      margin-top: 32px;
-      margin-bottom: 10px;
-      font-size: 21px;
-    }
+        .card {
+            background: #102019;
+            border: 1px solid #1d382d;
+            border-radius: 24px;
+            padding: 35px;
+        }
 
-    h2:first-of-type {
-      margin-top: 0;
-    }
+        h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
 
-    p, li {
-      color: #46524e;
-    }
+        h3 {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            color: #75d6aa;
+            font-size: 19px;
+        }
 
-    ul {
-      padding-left: 24px;
-      margin-top: 10px;
-    }
+        p {
+            margin-bottom: 14px;
+            color: #d6e5dd;
+        }
 
-    li {
-      margin-bottom: 7px;
-    }
+        ul {
+            padding-left: 22px;
+            margin-bottom: 15px;
+        }
 
-    a {
-      color: var(--green-800);
-      font-weight: 600;
-    }
+        li {
+            margin-bottom: 8px;
+            color: #d6e5dd;
+        }
 
-    .notice {
-      background: var(--green-100);
-      border-left: 4px solid var(--green-800);
-      padding: 18px;
-      border-radius: 10px;
-      margin: 24px 0;
-    }
+        .updated {
+            color: #91a99d;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
 
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: var(--muted);
-      font-size: 14px;
-    }
+        a {
+            color: #75d6aa;
+        }
 
-    @media (max-width: 600px) {
-      main {
-        padding: 25px 20px;
-      }
+        .footer {
+            text-align: center;
+            color: #81988c;
+            font-size: 13px;
+            margin-top: 25px;
+        }
 
-      header h1 {
-        font-size: 25px;
-      }
-    }
-  </style>
+        @media (max-width: 600px) {
+            body {
+                padding: 24px 14px;
+            }
+
+            .card {
+                padding: 24px 20px;
+            }
+
+            h2 {
+                font-size: 25px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<header>
-  <h1>ControleS</h1>
-  <p>Seu dinheiro sob controle.</p>
-</header>
+<div class="container">
 
-<main>
+    <div class="brand">
+        <div class="logo">CS</div>
 
-  <h1>Política de Privacidade</h1>
+        <div>
+            <h1>ControleS</h1>
+            <p>Seu dinheiro sob controle.</p>
+        </div>
+    </div>
 
-  <p>
-    Última atualização: 29 de setembro de 2026.
-  </p>
+    <main class="card">
 
-  <div class="notice">
-    Esta Política de Privacidade explica como o ControleS trata
-    informações relacionadas ao uso de seus serviços.
-  </div>
+        <h2>Política de Privacidade</h2>
 
-  <h2>1. Sobre o ControleS</h2>
+        <p class="updated">
+            Última atualização: 29 de setembro de 2026
+        </p>
 
-  <p>
-    O ControleS é uma ferramenta de organização financeira pessoal
-    que permite ao usuário registrar e acompanhar informações como
-    receitas, despesas, categorias, metas, valores a receber e
-    relatórios financeiros.
-  </p>
+        <p>
+            A sua privacidade é importante para o ControleS.
+            Esta Política de Privacidade explica como as informações
+            dos usuários podem ser coletadas, utilizadas, armazenadas
+            e protegidas durante a utilização do aplicativo ControleS.
+        </p>
 
-  <h2>2. Informações tratadas pelo ControleS</h2>
+        <h3>1. Informações coletadas</h3>
 
-  <p>
-    Dependendo dos recursos utilizados, poderão ser tratados dados
-    fornecidos pelo próprio usuário, incluindo:
-  </p>
+        <p>
+            Para permitir o funcionamento do aplicativo, o ControleS
+            poderá tratar informações fornecidas diretamente pelo usuário,
+            incluindo:
+        </p>
 
-  <ul>
-    <li>nome;</li>
-    <li>endereço de e-mail;</li>
-    <li>informações necessárias para autenticação da conta;</li>
-    <li>receitas e despesas cadastradas;</li>
-    <li>categorias financeiras;</li>
-    <li>metas e orçamentos;</li>
-    <li>valores e datas de lançamentos;</li>
-    <li>informações inseridas voluntariamente pelo usuário;</li>
-    <li>dados necessários ao funcionamento das integrações habilitadas.</li>
-  </ul>
+        <ul>
+            <li>Nome;</li>
+            <li>Endereço de e-mail;</li>
+            <li>Informações necessárias para autenticação da conta;</li>
+            <li>Receitas e despesas cadastradas pelo usuário;</li>
+            <li>Categorias financeiras;</li>
+            <li>Metas e informações de organização financeira;</li>
+            <li>Outros dados inseridos voluntariamente no aplicativo.</li>
+        </ul>
 
-  <p>
-    O ControleS não solicita que o usuário informe senhas bancárias,
-    números completos de cartão ou credenciais de acesso a instituições
-    financeiras nos campos comuns do aplicativo.
-  </p>
+        <h3>2. Dados financeiros</h3>
 
-  <h2>3. Finalidade do tratamento</h2>
+        <p>
+            O ControleS é uma ferramenta de organização financeira.
+            Os valores, descrições, categorias, receitas, despesas,
+            metas e demais informações financeiras cadastradas no
+            aplicativo são fornecidos pelo próprio usuário.
+        </p>
 
-  <p>As informações poderão ser utilizadas para:</p>
+        <p>
+            O ControleS não é uma instituição financeira e não movimenta
+            diretamente o dinheiro do usuário.
+        </p>
 
-  <ul>
-    <li>criar e autenticar a conta do usuário;</li>
-    <li>salvar e apresentar os registros financeiros cadastrados;</li>
-    <li>calcular saldos, receitas e despesas;</li>
-    <li>gerar gráficos, resumos e relatórios;</li>
-    <li>oferecer funcionalidades Premium;</li>
-    <li>prestar suporte;</li>
-    <li>manter a segurança e o funcionamento do serviço;</li>
-    <li>permitir integrações solicitadas pelo usuário.</li>
-  </ul>
+        <h3>3. Como utilizamos as informações</h3>
 
-  <h2>4. Supabase</h2>
+        <p>
+            As informações poderão ser utilizadas para:
+        </p>
 
-  <p>
-    O ControleS utiliza infraestrutura do Supabase para recursos como
-    autenticação, banco de dados e armazenamento das informações
-    necessárias ao funcionamento do aplicativo.
-  </p>
+        <ul>
+            <li>Criar e manter a conta do usuário;</li>
+            <li>Permitir o funcionamento dos recursos do ControleS;</li>
+            <li>Exibir dashboards, relatórios e resumos financeiros;</li>
+            <li>Sincronizar informações vinculadas à conta;</li>
+            <li>Disponibilizar recursos Premium contratados;</li>
+            <li>Melhorar a segurança e estabilidade do aplicativo;</li>
+            <li>Prestar suporte ao usuário;</li>
+            <li>Cumprir obrigações legais quando aplicável.</li>
+        </ul>
 
-  <p>
-    Dados da conta e informações financeiras cadastradas no ControleS
-    poderão, portanto, ser processados pela infraestrutura utilizada
-    para disponibilizar esses serviços.
-  </p>
+        <h3>4. Armazenamento e serviços de terceiros</h3>
 
-  <h2>5. WhatsApp e Meta</h2>
+        <p>
+            Para oferecer determinadas funcionalidades, o ControleS
+            poderá utilizar serviços tecnológicos de terceiros para
+            autenticação, banco de dados, hospedagem, pagamentos,
+            assinaturas e outras funções necessárias ao aplicativo.
+        </p>
 
-  <p>
-    O ControleS poderá disponibilizar integração com o WhatsApp para
-    permitir que usuários interajam com funcionalidades do serviço
-    por mensagens.
-  </p>
+        <p>
+            Esses serviços poderão tratar informações estritamente
+            necessárias para executar suas respectivas funções.
+        </p>
 
-  <p>
-    Quando essa funcionalidade estiver habilitada e for utilizada,
-    poderão ser processados dados necessários à comunicação, como
-    número associado ao WhatsApp, identificadores técnicos e conteúdo
-    das mensagens enviadas ao ControleS.
-  </p>
+        <h3>5. Assinatura Premium</h3>
 
-  <p>
-    Essas informações serão utilizadas para interpretar solicitações,
-    executar funcionalidades autorizadas pelo usuário e enviar as
-    respectivas respostas.
-  </p>
+        <p>
+            Caso o usuário contrate o ControleS Premium através da
+            Google Play, o processamento da compra e da assinatura
+            poderá ser realizado pela Google Play e por serviços
+            utilizados para gerenciamento das assinaturas.
+        </p>
 
-  <h2>6. Recursos de inteligência artificial</h2>
+        <p>
+            O ControleS não recebe nem armazena diretamente os dados
+            completos do cartão utilizado pelo usuário na Google Play.
+        </p>
 
-  <p>
-    O ControleS poderá utilizar recursos de inteligência artificial
-    para auxiliar na análise e apresentação das informações financeiras
-    do usuário.
-  </p>
+        <h3>6. Compartilhamento de dados</h3>
 
-  <p>
-    Quando esses recursos estiverem disponíveis, somente as informações
-    necessárias para executar a funcionalidade solicitada deverão ser
-    processadas pelos serviços envolvidos.
-  </p>
+        <p>
+            O ControleS não vende os dados pessoais dos usuários.
+        </p>
 
-  <p>
-    Informações e análises fornecidas pelo ControleS têm finalidade
-    organizacional e informativa e não constituem aconselhamento
-    financeiro, contábil, jurídico ou de investimento.
-  </p>
+        <p>
+            Informações poderão ser compartilhadas com prestadores
+            de serviços necessários ao funcionamento do aplicativo
+            ou quando houver obrigação legal.
+        </p>
 
-  <h2>7. Plano Premium e pagamentos</h2>
+        <h3>7. Segurança</h3>
 
-  <p>
-    O ControleS poderá disponibilizar funcionalidades gratuitas e
-    funcionalidades Premium.
-  </p>
+        <p>
+            São adotadas medidas técnicas e organizacionais destinadas
+            a proteger as informações contra acesso, alteração,
+            divulgação ou destruição não autorizada.
+        </p>
 
-  <p>
-    Quando assinaturas ou compras forem realizadas por plataformas
-    externas, como a Google Play, o processamento do pagamento será
-    realizado pelo respectivo provedor. O ControleS poderá receber
-    informações necessárias para identificar o status da assinatura
-    e liberar os recursos correspondentes.
-  </p>
+        <p>
+            Entretanto, nenhum sistema conectado à internet pode
+            garantir segurança absoluta.
+        </p>
 
-  <h2>8. Publicidade</h2>
+        <h3>8. Exclusão da conta e dos dados</h3>
 
-  <p>
-    Versões gratuitas do ControleS poderão apresentar publicidade.
-    Caso serviços de publicidade sejam implementados, informações
-    técnicas poderão ser tratadas pelos respectivos provedores de
-    acordo com suas próprias políticas e com as permissões aplicáveis.
-  </p>
+        <p>
+            O usuário poderá solicitar a exclusão da sua conta e dos
+            dados pessoais associados a ela.
+        </p>
 
-  <h2>9. Compartilhamento de informações</h2>
+        <p>
+            Para consultar as instruções, acesse a página
+            <a href="exclusao-dados.html">
+                Exclusão de Dados
+            </a>.
+        </p>
 
-  <p>
-    O ControleS não comercializa os dados financeiros pessoais
-    cadastrados pelo usuário.
-  </p>
+        <h3>9. Direitos do usuário</h3>
 
-  <p>
-    Informações poderão ser processadas por prestadores necessários
-    ao funcionamento do serviço, por exemplo, serviços de hospedagem,
-    banco de dados, autenticação, comunicação, pagamentos e recursos
-    tecnológicos integrados ao ControleS.
-  </p>
+        <p>
+            De acordo com a legislação aplicável, inclusive a Lei Geral
+            de Proteção de Dados Pessoais (LGPD), o usuário poderá
+            solicitar informações sobre o tratamento de seus dados,
+            correção de informações e exclusão de dados quando aplicável.
+        </p>
 
-  <p>
-    Informações também poderão ser disponibilizadas quando houver
-    obrigação legal ou solicitação válida de autoridade competente.
-  </p>
+        <h3>10. Alterações nesta política</h3>
 
-  <h2>10. Segurança</h2>
+        <p>
+            Esta Política de Privacidade poderá ser atualizada para
+            acompanhar alterações no aplicativo, nos serviços utilizados
+            ou na legislação.
+        </p>
 
-  <p>
-    São adotadas medidas técnicas e organizacionais destinadas a
-    proteger as informações tratadas pelo ControleS. Entretanto,
-    nenhum sistema conectado à internet pode garantir segurança
-    absoluta.
-  </p>
+        <p>
+            A versão mais recente será disponibilizada nesta página.
+        </p>
 
-  <p>
-    O usuário também é responsável por proteger sua senha e os
-    dispositivos utilizados para acessar sua conta.
-  </p>
+        <h3>11. Contato</h3>
 
-  <h2>11. Retenção de dados</h2>
+        <p>
+            Para dúvidas relacionadas à privacidade ou aos dados
+            pessoais, entre em contato pelo e-mail:
+        </p>
 
-  <p>
-    As informações poderão ser mantidas enquanto forem necessárias
-    para fornecer o serviço, cumprir obrigações aplicáveis, solucionar
-    questões de segurança ou exercer direitos.
-  </p>
+        <p>
+            <strong>controlesfinanceirossuport@gmail.com</strong>
+        </p>
 
-  <p>
-    Quando cabível, dados poderão ser excluídos ou anonimizados após
-    o encerramento da conta ou solicitação válida do usuário.
-  </p>
+    </main>
 
-  <h2>12. Direitos do usuário</h2>
+    <div class="footer">
+        © 2026 ControleS — Seu dinheiro sob controle.
+    </div>
 
-  <p>
-    O usuário poderá solicitar informações relacionadas ao tratamento
-    de seus dados e, quando aplicável, solicitar correção, atualização
-    ou exclusão de informações.
-  </p>
-
-  <p>
-    Solicitações podem ser encaminhadas para:
-  </p>
-
-  <p>
-    <strong>E-mail:</strong>
-    <a href="mailto:controlesfinanceirossuport@gmail.com">
-      controlesfinanceirossuport@gmail.com
-    </a>
-  </p>
-
-  <h2>13. Exclusão da conta e dos dados</h2>
-
-  <p>
-    O usuário poderá solicitar a exclusão de sua conta e dos dados
-    associados conforme as opções disponibilizadas pelo ControleS ou
-    por meio do endereço de suporte informado nesta política.
-  </p>
-
-  <p>
-    O ControleS também disponibilizará uma página específica com
-    instruções para exclusão de dados.
-  </p>
-
-  <h2>14. Crianças e adolescentes</h2>
-
-  <p>
-    O ControleS não é desenvolvido com a finalidade de coletar
-    intencionalmente dados pessoais de crianças. O uso do serviço
-    deve observar os requisitos de idade e autorização aplicáveis.
-  </p>
-
-  <h2>15. Alterações desta política</h2>
-
-  <p>
-    Esta Política de Privacidade poderá ser atualizada para refletir
-    alterações no ControleS, em suas integrações ou em requisitos
-    legais e regulatórios.
-  </p>
-
-  <p>
-    A versão atualizada será disponibilizada nesta página com a
-    indicação da respectiva data de atualização.
-  </p>
-
-  <h2>16. Contato</h2>
-
-  <p>
-    Para dúvidas relacionadas à privacidade ou ao tratamento de dados
-    pelo ControleS:
-  </p>
-
-  <p>
-    <strong>ControleS — Suporte</strong><br>
-    <a href="mailto:controlesfinanceirossuport@gmail.com">
-      controlesfinanceirossuport@gmail.com
-    </a>
-  </p>
-
-</main>
-
-<footer>
-  © 2026 ControleS — Seu dinheiro sob controle.
-</footer>
+</div>
 
 </body>
 </html>
