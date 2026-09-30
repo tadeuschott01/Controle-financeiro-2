@@ -49,13 +49,31 @@
 
 <body>
 
+
+  <!-- CONTROLES — BOAS-VINDAS MOBILE -->
+  <div id="welcomeView" class="auth-page welcome-page">
+    <div class="welcome-shell">
+      <div class="welcome-brand">
+        <div class="welcome-logo"><img src="logo.png" alt="ControleS"><span>C↗</span></div>
+        <span class="welcome-kicker">CONTROLES</span>
+        <h1>Seu dinheiro.<br><em>Sob controle.</em></h1>
+        <p>Organize sua vida financeira de um jeito simples, visual e inteligente.</p>
+      </div>
+      <div class="welcome-actions">
+        <button id="welcomeLoginBtn" class="btn btn-primary btn-large" type="button">Entrar</button>
+        <button id="welcomeRegisterBtn" class="btn btn-secondary btn-large" type="button">Criar conta</button>
+        <small>Ao continuar, você concorda com os <a href="termos.html">Termos de Uso</a> e a <a href="privacidade.html">Política de Privacidade</a>.</small>
+      </div>
+    </div>
+  </div>
+
   <!-- =====================================================
        LOGIN
   ====================================================== -->
 
   <div
     id="loginView"
-    class="auth-page"
+    class="auth-page hidden"
   >
 
     <div class="auth-card">
@@ -3050,6 +3068,7 @@
       <p class="clear-transactions-description">Escolha o período que deseja apagar. Valores cadastrados em <strong>A Receber</strong> não serão excluídos.</p>
       <div class="clear-transactions-options">
         <button type="button" class="clear-period-option" data-clear-transactions="today"><span class="clear-option-icon">☀</span><span><strong>Hoje</strong><small>Apaga somente os lançamentos de hoje.</small></span><b>›</b></button>
+        <button type="button" class="clear-period-option" data-clear-transactions="week"><span class="clear-option-icon">7</span><span><strong>Últimos 7 dias</strong><small>Apaga os lançamentos da última semana.</small></span><b>›</b></button>
         <button type="button" class="clear-period-option" data-clear-transactions="month"><span class="clear-option-icon">▦</span><span><strong>Mês atual</strong><small>Apaga os lançamentos deste mês.</small></span><b>›</b></button>
         <button type="button" class="clear-period-option danger" data-clear-transactions="all"><span class="clear-option-icon">⌫</span><span><strong>Todo o período</strong><small>Apaga todo o histórico de lançamentos.</small></span><b>›</b></button>
       </div>
