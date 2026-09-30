@@ -1401,198 +1401,35 @@
              FILTROS DOS LANÇAMENTOS
         ================================================== -->
 
-        <div class="filters panel">
-
-          <div class="filters-header">
-
+        <section class="app-filter-card" aria-labelledby="filterTitle">
+          <div class="app-filter-head">
+            <div class="app-filter-icon" aria-hidden="true">⌕</div>
             <div>
-
-              <h3>
-                🔎 Filtrar lançamentos
-              </h3>
-
-              <p>
-                Combine período, tipo, categoria e pesquisa.
-              </p>
-
+              <span class="app-kicker">ORGANIZAR</span>
+              <h3 id="filterTitle">Filtros</h3>
+              <p>Encontre seus lançamentos rapidamente.</p>
             </div>
-
-
-            <button
-              id="clearTransactionFiltersBtn"
-              class="text-button"
-              type="button"
-            >
-              Limpar filtros
-            </button>
-
+            <button id="clearTransactionFiltersBtn" class="filter-reset" type="button">Limpar</button>
           </div>
-
-
-          <div class="filters-grid">
-
-            <div class="filter-field filter-search">
-
-              <label for="transactionSearch">
-                Pesquisa
-              </label>
-
-              <input
-                id="transactionSearch"
-                type="search"
-                placeholder="Buscar lançamento..."
-                autocomplete="off"
-              >
-
-            </div>
-
-
-            <div class="filter-field">
-
-              <label for="transactionFilter">
-                Tipo
-              </label>
-
-              <select id="transactionFilter">
-
-                <option value="all">
-                  Todos os tipos
-                </option>
-
-                <option value="income">
-                  Receitas
-                </option>
-
-                <option value="expense">
-                  Despesas
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <div class="filter-field">
-
-              <label for="typeFilter">
-                Movimento
-              </label>
-
-              <select id="typeFilter">
-
-                <option value="all">
-                  Todos
-                </option>
-
-                <option value="income">
-                  Receita
-                </option>
-
-                <option value="expense">
-                  Despesa
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <div class="filter-field">
-
-              <label for="categoryFilter">
-                Categoria
-              </label>
-
-              <select id="categoryFilter">
-
-                <option value="all">
-                  Todas as categorias
-                </option>
-
-              </select>
-
-            </div>
-
+          <label class="app-search-field" for="transactionSearch">
+            <span aria-hidden="true">⌕</span>
+            <input id="transactionSearch" type="search" placeholder="Buscar por descrição ou categoria" autocomplete="off">
+          </label>
+          <div class="app-filter-grid">
+            <label class="app-select-field" for="transactionFilter"><span>Tipo</span><select id="transactionFilter"><option value="all">Todos</option><option value="income">Receitas</option><option value="expense">Despesas</option></select></label>
+            <label class="app-select-field" for="categoryFilter"><span>Categoria</span><select id="categoryFilter"><option value="all">Todas</option></select></label>
           </div>
+          <div id="transactionFilterSummary" class="filter-summary" aria-live="polite">Mostrando todos os lançamentos.</div>
+        </section>
 
-
-          <div
-            id="transactionFilterSummary"
-            class="filter-summary"
-            aria-live="polite"
-          >
-            Mostrando todos os lançamentos do período.
+        <section class="transactions-app-list" aria-label="Lista de lançamentos">
+          <div id="transactionsList" class="transactions-list"></div>
+          <div id="transactionsEmpty" class="empty-state hidden">
+            <div class="empty-state-icon">↔</div>
+            <h3>Nenhum lançamento encontrado</h3>
+            <p>Ajuste os filtros ou adicione uma nova movimentação.</p>
           </div>
-
-        </div>
-
-
-        <div class="panel table-panel">
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-
-                <tr>
-
-                  <th>
-                    Descrição
-                  </th>
-
-                  <th>
-                    Categoria
-                  </th>
-
-                  <th>
-                    Data
-                  </th>
-
-                  <th>
-                    Tipo
-                  </th>
-
-                  <th>
-                    Valor
-                  </th>
-
-                  <th>
-                    Ações
-                  </th>
-
-                </tr>
-
-              </thead>
-
-
-              <tbody id="transactionsTableBody"></tbody>
-
-            </table>
-
-          </div>
-
-
-          <div
-            id="transactionsEmpty"
-            class="empty-state hidden"
-          >
-
-            <div>
-              ◎
-            </div>
-
-            <h3>
-              Nenhum lançamento encontrado
-            </h3>
-
-            <p>
-              Ajuste os filtros ou adicione uma nova movimentação.
-            </p>
-
-          </div>
-
-        </div>
+        </section>
 
       </section>
       <!-- =================================================
@@ -2368,7 +2205,7 @@
             <a class="profile-row" href="exclusao-dados.html" target="_blank" rel="noopener"><span><b>Exclusão da conta e dos dados</b><small>Solicite a remoção das suas informações</small></span><i>›</i></a>
           </div>
           <button id="profileLogoutBtn" class="profile-logout" type="button">Sair da conta</button>
-          <div class="profile-logo-sign"><img src="logo.png" alt="ControleS"><small>Seu dinheiro sob controle.</small></div>
+          <div class="profile-signature"><strong>ControleS</strong><small>Seu dinheiro sob controle.</small></div>
         </div>
       </section>
 
@@ -3073,6 +2910,18 @@
         <button type="button" class="clear-period-option danger" data-clear-transactions="all"><span class="clear-option-icon">⌫</span><span><strong>Todo o período</strong><small>Apaga todo o histórico de lançamentos.</small></span><b>›</b></button>
       </div>
       <div class="clear-warning">⚠ Você verá uma confirmação antes da exclusão. Essa ação não pode ser desfeita.</div>
+    </div>
+  </div>
+
+  <div id="confirmDeleteModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card confirm-delete-card" role="dialog" aria-modal="true" aria-labelledby="confirmDeleteTitle">
+      <div class="confirm-delete-icon">!</div>
+      <h2 id="confirmDeleteTitle">Confirmar exclusão</h2>
+      <p id="confirmDeleteText">Esta ação não pode ser desfeita.</p>
+      <div class="confirm-delete-actions">
+        <button id="cancelDeleteBtn" type="button" class="btn btn-secondary">Cancelar</button>
+        <button id="confirmDeleteBtn" type="button" class="btn btn-danger">Excluir</button>
+      </div>
     </div>
   </div>
 
