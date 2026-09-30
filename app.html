@@ -374,6 +374,8 @@
 
       </div>
 
+      <div class="auth-legal-note">Ao criar sua conta, você concorda com os <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>. Para solicitar exclusão, acesse <a href="exclusao-dados.html" target="_blank" rel="noopener">Exclusão de Dados</a>.</div>
+
     </div>
 
   </div>
@@ -2225,47 +2227,92 @@
       <section id="whatsappSection" class="content-section">
         <div class="smart-feature-page whatsapp-feature-page">
           <div class="smart-feature-header">
-            <div><span class="smart-eyebrow">CONTROLES PREMIUM</span><h2>Assessor WhatsApp</h2><p>Seu financeiro no WhatsApp. Consulte números, registre movimentações e receba respostas rápidas sem precisar abrir o app.</p></div>
-            <div class="smart-status"><span></span> Integração segura</div>
-          </div>
-          <div class="whatsapp-dashboard">
-            <div class="phone-mockup">
-              <div class="phone-top"><div class="phone-avatar">C</div><div><strong>ControleS</strong><small>Assistente financeiro</small></div><span class="phone-online">●</span></div>
-              <div class="phone-chat">
-                <div class="chat-time">Hoje, 19:32</div>
-                <div class="chat-bubble user">Quanto eu já gastei esse mês?</div>
-                <div class="chat-bubble bot"><span class="bot-label">CONTROLES</span><strong>R$ 1.847,30</strong> gastos no mês.<br><small>Alimentação representa a maior categoria.</small></div>
-                <div class="chat-bubble user">Gastei R$ 45,90 no posto hoje</div>
-                <div class="chat-bubble bot success-bubble">✓ Lançamento identificado<div class="mini-transaction"><b>R$ 45,90</b><span>Transporte • Hoje</span></div></div>
-              </div>
-              <div class="phone-input"><span>Digite uma mensagem...</span><b>➤</b></div>
+            <div>
+              <span class="smart-eyebrow">CONTROLES PREMIUM • AUTOMAÇÃO</span>
+              <h2>Assessor WhatsApp</h2>
+              <p>Uma central financeira no WhatsApp para consultar saldo, gastos, valores a receber e registrar movimentações por mensagem.</p>
             </div>
+            <div id="whatsappIntegrationStatus" class="smart-status status-pending"><span></span> Integração em configuração</div>
+          </div>
+
+          <div class="whatsapp-dashboard">
+            <div class="phone-mockup" aria-label="Prévia do Assessor WhatsApp">
+              <div class="phone-top">
+                <div class="phone-avatar">C</div>
+                <div><strong>ControleS</strong><small>Assessor financeiro</small></div>
+                <span class="phone-online">●</span>
+              </div>
+              <div id="whatsappPreviewChat" class="phone-chat">
+                <div class="chat-time">EXEMPLO DE CONVERSA</div>
+                <div class="chat-bubble user">Quanto eu gastei este mês?</div>
+                <div class="chat-bubble bot"><span class="bot-label">CONTROLES</span><strong id="waPreviewExpense">R$ 0,00</strong> em despesas no período.<br><small id="waPreviewCategory">Cadastre lançamentos para ver sua maior categoria.</small></div>
+                <div class="chat-bubble user">Quanto tenho a receber?</div>
+                <div class="chat-bubble bot success-bubble"><span class="bot-label">CONTROLES</span><strong id="waPreviewReceivable">R$ 0,00</strong><br><small id="waPreviewReceivableText">Nenhum valor futuro encontrado.</small></div>
+              </div>
+              <div class="phone-input"><span>Converse com o ControleS...</span><b>➤</b></div>
+            </div>
+
             <div class="smart-feature-side">
-              <span class="premium-pill">PREMIUM</span><h3>Resolva suas finanças em uma conversa</h3>
-              <div class="feature-benefit"><i>↗</i><div><b>Registre gastos e receitas</b><small>Envie uma mensagem e o ControleS organiza a movimentação.</small></div></div>
-              <div class="feature-benefit"><i>▥</i><div><b>Consulte seu mês</b><small>Pergunte sobre saldo, gastos, categorias e valores a receber.</small></div></div>
-              <div class="feature-benefit"><i>✦</i><div><b>Respostas inteligentes</b><small>Receba contexto financeiro de forma simples e objetiva.</small></div></div>
-              <button class="btn btn-premium feature-premium-btn" data-section="premium" type="button">Desbloquear Assessor no Premium</button>
-              <small class="feature-security">🔒 Seus dados continuam protegidos pela sua conta ControleS.</small>
+              <div class="feature-title-row"><span class="premium-pill">PREMIUM</span><span class="feature-version">ASSISTENTE 1.0</span></div>
+              <h3>Seu financeiro em uma conversa</h3>
+              <div class="feature-benefit"><i>↗</i><div><b>Registrar movimentações</b><small>Ex.: “Gastei R$ 45,90 no posto hoje”.</small></div></div>
+              <div class="feature-benefit"><i>▥</i><div><b>Consultar seus números</b><small>Saldo, despesas, receitas, categorias e valores a receber.</small></div></div>
+              <div class="feature-benefit"><i>✦</i><div><b>Resumo instantâneo</b><small>Respostas curtas e organizadas com base nos dados da sua conta.</small></div></div>
+              <div class="integration-box">
+                <div><span class="integration-dot"></span><strong>Status da integração</strong></div>
+                <p id="whatsappStatusText">A interface está pronta. Para conversar pelo WhatsApp de verdade, ainda é necessário conectar a API oficial e o webhook do ControleS.</p>
+              </div>
+              <button id="whatsappPrimaryBtn" class="btn btn-premium feature-premium-btn" type="button">Ver status da integração</button>
+              <small class="feature-security">🔒 O acesso financeiro permanece vinculado à conta autenticada do ControleS.</small>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- RELATÓRIO COM IA — DESIGN PROFISSIONAL -->
+      <!-- RELATÓRIO INTELIGENTE — FUNCIONAL -->
       <section id="ai-reportSection" class="content-section">
         <div class="smart-feature-page ai-feature-page">
           <div class="smart-feature-header">
-            <div><span class="smart-eyebrow">INTELIGÊNCIA FINANCEIRA</span><h2>Relatório com IA</h2><p>Transforme seus lançamentos em um resumo visual com comparações, destaques e informações úteis sobre o período.</p></div>
-            <div class="smart-status ai-status"><span>✦</span> Análise inteligente</div>
+            <div>
+              <span class="smart-eyebrow">CONTROLES PREMIUM • INTELIGÊNCIA FINANCEIRA</span>
+              <h2>Relatório Inteligente</h2>
+              <p>Uma leitura automática dos seus lançamentos com comparação mensal, categoria de maior gasto, saldo, tendência e pontos de atenção.</p>
+            </div>
+            <div class="smart-status ai-status"><span>✦</span> Atualizado com seus dados</div>
           </div>
+
+          <div class="ai-toolbar">
+            <div><small>PERÍODO ANALISADO</small><strong id="aiPeriodLabel">Mês atual</strong></div>
+            <button id="generateAIReportBtn" class="btn btn-primary" type="button">✦ Gerar nova análise</button>
+          </div>
+
           <div class="ai-dashboard-preview">
             <div class="ai-main-card">
-              <div class="ai-card-head"><div><span>RESUMO INTELIGENTE</span><h3>Seu mês em poucos segundos</h3></div><div class="ai-spark">✦</div></div>
-              <div class="ai-metrics"><div><small>Total gasto</small><b>R$ 1.847,30</b><span class="metric-down">↓ 8,4% vs. período anterior</span></div><div><small>Saldo estimado</small><b>R$ 2.152,70</b><span class="metric-ok">Dentro do planejado</span></div></div>
-              <div class="ai-chart-demo"><div class="chart-head"><b>Evolução dos gastos</b><small>Últimas 4 semanas</small></div><div class="fake-bars"><i style="height:42%"></i><i style="height:68%"></i><i style="height:53%"></i><i style="height:82%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:58%"></i></div></div>
+              <div class="ai-card-head"><div><span>RESUMO INTELIGENTE</span><h3 id="aiHeadline">Seu mês em poucos segundos</h3></div><div class="ai-spark">✦</div></div>
+              <div class="ai-metrics">
+                <div><small>Total recebido</small><b id="aiIncomeValue">R$ 0,00</b><span id="aiIncomeNote">Receitas confirmadas</span></div>
+                <div><small>Total gasto</small><b id="aiExpenseValue">R$ 0,00</b><span id="aiExpenseTrend">Aguardando análise</span></div>
+                <div><small>Saldo do período</small><b id="aiBalanceValue">R$ 0,00</b><span id="aiBalanceNote">Receitas menos despesas</span></div>
+                <div><small>A receber</small><b id="aiReceivableValue">R$ 0,00</b><span id="aiReceivableNote">Receitas futuras</span></div>
+              </div>
+              <div class="ai-chart-demo">
+                <div class="chart-head"><b>Distribuição dos gastos</b><small id="aiChartCaption">Principais categorias</small></div>
+                <div id="aiCategoryBars" class="ai-category-bars"><div class="ai-empty-mini">Adicione despesas para visualizar.</div></div>
+              </div>
             </div>
-            <div class="ai-insights-panel"><span class="premium-pill">PREMIUM</span><h3>Destaques encontrados pela IA</h3><div class="ai-insight-pro"><i>01</i><div><b>Alimentação lidera seus gastos</b><small>É a categoria com maior participação neste período.</small></div></div><div class="ai-insight-pro positive"><i>02</i><div><b>Seus gastos diminuíram</b><small>O total ficou abaixo do período anterior.</small></div></div><div class="ai-insight-pro"><i>03</i><div><b>Acompanhe seus compromissos</b><small>Considere também os valores cadastrados em A Receber.</small></div></div><button class="btn btn-premium feature-premium-btn" data-section="premium" type="button">Desbloquear Relatório com IA</button></div>
+
+            <div class="ai-insights-panel">
+              <div class="feature-title-row"><span class="premium-pill">PREMIUM</span><span id="aiReportBadge" class="feature-version">ANÁLISE LOCAL</span></div>
+              <h3>Destaques do seu financeiro</h3>
+              <div id="aiInsightsList" class="ai-insights-list">
+                <div class="ai-insight-pro"><i>01</i><div><b>Sem dados suficientes</b><small>Adicione lançamentos para gerar uma análise personalizada.</small></div></div>
+              </div>
+              <div class="ai-score-card">
+                <div><small>ÍNDICE DO PERÍODO</small><strong id="aiHealthScore">—</strong></div>
+                <p id="aiHealthText">O índice aparecerá quando houver dados financeiros no período.</p>
+              </div>
+              <small class="feature-security">A análise usa os lançamentos da sua conta. Ela é informativa e não substitui orientação financeira profissional.</small>
+            </div>
           </div>
         </div>
       </section>
