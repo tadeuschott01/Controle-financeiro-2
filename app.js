@@ -332,7 +332,7 @@ function initializeSupabase() {
                 currentProfile = null;
 
                 if (authInitialized) {
-                    showLoginView();
+                    showWelcomeView();
                 }
             }
 
@@ -359,7 +359,7 @@ async function checkSession() {
 
         if (error) {
             console.error(error);
-            showLoginView();
+            showWelcomeView();
             return;
         }
 
@@ -371,7 +371,7 @@ async function checkSession() {
 
         } else {
 
-            showLoginView();
+            showWelcomeView();
         }
 
     } catch (error) {
@@ -381,7 +381,7 @@ async function checkSession() {
             error
         );
 
-        showLoginView();
+        showWelcomeView();
     }
 }
 
@@ -824,9 +824,23 @@ async function enterApp() {
    VIEWS
    ========================================================= */
 
+function showWelcomeView() {
+    closeMobileMenu();
+    const welcome = $("welcomeView");
+    const login = firstExisting("loginView", "authView");
+    const register = $("registerView");
+    const app = firstExisting("appView", "mainApp");
+    if (welcome) welcome.classList.remove("hidden");
+    if (login) login.classList.add("hidden");
+    if (register) register.classList.add("hidden");
+    if (app) app.classList.add("hidden");
+}
+
 function showLoginView() {
 
     closeMobileMenu();
+    const welcome = $("welcomeView");
+    if (welcome) welcome.classList.add("hidden");
 
     const login =
         firstExisting(
@@ -861,6 +875,8 @@ function showLoginView() {
 function showRegisterView() {
 
     closeMobileMenu();
+    const welcome = $("welcomeView");
+    if (welcome) welcome.classList.add("hidden");
 
     const login =
         firstExisting(
@@ -893,6 +909,9 @@ function showRegisterView() {
 
 
 function showAppView() {
+
+    const welcome = $("welcomeView");
+    if (welcome) welcome.classList.add("hidden");
 
     const login =
         firstExisting(
@@ -965,7 +984,7 @@ async function handleLogout() {
             categoryChart = null;
         }
 
-        showLoginView();
+        showWelcomeView();
 
         showToast(
             "Você saiu da sua conta.",
@@ -4959,13 +4978,18 @@ async function loadSubscription() {
 }
 
 
-function isPremiumActive() {
-    if (!subscription || subscription.status !== "active") return false;
+const PREMIUM_ADMIN_EMAIL = "controlesfinanceirossuport@gmail.com";
 
-    if (subscription.expires_at) {
+function isPremiumActive() {
+    const email = String(currentUser?.email || "").trim().toLowerCase();
+    if (email === PREMIUM_ADMIN_EMAIL) return true;
+
+    const status = String(subscription?.status || "").trim().toLowerCase();
+    if (!["active", "trial", "premium"].includes(status)) return false;
+
+    if (subscription?.expires_at) {
         return new Date(subscription.expires_at) > new Date();
     }
-
     return true;
 }
 
@@ -6683,7 +6707,6 @@ function applyPremiumAccess() {
        ===================================================== */
 
     const premiumContent = [
-        "#dashboardPeriodFilter",
         "#receivableDashboardCard",
         "#premiumDashboardContent"
     ];
@@ -7055,3 +7078,396 @@ window.addEventListener(
 /* =========================================================
    FIM DO APP.JS
    ========================================================= */
+
+/* =========================================================
+   CONTROLES — RELATÓRIO INTELIGENTE / WHATSAPP — PATCH 6.0
+   ========================================================= */
+
+function getAIReportPeriod() {
+    const now = new Date();
+    const start = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-01`;
+    return { start, end: todayISO(), label: now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) };
+}
+
+function buildAIReportData() {
+    const period = getAIReportPeriod();
+    const current = calculatePeriodSummary(period);
+    const previousDate = new Date();
+    previousDate.setMonth(previousDate.getMonth() - 1);
+    const previous = getMonthlyTotals(previousDate.getFullYear(), previousDate.getMonth());
+    const ranking = {};
+
+    transactions.forEach(transaction => {
+        if (!transactionIsInPeriod(transaction, period)) return;
+        const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
+        if (type !== "expense") return;
+        const category = getTransactionCategory(transaction);
+        ranking[category] = (ranking[category] || 0) + getTransactionAmount(transaction);
+    });
+
+    const categories = Object.entries(ranking).sort((a,b) => b[1] - a[1]);
+    const receivable = getReceivableSummary();
+    return { period, current, previous, categories, receivable };
+}
+
+function renderAIReport(showMessage = false) {
+    const data = buildAIReportData();
+    const { period, current, previous, categories, receivable } = data;
+    const setText = (id, text) => { const el = $(id); if (el) el.textContent = text; };
+
+    setText("aiPeriodLabel", period.label.charAt(0).toUpperCase() + period.label.slice(1));
+    setText("aiIncomeValue", formatCurrency(current.income));
+    setText("aiExpenseValue", formatCurrency(current.expense));
+    setText("aiBalanceValue", formatCurrency(current.balance));
+    setText("aiReceivableValue", formatCurrency(receivable.total));
+
+    const expenseDelta = previous.expense > 0 ? ((current.expense - previous.expense) / previous.expense) * 100 : null;
+    if (expenseDelta === null) setText("aiExpenseTrend", "Sem base no mês anterior");
+    else if (expenseDelta > 0) setText("aiExpenseTrend", `↑ ${Math.abs(expenseDelta).toFixed(1)}% vs. mês anterior`);
+    else if (expenseDelta < 0) setText("aiExpenseTrend", `↓ ${Math.abs(expenseDelta).toFixed(1)}% vs. mês anterior`);
+    else setText("aiExpenseTrend", "Mesmo nível do mês anterior");
+
+    const headline = current.income === 0 && current.expense === 0
+        ? "Adicione lançamentos para começar"
+        : current.balance >= 0
+            ? "Seu mês está com saldo positivo"
+            : "Seus gastos superaram suas receitas";
+    setText("aiHeadline", headline);
+
+    const bars = $("aiCategoryBars");
+    if (bars) {
+        if (!categories.length) {
+            bars.innerHTML = '<div class="ai-empty-mini">Adicione despesas para visualizar.</div>';
+        } else {
+            const max = categories[0][1] || 1;
+            bars.innerHTML = categories.slice(0,5).map(([name, value]) => `
+                <div class="ai-category-row">
+                    <div><strong>${escapeHTML(name)}</strong><span>${formatCurrency(value)}</span></div>
+                    <div class="ai-category-track"><i style="width:${Math.max(5, (value/max)*100)}%"></i></div>
+                </div>`).join("");
+        }
+    }
+
+    const insights = [];
+    if (categories.length) insights.push(["01", `${categories[0][0]} lidera seus gastos`, `${formatCurrency(categories[0][1])} gastos nessa categoria neste mês.`]);
+    if (expenseDelta !== null) insights.push(["02", expenseDelta <= 0 ? "Seus gastos diminuíram" : "Seus gastos aumentaram", `${Math.abs(expenseDelta).toFixed(1)}% em relação ao mês anterior.`]);
+    if (receivable.total > 0) insights.push(["03", "Você tem valores a receber", `${formatCurrency(receivable.total)} previstos em ${receivable.count} lançamento(s).`]);
+    if (!insights.length && (current.income || current.expense)) insights.push(["01", "Acompanhamento iniciado", "Continue registrando movimentações para enriquecer sua análise."]);
+
+    const list = $("aiInsightsList");
+    if (list) {
+        list.innerHTML = insights.length ? insights.map(([n,t,d], idx) => `
+            <div class="ai-insight-pro ${idx === 1 && expenseDelta <= 0 ? "positive" : ""}">
+                <i>${n}</i><div><b>${escapeHTML(t)}</b><small>${escapeHTML(d)}</small></div>
+            </div>`).join("") : '<div class="ai-insight-pro"><i>01</i><div><b>Sem dados suficientes</b><small>Adicione lançamentos para gerar uma análise personalizada.</small></div></div>';
+    }
+
+    let score = null;
+    if (current.income > 0 || current.expense > 0) {
+        const ratio = current.income > 0 ? current.expense / current.income : 2;
+        score = Math.max(0, Math.min(100, Math.round(100 - Math.max(0, ratio - .5) * 80)));
+    }
+    setText("aiHealthScore", score === null ? "—" : `${score}/100`);
+    setText("aiHealthText", score === null ? "O índice aparecerá quando houver dados financeiros no período." : score >= 75 ? "Boa margem entre receitas e despesas no período." : score >= 50 ? "Atenção ao peso das despesas sobre sua renda." : "As despesas estão pressionando bastante o seu orçamento.");
+    setText("aiReportBadge", "ATUALIZADO AGORA");
+
+    if (showMessage) showToast("Análise atualizada com seus lançamentos.", "success");
+}
+
+function updateWhatsAppPreview() {
+    const totals = getMonthlyTotals(new Date().getFullYear(), new Date().getMonth());
+    const ranking = {};
+    transactions.forEach(t => {
+        const d = getTransactionDate(t); if (!d) return;
+        const dt = new Date(`${d}T00:00:00`); const now = new Date();
+        if (dt.getMonth() !== now.getMonth() || dt.getFullYear() !== now.getFullYear()) return;
+        if (normalizeTransactionType(t.type || t.tipo) !== "expense") return;
+        const c = getTransactionCategory(t); ranking[c] = (ranking[c] || 0) + getTransactionAmount(t);
+    });
+    const top = Object.entries(ranking).sort((a,b)=>b[1]-a[1])[0];
+    const expense = $("waPreviewExpense"); if (expense) expense.textContent = formatCurrency(totals.expense);
+    const cat = $("waPreviewCategory"); if (cat) cat.textContent = top ? `${top[0]} é sua maior categoria no mês.` : "Cadastre lançamentos para ver sua maior categoria.";
+}
+
+(function bindSmartFeatureButtons(){
+    document.addEventListener("click", event => {
+        const ai = event.target.closest?.("#generateAIReportBtn");
+        if (ai) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); renderAIReport(true); return; }
+        const wa = event.target.closest?.("#whatsappPrimaryBtn");
+        if (wa) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); updateWhatsAppPreview(); showToast("A interface está pronta. Falta conectar a API oficial do WhatsApp.", "info"); }
+    });
+})();
+
+const _showSectionControleS = showSection;
+showSection = function(sectionName) {
+    _showSectionControleS(sectionName);
+    if (sectionName === "ai-report" && isPremiumActive()) renderAIReport(false);
+    if (sectionName === "whatsapp" && isPremiumActive()) updateWhatsAppPreview();
+};
+
+
+/* =========================================================
+   CONTROLES — NAVEGAÇÃO MOBILE DA DEMO / PERFIL
+   ========================================================= */
+(function setupDemoMobileNavigation(){
+  function syncBottomNav(section){
+    document.querySelectorAll('[data-bottom-section]').forEach(btn=>btn.classList.toggle('active',btn.dataset.bottomSection===section));
+  }
+  document.addEventListener('click', async function(event){
+    const bottom=event.target.closest?.('[data-bottom-section]');
+    if(bottom){event.preventDefault();const section=bottom.dataset.bottomSection;showSection(section);syncBottomNav(section);return;}
+    if(event.target.closest?.('#mobileAddButton')){event.preventDefault();openTransactionModal('expense');return;}
+    if(event.target.closest?.('#profileThemeBtn')){event.preventDefault();toggleTheme();return;}
+    if(event.target.closest?.('#profileClearTransactionsBtn')){event.preventDefault();openClearTransactionsModal();return;}
+    if(event.target.closest?.('#profileLogoutBtn')){event.preventDefault();await handleLogout();return;}
+  });
+  const originalShowSection=window.showSection;
+  if(typeof originalShowSection==='function'){
+    window.showSection=function(sectionName){originalShowSection(sectionName);syncBottomNav(sectionName);};
+  }
+})();
+
+/* Saudação mobile com o nome real da conta */
+(function enhanceMobileGreeting(){
+  const original=window.updateUserInterface;
+  if(typeof original!=='function') return;
+  window.updateUserInterface=function(){
+    original();
+    const name=currentProfile?.name||currentUser?.user_metadata?.name||currentUser?.email?.split('@')[0]||'Usuário';
+    const first=String(name).trim().split(/\s+/)[0];
+    const welcome=document.getElementById('welcomeMessage');
+    if(welcome) welcome.textContent=`Olá, ${first} 👋`;
+  };
+})();
+
+
+/* =========================================================
+   CONTROLES — PATCH MOBILE 7.0
+   Boas-vindas, limpeza por período e navegação
+   ========================================================= */
+(function setupMobileV7(){
+    document.addEventListener("click", async (event) => {
+        if (event.target.closest?.("#welcomeLoginBtn")) { event.preventDefault(); showLoginView(); return; }
+        if (event.target.closest?.("#welcomeRegisterBtn")) { event.preventDefault(); showRegisterView(); return; }
+        if (event.target.closest?.("#clearTransactionsBtn")) { event.preventDefault(); openClearTransactionsModal(); return; }
+        const clearButton = event.target.closest?.("[data-clear-transactions]");
+        if (clearButton) { event.preventDefault(); await clearTransactionsByPeriod(clearButton.dataset.clearTransactions); }
+    });
+})();
+
+function openClearTransactionsModal(){
+    const modal = $("clearTransactionsModal");
+    if (!modal) return;
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+}
+
+function closeClearTransactionsModal(){
+    const modal = $("clearTransactionsModal");
+    if (!modal) return;
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+}
+
+function requestDeleteConfirmation(message){
+    return new Promise(resolve => {
+        const modal = $("confirmDeleteModal");
+        const text = $("confirmDeleteText");
+        const cancel = $("cancelDeleteBtn");
+        const confirmBtn = $("confirmDeleteBtn");
+        if (!modal || !cancel || !confirmBtn) { resolve(false); return; }
+        if (text) text.textContent = message;
+        modal.classList.remove("hidden");
+        modal.setAttribute("aria-hidden", "false");
+        const finish = value => {
+            modal.classList.add("hidden");
+            modal.setAttribute("aria-hidden", "true");
+            cancel.onclick = null; confirmBtn.onclick = null;
+            resolve(value);
+        };
+        cancel.onclick = () => finish(false);
+        confirmBtn.onclick = () => finish(true);
+    });
+}
+
+async function clearTransactionsByPeriod(period){
+    if (!supabaseClient || !currentUser) return;
+    const today = todayISO();
+    const startOfWeek = (() => { const d = new Date(); d.setDate(d.getDate()-6); return d.toISOString().slice(0,10); })();
+    const monthStart = today.slice(0,7) + "-01";
+    const labels = { today:"de hoje", week:"dos últimos 7 dias", month:"deste mês", all:"de todo o período" };
+    const confirmed = await requestDeleteConfirmation(`Excluir os lançamentos ${labels[period] || "selecionados"}? Esta ação não pode ser desfeita.`);
+    if (!confirmed) return;
+    try {
+        let query = supabaseClient.from("transactions").delete().eq("user_id", currentUser.id);
+        if (period === "today") query = query.eq("date", today);
+        else if (period === "week") query = query.gte("date", startOfWeek).lte("date", today);
+        else if (period === "month") query = query.gte("date", monthStart).lte("date", today);
+        else if (period !== "all") return;
+        const { error } = await query;
+        if (error) throw error;
+        closeClearTransactionsModal();
+        await loadTransactions();
+        updateDashboard(); renderTransactions(); renderReceivables(); updateReceivableDashboard(); updatePeriodSummary(); renderReports();
+        showToast("Lançamentos excluídos com sucesso.", "success");
+    } catch (error) {
+        console.error(error);
+        showToast(error.message || "Não foi possível excluir os lançamentos.", "error");
+    }
+}
+
+/* =========================================================
+   CONTROLES MOBILE 10 — CORREÇÕES DE AÇÕES RÁPIDAS E MODAIS
+   ========================================================= */
+(function controlesMobile10Fixes(){
+  function openCleanModal(id){
+    const modal=document.getElementById(id); if(!modal)return;
+    modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false');
+    const card=modal.querySelector('.modal-card'); if(card) card.scrollTop=0;
+  }
+  function prepareCategory(){
+    const form=document.getElementById('categoryForm'); if(form) form.reset();
+    const msg=document.getElementById('categoryMessage'); if(msg) msg.textContent='';
+    openCleanModal('categoryModal');
+    setTimeout(()=>document.getElementById('categoryName')?.focus({preventScroll:true}),120);
+  }
+  function prepareGoal(){
+    const form=document.getElementById('goalForm'); if(form) form.reset();
+    const msg=document.getElementById('goalMessage'); if(msg) msg.textContent='';
+    openCleanModal('goalModal');
+    setTimeout(()=>document.getElementById('goalName')?.focus({preventScroll:true}),120);
+  }
+  document.addEventListener('click',function(e){
+    const el=e.target.closest?.('button,a'); if(!el)return;
+    const action=el.dataset.action;
+    if(action==='add-income'){e.preventDefault();e.stopPropagation();openTransactionModal('income');return;}
+    if(action==='add-expense'){e.preventDefault();e.stopPropagation();openTransactionModal('expense');return;}
+    if(el.id==='addCategoryBtn'||el.id==='addCategoryBtn2'||el.matches('[data-new-category]')){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const premium=typeof isPremiumActive==='function' && isPremiumActive();
+      if(!premium){
+        if(typeof openPremiumAccess==='function') openPremiumAccess();
+        else { showToast('🔒 Nova categoria é um recurso Premium.','warning'); showSection('premium'); }
+        return;
+      }
+      prepareCategory();
+      return;
+    }
+    if(el.id==='addGoalBtn'||el.id==='newGoalBtn'||el.matches('[data-new-goal]')){e.preventDefault();e.stopPropagation();prepareGoal();return;}
+  },true);
+  document.addEventListener('click',function(e){
+    const typeBtn=e.target.closest?.('[data-transaction-type]'); if(!typeBtn)return;
+    const type=typeBtn.dataset.transactionType; setTransactionType(type);
+    const title=document.getElementById('transactionModalTitle');
+    if(title&&!editingTransactionId) title.textContent=normalizeTransactionType(type)==='income'?'Nova receita':'Nova despesa';
+  });
+})();
+
+
+/* CONTROLES MOBILE 11 — CTAs de demonstração Premium */
+document.addEventListener('click', function(e){
+  const btn=e.target.closest?.('[data-premium-preview]');
+  if(!btn) return;
+  e.preventDefault();
+  const activate=document.getElementById('activatePremiumBtn');
+  if(activate){ activate.click(); return; }
+  const modal=document.getElementById('premiumModal');
+  if(modal){ modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false'); }
+});
+
+
+/* =========================================================
+   CONTROLES MOBILE 12 — INTERAÇÕES DA HOME E LOGIN
+   ========================================================= */
+(function(){
+  const $m12=id=>document.getElementById(id);
+  const filter=$m12('dashboardPeriodFilter');
+  const quick=$m12('periodQuickBtn');
+  const quickLabel=$m12('periodQuickLabel');
+  const activeLabel=$m12('activePeriodLabel');
+  function syncPeriodLabel(){
+    if(!quickLabel) return;
+    const select=$m12('dashboardPeriod');
+    const txt=select && select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : 'Últimos 30 dias';
+    quickLabel.textContent=txt;
+  }
+  function setFilter(open){
+    if(!filter||!quick) return;
+    filter.classList.toggle('period-sheet-collapsed',!open);
+    quick.setAttribute('aria-expanded',String(open));
+  }
+  quick?.addEventListener('click',()=>setFilter(filter?.classList.contains('period-sheet-collapsed')));
+  $m12('applyPeriodBtn')?.addEventListener('click',()=>{syncPeriodLabel();setTimeout(()=>setFilter(false),120);});
+  $m12('clearPeriodBtn')?.addEventListener('click',()=>{setTimeout(()=>{syncPeriodLabel();setFilter(false)},120);});
+  $m12('dashboardPeriod')?.addEventListener('change',syncPeriodLabel);
+  syncPeriodLabel();
+
+  // Insight abre a análise; o bloqueio Premium existente continua valendo.
+  $m12('homeInsightBtn')?.addEventListener('click',()=>{
+    const nav=document.querySelector('[data-section="ai-report"]');
+    if(nav) nav.click();
+  });
+
+  // Atualiza o texto do insight com os valores já calculados na Home.
+  function moneyText(id){return ($m12(id)?.textContent||'R$ 0,00').trim()}
+  function updateInsight(){
+    const title=$m12('homeInsightTitle'), text=$m12('homeInsightText');
+    if(!title||!text) return;
+    const income=moneyText('incomeValue'), expense=moneyText('expenseValue');
+    title.textContent='Resumo do período';
+    text.textContent=`Você recebeu ${income} e gastou ${expense}. Toque para ver a análise inteligente.`;
+  }
+  ['incomeValue','expenseValue'].forEach(id=>{const el=$m12(id);if(el)new MutationObserver(updateInsight).observe(el,{childList:true,subtree:true,characterData:true})});
+  updateInsight();
+
+  // Feedback moderno do olho da senha, preservando o listener original.
+  document.querySelectorAll('[data-password-toggle]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const input=$m12(btn.getAttribute('data-password-toggle'));
+      setTimeout(()=>{
+        const visible=input?.type==='text';
+        btn.setAttribute('aria-pressed',String(visible));
+        btn.setAttribute('aria-label',visible?'Ocultar senha':'Mostrar senha');
+      },0);
+    });
+  });
+})();
+
+/* =========================================================
+   CONTROLES MOBILE 15.1 — CADEADO PREMIUM NOS ATALHOS
+   ========================================================= */
+(function controlesPremiumShortcutLock(){
+  function syncPremiumShortcutLocks(){
+    const premium = typeof isPremiumActive === 'function' && isPremiumActive();
+    document.querySelectorAll('[data-premium-home="true"]').forEach(btn=>{
+      btn.classList.toggle('premium-locked', !premium);
+      if(!premium) btn.setAttribute('data-premium-locked','true');
+      else btn.removeAttribute('data-premium-locked');
+      const lock=btn.querySelector('.premium-diamond');
+      if(lock){
+        lock.setAttribute('aria-label', premium ? 'Premium desbloqueado' : 'Recurso Premium bloqueado');
+        lock.title=premium ? 'Premium desbloqueado' : 'Recurso Premium';
+      }
+    });
+    document.querySelectorAll('.nav-lock').forEach(lock=>{
+      lock.setAttribute('aria-label', premium ? 'Premium desbloqueado' : 'Recurso Premium bloqueado');
+      lock.title=premium ? 'Premium desbloqueado' : 'Recurso Premium';
+    });
+  }
+  document.addEventListener('click',function(e){
+    const shortcut=e.target.closest?.('[data-premium-home="true"]');
+    if(!shortcut) return;
+    const premium=typeof isPremiumActive === 'function' && isPremiumActive();
+    if(!premium){
+      e.preventDefault();e.stopImmediatePropagation();
+      if(typeof openPremiumAccess === 'function') openPremiumAccess();
+    }
+  },true);
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(syncPremiumShortcutLocks,100));
+  window.addEventListener('load',()=>setTimeout(syncPremiumShortcutLocks,250));
+  const oldApply=window.applyPremiumAccess;
+  if(typeof oldApply==='function'){
+    window.applyPremiumAccess=function(){const r=oldApply.apply(this,arguments);syncPremiumShortcutLocks();return r;};
+  }
+})();
