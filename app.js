@@ -6617,6 +6617,7 @@ function applyPremiumAccess() {
     const blockedSections = [
         "categories",
         "reports",
+        "whatsapp",
         "ai-report"
     ];
 
@@ -6930,6 +6931,7 @@ document.addEventListener(
             target.closest(
                 '[data-section="categories"],' +
                 '[data-section="reports"],' +
+                '[data-section="whatsapp"],' +
                 '[data-section="ai-report"]'
             );
 
@@ -7185,6 +7187,15 @@ function updateWhatsAppPreview() {
 
 (function bindSmartFeatureButtons(){
     document.addEventListener("click", event => {
+        const globalPremium = event.target.closest?.("#globalPremiumBtn");
+        if (globalPremium) { event.preventDefault(); showSection("premium"); return; }
+        const globalWhatsApp = event.target.closest?.("#globalWhatsAppBubble");
+        if (globalWhatsApp) {
+            event.preventDefault();
+            if (!isPremiumActive()) return openPremiumAccess();
+            showSection("whatsapp");
+            return;
+        }
         const ai = event.target.closest?.("#generateAIReportBtn");
         if (ai) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); renderAIReport(true); return; }
         const waUpgrade = event.target.closest?.("#whatsappUpgradeBtn");
