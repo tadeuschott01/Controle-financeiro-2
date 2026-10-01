@@ -5015,7 +5015,7 @@ function renderPremium() {
     if (buyButton) {
         buyButton.textContent = isPremiumActive()
             ? "Premium ativo"
-            : "Assinar Premium — R$ 24,99/mês";
+            : "Assinar Premium — R$ 29,99/mês";
         buyButton.disabled = isPremiumActive();
     }
 }
@@ -6617,7 +6617,6 @@ function applyPremiumAccess() {
     const blockedSections = [
         "categories",
         "reports",
-        "whatsapp",
         "ai-report"
     ];
 
@@ -6931,7 +6930,6 @@ document.addEventListener(
             target.closest(
                 '[data-section="categories"],' +
                 '[data-section="reports"],' +
-                '[data-section="whatsapp"],' +
                 '[data-section="ai-report"]'
             );
 
@@ -7189,8 +7187,10 @@ function updateWhatsAppPreview() {
     document.addEventListener("click", event => {
         const ai = event.target.closest?.("#generateAIReportBtn");
         if (ai) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); renderAIReport(true); return; }
+        const waUpgrade = event.target.closest?.("#whatsappUpgradeBtn");
+        if (waUpgrade) { event.preventDefault(); showSection("premium"); return; }
         const wa = event.target.closest?.("#whatsappPrimaryBtn");
-        if (wa) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); updateWhatsAppPreview(); showToast("A interface está pronta. Falta conectar a API oficial do WhatsApp.", "info"); }
+        if (wa) { event.preventDefault(); if (!isPremiumActive()) { showSection("premium"); return; } updateWhatsAppPreview(); showToast("A interface está pronta. Falta conectar a API oficial do WhatsApp.", "info"); }
     });
 })();
 
