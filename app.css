@@ -5749,3 +5749,17 @@ html body #appView #dashboardSection .balance-overview-card .balance-breakdown-i
   #appView #appBottomNav > .bottom-nav-item small { font-size: 9px !important; }
   #appView #appBottomNav > #mobileAddButton { width: 68px !important; height: 68px !important; min-width: 68px !important; min-height: 68px !important; max-width: 68px !important; max-height: 68px !important; }
 }
+
+/* =========================================================
+   CONTROLES — ASSessor WhatsApp / CTA PREMIUM 1.0
+   ========================================================= */
+.whatsapp-upgrade-banner{display:grid;grid-template-columns:54px minmax(0,1fr) auto;align-items:center;gap:16px;margin:0 0 22px;padding:22px;border:1px solid rgba(62,225,164,.35);border-radius:22px;background:radial-gradient(circle at 100% 0%,rgba(255,145,45,.18),transparent 35%),linear-gradient(120deg,#103e2e,#0a251b 72%);box-shadow:0 18px 42px rgba(0,0,0,.2)}
+.whatsapp-upgrade-icon{width:54px;height:54px;display:grid;place-items:center;border-radius:17px;background:linear-gradient(145deg,#ffad58,#f47718);color:#fff;font-size:25px;box-shadow:0 8px 22px rgba(244,119,24,.24)}
+.whatsapp-upgrade-copy>span{display:block;margin-bottom:6px;color:#74e4b8;font-size:9px;font-weight:850;letter-spacing:.13em}
+.whatsapp-upgrade-copy h3{margin:0 0 6px;color:#fff;font-size:20px;line-height:1.15;letter-spacing:-.03em}
+.whatsapp-upgrade-copy p{max-width:650px;margin:0 0 8px;color:#b3c9bf;font-size:11px;line-height:1.55}
+.whatsapp-upgrade-copy small{color:#9eb8ab;font-size:10px}.whatsapp-upgrade-copy small strong{color:#ffd09c}
+.whatsapp-upgrade-cta{min-height:48px;padding:0 17px;border:0;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:12px;background:linear-gradient(135deg,#ffa34a,#f36e12);color:#fff;font-size:11px;font-weight:850;white-space:nowrap;box-shadow:0 9px 24px rgba(243,110,18,.24);transition:transform .18s ease,filter .18s ease}
+.whatsapp-upgrade-cta:hover{transform:translateY(-2px);filter:brightness(1.05)}.whatsapp-upgrade-cta:active{transform:scale(.98)}
+.premium-plan .whatsapp-upgrade-banner{display:none!important}
+@media(max-width:720px){.whatsapp-upgrade-banner{grid-template-columns:44px minmax(0,1fr);gap:12px;padding:17px;border-radius:20px}.whatsapp-upgrade-icon{width:44px;height:44px;border-radius:14px;font-size:21px}.whatsapp-upgrade-copy h3{font-size:18px}.whatsapp-upgrade-copy p{font-size:11px}.whatsapp-upgrade-copy small{font-size:10px}.whatsapp-upgrade-cta{grid-column:1/-1;width:100%;min-height:52px;font-size:13px;border-radius:15px}}
