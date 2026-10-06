@@ -43,187 +43,8 @@
 
   <link
     rel="stylesheet"
-    href="app.css?v=5"
+    href="app.css"
   >
-
-  <!-- CORREÇÃO DA BARRA INFERIOR (fica aqui para valer mesmo que o app.css esteja em cache/antigo) -->
-  <style id="appBottomNavFix">
-/* =========================================================
-   CONTROLES — BARRA INFERIOR MOBILE (BLOCO AUTORITATIVO)
-   Início | Lançamentos | + | Relatórios | Perfil
-   Usa #appBottomNav (id) para vencer qualquer regra antiga,
-   tanto as de .mobile-bottom-nav quanto as de .controles-bottom-bar.
-   ========================================================= */
-@media (max-width: 720px), (pointer: coarse) {
-
-  #appView #appBottomNav {
-    position: fixed !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    top: auto !important;
-    width: 100% !important;
-    height: calc(80px + env(safe-area-inset-bottom)) !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    margin: 0 !important;
-    padding: 0 6px env(safe-area-inset-bottom) !important;
-    box-sizing: border-box !important;
-
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 84px 1fr 1fr !important;
-    grid-template-rows: 1fr !important;
-    align-items: center !important;
-    justify-items: stretch !important;
-    gap: 0 !important;
-
-    overflow: visible !important;
-    background: #022f24 !important;
-    border-top: 1px solid rgba(255,255,255,.08) !important;
-    box-shadow: 0 -10px 28px rgba(0,0,0,.22) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    z-index: 99999 !important;
-  }
-
-  #appView #appBottomNav > .bottom-nav-item {
-    position: relative !important;
-    inset: auto !important;
-    left: auto !important;
-    right: auto !important;
-    top: auto !important;
-    bottom: auto !important;
-    transform: none !important;
-    translate: none !important;
-
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    height: 66px !important;
-    margin: 0 !important;
-    padding: 6px 2px !important;
-
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 5px !important;
-
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    color: #a9bbb3 !important;
-    text-align: center !important;
-    overflow: visible !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-
-  #appView #appBottomNav > [data-bottom-section="dashboard"]    { grid-column: 1 !important; grid-row: 1 !important; }
-  #appView #appBottomNav > [data-bottom-section="transactions"] { grid-column: 2 !important; grid-row: 1 !important; }
-  #appView #appBottomNav > [data-bottom-section="reports"]      { grid-column: 4 !important; grid-row: 1 !important; }
-  #appView #appBottomNav > [data-bottom-section="profile"]      { grid-column: 5 !important; grid-row: 1 !important; }
-
-  #appView #appBottomNav > .bottom-nav-item span {
-    position: static !important;
-    inset: auto !important;
-    transform: none !important;
-    width: 100% !important;
-    height: 26px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    display: grid !important;
-    place-items: center !important;
-    font-size: 24px !important;
-    line-height: 1 !important;
-    color: inherit !important;
-  }
-
-  #appView #appBottomNav > .bottom-nav-item small {
-    position: static !important;
-    inset: auto !important;
-    transform: none !important;
-    display: block !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    font-size: 10px !important;
-    font-weight: 700 !important;
-    line-height: 1.1 !important;
-    letter-spacing: -.01em !important;
-    white-space: nowrap !important;
-    text-align: center !important;
-    color: inherit !important;
-  }
-
-  #appView #appBottomNav > .bottom-nav-item.active { color: #3ee4a4 !important; }
-  #appView #appBottomNav > [data-bottom-section="reports"].active { color: #ff922f !important; }
-
-  /* Botão +: fora do fluxo do grid, centralizado sobre a borda superior da barra */
-  #appView #appBottomNav > #mobileAddButton {
-    position: absolute !important;
-    grid-column: auto !important;
-    grid-row: auto !important;
-    left: 50% !important;
-    right: auto !important;
-    top: 0 !important;
-    bottom: auto !important;
-    transform: translate(-50%, -50%) !important;
-    translate: none !important;
-
-    width: 76px !important;
-    height: 76px !important;
-    min-width: 76px !important;
-    min-height: 76px !important;
-    max-width: 76px !important;
-    max-height: 76px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    border: 6px solid #073128 !important;
-    border-radius: 50% !important;
-    background: linear-gradient(145deg, #ff922c, #ff7414) !important;
-    color: #fff !important;
-    box-shadow: 0 10px 26px rgba(255,125,23,.32) !important;
-    overflow: hidden !important;
-    z-index: 100002 !important;
-  }
-
-  #appView #appBottomNav > #mobileAddButton span {
-    position: static !important;
-    inset: auto !important;
-    transform: none !important;
-    display: block !important;
-    width: auto !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 0 4px !important;
-    font-size: 44px !important;
-    font-weight: 300 !important;
-    line-height: 1 !important;
-    color: #fff !important;
-  }
-
-  #appView #appBottomNav > #mobileAddButton:active {
-    transform: translate(-50%, -50%) scale(.95) !important;
-  }
-
-  /* espaço para o conteúdo não ficar embaixo da barra */
-  body { padding-bottom: calc(84px + env(safe-area-inset-bottom)) !important; }
-  .main-content { padding-bottom: calc(120px + env(safe-area-inset-bottom)) !important; }
-}
-
-@media (max-width: 380px) {
-  #appView #appBottomNav { grid-template-columns: 1fr 1fr 72px 1fr 1fr !important; padding-left: 2px !important; padding-right: 2px !important; }
-  #appView #appBottomNav > .bottom-nav-item small { font-size: 9px !important; }
-  #appView #appBottomNav > #mobileAddButton { width: 68px !important; height: 68px !important; min-width: 68px !important; min-height: 68px !important; max-width: 68px !important; max-height: 68px !important; }
-}
-
-  </style>
 </head>
 
 <body>
@@ -849,10 +670,6 @@
         </div>
 
 
-        <button id="globalPremiumBtn" class="global-premium-cta" type="button" aria-label="Conhecer o ControleS Premium">
-          <span aria-hidden="true">✦</span> <span class="global-premium-label">Desbloquear Premium</span> <small>7 dias grátis</small>
-        </button>
-
         <div class="topbar-user">
 
           <div
@@ -876,14 +693,6 @@
 
       </header>
 
-      <!-- Atalho flutuante global: o Assessor WhatsApp é exclusivo do Premium -->
-      <button id="globalWhatsAppBubble" class="global-whatsapp-bubble" type="button" aria-label="Assessor WhatsApp bloqueado para o plano grátis">
-        <span class="global-whatsapp-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" focusable="false"><path d="M12 2.2a9.6 9.6 0 0 0-8.23 14.55L2.5 21.5l4.93-1.15A9.6 9.6 0 1 0 12 2.2Zm0 17.4a7.7 7.7 0 0 1-3.93-1.08l-.28-.16-3 .7.76-2.92-.19-.3A7.73 7.73 0 1 1 12 19.6Zm4.25-5.8c-.23-.11-1.36-.67-1.57-.74-.2-.08-.36-.11-.51.11-.15.23-.59.74-.72.9-.13.15-.26.17-.51.06-.23-.11-.98-.36-1.87-1.16a7 7 0 0 1-1.3-1.62c-.13-.23-.01-.35.1-.47.1-.1.23-.26.34-.39.12-.13.15-.23.23-.38.08-.15.04-.28-.01-.39-.06-.11-.52-1.24-.71-1.7-.19-.45-.37-.39-.51-.4h-.44c-.15 0-.41.06-.62.29-.21.23-.8.78-.8 1.94 0 1.14.84 2.25.95 2.41.11.15 1.64 2.5 3.96 3.5.55.24.98.39 1.31.49.55.18 1.05.15 1.45.09.44-.07 1.36-.56 1.55-1.09.19-.54.19-.99.13-1.09-.06-.1-.21-.15-.44-.27Z"/></svg>
-        </span>
-        <span class="global-whatsapp-copy"><strong>Assessor WhatsApp</strong><small><i aria-hidden="true">🔒</i> Exclusivo Premium</small></span>
-        <span class="global-whatsapp-arrow" aria-hidden="true">›</span>
-      </button>
 
       <!-- =================================================
            DASHBOARD
@@ -1146,7 +955,7 @@
           <button id="addCategoryBtn" class="quick-action premium-home-shortcut" data-premium-locked="true" data-premium-home="true" type="button"><span>◈</span>Nova categoria<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
           <button class="quick-action premium-home-shortcut" data-section="reports" data-premium-home="true" type="button"><span>▥</span>Relatórios<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
           <button class="quick-action premium-home-shortcut" data-section="ai-report" data-premium-home="true" type="button"><span>✦</span>Relatório com IA<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
-          <button class="quick-action premium-home-shortcut" data-section="whatsapp" data-premium-home="true" type="button"><span class="whatsapp-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3.2a8.5 8.5 0 0 0-7.3 12.85L3.6 20.4l4.46-1.04A8.5 8.5 0 1 0 12 3.2Zm0 15.35a6.82 6.82 0 0 1-3.48-.95l-.25-.15-2.65.62.67-2.58-.17-.27A6.85 6.85 0 1 1 12 18.55Zm3.76-5.12c-.2-.1-1.2-.59-1.39-.66-.18-.07-.32-.1-.45.1-.14.21-.52.66-.64.8-.12.14-.24.16-.45.06-.2-.1-.87-.32-1.66-1.03a6.2 6.2 0 0 1-1.15-1.43c-.12-.2-.01-.31.09-.42l.3-.35c.1-.12.14-.2.2-.34.07-.14.04-.26-.01-.36-.05-.1-.46-1.1-.63-1.51-.16-.4-.33-.35-.45-.36h-.39c-.14 0-.36.05-.55.26-.18.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.13.1.14 1.45 2.21 3.51 3.1.49.21.87.34 1.17.43.49.16.94.13 1.29.08.4-.06 1.2-.49 1.37-.96.17-.47.17-.87.12-.96-.05-.08-.19-.13-.4-.23Z"/></svg></span>Assessor WhatsApp<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
+          <button class="quick-action premium-home-shortcut whatsapp-home-highlight" data-section="whatsapp" data-premium-home="true" type="button"><span class="whatsapp-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3.2a8.5 8.5 0 0 0-7.3 12.85L3.6 20.4l4.46-1.04A8.5 8.5 0 1 0 12 3.2Zm0 15.35a6.82 6.82 0 0 1-3.48-.95l-.25-.15-2.65.62.67-2.58-.17-.27A6.85 6.85 0 1 1 12 18.55Zm3.76-5.12c-.2-.1-1.2-.59-1.39-.66-.18-.07-.32-.1-.45.1-.14.21-.52.66-.64.8-.12.14-.24.16-.45.06-.2-.1-.87-.32-1.66-1.03a6.2 6.2 0 0 1-1.15-1.43c-.12-.2-.01-.31.09-.42l.3-.35c.1-.12.14-.2.2-.34.07-.14.04-.26-.01-.36-.05-.1-.46-1.1-.63-1.51-.16-.4-.33-.35-.45-.36h-.39c-.14 0-.36.05-.55.26-.18.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.13.1.14 1.45 2.21 3.51 3.1.49.21.87.34 1.17.43.49.16.94.13 1.29.08.4-.06 1.2-.49 1.37-.96.17-.47.17-.87.12-.96-.05-.08-.19-.13-.4-.23Z"/></svg></span>Assessor WhatsApp<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
         </div>
 
         <article class="home-insight-card" id="homeInsightCard">
@@ -2184,17 +1993,6 @@
             <div id="whatsappIntegrationStatus" class="smart-status status-pending"><span></span> Integração em configuração</div>
           </div>
 
-          <div class="whatsapp-upgrade-banner" id="whatsappUpgradeBanner">
-            <div class="whatsapp-upgrade-icon" aria-hidden="true">✦</div>
-            <div class="whatsapp-upgrade-copy">
-              <span>RECURSO PREMIUM</span>
-              <h3>Seu financeiro, direto no WhatsApp</h3>
-              <p>Veja uma prévia de como consultar gastos e registrar movimentações por conversa. Desbloqueie o Premium para acessar os recursos exclusivos.</p>
-              <small><strong>7 dias grátis</strong> · depois R$ 29,99/mês · cancele quando quiser</small>
-            </div>
-            <button id="whatsappUpgradeBtn" class="whatsapp-upgrade-cta" type="button">Conhecer o Premium <span aria-hidden="true">→</span></button>
-          </div>
-
           <div class="whatsapp-dashboard">
             <div class="phone-mockup" aria-label="Prévia do Assessor WhatsApp">
               <div class="phone-top">
@@ -2222,7 +2020,7 @@
                 <div><span class="integration-dot"></span><strong>Status da integração</strong></div>
                 <p id="whatsappStatusText">A interface está pronta. Para conversar pelo WhatsApp de verdade, ainda é necessário conectar a API oficial e o webhook do ControleS.</p>
               </div>
-              <button id="whatsappPrimaryBtn" class="btn btn-premium feature-premium-btn" type="button">Ver planos e desbloquear</button>
+              <button id="whatsappPrimaryBtn" class="btn btn-premium feature-premium-btn" type="button">Ver status da integração</button>
               <small class="feature-security">🔒 O acesso financeiro permanece vinculado à conta autenticada do ControleS.</small>
             </div>
           </div>
@@ -2398,12 +2196,12 @@
 
     </main>
 
-    <nav id="appBottomNav" class="mobile-bottom-nav controles-bottom-bar" aria-label="Navegação do aplicativo">
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-home nav-home active" data-bottom-section="dashboard"><span>⌂</span><small>Início</small></button>
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-transactions nav-transactions" data-bottom-section="transactions"><span>↔</span><small>Lançamentos</small></button>
-      <button type="button" class="bottom-add-button controles-fab nav-add" id="mobileAddButton" aria-label="Adicionar lançamento"><span>＋</span></button>
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-reports nav-reports" data-bottom-section="reports"><span>⌁</span><small>Relatórios</small></button>
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-profile nav-profile" data-bottom-section="profile"><span>♙</span><small>Perfil</small></button>
+    <nav class="controles-bottom-bar" aria-label="Navegação do aplicativo">
+      <button type="button" class="bottom-nav-item controles-nav controles-nav-home active" data-bottom-section="dashboard"><span>⌂</span><small>Início</small></button>
+      <button type="button" class="bottom-nav-item controles-nav controles-nav-transactions" data-bottom-section="transactions"><span>↔</span><small>Lançamentos</small></button>
+      <button type="button" class="bottom-add-button controles-fab" id="mobileAddButton" aria-label="Adicionar lançamento"><span>＋</span></button>
+      <button type="button" class="bottom-nav-item controles-nav controles-nav-reports" data-bottom-section="reports"><span>⌁</span><small>Relatórios</small></button>
+      <button type="button" class="bottom-nav-item controles-nav controles-nav-profile" data-bottom-section="profile"><span>♙</span><small>Perfil</small></button>
     </nav>
 
   </div>
