@@ -6674,12 +6674,16 @@ function applyPremiumAccess() {
         if (!button) return;
 
 
-               button.classList.toggle(
+        button.classList.toggle(
             "premium-locked",
             !premium
         );
 
-        button.classList.remove("premium-content-hidden");
+
+        button.classList.toggle(
+            "premium-content-hidden",
+            !premium
+        );
 
 
         if (!premium) {
@@ -7187,21 +7191,10 @@ function updateWhatsAppPreview() {
 
 (function bindSmartFeatureButtons(){
     document.addEventListener("click", event => {
-        const globalPremium = event.target.closest?.("#globalPremiumBtn");
-        if (globalPremium) { event.preventDefault(); showSection("premium"); return; }
-        const globalWhatsApp = event.target.closest?.("#globalWhatsAppBubble");
-        if (globalWhatsApp) {
-            event.preventDefault();
-            if (!isPremiumActive()) return openPremiumAccess();
-            showSection("whatsapp");
-            return;
-        }
         const ai = event.target.closest?.("#generateAIReportBtn");
         if (ai) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); renderAIReport(true); return; }
-        const waUpgrade = event.target.closest?.("#whatsappUpgradeBtn");
-        if (waUpgrade) { event.preventDefault(); showSection("premium"); return; }
         const wa = event.target.closest?.("#whatsappPrimaryBtn");
-        if (wa) { event.preventDefault(); if (!isPremiumActive()) { showSection("premium"); return; } updateWhatsAppPreview(); showToast("A interface está pronta. Falta conectar a API oficial do WhatsApp.", "info"); }
+        if (wa) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); updateWhatsAppPreview(); showToast("A interface está pronta. Falta conectar a API oficial do WhatsApp.", "info"); }
     });
 })();
 
