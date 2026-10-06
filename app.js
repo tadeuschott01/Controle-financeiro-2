@@ -7484,3 +7484,107 @@ document.addEventListener("click", function controlesNavigationFallback(event){
     showSection(section);
   }
 });
+
+
+/* =========================================================
+   CONTROLES — APARÊNCIA + WHATSAPP FLUTUANTE
+   ========================================================= */
+(function(){
+  const STORAGE_KEY = "controles_theme_preference";
+  const root = document.documentElement;
+  const systemDark = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+
+  function savedTheme(){
+    return localStorage.getItem(STORAGE_KEY) || "dark";
+  }
+
+  function effectiveTheme(choice){
+    if(choice === "system"){
+      return systemDark && systemDark.matches ? "dark" : "light";
+    }
+    return choice === "light" ? "light" : "dark";
+  }
+
+  function applyTheme(choice, save){
+    const valid = ["light","dark","system"].includes(choice) ? choice : "dark";
+    root.dataset.controlesTheme = effectiveTheme(valid);
+    root.dataset.controlesThemeChoice = valid;
+    if(save) localStorage.setItem(STORAGE_KEY, valid);
+
+    document.querySelectorAll("[data-theme-choice]").forEach(btn=>{
+      btn.classList.toggle("active", btn.dataset.themeChoice === valid);
+    });
+  }
+
+  applyTheme(savedTheme(), false);
+
+  if(systemDark){
+    const onSystemChange = () => {
+      if(savedTheme() === "system") applyTheme("system", false);
+    };
+    if(systemDark.addEventListener) systemDark.addEventListener("change", onSystemChange);
+    else if(systemDark.addListener) systemDark.addListener(onSystemChange);
+  }
+
+  function appearanceTrigger(){
+    return Array.from(document.querySelectorAll("button, a, [role='button']")).find(el=>{
+      const txt = (el.textContent || "").trim().toLowerCase();
+      return txt.includes("aparência") || txt.includes("aparencia");
+    });
+  }
+
+  function openAppearance(){
+    const modal = document.getElementById("appearanceModal");
+    if(!modal) return;
+    applyTheme(savedTheme(), false);
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden","false");
+  }
+
+  function closeAppearance(){
+    const modal = document.getElementById("appearanceModal");
+    if(!modal) return;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden","true");
+  }
+
+  document.addEventListener("click", function(e){
+    const trigger = e.target.closest("button, a, [role='button']");
+    const appTrigger = appearanceTrigger();
+
+    if(trigger && appTrigger && trigger === appTrigger){
+      e.preventDefault();
+      e.stopPropagation();
+      openAppearance();
+      return;
+    }
+
+    if(e.target.closest("#appearanceClose") || e.target.closest("[data-close-appearance='true']")){
+      closeAppearance();
+      return;
+    }
+
+    const themeButton = e.target.closest("[data-theme-choice]");
+    if(themeButton){
+      applyTheme(themeButton.dataset.themeChoice, true);
+      setTimeout(closeAppearance, 160);
+      return;
+    }
+
+    const whatsappButton = e.target.closest("#whatsappFloatingButton");
+    if(whatsappButton){
+      e.preventDefault();
+
+      /* Por enquanto abre a área interna do Assessor WhatsApp.
+         Quando o número/API definitivo estiver pronto, substitua este bloco
+         pelo redirecionamento da integração oficial. */
+      if(typeof showSection === "function"){
+        showSection("whatsapp");
+        return;
+      }
+
+      const internalWhatsapp = document.querySelector('[data-section="whatsapp"]');
+      if(internalWhatsapp) internalWhatsapp.click();
+    }
+  }, true);
+})();
