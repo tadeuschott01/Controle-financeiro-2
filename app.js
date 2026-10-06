@@ -7588,3 +7588,55 @@ document.addEventListener("click", function controlesNavigationFallback(event){
     }
   }, true);
 })();
+
+
+/* =========================================================
+   CONTROLES — ESTADO PREMIUM DA BOLHA WHATSAPP
+   ========================================================= */
+(function(){
+  function ctUserIsPremium(){
+    try{
+      if(typeof isPremiumActive === "function") return !!isPremiumActive();
+    }catch(e){}
+
+    /* Fallback visual: procura estados já usados pelo próprio app. */
+    const body = document.body;
+    if(body && (body.classList.contains("premium-user") || body.dataset.premium === "true")){
+      return true;
+    }
+    return false;
+  }
+
+  function syncWhatsappFloatingLock(){
+    const btn=document.getElementById("whatsappFloatingButton");
+    if(!btn) return;
+    const premium=ctUserIsPremium();
+    btn.classList.toggle("ct-free-locked",!premium);
+    btn.setAttribute("aria-label", premium ? "Abrir Assessor WhatsApp" : "Assessor WhatsApp — recurso Premium");
+  }
+
+  document.addEventListener("DOMContentLoaded",syncWhatsappFloatingLock);
+  window.addEventListener("load",syncWhatsappFloatingLock);
+
+  /* Atualiza também após mudanças de tela/login/assinatura. */
+  document.addEventListener("click",function(){
+    setTimeout(syncWhatsappFloatingLock,120);
+  });
+
+  /* Usuário grátis: clicar na bolha respeita o gate Premium existente. */
+  document.addEventListener("click",function(e){
+    const btn=e.target.closest("#whatsappFloatingButton");
+    if(!btn || ctUserIsPremium()) return;
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    if(typeof openPremiumAccess === "function"){
+      openPremiumAccess();
+      return;
+    }
+
+    const premiumButton=document.querySelector('[data-section="premium"]');
+    if(premiumButton) premiumButton.click();
+  },true);
+})();
