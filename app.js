@@ -7640,3 +7640,19 @@ document.addEventListener("click", function controlesNavigationFallback(event){
     if(premiumButton) premiumButton.click();
   },true);
 })();
+
+
+/* CONTROLES — WhatsApp flutuante sem cadeado visual */
+(function(){
+  function cleanWhatsappBubble(){
+    const btn=document.getElementById("whatsappFloatingButton");
+    if(!btn) return;
+    btn.classList.remove("ct-free-locked");
+    const lock=btn.querySelector(".ct-whatsapp-lock");
+    if(lock) lock.remove();
+    btn.setAttribute("aria-label","Abrir Assessor WhatsApp");
+  }
+  document.addEventListener("DOMContentLoaded",cleanWhatsappBubble);
+  window.addEventListener("load",cleanWhatsappBubble);
+  setTimeout(cleanWhatsappBubble,250);
+})();
