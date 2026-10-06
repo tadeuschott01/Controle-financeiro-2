@@ -5616,3 +5616,175 @@ html[data-controles-theme="light"] .ct-appearance-close{background:#e2eee9;color
 @media(min-width:721px) and (pointer:fine){
   .ct-whatsapp-float{bottom:24px;right:24px}
 }
+
+
+/* =========================================================
+   CONTROLES — RELATÓRIOS PREMIUM + LOCK WHATSAPP
+   Correção visual pontual
+   ========================================================= */
+
+/* Corrige o bloco Premium que estava desmontado */
+#reportsSection .premium-lock,
+#reportsSection .premium-locked-message,
+#reportsSection .premium-report-lock,
+#reportsSection .premium-overlay,
+#reportsSection .premium-gate{
+  width:100%!important;
+  max-width:none!important;
+  margin:18px 0 0!important;
+  padding:20px!important;
+  display:grid!important;
+  grid-template-columns:48px minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:14px!important;
+  border:1px solid rgba(242,138,53,.20)!important;
+  border-radius:22px!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(242,138,53,.12),transparent 38%),
+    linear-gradient(145deg,#14271f,#0d1d18)!important;
+  box-shadow:0 16px 36px rgba(0,0,0,.18)!important;
+  color:#f5faf7!important;
+  text-align:left!important;
+  overflow:hidden!important;
+}
+
+/* Se a implementação usa filhos diretos, impede texto de ficar esmagado */
+#reportsSection .premium-lock > *,
+#reportsSection .premium-locked-message > *,
+#reportsSection .premium-report-lock > *,
+#reportsSection .premium-overlay > *,
+#reportsSection .premium-gate > *{
+  min-width:0!important;
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  margin:0!important;
+}
+
+/* Título/descrição Premium */
+#reportsSection .premium-lock h2,
+#reportsSection .premium-lock h3,
+#reportsSection .premium-lock strong,
+#reportsSection .premium-locked-message h2,
+#reportsSection .premium-locked-message h3,
+#reportsSection .premium-locked-message strong,
+#reportsSection .premium-report-lock h2,
+#reportsSection .premium-report-lock h3,
+#reportsSection .premium-report-lock strong,
+#reportsSection .premium-gate h2,
+#reportsSection .premium-gate h3,
+#reportsSection .premium-gate strong{
+  color:#fff!important;
+  font-size:16px!important;
+  line-height:1.25!important;
+  font-weight:850!important;
+  white-space:normal!important;
+}
+#reportsSection .premium-lock p,
+#reportsSection .premium-lock span,
+#reportsSection .premium-locked-message p,
+#reportsSection .premium-locked-message span,
+#reportsSection .premium-report-lock p,
+#reportsSection .premium-report-lock span,
+#reportsSection .premium-gate p,
+#reportsSection .premium-gate span{
+  color:#9db0a8!important;
+  font-size:12px!important;
+  line-height:1.45!important;
+  white-space:normal!important;
+}
+
+/* Botão Premium do relatório */
+#reportsSection .premium-lock button,
+#reportsSection .premium-locked-message button,
+#reportsSection .premium-report-lock button,
+#reportsSection .premium-overlay button,
+#reportsSection .premium-gate button,
+#reportsSection [data-section="premium"]{
+  width:auto!important;
+  min-width:112px!important;
+  min-height:48px!important;
+  padding:10px 14px!important;
+  border:0!important;
+  border-radius:14px!important;
+  background:linear-gradient(135deg,#f5a052,#f28a35)!important;
+  color:#fff!important;
+  font-size:12px!important;
+  line-height:1.15!important;
+  font-weight:850!important;
+  text-align:center!important;
+  box-shadow:0 8px 20px rgba(242,138,53,.20)!important;
+}
+
+/* Período do relatório com leitura melhor */
+#reportsSection .report-period-card,
+#reportsSection .period-card,
+#reportsSection .report-filter-card{
+  border-radius:22px!important;
+  border:1px solid rgba(190,220,207,.12)!important;
+  background:linear-gradient(145deg,#122820,#0d1f19)!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.14)!important;
+}
+
+/* WhatsApp: cadeado flutuante só quando FREE */
+.ct-whatsapp-float{overflow:visible!important}
+.ct-whatsapp-lock{
+  display:none;
+  position:absolute;
+  right:-4px;
+  top:-5px;
+  width:23px;
+  height:23px;
+  border-radius:50%;
+  place-items:center;
+  background:#f28a35;
+  color:#fff;
+  border:3px solid #0a1915;
+  box-shadow:0 5px 12px rgba(0,0,0,.28);
+  font-size:10px;
+  line-height:1;
+  z-index:3;
+}
+.ct-whatsapp-float.ct-free-locked .ct-whatsapp-lock{
+  display:grid!important;
+}
+
+@media(max-width:520px){
+  #reportsSection .premium-lock,
+  #reportsSection .premium-locked-message,
+  #reportsSection .premium-report-lock,
+  #reportsSection .premium-overlay,
+  #reportsSection .premium-gate{
+    grid-template-columns:42px minmax(0,1fr)!important;
+    padding:17px!important;
+  }
+  #reportsSection .premium-lock button,
+  #reportsSection .premium-locked-message button,
+  #reportsSection .premium-report-lock button,
+  #reportsSection .premium-overlay button,
+  #reportsSection .premium-gate button,
+  #reportsSection [data-section="premium"]{
+    grid-column:1/-1!important;
+    width:100%!important;
+  }
+}
+
+/* Light theme correspondente */
+html[data-controles-theme="light"] #reportsSection .premium-lock,
+html[data-controles-theme="light"] #reportsSection .premium-locked-message,
+html[data-controles-theme="light"] #reportsSection .premium-report-lock,
+html[data-controles-theme="light"] #reportsSection .premium-overlay,
+html[data-controles-theme="light"] #reportsSection .premium-gate{
+  background:linear-gradient(145deg,#fffaf5,#f4eee8)!important;
+  border-color:#f2d3b7!important;
+  color:#173128!important;
+}
+html[data-controles-theme="light"] #reportsSection .premium-lock h2,
+html[data-controles-theme="light"] #reportsSection .premium-lock h3,
+html[data-controles-theme="light"] #reportsSection .premium-lock strong,
+html[data-controles-theme="light"] #reportsSection .premium-locked-message h2,
+html[data-controles-theme="light"] #reportsSection .premium-locked-message h3,
+html[data-controles-theme="light"] #reportsSection .premium-locked-message strong{
+  color:#173128!important;
+}
+html[data-controles-theme="light"] .ct-whatsapp-lock{border-color:#edf4f1}
