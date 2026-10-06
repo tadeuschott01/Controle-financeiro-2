@@ -5989,3 +5989,201 @@ html[data-controles-theme="light"] #reportsSection .report-period-filter h3{
   height:100%!important;
   display:block!important;
 }
+
+
+/* =========================================================
+   CONTROLES — ACABAMENTO LANÇAMENTOS + RELATÓRIOS
+   Não altera navegação, FAB, WhatsApp ou Aparência.
+   ========================================================= */
+
+/* ---------- LANÇAMENTOS ---------- */
+#transactionsSection .section-heading{
+  margin-bottom:18px!important;
+}
+
+/* Ações superiores */
+#transactionsSection .transactions-actions,
+#transactionsSection .section-actions,
+#transactionsSection .top-actions{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)!important;
+  gap:10px!important;
+  align-items:stretch!important;
+}
+
+/* Limpar: secundário elegante, não compete com Novo lançamento */
+#transactionsSection button[id*="clear" i],
+#transactionsSection button[class*="clear" i],
+#transactionsSection button[id*="limpar" i],
+#transactionsSection button[class*="limpar" i]{
+  min-height:52px!important;
+  padding:10px 14px!important;
+  border:1px solid rgba(229,101,101,.22)!important;
+  border-radius:16px!important;
+  background:rgba(229,101,101,.075)!important;
+  color:#ef9b9b!important;
+  box-shadow:none!important;
+  font-size:12px!important;
+  line-height:1.15!important;
+  font-weight:800!important;
+  text-align:center!important;
+}
+
+/* Novo lançamento permanece ação principal */
+#transactionsSection button[id*="add" i],
+#transactionsSection button[class*="add" i],
+#transactionsSection button[id*="new" i],
+#transactionsSection button[class*="new" i]{
+  border-radius:16px!important;
+}
+
+/* Card Filtros mais refinado */
+#transactionsSection .filters-card,
+#transactionsSection .filter-card,
+#transactionsSection .transactions-filter,
+#transactionsSection .filters-panel{
+  padding:20px!important;
+  border-radius:24px!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(42,202,146,.10),transparent 35%),
+    linear-gradient(145deg,#0f513e,#0b3f31)!important;
+  border:1px solid rgba(77,224,171,.24)!important;
+  box-shadow:0 16px 34px rgba(0,0,0,.16)!important;
+}
+
+/* Inputs e selects: evita categoria cortada */
+#transactionsSection input,
+#transactionsSection select{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:54px!important;
+  border-radius:16px!important;
+  font-size:13px!important;
+  text-overflow:ellipsis!important;
+}
+#transactionsSection select{
+  padding-right:34px!important;
+}
+#transactionsSection .filter-grid,
+#transactionsSection .filters-grid{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:10px!important;
+}
+#transactionsSection .filter-grid > *,
+#transactionsSection .filters-grid > *{
+  min-width:0!important;
+  overflow:hidden!important;
+}
+
+/* Cards dos lançamentos */
+#transactionsSection .transaction-item,
+#transactionsSection .transaction-card{
+  border:1px solid rgba(190,220,207,.10)!important;
+  border-radius:20px!important;
+  background:linear-gradient(145deg,#123127,#0e281f)!important;
+  box-shadow:0 10px 26px rgba(0,0,0,.13)!important;
+}
+
+/* ---------- RELATÓRIOS ---------- */
+#reportsSection #premiumReportContent.premium-report-gate{
+  margin-top:18px!important;
+  padding:20px!important;
+  grid-template-columns:50px minmax(0,1fr)!important;
+  grid-template-areas:
+    "icon title"
+    "icon text"
+    "button button"!important;
+  gap:6px 13px!important;
+  background:
+    radial-gradient(circle at 92% 8%,rgba(242,138,53,.14),transparent 38%),
+    linear-gradient(145deg,#172a23,#0d1d18)!important;
+  border:1px solid rgba(242,138,53,.20)!important;
+  border-radius:22px!important;
+  box-shadow:0 15px 34px rgba(0,0,0,.18)!important;
+}
+
+#reportsSection #premiumReportContent .premium-lock{
+  grid-area:icon!important;
+  width:46px!important;
+  height:46px!important;
+  min-width:46px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:14px!important;
+  background:linear-gradient(145deg,rgba(242,138,53,.18),rgba(242,138,53,.08))!important;
+  border:1px solid rgba(242,138,53,.22)!important;
+  color:#f4a25b!important;
+}
+
+#reportsSection #premiumReportContent > h3{
+  grid-area:title!important;
+  margin:0!important;
+  align-self:end!important;
+  color:#fff!important;
+  font-size:16px!important;
+  line-height:1.2!important;
+  font-weight:850!important;
+}
+
+#reportsSection #premiumReportContent > p{
+  grid-area:text!important;
+  margin:0!important;
+  color:#9eb0a9!important;
+  font-size:12px!important;
+  line-height:1.45!important;
+}
+
+/* Botão Premium visível e profissional */
+#reportsSection #premiumReportContent > button{
+  grid-area:button!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:50px!important;
+  margin-top:10px!important;
+  padding:12px 16px!important;
+  border:0!important;
+  border-radius:15px!important;
+  background:linear-gradient(135deg,#f5a052,#f28a35)!important;
+  color:#fff!important;
+  font-size:13px!important;
+  font-weight:850!important;
+  letter-spacing:.01em!important;
+  box-shadow:0 9px 22px rgba(242,138,53,.20)!important;
+}
+
+/* Card de período mais legível */
+#reportsSection .report-period-filter{
+  padding:20px!important;
+  border-radius:22px!important;
+  background:linear-gradient(145deg,#122820,#0d1f19)!important;
+  border:1px solid rgba(190,220,207,.12)!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.13)!important;
+}
+
+/* Light theme */
+html[data-controles-theme="light"] #transactionsSection .filters-card,
+html[data-controles-theme="light"] #transactionsSection .filter-card,
+html[data-controles-theme="light"] #transactionsSection .transactions-filter,
+html[data-controles-theme="light"] #transactionsSection .filters-panel{
+  background:linear-gradient(145deg,#e9f6f1,#deeee8)!important;
+  border-color:#bcded1!important;
+}
+html[data-controles-theme="light"] #transactionsSection .transaction-item,
+html[data-controles-theme="light"] #transactionsSection .transaction-card{
+  background:#f8fbfa!important;
+  border-color:#dce8e3!important;
+  color:#173128!important;
+}
+
+@media(max-width:420px){
+  #transactionsSection .transactions-actions,
+  #transactionsSection .section-actions,
+  #transactionsSection .top-actions{
+    grid-template-columns:1fr 1.25fr!important;
+  }
+  #transactionsSection .filter-grid,
+  #transactionsSection .filters-grid{
+    grid-template-columns:1fr 1fr!important;
+  }
+}
