@@ -5788,3 +5788,204 @@ html[data-controles-theme="light"] #reportsSection .premium-locked-message stron
   color:#173128!important;
 }
 html[data-controles-theme="light"] .ct-whatsapp-lock{border-color:#edf4f1}
+
+
+/* =========================================================
+   CONTROLES — RELATÓRIO PREMIUM CORREÇÃO EXATA
+   Estrutura real: #premiumReportContent.premium-report-gate
+   ========================================================= */
+
+#reportsSection #premiumReportContent.premium-report-gate{
+  width:100%!important;
+  margin:18px 0 0!important;
+  padding:20px!important;
+  display:grid!important;
+  grid-template-columns:52px minmax(0,1fr) 132px!important;
+  grid-template-areas:
+    "icon title button"
+    "icon text button"!important;
+  column-gap:14px!important;
+  row-gap:5px!important;
+  align-items:center!important;
+
+  background:
+    radial-gradient(circle at 100% 0%,rgba(242,138,53,.13),transparent 42%),
+    linear-gradient(145deg,#152a22,#0d1d18)!important;
+  border:1px solid rgba(242,138,53,.22)!important;
+  border-radius:22px!important;
+  box-shadow:0 14px 32px rgba(0,0,0,.18)!important;
+  color:#f5faf7!important;
+  text-align:left!important;
+  overflow:hidden!important;
+}
+
+#reportsSection #premiumReportContent.premium-report-gate.hidden{
+  display:none!important;
+}
+
+#reportsSection #premiumReportContent .premium-lock{
+  grid-area:icon!important;
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  width:48px!important;
+  height:48px!important;
+  min-width:48px!important;
+  margin:0!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid rgba(242,138,53,.20)!important;
+  border-radius:15px!important;
+  background:rgba(242,138,53,.12)!important;
+  color:#f5a052!important;
+  font-size:22px!important;
+  line-height:1!important;
+  box-shadow:none!important;
+}
+
+#reportsSection #premiumReportContent > h3{
+  grid-area:title!important;
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  margin:0!important;
+  padding:0!important;
+  color:#fff!important;
+  font-size:16px!important;
+  line-height:1.25!important;
+  font-weight:850!important;
+  white-space:normal!important;
+}
+
+#reportsSection #premiumReportContent > p{
+  grid-area:text!important;
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  margin:0!important;
+  padding:0!important;
+  max-width:100%!important;
+  color:#9fb1aa!important;
+  font-size:12px!important;
+  line-height:1.45!important;
+  text-align:left!important;
+  white-space:normal!important;
+}
+
+#reportsSection #premiumReportContent > button{
+  grid-area:button!important;
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  width:132px!important;
+  min-width:132px!important;
+  min-height:48px!important;
+  margin:0!important;
+  padding:10px 12px!important;
+  border:0!important;
+  border-radius:14px!important;
+  background:linear-gradient(135deg,#f5a052,#f28a35)!important;
+  color:#fff!important;
+  font-size:12px!important;
+  line-height:1.2!important;
+  font-weight:850!important;
+  text-align:center!important;
+  box-shadow:0 8px 20px rgba(242,138,53,.20)!important;
+}
+
+/* Período: contraste e organização */
+#reportsSection .report-period-filter{
+  padding:20px!important;
+  border-radius:22px!important;
+  background:linear-gradient(145deg,#122820,#0d1f19)!important;
+  border:1px solid rgba(190,220,207,.12)!important;
+}
+#reportsSection .report-period-filter h3{
+  margin:0 0 5px!important;
+  color:#f4faf7!important;
+  font-size:15px!important;
+}
+#reportsSection .report-period-filter p{
+  margin:0!important;
+  color:#8fa59c!important;
+  font-size:11px!important;
+  line-height:1.4!important;
+}
+#reportsSection .report-period-status{
+  margin-top:18px!important;
+  padding-top:15px!important;
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  gap:14px!important;
+  border-top:1px solid rgba(210,232,222,.18)!important;
+}
+#reportsSection .report-period-status span{
+  color:#91a69d!important;
+  font-size:12px!important;
+}
+#reportsSection .report-period-status strong{
+  color:#55d8a7!important;
+  font-size:13px!important;
+  text-align:right!important;
+}
+
+/* Mobile: botão ocupa linha inteira e não aperta o texto */
+@media(max-width:520px){
+  #reportsSection #premiumReportContent.premium-report-gate{
+    padding:17px!important;
+    grid-template-columns:46px minmax(0,1fr)!important;
+    grid-template-areas:
+      "icon title"
+      "icon text"
+      "button button"!important;
+    column-gap:12px!important;
+    row-gap:6px!important;
+  }
+  #reportsSection #premiumReportContent .premium-lock{
+    width:44px!important;
+    height:44px!important;
+    min-width:44px!important;
+    border-radius:14px!important;
+    font-size:20px!important;
+  }
+  #reportsSection #premiumReportContent > button{
+    width:100%!important;
+    min-width:0!important;
+    margin-top:8px!important;
+  }
+}
+
+/* Tema claro equivalente */
+html[data-controles-theme="light"] #reportsSection #premiumReportContent.premium-report-gate{
+  background:linear-gradient(145deg,#fffaf5,#f4eee8)!important;
+  border-color:#f0d2b7!important;
+  color:#173128!important;
+}
+html[data-controles-theme="light"] #reportsSection #premiumReportContent > h3{
+  color:#173128!important;
+}
+html[data-controles-theme="light"] #reportsSection #premiumReportContent > p{
+  color:#71867d!important;
+}
+html[data-controles-theme="light"] #reportsSection .report-period-filter{
+  background:#f8fbfa!important;
+  border-color:#dce8e3!important;
+}
+html[data-controles-theme="light"] #reportsSection .report-period-filter h3{
+  color:#173128!important;
+}
+
+/* WhatsApp volta a ser somente a bolha limpa */
+.ct-whatsapp-lock{display:none!important}
+.ct-whatsapp-float{
+  overflow:hidden!important;
+  background:#20bd78!important;
+  color:#fff!important;
+}
+.ct-whatsapp-float svg{
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+}
