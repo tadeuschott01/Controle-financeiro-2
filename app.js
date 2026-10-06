@@ -7460,3 +7460,27 @@ document.addEventListener('click', function(e){
     window.applyPremiumAccess=function(){const r=oldApply.apply(this,arguments);syncPremiumShortcutLocks();return r;};
   }
 })();
+
+
+/* =========================================================
+   CONTROLES — NAVEGAÇÃO DE SEGURANÇA
+   Garante ação nos botões declarativos sem duplicar eventos.
+   ========================================================= */
+document.addEventListener("click", function controlesNavigationFallback(event){
+  const button = event.target.closest("button[data-section]");
+  if (!button) return;
+
+  const section = button.dataset.section;
+  if (!section) return;
+
+  /* Os listeners principais continuam tendo prioridade.
+     Este fallback só atua quando a navegação declarativa existe. */
+  if (button.dataset.premiumLocked === "true" && typeof isPremiumActive === "function" && !isPremiumActive()){
+    if (typeof openPremiumAccess === "function") openPremiumAccess();
+    return;
+  }
+
+  if (typeof showSection === "function"){
+    showSection(section);
+  }
+});
