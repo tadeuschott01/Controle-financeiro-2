@@ -1705,35 +1705,45 @@
         </div>
 
 
-        <div
-          id="premiumReportContent"
-          class="premium-report-gate"
-        >
-
-          <div class="premium-lock">
-            ★
-          </div>
-
-          <h3>
-            Relatórios ControleS Prime
-          </h3>
-
-          <p>
-            Assine o ControleS Prime para desbloquear gráficos, categorias e análises financeiras.
-          </p>
-
-          <button
-            class="btn btn-primary"
-            data-section="premium"
-            type="button"
-          >
-            Conhecer ControleS Prime
-          </button>
-
+        <div id="primeReportsIntro" class="prime-reports-intro">
+          <span class="prime-chip">✦ CONTROLES PRIME</span>
+          <h3>Entenda cada movimento do seu dinheiro</h3>
+          <p>Receitas, despesas e categorias em um só lugar.</p>
         </div>
 
+        <div id="primePreview" class="prime-preview" aria-label="Prévia dos relatórios exclusivos">
+          <div class="prime-preview-heading">
+            <span>PRÉVIA DO PRIME</span><span>🔒 Exclusivo</span>
+          </div>
+          <div class="prime-preview-stats" aria-hidden="true">
+            <div><small>Receitas</small><strong>R$ •••••</strong></div>
+            <div><small>Despesas</small><strong>R$ •••••</strong></div>
+            <div><small>Saldo</small><strong>R$ •••••</strong></div>
+          </div>
+          <div class="prime-preview-chart">
+            <div class="prime-preview-chart-title">Evolução financeira <span>🔒</span></div>
+            <svg viewBox="0 0 320 120" role="img" aria-label="Ilustração de gráfico bloqueado">
+              <path d="M0 30H320M0 60H320M0 90H320" stroke="#345960" stroke-dasharray="4 6"/>
+              <path d="M4 88C36 79 48 91 75 69S123 81 150 51S199 70 226 35S273 49 316 16" fill="none" stroke="#48dfb7" stroke-width="3" stroke-linecap="round"/>
+              <path d="M4 107C35 88 49 103 77 93S127 73 151 86S203 61 228 72S277 45 316 57" fill="none" stroke="#ff9a4b" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <div class="prime-preview-legend"><span>● Receitas</span><span>● Despesas</span></div>
+          </div>
+          <div class="prime-preview-chart">
+            <div class="prime-preview-chart-title">Despesas por categoria <span>🔒</span></div>
+            <div class="prime-preview-categories">
+              <div class="prime-preview-donut"></div>
+              <div><p>● Alimentação</p><p>● Transporte</p><p>● Outros gastos</p></div>
+            </div>
+          </div>
+        </div>
 
-        <div id="primeReportsIntro" class="prime-reports-intro"><span class="prime-chip">✦ CONTROLES PRIME</span><h3>Seu dinheiro, em detalhes</h3><p>Compare receitas e despesas, descubra suas maiores categorias e acompanhe sua evolução financeira.</p></div>
+        <div id="premiumReportContent" class="premium-report-gate">
+          <div class="premium-lock">✦</div>
+          <h3>Desbloqueie o ControleS Prime</h3>
+          <p>Veja seus números reais, gráficos completos, categorias e análises financeiras.</p>
+          <button class="btn btn-primary" data-section="premium" type="button">Conhecer ControleS Prime →</button>
+        </div>
 
         <div id="normalReportContent" hidden>
 
