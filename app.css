@@ -1,3 +1,70 @@
+
+Carregando mensagens mais antigas…
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* =========================================================
    CONTROLES — PREMIUM MINT 6.0
    Dark + Esmeralda + Menta + Laranja
@@ -6187,185 +6254,16 @@ html[data-controles-theme="light"] #transactionsSection .transaction-card{
     grid-template-columns:1fr 1fr!important;
   }
 }
-/* =========================================================
-   CONTROLES PRIME — NOVA IDENTIDADE VERDE + AZUL PROFUNDO
-   ========================================================= */
-:root { --prime-teal:#00bda3; --prime-blue:#062d48; }
-.balance-overview-card, .summary-card.balance-card {
-  background: radial-gradient(circle at 10% 10%,rgba(25,230,169,.25),transparent 42%),
-    linear-gradient(125deg,#06886b 0%,#056e72 40%,#06445b 72%,#05263f 100%) !important;
-  border:1px solid rgba(63,231,207,.32)!important;
-  box-shadow:0 22px 44px rgba(0,8,24,.36),inset 0 1px 0 rgba(255,255,255,.13)!important;
+/* CONTROLES — PREMIUM: esconder totalmente os cadeados no plano ativo */
+body.premium-plan .premium-diamond,
+body.premium-plan .nav-lock,
+body.premium-plan .premium-diamond::before,
+body.premium-plan .premium-diamond::after,
+body.premium-plan .nav-lock::before,
+body.premium-plan .nav-lock::after {
+  display: none !important;
+  content: none !important;
 }
-.balance-breakdown-item { background:rgba(0,24,41,.34)!important; border:1px solid rgba(125,239,221,.16)!important; backdrop-filter:blur(9px); }
-.balance-chart-mark { background:rgba(0,39,58,.35)!important; border:1px solid rgba(87,237,217,.24)!important; }
-.period-quick-btn { background:linear-gradient(115deg,#064a42,#062a3d)!important; border:1px solid rgba(58,211,185,.22)!important; }
-.prime-reports-intro { padding:22px; margin:18px 0; border-radius:22px; background:linear-gradient(125deg,#073d38,#06263d); border:1px solid rgba(85,224,201,.2); }
-.prime-reports-intro h3 { font-size:22px; margin:12px 0 7px; color:#fff; }
-.prime-reports-intro p { color:#afcbc6; line-height:1.55; }
-.prime-chip { display:inline-flex; padding:7px 11px; border-radius:99px; background:rgba(255,163,75,.13); color:#ffb66d; font-size:11px; font-weight:800; letter-spacing:.08em; }
-#premiumReportContent { display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; padding:35px 22px; margin-top:16px; border-radius:24px; border:1px solid rgba(74,212,193,.25); background:linear-gradient(145deg,#103b35,#071f31); }
-#premiumReportContent.hidden, #normalReportContent[hidden], #primeReportsIntro[hidden] { display:none!important; }
-#premiumReportContent h3 { font-size:23px; color:white; }
-#premiumReportContent p { max-width:340px; color:#b5c9c8; line-height:1.6; }
-#premiumReportContent .premium-lock { display:grid;place-items:center;width:62px;height:62px;border-radius:20px;background:rgba(255,164,73,.16);color:#ffb26b;font-size:28px; }
-#normalReportContent .report-card { background:linear-gradient(135deg,#0b423d,#082a40);border:1px solid rgba(91,218,202,.18);border-radius:20px; }
-#normalReportContent .report-card strong {color:#e8fffa;}
-@media(max-width:600px){ .balance-overview-card {border-radius:25px!important;} .balance-breakdown {gap:10px!important;} .balance-breakdown-item {min-width:0!important;padding:13px 10px!important;} .balance-breakdown-item strong {font-size:clamp(12px,3.5vw,17px)!important;} .balance-overview-top strong {font-size:clamp(30px,8vw,51px)!important;} }
+#normalReportContent[hidden], #premiumReportContent[hidden], #primeReportsIntro[hidden] { display: none !important; }
 
 
-/* ================================================================
-   CONTROLES — TELA INICIAL VERDE (REFERÊNCIA APROVADA)
-   Somente CSS. Sem alterações em HTML, JavaScript ou demais telas.
-   ================================================================ */
-#appView #dashboardSection .period-quick-btn {
-  background:linear-gradient(115deg,#006b4d 0%,#004b39 45%,#002b27 100%)!important;
-  border:1px solid #08b888!important;
-  box-shadow:0 10px 25px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.07)!important;
-  border-radius:22px!important;min-height:88px!important;color:white!important;
-}
-#appView #dashboardSection .period-quick-btn .period-quick-icon{
-  background:linear-gradient(135deg,#00e6a8,#00aa83)!important;
-  color:#fff!important;border-radius:17px!important;
-}
-#appView #dashboardSection .period-quick-btn strong{color:#fff!important;}
-#appView #dashboardSection .period-quick-btn small{color:#b8d8cd!important;}
-#appView #dashboardSection .balance-overview-card {
-  position:relative!important;isolation:isolate!important;overflow:hidden!important;
-  min-height:345px!important;padding:25px 21px 23px!important;
-  border-radius:29px!important;border:1.5px solid #0df2a8!important;
-  background:
-    radial-gradient(ellipse at 0% 4%,rgba(0,246,160,.60),transparent 56%),
-    radial-gradient(ellipse at 96% 100%,rgba(0,54,37,.86),transparent 54%),
-    linear-gradient(135deg,#00ba78 0%,#00885e 34%,#00513d 70%,#002b27 100%)!important;
-  box-shadow:0 20px 42px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.14)!important;
-}
-#appView #dashboardSection .balance-overview-card::before{
-  content:""!important;position:absolute!important;z-index:0!important;
-  width:85%!important;height:85%!important;top:-50%!important;right:-24%!important;
-  border-radius:50%!important;background:rgba(0,239,156,.11)!important;
-  border:1px solid rgba(255,255,255,.07)!important;pointer-events:none!important;
-}
-#appView #dashboardSection .balance-overview-card::after{
-  content:""!important;position:absolute!important;z-index:0!important;
-  width:105%!important;height:85%!important;bottom:-68%!important;left:-30%!important;
-  border-radius:50%!important;background:rgba(0,31,26,.13)!important;
-  border:1px solid rgba(255,255,255,.04)!important;pointer-events:none!important;
-}
-#appView #dashboardSection .balance-overview-card .balance-overview-top,
-#appView #dashboardSection .balance-overview-card .balance-breakdown{position:relative!important;z-index:1!important;}
-#appView #dashboardSection .balance-overview-card .balance-main-copy>span{
-  color:#f4fff9!important;font-weight:750!important;
-}
-#appView #dashboardSection .balance-overview-card #balanceValue{
-  color:#fff!important;font-size:clamp(30px,8.1vw,56px)!important;
-  font-weight:850!important;letter-spacing:-.055em!important;
-  line-height:1.18!important;overflow-wrap:anywhere!important;
-}
-#appView #dashboardSection .balance-overview-card #balancePeriodText{color:#c9f4df!important;}
-#appView #dashboardSection .balance-overview-card .balance-chart-mark{
-  background:linear-gradient(145deg,rgba(0,217,151,.68),rgba(0,83,65,.72))!important;
-  border:1.5px solid #27ffc2!important;border-radius:21px!important;
-  box-shadow:0 7px 20px rgba(0,31,24,.25)!important;
-}
-#appView #dashboardSection .balance-overview-card .balance-chart-mark i{
-  background:linear-gradient(#8affd5,#00dc9b)!important;
-}
-#appView #dashboardSection .balance-overview-card .balance-breakdown{gap:10px!important;margin-top:26px!important;}
-#appView #dashboardSection .balance-overview-card .balance-breakdown-item{
-  min-width:0!important;min-height:94px!important;padding:12px 10px!important;
-  border-radius:20px!important;
-  background:linear-gradient(135deg,rgba(0,87,65,.88),rgba(0,35,31,.87))!important;
-  border:1px solid rgba(16,214,150,.35)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04)!important;
-}
-#appView #dashboardSection .balance-overview-card .balance-breakdown-item small{color:#d1f0e3!important;}
-#appView #dashboardSection .balance-overview-card .income-breakdown strong{color:#37ffbc!important;}
-#appView #dashboardSection .balance-overview-card .expense-breakdown strong{color:#ff6478!important;}
-#appView #dashboardSection .balance-overview-card .balance-breakdown-item strong{
-  font-size:clamp(12px,3.8vw,18px)!important;overflow-wrap:anywhere!important;
-}
-#appView #dashboardSection .balance-overview-card .income-breakdown .balance-breakdown-icon{
-  background:linear-gradient(145deg,#00e4a3,#00b885)!important;color:white!important;
-}
-#appView #dashboardSection .balance-overview-card .expense-breakdown .balance-breakdown-icon{
-  background:linear-gradient(145deg,#ff7384,#f43c58)!important;color:white!important;
-}
-#appView #dashboardSection .quick-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:11px!important;}
-#appView #dashboardSection .quick-actions .quick-action{
-  min-width:0!important;min-height:89px!important;padding:13px 10px!important;
-  display:flex!important;align-items:center!important;gap:9px!important;
-  border-radius:21px!important;
-  background:linear-gradient(135deg,#003e30,#00251f)!important;
-  color:#fff!important;border:1px solid rgba(0,199,136,.43)!important;
-  box-shadow:0 9px 24px rgba(0,0,0,.14)!important;
-  font-size:clamp(12px,3.5vw,16px)!important;font-weight:750!important;
-  text-align:left!important;
-}
-#appView #dashboardSection .quick-actions .quick-action>span:first-child{
-  flex:0 0 45px!important;width:45px!important;height:45px!important;
-  display:grid!important;place-items:center!important;
-  border-radius:13px!important;background:linear-gradient(135deg,#00e8a6,#00b58c)!important;
-  color:white!important;font-size:26px!important;
-}
-#appView #dashboardSection .quick-actions .quick-action:nth-child(2)>span:first-child{
-  background:linear-gradient(135deg,#ff7382,#f33b58)!important;
-}
-#appView #dashboardSection .quick-actions .quick-action:nth-child(3)>span:first-child{
-  background:linear-gradient(135deg,#55d5ff,#1299ec)!important;
-}
-#appView #dashboardSection .quick-actions .quick-action:nth-child(4)>span:first-child{
-  background:linear-gradient(135deg,#a69aff,#6654ed)!important;
-}
-@media(min-width:650px){
-  #appView #dashboardSection .balance-overview-card{min-height:365px!important;padding:32px!important;}
-  #appView #dashboardSection .quick-actions .quick-action{min-height:105px!important;}
-}
-
-
-/* CONTROLES — ALINHAMENTO MOBILE, SEM ALTERAR FUNCIONALIDADES */
-@media(max-width:768px){
- #appView #dashboardSection .quick-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:stretch!important;}
- #appView #dashboardSection .quick-actions .quick-action{box-sizing:border-box!important;position:relative!important;width:100%!important;min-width:0!important;height:126px!important;min-height:126px!important;max-height:126px!important;padding:13px 10px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:11px!important;text-align:center!important;font-size:clamp(12px,3.45vw,16px)!important;line-height:1.2!important;white-space:normal!important;overflow:hidden!important;overflow-wrap:break-word!important;border-radius:22px!important;}
- #appView #dashboardSection .quick-actions .quick-action>span:first-child{flex:0 0 48px!important;width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;display:grid!important;place-items:center!important;margin:0!important;font-size:27px!important;}
- #appView #dashboardSection .quick-actions .quick-action .premium-diamond{position:absolute!important;top:9px!important;right:9px!important;margin:0!important;z-index:2!important;}
- #appView #dashboardSection .quick-actions .quick-action.whatsapp-home-highlight{font-size:clamp(11px,3vw,15px)!important;}
- #appView #dashboardSection .quick-actions .quick-action .whatsapp-action-icon{position:static!important;transform:none!important;}
- #appView #transactionsSection{min-width:0!important;}
- #appView #transactionsSection .section-heading{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:14px!important;}
- #appView #transactionsSection .transactions-heading-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;width:100%!important;}
- #appView #transactionsSection .transactions-heading-actions .btn{min-width:0!important;width:100%!important;min-height:51px!important;padding:10px 7px!important;line-height:1.2!important;font-size:clamp(11px,3vw,14px)!important;white-space:normal!important;}
- #appView #transactionsSection .app-filter-card{box-sizing:border-box!important;width:100%!important;min-width:0!important;padding:17px 14px!important;margin-top:16px!important;border-radius:22px!important;overflow:hidden!important;}
- #appView #transactionsSection .app-filter-head{display:grid!important;grid-template-columns:48px minmax(0,1fr) auto!important;gap:10px!important;align-items:center!important;min-width:0!important;margin-bottom:16px!important;}
- #appView #transactionsSection .app-filter-head>div:nth-child(2){min-width:0!important;}
- #appView #transactionsSection .app-filter-head h3{font-size:24px!important;margin:2px 0!important;}
- #appView #transactionsSection .app-filter-head p{font-size:12px!important;line-height:1.35!important;}
- #appView #transactionsSection .app-filter-icon{width:48px!important;height:48px!important;min-width:48px!important;}
- #appView #transactionsSection .filter-reset{padding:10px 9px!important;font-size:12px!important;min-width:0!important;}
- #appView #transactionsSection .app-search-field{display:flex!important;align-items:center!important;box-sizing:border-box!important;width:100%!important;min-width:0!important;height:53px!important;min-height:53px!important;padding:0 12px!important;gap:9px!important;overflow:hidden!important;border-radius:14px!important;}
- #appView #transactionsSection .app-search-field input{box-sizing:border-box!important;flex:1 1 auto!important;width:100%!important;min-width:0!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;font-size:14px!important;border:0!important;outline:0!important;}
- #appView #transactionsSection .app-filter-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin-top:12px!important;}
- #appView #transactionsSection .app-select-field{box-sizing:border-box!important;display:flex!important;flex-direction:column!important;gap:7px!important;width:100%!important;min-width:0!important;min-height:76px!important;padding:9px!important;border-radius:14px!important;overflow:hidden!important;}
- #appView #transactionsSection .app-select-field>span{font-size:11px!important;}
- #appView #transactionsSection .app-select-field select{display:block!important;box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;height:35px!important;min-height:35px!important;margin:0!important;padding:0 20px 0 7px!important;font-size:13px!important;text-overflow:ellipsis!important;border-radius:9px!important;}
- #appView #transactionsSection .filter-summary{margin-top:12px!important;font-size:12px!important;line-height:1.4!important;}
- #appView #transactionsSection .transactions-app-list,#appView #transactionsSection .transactions-list{min-width:0!important;}
- #appView #transactionsSection .transaction-item{box-sizing:border-box!important;max-width:100%!important;}
-}
-
-
-/* AJUSTE EXCLUSIVO DE LEGIBILIDADE — RELATÓRIOS */
-html body #appView #reportsSection #normalReportContent .panel-header h3,
-html body #appView #reportsSection #normalReportContent .panel h3,
-html body #appView #reportsSection #normalReportContent .report-values h3,
-html body #appView #reportsSection #normalReportContent .report-card strong {color:#f7fffd!important;opacity:1!important;}
-html body #appView #reportsSection #normalReportContent .panel-header p,
-html body #appView #reportsSection #normalReportContent .panel p {color:#bbd8d1!important;opacity:1!important;}
-html body #appView #reportsSection #normalReportContent .report-card span {color:#d1eae4!important;opacity:1!important;font-weight:700!important;}
-html body #appView #reportsSection #normalReportContent .report-line span {color:#264b40!important;opacity:1!important;}
-html body #appView #reportsSection #normalReportContent .report-line strong {color:#103e31!important;opacity:1!important;}
-html body #appView #reportsSection #normalReportContent .report-card:first-child strong{color:#50e9b7!important;}
-html body #appView #reportsSection #normalReportContent .report-card:nth-child(2) strong{color:#ff7d91!important;}
-html body #appView #reportsSection #normalReportContent .report-card:nth-child(3) strong{color:#ffc06d!important;}
-html body #appView #reportsSection #normalReportContent .panel,
-html body #appView #reportsSection #normalReportContent .report-card {opacity:1!important;}
