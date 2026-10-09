@@ -6492,3 +6492,196 @@ html body #appView #dashboardSection .balance-overview-card .balance-breakdown-i
  padding:11px 6px!important;
 }
 }
+
+
+/* ==========================================================
+  CONTROLES | IDENTIDADE VISUAL UNIFICADA
+  Base: verde petróleo, esmeralda, azul marinho e vidro escuro
+  Apenas aparência; a lógica continua no app.js original.
+========================================================== */
+:root {
+ --prime-surface:#032a29;
+ --prime-surface-blue:#042b40;
+ --prime-ink:#ecfffa;
+ --prime-muted:#a1c5c3;
+ --prime-line:rgba(17,209,177,.26);
+ --prime-mint:#23e6b7;
+ --prime-red:#ff647b;
+}
+html body #appView {
+ background:
+ radial-gradient(ellipse at 8% 0%,rgba(0,112,91,.23),transparent 40%),
+ radial-gradient(ellipse at 100% 52%,rgba(0,70,95,.13),transparent 50%),
+ #021b1a !important;
+}
+html body #appView .content-section {color:var(--prime-ink);}
+html body #appView .section-heading h2,
+html body #appView .welcome-row h2{color:#fff!important;letter-spacing:-.035em!important;}
+html body #appView .section-heading p,
+html body #appView .welcome-row p{color:#a7c3c1!important;}
+html body #appView .section-heading .eyebrow,
+html body #appView .app-kicker{color:#4bd9b8!important;}
+html body #appView .panel,
+html body #appView .app-filter-card,
+html body #appView .profile-app-card,
+html body #appView .report-card,
+html body #appView .transactions-app-list .transaction-item{
+ background:linear-gradient(140deg,rgba(1,65,56,.86),rgba(1,29,43,.96))!important;
+ border:1px solid var(--prime-line)!important;
+ box-shadow:0 12px 28px rgba(0,11,18,.19)!important;
+ border-radius:20px!important;
+}
+html body #appView input,
+html body #appView select,
+html body #appView textarea {
+ accent-color:#00c89b;
+}
+html body #appView .btn-primary {
+ background:linear-gradient(115deg,#00d2a2,#049d82)!important;
+ color:#fff!important;border:0!important;
+ box-shadow:0 8px 22px rgba(0,141,113,.22)!important;
+}
+html body #appView .quick-actions .quick-action.featured-action{
+ background:linear-gradient(130deg,#003b33,#002723)!important;
+ border:1px solid rgba(0,193,158,.32)!important;
+ color:#fff!important;
+ min-height:95px!important;
+ border-radius:20px!important;
+ display:flex!important;gap:10px!important;align-items:center!important;
+}
+html body #appView .quick-actions .quick-action.featured-action>span:first-child{
+ width:46px!important;height:46px!important;min-width:46px!important;
+ border-radius:13px!important;display:grid!important;place-items:center!important;
+ color:white!important;font-size:26px!important;
+ background:linear-gradient(135deg,#00d4a2,#008f80)!important;
+}
+html body #appView .quick-actions .quick-action.featured-action:nth-child(2)>span:first-child{
+ background:linear-gradient(135deg,#ff7685,#ed3855)!important;
+}
+html body #appView .quick-actions .quick-action.featured-action:nth-child(3)>span:first-child{
+ background:linear-gradient(135deg,#48c9ff,#137fda)!important;
+}
+html body #appView .quick-actions .quick-action.featured-action:nth-child(4)>span:first-child{
+ background:linear-gradient(135deg,#a28cff,#4c45e8)!important;
+}
+html body #appView .quick-actions .quick-action.featured-action::after{
+ content:"›";font-size:27px;line-height:1;margin-left:auto;
+ display:grid;place-items:center;width:28px;height:28px;flex-shrink:0;
+ border-radius:50%;color:#d3f9f0;background:rgba(9,98,91,.36);
+}
+html body #appView #dashboardSection article.balance-overview-card{
+ background:
+ radial-gradient(ellipse at 0% 5%,rgba(0,211,153,.44),transparent 42%),
+ radial-gradient(ellipse at 70% 2%,rgba(0,128,171,.28),transparent 45%),
+ linear-gradient(120deg,#005c43 0%,#004b4a 34%,#043b58 63%,#051f4a 100%)!important;
+ min-height:365px!important;
+ border:2px solid rgba(0,211,172,.64)!important;
+ border-radius:30px!important;
+ box-shadow:0 18px 44px rgba(0,15,25,.4)!important;
+}
+html body #appView #dashboardSection .balance-overview-card .balance-breakdown-item{
+ background:linear-gradient(125deg,rgba(0,73,65,.8),rgba(0,27,51,.75))!important;
+ border:1px solid rgba(0,203,186,.3)!important;
+ min-height:110px!important;
+}
+html body #appView #dashboardSection .balance-overview-card .income-breakdown strong{color:#31e4ba!important;}
+html body #appView #dashboardSection .balance-overview-card .expense-breakdown strong{color:#ff637b!important;}
+html body #appView #dashboardSection .period-quick-btn{
+ background:linear-gradient(120deg,#004b3f,#002e3e)!important;
+ border:1px solid rgba(0,212,181,.40)!important;
+}
+/* LANÇAMENTOS */
+html body #appView #transactionsSection .app-filter-card{
+ padding:16px!important;margin-bottom:16px!important;
+}
+html body #appView #transactionsSection .app-search-field,
+html body #appView #transactionsSection .app-select-field{
+ background:rgba(0,25,34,.63)!important;
+ border:1px solid rgba(24,174,158,.27)!important;
+ border-radius:13px!important;
+}
+html body #appView #transactionsSection .transactions-list{
+ display:grid;gap:8px;
+}
+html body #appView #transactionsSection .transaction-item,
+html body #appView #transactionsSection .transaction-row,
+html body #appView #transactionsSection .transaction-card{
+ background:linear-gradient(130deg,#003b34,#002735)!important;
+ border:1px solid rgba(18,161,147,.23)!important;
+ border-radius:15px!important;
+ box-shadow:none!important;
+}
+html body #appView #transactionsSection .transaction-amount.positive,
+html body #appView #transactionsSection .positive{color:#35e9ba!important;}
+html body #appView #transactionsSection .transaction-amount.negative,
+html body #appView #transactionsSection .negative{color:#ff637b!important;}
+/* RELATÓRIOS */
+html body #appView #reportsSection .prime-report-period,
+html body #appView #reportsSection .report-period-filter{
+ background:linear-gradient(115deg,#00483d,#002b43)!important;
+ border:1px solid rgba(12,195,167,.34)!important;
+ border-radius:19px!important;
+}
+html body #appView #reportsSection .report-cards{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;
+}
+html body #appView #reportsSection .report-card{
+ padding:13px 9px!important;border-radius:15px!important;min-width:0;
+}
+html body #appView #reportsSection .report-card span{font-size:11px!important;color:#b1cecc!important;}
+html body #appView #reportsSection .report-card strong{
+ font-size:clamp(12px,3.5vw,19px)!important;
+ overflow-wrap:anywhere;color:#f8fffd!important;
+}
+html body #appView #reportsSection canvas{
+ max-width:100%!important;
+}
+html body #appView #reportsSection .prime-preview-chart{
+ background:linear-gradient(135deg,#03453f,#03263e)!important;
+ border:1px solid rgba(0,196,169,.26)!important;
+}
+html body #appView #reportsSection #premiumReportContent{
+ background:linear-gradient(125deg,#044b3f,#03283e)!important;
+}
+/* PERFIL */
+html body #appView #profileSection .profile-app-head{
+ background:linear-gradient(130deg,#00483d,#042e42)!important;
+ border:1px solid rgba(0,201,164,.37)!important;
+ border-radius:20px!important;padding:16px!important;
+}
+html body #appView #profileSection .profile-app-avatar{
+ background:linear-gradient(135deg,#009c7f,#005c64)!important;
+ color:#e9fff9!important;
+}
+html body #appView #profileSection .profile-app-card{
+ overflow:hidden!important;margin-bottom:16px!important;
+}
+html body #appView #profileSection .profile-row{
+ background:transparent!important;
+ color:#f0fffb!important;
+ border-color:rgba(18,157,141,.22)!important;
+}
+html body #appView #profileSection .profile-row b{color:#f0fffb!important;}
+html body #appView #profileSection .profile-row small{color:#9dbebb!important;}
+html body #appView #profileSection .profile-row-icon{
+ background:linear-gradient(140deg,#045d54,#053b51)!important;
+ color:#68e9d2!important;border-radius:12px!important;
+}
+html body #appView #profileSection .profile-group-title{
+ color:#d7f3ee!important;
+}
+html body #appView #profileSection .profile-logout{
+ background:linear-gradient(120deg,#b72f4b,#dc4d5e)!important;
+ border-radius:13px!important;
+}
+/* MODAIS E FORMULÁRIOS: somente aparência */
+html body .modal-content,
+html body .modal-card,
+html body .dialog-content{
+ border-color:rgba(0,190,163,.28)!important;
+}
+@media(max-width:390px){
+ html body #appView #reportsSection .report-cards{gap:6px!important;}
+ html body #appView #reportsSection .report-card{padding:11px 7px!important;}
+ html body #appView #dashboardSection .quick-actions .quick-action.featured-action{padding:12px 8px!important;gap:7px!important;}
+}
