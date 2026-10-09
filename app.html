@@ -43,7 +43,7 @@
 
   <link
     rel="stylesheet"
-    href="app.css?v=layout-completo-20261009"
+    href="app.css"
   >
 </head>
 
@@ -899,7 +899,7 @@
 
             <div class="balance-overview-top">
               <div class="balance-main-copy">
-                <span>Saldo do período <span class="balance-eye" aria-hidden="true">◉</span></span>
+                <span>Saldo do período</span>
                 <strong id="balanceValue">R$ 0,00</strong>
                 <small id="balancePeriodText">Receitas menos despesas</small>
               </div>
@@ -942,10 +942,10 @@
 
         <div class="quick-actions">
 
-          <button class="quick-action featured-action" data-action="add-income" type="button"><span>＋</span>Adicionar receita</button>
-          <button class="quick-action featured-action" data-action="add-expense" type="button"><span>−</span>Adicionar despesa</button>
-          <button id="addGoalBtn" class="quick-action featured-action" type="button"><span>◎</span>Nova meta</button>
-          <button class="quick-action featured-action" data-section="receivable" type="button"><span>◷</span>A Receber</button>
+          <button class="quick-action" data-action="add-income" type="button"><span>＋</span>Adicionar receita</button>
+          <button class="quick-action" data-action="add-expense" type="button"><span>−</span>Adicionar despesa</button>
+          <button id="addGoalBtn" class="quick-action" type="button"><span>◎</span>Nova meta</button>
+          <button class="quick-action" data-section="receivable" type="button"><span>◷</span>A Receber</button>
           <button class="quick-action" data-section="transactions" type="button"><span>↔</span>Lançamentos</button>
 
           <button id="addCategoryBtn" class="quick-action premium-home-shortcut" data-premium-locked="true" data-premium-home="true" type="button"><span>◈</span>Nova categoria<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
@@ -1360,7 +1360,7 @@
           <div id="transactionFilterSummary" class="filter-summary" aria-live="polite">Mostrando todos os lançamentos.</div>
         </section>
 
-        <section class="transactions-app-list prime-transactions-design" aria-label="Lista de lançamentos">
+        <section class="transactions-app-list" aria-label="Lista de lançamentos">
           <div id="transactionsList" class="transactions-list"></div>
           <div id="transactionsEmpty" class="empty-state hidden">
             <div class="empty-state-icon">↔</div>
@@ -1670,7 +1670,7 @@
 
 
         <div
-          class="period-filter panel report-period-filter prime-report-period"
+          class="period-filter panel report-period-filter"
         >
 
           <div class="period-filter-header">
@@ -1705,45 +1705,35 @@
         </div>
 
 
-        <div id="primeReportsIntro" class="prime-reports-intro">
-          <span class="prime-chip">✦ CONTROLES PRIME</span>
-          <h3>Entenda cada movimento do seu dinheiro</h3>
-          <p>Receitas, despesas e categorias em um só lugar.</p>
+        <div
+          id="premiumReportContent"
+          class="premium-report-gate"
+        >
+
+          <div class="premium-lock">
+            ★
+          </div>
+
+          <h3>
+            Relatórios ControleS Prime
+          </h3>
+
+          <p>
+            Assine o ControleS Prime para desbloquear gráficos, categorias e análises financeiras.
+          </p>
+
+          <button
+            class="btn btn-primary"
+            data-section="premium"
+            type="button"
+          >
+            Conhecer ControleS Prime
+          </button>
+
         </div>
 
-        <div id="primePreview" class="prime-preview" aria-label="Prévia dos relatórios exclusivos">
-          <div class="prime-preview-heading">
-            <span>PRÉVIA DO PRIME</span><span>🔒 Exclusivo</span>
-          </div>
-          <div class="prime-preview-stats" aria-hidden="true">
-            <div><small>Receitas</small><strong>R$ •••••</strong></div>
-            <div><small>Despesas</small><strong>R$ •••••</strong></div>
-            <div><small>Saldo</small><strong>R$ •••••</strong></div>
-          </div>
-          <div class="prime-preview-chart">
-            <div class="prime-preview-chart-title">Evolução financeira <span>🔒</span></div>
-            <svg viewBox="0 0 320 120" role="img" aria-label="Ilustração de gráfico bloqueado">
-              <path d="M0 30H320M0 60H320M0 90H320" stroke="#345960" stroke-dasharray="4 6"/>
-              <path d="M4 88C36 79 48 91 75 69S123 81 150 51S199 70 226 35S273 49 316 16" fill="none" stroke="#48dfb7" stroke-width="3" stroke-linecap="round"/>
-              <path d="M4 107C35 88 49 103 77 93S127 73 151 86S203 61 228 72S277 45 316 57" fill="none" stroke="#ff9a4b" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-            <div class="prime-preview-legend"><span>● Receitas</span><span>● Despesas</span></div>
-          </div>
-          <div class="prime-preview-chart">
-            <div class="prime-preview-chart-title">Despesas por categoria <span>🔒</span></div>
-            <div class="prime-preview-categories">
-              <div class="prime-preview-donut"></div>
-              <div><p>● Alimentação</p><p>● Transporte</p><p>● Outros gastos</p></div>
-            </div>
-          </div>
-        </div>
 
-        <div id="premiumReportContent" class="premium-report-gate">
-          <div class="premium-lock">✦</div>
-          <h3>Desbloqueie o ControleS Prime</h3>
-          <p>Veja seus números reais, gráficos completos, categorias e análises financeiras.</p>
-          <button class="btn btn-primary" data-section="premium" type="button">Conhecer ControleS Prime →</button>
-        </div>
+        <div id="primeReportsIntro" class="prime-reports-intro"><span class="prime-chip">✦ CONTROLES PRIME</span><h3>Seu dinheiro, em detalhes</h3><p>Compare receitas e despesas, descubra suas maiores categorias e acompanhe sua evolução financeira.</p></div>
 
         <div id="normalReportContent" hidden>
 
@@ -2086,7 +2076,7 @@
 
       <!-- PERFIL / CONFIGURAÇÕES — MOBILE APP -->
       <section id="profileSection" class="content-section">
-        <div class="mobile-profile-page prime-profile-design">
+        <div class="mobile-profile-page">
           <div class="profile-app-head">
             <div class="profile-app-avatar" id="profileAvatar">C</div>
             <div><span class="app-kicker">MINHA CONTA</span><h2 id="profileName">Usuário</h2><p id="profileEmail"></p></div>
@@ -2096,7 +2086,7 @@
             <button type="button" class="profile-row" data-section="categories"><span class="profile-row-icon">◇</span><span><b>Categorias</b><small>Organize receitas e despesas</small></span><i>›</i></button>
             <button type="button" class="profile-row" data-section="whatsapp"><span class="profile-row-icon whatsapp-profile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3.2a8.5 8.5 0 0 0-7.3 12.85L3.6 20.4l4.46-1.04A8.5 8.5 0 1 0 12 3.2Zm0 15.35a6.82 6.82 0 0 1-3.48-.95l-.25-.15-2.65.62.67-2.58-.17-.27A6.85 6.85 0 1 1 12 18.55Zm3.76-5.12c-.2-.1-1.2-.59-1.39-.66-.18-.07-.32-.1-.45.1-.14.21-.52.66-.64.8-.12.14-.24.16-.45.06-.2-.1-.87-.32-1.66-1.03a6.2 6.2 0 0 1-1.15-1.43c-.12-.2-.01-.31.09-.42l.3-.35c.1-.12.14-.2.2-.34.07-.14.04-.26-.01-.36-.05-.1-.46-1.1-.63-1.51-.16-.4-.33-.35-.45-.36h-.39c-.14 0-.36.05-.55.26-.18.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.13.1.14 1.45 2.21 3.51 3.1.49.21.87.34 1.17.43.49.16.94.13 1.29.08.4-.06 1.2-.49 1.37-.96.17-.47.17-.87.12-.96-.05-.08-.19-.13-.4-.23Z"/></svg></span><span><b>Assessor WhatsApp</b><small>Seu financeiro por conversa</small></span><i>›</i></button>
             <button type="button" class="profile-row" data-section="ai-report"><span class="profile-row-icon">✦</span><span><b>Relatório Inteligente</b><small>Análise automática do seu mês</small></span><i>›</i></button>
-            <button type="button" class="profile-row" data-section="premium"><span class="profile-row-icon orange">★</span><span><b>ControleS Prime</b><small>Plano, assinatura e restauração</small></span><i>›</i></button>
+            <button type="button" class="profile-row" data-section="premium"><span class="profile-row-icon orange">★</span><span><b>ControleS Premium</b><small>Plano, assinatura e restauração</small></span><i>›</i></button>
           </div>
           <h3 class="profile-group-title">Configurações</h3>
           <div class="profile-app-card">
