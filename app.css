@@ -6187,3 +6187,28 @@ html[data-controles-theme="light"] #transactionsSection .transaction-card{
     grid-template-columns:1fr 1fr!important;
   }
 }
+/* =========================================================
+   CONTROLES PRIME — NOVA IDENTIDADE VERDE + AZUL PROFUNDO
+   ========================================================= */
+:root { --prime-teal:#00bda3; --prime-blue:#062d48; }
+.balance-overview-card, .summary-card.balance-card {
+  background: radial-gradient(circle at 10% 10%,rgba(25,230,169,.25),transparent 42%),
+    linear-gradient(125deg,#06886b 0%,#056e72 40%,#06445b 72%,#05263f 100%) !important;
+  border:1px solid rgba(63,231,207,.32)!important;
+  box-shadow:0 22px 44px rgba(0,8,24,.36),inset 0 1px 0 rgba(255,255,255,.13)!important;
+}
+.balance-breakdown-item { background:rgba(0,24,41,.34)!important; border:1px solid rgba(125,239,221,.16)!important; backdrop-filter:blur(9px); }
+.balance-chart-mark { background:rgba(0,39,58,.35)!important; border:1px solid rgba(87,237,217,.24)!important; }
+.period-quick-btn { background:linear-gradient(115deg,#064a42,#062a3d)!important; border:1px solid rgba(58,211,185,.22)!important; }
+.prime-reports-intro { padding:22px; margin:18px 0; border-radius:22px; background:linear-gradient(125deg,#073d38,#06263d); border:1px solid rgba(85,224,201,.2); }
+.prime-reports-intro h3 { font-size:22px; margin:12px 0 7px; color:#fff; }
+.prime-reports-intro p { color:#afcbc6; line-height:1.55; }
+.prime-chip { display:inline-flex; padding:7px 11px; border-radius:99px; background:rgba(255,163,75,.13); color:#ffb66d; font-size:11px; font-weight:800; letter-spacing:.08em; }
+#premiumReportContent { display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; padding:35px 22px; margin-top:16px; border-radius:24px; border:1px solid rgba(74,212,193,.25); background:linear-gradient(145deg,#103b35,#071f31); }
+#premiumReportContent.hidden, #normalReportContent[hidden], #primeReportsIntro[hidden] { display:none!important; }
+#premiumReportContent h3 { font-size:23px; color:white; }
+#premiumReportContent p { max-width:340px; color:#b5c9c8; line-height:1.6; }
+#premiumReportContent .premium-lock { display:grid;place-items:center;width:62px;height:62px;border-radius:20px;background:rgba(255,164,73,.16);color:#ffb26b;font-size:28px; }
+#normalReportContent .report-card { background:linear-gradient(135deg,#0b423d,#082a40);border:1px solid rgba(91,218,202,.18);border-radius:20px; }
+#normalReportContent .report-card strong {color:#e8fffa;}
+@media(max-width:600px){ .balance-overview-card {border-radius:25px!important;} .balance-breakdown {gap:10px!important;} .balance-breakdown-item {min-width:0!important;padding:13px 10px!important;} .balance-breakdown-item strong {font-size:clamp(12px,3.5vw,17px)!important;} .balance-overview-top strong {font-size:clamp(30px,8vw,51px)!important;} }
