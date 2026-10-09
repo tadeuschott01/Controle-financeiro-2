@@ -4431,7 +4431,10 @@ function renderCategoryChart() {
 
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#d9f4ed', font: { size: 12 } } }
+                    }
                 }
             }
         );
