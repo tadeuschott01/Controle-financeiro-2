@@ -6321,3 +6321,34 @@ html[data-controles-theme="light"] #transactionsSection .transaction-card{
   #appView #dashboardSection .balance-overview-card{min-height:365px!important;padding:32px!important;}
   #appView #dashboardSection .quick-actions .quick-action{min-height:105px!important;}
 }
+
+
+/* CONTROLES — ALINHAMENTO MOBILE, SEM ALTERAR FUNCIONALIDADES */
+@media(max-width:768px){
+ #appView #dashboardSection .quick-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;align-items:stretch!important;}
+ #appView #dashboardSection .quick-actions .quick-action{box-sizing:border-box!important;position:relative!important;width:100%!important;min-width:0!important;height:126px!important;min-height:126px!important;max-height:126px!important;padding:13px 10px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:11px!important;text-align:center!important;font-size:clamp(12px,3.45vw,16px)!important;line-height:1.2!important;white-space:normal!important;overflow:hidden!important;overflow-wrap:break-word!important;border-radius:22px!important;}
+ #appView #dashboardSection .quick-actions .quick-action>span:first-child{flex:0 0 48px!important;width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;display:grid!important;place-items:center!important;margin:0!important;font-size:27px!important;}
+ #appView #dashboardSection .quick-actions .quick-action .premium-diamond{position:absolute!important;top:9px!important;right:9px!important;margin:0!important;z-index:2!important;}
+ #appView #dashboardSection .quick-actions .quick-action.whatsapp-home-highlight{font-size:clamp(11px,3vw,15px)!important;}
+ #appView #dashboardSection .quick-actions .quick-action .whatsapp-action-icon{position:static!important;transform:none!important;}
+ #appView #transactionsSection{min-width:0!important;}
+ #appView #transactionsSection .section-heading{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:14px!important;}
+ #appView #transactionsSection .transactions-heading-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;width:100%!important;}
+ #appView #transactionsSection .transactions-heading-actions .btn{min-width:0!important;width:100%!important;min-height:51px!important;padding:10px 7px!important;line-height:1.2!important;font-size:clamp(11px,3vw,14px)!important;white-space:normal!important;}
+ #appView #transactionsSection .app-filter-card{box-sizing:border-box!important;width:100%!important;min-width:0!important;padding:17px 14px!important;margin-top:16px!important;border-radius:22px!important;overflow:hidden!important;}
+ #appView #transactionsSection .app-filter-head{display:grid!important;grid-template-columns:48px minmax(0,1fr) auto!important;gap:10px!important;align-items:center!important;min-width:0!important;margin-bottom:16px!important;}
+ #appView #transactionsSection .app-filter-head>div:nth-child(2){min-width:0!important;}
+ #appView #transactionsSection .app-filter-head h3{font-size:24px!important;margin:2px 0!important;}
+ #appView #transactionsSection .app-filter-head p{font-size:12px!important;line-height:1.35!important;}
+ #appView #transactionsSection .app-filter-icon{width:48px!important;height:48px!important;min-width:48px!important;}
+ #appView #transactionsSection .filter-reset{padding:10px 9px!important;font-size:12px!important;min-width:0!important;}
+ #appView #transactionsSection .app-search-field{display:flex!important;align-items:center!important;box-sizing:border-box!important;width:100%!important;min-width:0!important;height:53px!important;min-height:53px!important;padding:0 12px!important;gap:9px!important;overflow:hidden!important;border-radius:14px!important;}
+ #appView #transactionsSection .app-search-field input{box-sizing:border-box!important;flex:1 1 auto!important;width:100%!important;min-width:0!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;font-size:14px!important;border:0!important;outline:0!important;}
+ #appView #transactionsSection .app-filter-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin-top:12px!important;}
+ #appView #transactionsSection .app-select-field{box-sizing:border-box!important;display:flex!important;flex-direction:column!important;gap:7px!important;width:100%!important;min-width:0!important;min-height:76px!important;padding:9px!important;border-radius:14px!important;overflow:hidden!important;}
+ #appView #transactionsSection .app-select-field>span{font-size:11px!important;}
+ #appView #transactionsSection .app-select-field select{display:block!important;box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;height:35px!important;min-height:35px!important;margin:0!important;padding:0 20px 0 7px!important;font-size:13px!important;text-overflow:ellipsis!important;border-radius:9px!important;}
+ #appView #transactionsSection .filter-summary{margin-top:12px!important;font-size:12px!important;line-height:1.4!important;}
+ #appView #transactionsSection .transactions-app-list,#appView #transactionsSection .transactions-list{min-width:0!important;}
+ #appView #transactionsSection .transaction-item{box-sizing:border-box!important;max-width:100%!important;}
+}
