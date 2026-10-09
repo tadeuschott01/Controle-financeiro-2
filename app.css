@@ -6403,3 +6403,92 @@ html body #appView #dashboardSection .quick-actions .quick-action:nth-child(4)>s
  html body #appView #dashboardSection .balance-overview-card .balance-breakdown-item{gap:5px!important;padding:10px 6px!important;}
  html body #appView #dashboardSection .balance-overview-card .balance-breakdown-icon{width:30px!important;min-width:30px!important;height:30px!important;font-size:21px!important;}
 }
+
+/* ===============================================================
+   CONTROLES — TELA INICIAL / REFERÊNCIA APROVADA
+   Somente estilos. Nenhuma alteração de lógica, dados ou ações.
+   =============================================================== */
+@media (max-width: 768px) {
+html body #appView #dashboardSection .period-quick-btn {
+  background:linear-gradient(115deg,#00493e 0%,#003c3c 53%,#002a3d 100%)!important;
+  border:1px solid rgba(0,211,175,.50)!important;
+  border-radius:23px!important;
+  box-shadow:0 8px 28px rgba(0,18,29,.28)!important;
+}
+html body #appView #dashboardSection .period-quick-icon{
+  background:linear-gradient(145deg,#00d8a6,#008d86)!important;
+  color:#f2fffc!important;
+}
+html body #appView #dashboardSection article.balance-overview-card{
+  min-height:365px!important;
+  padding:29px 20px 24px!important;
+  background:
+    radial-gradient(ellipse at 0% 2%,rgba(0,221,153,.49) 0%,transparent 42%),
+    radial-gradient(ellipse at 84% 8%,rgba(0,110,170,.36) 0%,transparent 47%),
+    linear-gradient(118deg,#00583e 0%,#004e48 28%,#023f53 55%,#052e58 77%,#061d43 100%)!important;
+  border:2px solid rgba(0,202,172,.70)!important;
+  border-radius:30px!important;
+  box-shadow:0 20px 42px rgba(0,13,26,.38),inset 0 1px 0 rgba(255,255,255,.10)!important;
+}
+html body #appView #dashboardSection .balance-overview-card .balance-overview-top{
+  min-height:180px!important;align-items:center!important;
+}
+html body #appView #dashboardSection .balance-overview-card .balance-main-copy>span{
+  color:#c6e5e1!important;font-size:16px!important;
+}
+html body #appView #dashboardSection .balance-overview-card .balance-main-copy>strong{
+  color:#fff!important;font-size:clamp(30px,8.6vw,55px)!important;
+  letter-spacing:-1.9px!important;line-height:1.1!important;
+}
+html body #appView #dashboardSection .balance-overview-card .balance-main-copy>small{
+  color:#b6d9d9!important;font-size:13px!important;
+}
+html body #appView #dashboardSection .balance-overview-card .balance-chart-mark{
+  background:linear-gradient(145deg,rgba(0,130,129,.54),rgba(0,42,76,.78))!important;
+  border:1px solid rgba(0,234,207,.64)!important;
+}
+html body #appView #dashboardSection .balance-overview-card .balance-breakdown{
+  margin-top:28px!important;gap:10px!important;
+}
+html body #appView #dashboardSection .balance-overview-card .balance-breakdown-item{
+  min-height:112px!important;padding:13px 9px!important;
+  background:linear-gradient(120deg,rgba(0,74,68,.77),rgba(0,31,58,.73))!important;
+  border:1px solid rgba(0,188,186,.37)!important;
+  border-radius:21px!important;
+}
+html body #appView #dashboardSection .balance-overview-card .income-breakdown strong{
+  color:#32e9bf!important;
+}
+html body #appView #dashboardSection .balance-overview-card .expense-breakdown strong{
+  color:#ff6179!important;
+}
+html body #appView #dashboardSection .quick-actions{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+html body #appView #dashboardSection .quick-actions .quick-action{
+  min-height:92px!important;padding:13px 11px!important;
+  background:linear-gradient(140deg,#003c34,#002720)!important;
+  border:1px solid rgba(0,170,141,.35)!important;
+  border-radius:21px!important;
+  box-shadow:0 10px 25px rgba(0,18,23,.26)!important;
+  color:#fff!important;
+}
+html body #appView #dashboardSection .quick-actions .quick-action>span:first-child{
+  color:#fff!important;
+}
+html body #appView #dashboardSection .quick-actions .quick-action:nth-child(4)>span:first-child{
+  background:linear-gradient(135deg,#9a72ff,#4749e6)!important;
+}
+}
+@media (max-width: 380px){
+html body #appView #dashboardSection article.balance-overview-card{
+ min-height:345px!important;padding:23px 12px 20px!important;
+}
+html body #appView #dashboardSection .balance-overview-card .balance-main-copy>strong{
+ font-size:clamp(28px,8.1vw,40px)!important;letter-spacing:-1.4px!important;
+}
+html body #appView #dashboardSection .balance-overview-card .balance-breakdown-item{
+ padding:11px 6px!important;
+}
+}
