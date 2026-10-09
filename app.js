@@ -4645,9 +4645,6 @@ async function saveGoal(event) {
 
 function renderReports() {
     syncPrimeReports();
-    const reportPeriodLabel = document.getElementById("reportPeriodText");
-    const selectedReportPeriod = getSelectedPeriod();
-    if (reportPeriodLabel && selectedReportPeriod) reportPeriodLabel.textContent = selectedReportPeriod.label;
     if (!isPremiumActive()) return;
 
     const period = getSelectedPeriod();
@@ -7671,8 +7668,6 @@ function syncPrimeReports() {
     if (gate) { gate.classList.toggle('hidden', active); gate.hidden = active; }
     if (content) { content.classList.toggle('prime-reports-locked', !active); content.hidden = !active; }
     if (intro) intro.hidden = active;
-    const preview = document.getElementById('primePreview');
-    if (preview) preview.hidden = active;
     const reportsNav = document.querySelectorAll('[data-section="reports"], [data-bottom-section="reports"]');
     reportsNav.forEach(el => { el.removeAttribute('data-premium-locked'); el.classList.remove('premium-locked'); });
 }
