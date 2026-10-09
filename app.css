@@ -6352,3 +6352,20 @@ html[data-controles-theme="light"] #transactionsSection .transaction-card{
  #appView #transactionsSection .transactions-app-list,#appView #transactionsSection .transactions-list{min-width:0!important;}
  #appView #transactionsSection .transaction-item{box-sizing:border-box!important;max-width:100%!important;}
 }
+
+
+/* AJUSTE EXCLUSIVO DE LEGIBILIDADE — RELATÓRIOS */
+html body #appView #reportsSection #normalReportContent .panel-header h3,
+html body #appView #reportsSection #normalReportContent .panel h3,
+html body #appView #reportsSection #normalReportContent .report-values h3,
+html body #appView #reportsSection #normalReportContent .report-card strong {color:#f7fffd!important;opacity:1!important;}
+html body #appView #reportsSection #normalReportContent .panel-header p,
+html body #appView #reportsSection #normalReportContent .panel p {color:#bbd8d1!important;opacity:1!important;}
+html body #appView #reportsSection #normalReportContent .report-card span {color:#d1eae4!important;opacity:1!important;font-weight:700!important;}
+html body #appView #reportsSection #normalReportContent .report-line span {color:#264b40!important;opacity:1!important;}
+html body #appView #reportsSection #normalReportContent .report-line strong {color:#103e31!important;opacity:1!important;}
+html body #appView #reportsSection #normalReportContent .report-card:first-child strong{color:#50e9b7!important;}
+html body #appView #reportsSection #normalReportContent .report-card:nth-child(2) strong{color:#ff7d91!important;}
+html body #appView #reportsSection #normalReportContent .report-card:nth-child(3) strong{color:#ffc06d!important;}
+html body #appView #reportsSection #normalReportContent .panel,
+html body #appView #reportsSection #normalReportContent .report-card {opacity:1!important;}
