@@ -1,3 +1,26 @@
+
+Carregando mensagens mais antigas…
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* =========================================================
    CONTROLES 1.0 — APP.JS
    =========================================================
@@ -7671,5 +7694,5 @@ document.addEventListener("click", function controlesNavigationFallback(event){
   window.addEventListener("load",cleanWhatsappBubble);
   setTimeout(cleanWhatsappBubble,250);
 })();
-
+c
 
