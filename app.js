@@ -1,3059 +1,7673 @@
+/* =========================================================
+   CONTROLES 1.0 — APP.JS
+   =========================================================
+   Funcionalidades:
+   - Login / Cadastro / Logout
+   - Supabase
+   - Tema claro / escuro
+   - Dashboard
+   - Lançamentos
+   - A Receber
+   - Categorias
+   - Relatórios
+   - Premium / Google Play (RevenueCat)
+   - Metas
+   - Cofrinho mensal
+   - Resumo mensal
+   - Ranking de gastos
+   - Gráficos
+   - Filtro por período
+   - Menu mobile corrigido
+   ========================================================= */
+
+
+/* =========================================================
+   SUPABASE
+   ========================================================= */
+
+const SUPABASE_URL =
+    "https://sbiqhbxtrjrzpawdqqmy.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8";
+
+let supabaseClient = null;
+
+
+/* =========================================================
+   GOOGLE PLAY / REVENUECAT
+   =========================================================
+   Preencha REVENUECAT_ANDROID_API_KEY depois de criar o app
+   no RevenueCat. O entitlement deve se chamar "premium".
+========================================================= */
+
+const REVENUECAT_ANDROID_API_KEY = "COLE_AQUI_SUA_CHAVE_PUBLICA_ANDROID_REVENUECAT";
+const REVENUECAT_ENTITLEMENT_ID = "premium";
+let revenueCatConfigured = false;
+let revenueCatPackage = null;
+
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
 
-Carregando mensagens mais antigas…
-Tá ok, vou precisar.
-Sem problemas! Quando você
+let currentUser = null;
+let currentProfile = null;
+
+let transactions = [];
+let goals = [];
+let budgets = [];
 
-Tá ok vamos então
-Vamos configurar o Assessor WhatsApp do ControleS com seu número definitivo! 🚀
+let subscription = null;
+let customCategories = [];
 
-A ideia é que o usuário envie uma mensagem como:
+let financeChart = null;
+let categoryChart = null;
 
-Adicione uma despesa de R$ 50 em alimentação.
+let selectedTransactionType = "expense";
+let editingTransactionId = null;
 
-E o assessor faça tudo automaticamente:
+let toastTimer = null;
+let authInitialized = false;
+let enteringApp = false;
 
-WhatsApp → API → Supabase → ControleS atualizado.
+let eventsBound = false;
 
-Como você já tem uma API no Render, não precisamos começar do zero. Vamos aproveitar o que está pronto.
 
-Primeiro passo: configurar o número definitivo
-Precisamos verificar três coisas:
+/* =========================================================
+   CATEGORIAS PADRÃO
+   ========================================================= */
 
-Número: você já tem um número de telefone que pretende usar exclusivamente para o ControleS?
-Meta: esse número já está cadastrado no WhatsApp Business Platform ou você ainda utiliza o número de teste?
-API: seu servidor controles-whatsapp.onrender.com continua funcionando?
-Importante: não exclua o número de teste ainda. Podemos manter os testes enquanto configuramos o definitivo.
+const DEFAULT_CATEGORIES = [
+    "Alimentação",
+    "Moradia",
+    "Transporte",
+    "Saúde",
+    "Educação",
+    "Lazer",
+    "Compras",
+    "Contas",
+    "Salário",
+    "Investimentos",
+    "Outros"
+];
 
-Me responde uma coisa primeiro:
-Você já comprou um chip com o número definitivo do ControleS ou pretende utilizar um número que já possui?
 
-Com essa resposta, começamos a configuração na Meta, passo a passo.
+/* =========================================================
+   TÍTULOS DAS SEÇÕES
+   ========================================================= */
 
-Anexo do usuário
-Anexo do usuário
-Anexo do usuário
-Anexo do usuário
-Antes preciso de alterações no app , tem dois excluir conta deixa só o excluir conta no termos , quero as as letras do relatório fique clara e trás um lauthy mais visível , em relacao a o início do app preciso que melhore deixa assim e movimentos leves como bola se mexendo dentro do quadrado do saldo , faça o quadrado do saldo maneiro
+const SECTION_TITLES = {
+    dashboard: "Dashboard",
+    transactions: "Lançamentos",
+    receivable: "A Receber",
+    categories: "Categorias",
+    reports: "Relatórios",
+    whatsapp: "Assessor WhatsApp",
+    "ai-report": "Relatório com IA",
+    premium: "Premium"
+};
 
-Pensou por 47s
-Fiz as alterações no ControleS com base nas imagens que você enviou, mantendo a identidade visual verde, azul e laranja. 💚
 
-O que foi alterado
-Excluir conta: retirei a opção duplicada do início do Perfil. Ela permanece na seção de termos e privacidade.
-Relatórios: deixei as letras mais claras, aumentei o contraste e melhorei a aparência dos cards.
-Tela inicial: destaquei o quadrado de saldo com um degradê verde e azul, bordas iluminadas e sombras.
-Animação: adicionei círculos com movimentos suaves dentro do card de saldo, sem atrapalhar os valores.
-Mantive a barra inferior, o botão de adicionar lançamentos e o WhatsApp flutuante.
+/* =========================================================
+   HELPERS
+   ========================================================= */
 
-📂 Códigos completos para Bloco de Notas
-📦 
-Baixar os três arquivos juntos — ZIP
+function $(id) {
+    return document.getElementById(id);
+}
 
-Importante: o JavaScript foi mantido sem alterações, para não afetar as funcionalidades existentes. Verifique o resultado visual no celular antes de publicar definitivamente.
 
+function valueOf(id) {
+    const element = $(id);
+    return element ? element.value : "";
+}
 
-Codigo_html.txt
-Documento
 
-Codigo_css.txt
-Documento
+function firstExisting(...ids) {
+    for (const id of ids) {
+        const element = $(id);
+        if (element) return element;
+    }
 
-Codigo_js.txt
-Documento
-o excluir conta concertou mas e o resto que pedi
-Você tem razão. A exclusão de conta foi corrigida, mas o visual do saldo e a legibilidade dos relatórios ainda não ficaram como você pediu.
+    return null;
+}
 
-Encontrei um problema no CSS: existem regras antigas do card de saldo que podem se sobrepor às melhorias, principalmente no celular. Também vou corrigir o carregamento do CSS para evitar que o navegador continue mostrando a versão antiga.
 
-Vou manter o restante do aplicativo, incluindo a barra inferior e o WhatsApp flutuante.
+function formatCurrency(value) {
+    const number = Number(value) || 0;
 
-Relatórios: deixei as letras mais claras, aumentei o contraste e melhorei a aparência dos cards.
-Tela inicial: destaquei o quadrado de saldo com um degradê verde e azul, bordas iluminadas e sombras.
-Animação: adicionei círculos com movimentos suaves dentro do card de saldo, sem atrapalhar os valores.  isso nao foi
-…
+    return number.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
 
-Pensou por 46s
-Corrigi novamente os três pontos, desta vez ajustando a prioridade das regras do CSS para que as mudanças não sejam anuladas pelas regras antigas.
 
-Nesta versão:
+function formatDateBR(dateString) {
+    if (!dateString) return "";
 
-Os textos dos relatórios recebem cores claras e os cards têm contraste maior.
+    const date = String(dateString).split("T")[0];
+    const parts = date.split("-");
 
-O card de saldo tem degradê verde e azul, borda iluminada e sombra mais destacada.
+    if (parts.length !== 3) {
+        return dateString;
+    }
 
-Dois círculos decorativos se movimentam lentamente dentro do card, sem cobrir os valores.
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
 
-Também alterei a versão do arquivo CSS no HTML para forçar o navegador a carregar a atualização.
 
-Arquivos para o Bloco de Notas
-HTML completo (.txt)
+function todayISO() {
+    const date = new Date();
 
-CSS completo (.txt)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
-JavaScript completo (.txt)
+    return `${year}-${month}-${day}`;
+}
 
-Baixar os três arquivos em ZIP
 
-Para atualizar no GitHub: substitua o app.html e o app.css pelos novos arquivos. O app.js continua igual.
+function changeDate(dateString, days) {
+    const date = new Date(`${dateString}T00:00:00`);
 
-Não alterei o botão flutuante do WhatsApp, a barra inferior nem a função de exclusão de conta.
+    date.setDate(date.getDate() + days);
 
-A sintaxe do JavaScript foi verificada, mas o resultado visual ainda precisa ser conferido no celular.
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
+    return `${year}-${month}-${day}`;
+}
 
-Codigo_html.txt
-Documento
 
-Codigo_css.txt
-Documento
+function getFirstDayOfCurrentMonth() {
+    const date = new Date();
 
-Codigo_js.txt
-Documento
-nao foi sim carregou agora , mas ainda quero melhorar o visual do saldo em relaçao ao fundo
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
 
-Pensou por 47s
-Agora sim, o novo CSS carregou! Vamos melhorar somente o fundo do card “Saldo do período”, mantendo os valores, os botões de receitas e despesas e o restante do layout.
+    return `${year}-${month}-01`;
+}
 
-Minha proposta é deixar o fundo mais sofisticado: verde-esmeralda na esquerda, azul-petróleo na direita, iluminação suave e círculos translúcidos que se movimentam lentamente, dando profundidade sem atrapalhar a leitura.
 
-Preparei uma versão nova do fundo, com:
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
-Degradê mais profundo: esmeralda, turquesa e azul-petróleo.
 
-Iluminação suave: brilho concentrado nas extremidades.
+/* =========================================================
+   TIPO DE TRANSAÇÃO
+   ========================================================= */
 
-Bolas translúcidas animadas: movimento lento e discreto.
+function normalizeTransactionType(type) {
+    const value = String(type || "")
+        .toLowerCase()
+        .trim();
 
-Mais profundidade: sombra elegante e borda iluminada.
+    if (
+        value === "income" ||
+        value === "receita" ||
+        value === "entrada" ||
+        value === "credito" ||
+        value === "crédito"
+    ) {
+        return "income";
+    }
 
-Não mexi nos números, nos cards internos, nos relatórios ou no WhatsApp.
+    return "expense";
+}
 
-Arquivos para Bloco de Notas
-HTML (.txt)
 
-CSS (.txt)
+function databaseTransactionType(type) {
+    return normalizeTransactionType(type) === "income" ? "receita" : "despesa";
+}
 
-JavaScript (.txt)
 
-Baixar tudo em ZIP
+/* =========================================================
+   TOAST
+   ========================================================= */
 
-Para essa mudança, basta substituir app.css e app.html no GitHub. O HTML foi atualizado apenas para carregar a versão nova do CSS.
+function showToast(message, type = "info") {
+    const toast =
+        $("toast") ||
+        document.querySelector(".toast");
 
-A versão está pronta para testar no celular. A animação também respeita a configuração de movimento reduzido do aparelho.
+    if (!toast) {
+        console.log(message);
+        return;
+    }
 
-Se quiser, depois podemos deixar esse fundo ainda mais parecido com um cartão bancário premium, com reflexos sutis e efeito de profundidade.
+    toast.textContent = message;
 
+    toast.classList.remove(
+        "success",
+        "error",
+        "warning",
+        "info",
+        "show"
+    );
 
-Codigo_html.txt
-Documento
+    toast.classList.add(type);
+    toast.classList.add("show");
 
-Codigo_css.txt
-Documento
+    clearTimeout(toastTimer);
 
-Codigo_js.txt
-Documento
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
+}
 
 
+/* =========================================================
+   DOM READY
+   ========================================================= */
 
-<!DOCTYPE html>
-<html lang="pt-BR">
+document.addEventListener("DOMContentLoaded", async () => {
 
-<head>
-  <meta charset="UTF-8">
+    setupEvents();
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+    setCurrentDate();
+    setDefaultDate();
 
-  <meta
-    name="theme-color"
-    content="#0b3f2d"
-  >
+    loadTheme();
+    loadLocalCategories();
 
-  <meta
-    name="description"
-    content="ControleS — Seu dinheiro sob controle."
-  >
+    initializePeriodFilter();
+    setupPeriodEvents();
 
-  <title>ControleS — Seu dinheiro sob controle</title>
+    initializeSupabase();
 
-  <link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
-  >
+    await checkSession();
+});
 
-  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
-  >
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
+/* =========================================================
+   SUPABASE
+   ========================================================= */
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+function initializeSupabase() {
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    if (
+        typeof window.supabase === "undefined" ||
+        !window.supabase.createClient
+    ) {
+        console.error("Supabase não foi carregado.");
 
-  <link
-    rel="stylesheet"
-    href="app.css?v=saldo-premium-20261010-3"
-  >
-</head>
+        showToast(
+            "Erro ao carregar o sistema.",
+            "error"
+        );
 
-<body>
+        return;
+    }
 
+    supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
-  <!-- CONTROLES — BOAS-VINDAS MOBILE -->
-  <div id="welcomeView" class="auth-page welcome-page">
-    <div class="welcome-shell">
-      <div class="welcome-brand">
-        <div class="welcome-logo"><img src="logo-contoles.png" alt="ControleS"><span>C↗</span></div>
-        <span class="welcome-kicker">CONTROLES</span>
-        <h1>Seu dinheiro.<br><em>Sob controle.</em></h1>
-        <p>Organize sua vida financeira de um jeito simples, visual e inteligente.</p>
-      </div>
-      <div class="welcome-actions">
-        <button id="welcomeLoginBtn" class="btn btn-primary btn-large" type="button">Entrar</button>
-        <button id="welcomeRegisterBtn" class="btn btn-secondary btn-large" type="button">Criar conta</button>
-        <small>Ao continuar, você concorda com os <a href="termos.html">Termos de Uso</a> e a <a href="privacidade.html">Política de Privacidade</a>.</small>
-      </div>
-    </div>
-  </div>
+    supabaseClient.auth.onAuthStateChange(
+        async (event, session) => {
 
-  <!-- =====================================================
-       LOGIN
-  ====================================================== -->
+            if (session?.user) {
+                currentUser = session.user;
 
-  <div
-    id="loginView"
-    class="auth-page hidden"
-  >
+                if (
+                    event === "SIGNED_IN" &&
+                    !enteringApp
+                ) {
+                    await enterApp();
+                }
 
-    <div class="auth-card">
+            } else {
 
-      <div class="brand-block">
+                currentUser = null;
+                currentProfile = null;
 
-        <div class="brand-logo">
+                if (authInitialized) {
+                    showWelcomeView();
+                }
+            }
 
-          <img
-            src="logo-contoles.png"
-            alt="ControleS"
-            onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
-          >
+            authInitialized = true;
+        }
+    );
+}
 
-          <span class="logo-fallback-mark">
-            C↗
-          </span>
 
-        </div>
+/* =========================================================
+   SESSÃO
+   ========================================================= */
 
-        <h1>
-          ControleS
-        </h1>
+async function checkSession() {
 
-        <p>
-          Seu dinheiro sob controle.
-        </p>
+    if (!supabaseClient) return;
 
-      </div>
+    try {
 
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.getSession();
 
-      <div class="auth-heading">
+        if (error) {
+            console.error(error);
+            showWelcomeView();
+            return;
+        }
 
-        <span>
-          BEM-VINDO DE VOLTA
-        </span>
+        if (data?.session?.user) {
 
-        <h2>
-          Entre na sua conta
-        </h2>
+            currentUser = data.session.user;
 
-        <p>
-          Acompanhe suas finanças de onde estiver.
-        </p>
+            await enterApp();
 
-      </div>
+        } else {
 
+            showWelcomeView();
+        }
 
-      <form
-        id="loginForm"
-        novalidate
-      >
+    } catch (error) {
 
-        <label for="loginEmail">
-          E-mail
-        </label>
+        console.error(
+            "Erro ao verificar sessão:",
+            error
+        );
 
-        <input
-          id="loginEmail"
-          type="email"
-          autocomplete="email"
-          placeholder="seu@email.com"
-          required
-        >
+        showWelcomeView();
+    }
+}
 
 
-        <label for="loginPassword">
-          Senha
-        </label>
+/* =========================================================
+   LOGIN
+   ========================================================= */
 
-        <div class="password-wrap">
+async function handleLogin(event) {
 
-          <input
-            id="loginPassword"
-            type="password"
-            autocomplete="current-password"
-            placeholder="Digite sua senha"
-            required
-          >
+    event.preventDefault();
 
-          <button
-            type="button"
-            class="password-toggle"
-            data-password-toggle="loginPassword"
-            aria-label="Mostrar senha"
-            aria-pressed="false"
-          >
-            <span class="eye-icon" aria-hidden="true"></span>
-          </button>
+    if (!supabaseClient) {
+        showToast(
+            "Sistema de login indisponível.",
+            "error"
+        );
 
-        </div>
+        return;
+    }
 
+    const email =
+        valueOf("loginEmail").trim();
 
-        <div
-          id="loginMessage"
-          class="form-message"
-          role="alert"
-          aria-live="polite"
-        ></div>
+    const password =
+        valueOf("loginPassword");
 
+    if (!email || !password) {
+        showToast(
+            "Preencha e-mail e senha.",
+            "warning"
+        );
 
-        <button
-          id="loginSubmitBtn"
-          class="btn btn-primary btn-large"
-          type="submit"
-        >
-          Entrar no ControleS
-        </button>
+        return;
+    }
 
+    const button =
+        firstExisting(
+            "loginBtn",
+            "submitLoginBtn"
+        );
 
-        <button
-          id="registerBtn"
-          class="btn btn-secondary btn-large"
-          type="button"
-        >
-          Criar minha conta
-        </button>
+    if (button) {
+        button.disabled = true;
+    }
 
-      </form>
+    try {
 
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
 
-      <div class="auth-legal-note">Ao continuar, você concorda com os <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</div>
+        if (error) {
+            throw error;
+        }
 
-      <div class="security-note">
+        currentUser = data.user;
 
-        <span>
-          ✓
-        </span>
+        await enterApp();
 
-        Controle financeiro simples, inteligente e seguro.
+    } catch (error) {
 
-      </div>
+        console.error(error);
 
-    </div>
+        showToast(
+            error.message ||
+            "Não foi possível entrar.",
+            "error"
+        );
 
-  </div>
+    } finally {
 
+        if (button) {
+            button.disabled = false;
+        }
+    }
+}
 
-  <!-- =====================================================
-       CADASTRO
-  ====================================================== -->
 
-  <div
-    id="registerView"
-    class="auth-page hidden"
-  >
+/* =========================================================
+   CADASTRO
+   ========================================================= */
 
-    <div class="auth-card">
+async function handleRegister(event) {
 
-      <div class="brand-block">
+    event.preventDefault();
 
-        <div class="brand-logo">
+    if (!supabaseClient) {
+        showToast(
+            "Sistema de cadastro indisponível.",
+            "error"
+        );
 
-          <img
-            src="logo-contoles.png"
-            alt="ControleS"
-            onerror="this.style.display='none';this.parentElement.classList.add('logo-fallback')"
-          >
+        return;
+    }
 
-          <span class="logo-fallback-mark">
-            C↗
-          </span>
+    const name =
+        valueOf("registerName").trim();
 
-        </div>
+    const email =
+        valueOf("registerEmail").trim();
 
-        <h1>
-          ControleS
-        </h1>
+    const password =
+        valueOf("registerPassword");
 
-        <p>
-          Seu dinheiro sob controle.
-        </p>
+    const passwordConfirm =
+        valueOf("registerPasswordConfirm") ||
+        valueOf("registerConfirmPassword");
 
-      </div>
+    if (!name || !email || !password) {
 
+        showToast(
+            "Preencha todos os campos.",
+            "warning"
+        );
 
-      <div class="auth-heading">
+        return;
+    }
 
-        <span>
-          COMECE AGORA
-        </span>
+    if (
+        passwordConfirm &&
+        password !== passwordConfirm
+    ) {
 
-        <h2>
-          Crie sua conta
-        </h2>
+        showToast(
+            "As senhas não coincidem.",
+            "warning"
+        );
 
-        <p>
-          Organize seu dinheiro de um jeito simples.
-        </p>
+        return;
+    }
 
-      </div>
+    if (password.length < 6) {
 
+        showToast(
+            "A senha deve ter pelo menos 6 caracteres.",
+            "warning"
+        );
 
-      <form
-        id="registerForm"
-        novalidate
-      >
+        return;
+    }
 
-        <label for="registerName">
-          Nome
-        </label>
+    try {
 
-        <input
-          id="registerName"
-          type="text"
-          autocomplete="name"
-          placeholder="Seu nome"
-          required
-        >
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    name
+                }
+            }
+        });
 
+        if (error) {
+            throw error;
+        }
 
-        <label for="registerEmail">
-          E-mail
-        </label>
+        if (data?.user) {
 
-        <input
-          id="registerEmail"
-          type="email"
-          autocomplete="email"
-          placeholder="seu@email.com"
-          required
-        >
+            currentUser = data.user;
 
+            await createProfileIfNeeded(name);
 
-        <label for="registerPassword">
-          Senha
-        </label>
+            showToast(
+                "Cadastro realizado com sucesso!",
+                "success"
+            );
 
-        <div class="password-wrap">
+            if (data.session) {
+                await enterApp();
+            } else {
+                showToast(
+                    "Verifique seu e-mail para confirmar o cadastro.",
+                    "info"
+                );
 
-          <input
-            id="registerPassword"
-            type="password"
-            autocomplete="new-password"
-            placeholder="Crie uma senha"
-            minlength="6"
-            required
-          >
+                showLoginView();
 
-          <button
-            type="button"
-            class="password-toggle"
-            data-password-toggle="registerPassword"
-            aria-label="Mostrar senha"
-            aria-pressed="false"
-          >
-            <span class="eye-icon" aria-hidden="true"></span>
-          </button>
+                const loginEmailField =
+                    $("loginEmail");
 
-        </div>
+                if (loginEmailField) {
+                    loginEmailField.value = email;
+                }
+            }
+        }
 
+    } catch (error) {
 
-        <label for="registerPasswordConfirm">
-          Confirmar senha
-        </label>
+        console.error(error);
 
-        <div class="password-wrap">
+        showToast(
+            error.message ||
+            "Não foi possível realizar o cadastro.",
+            "error"
+        );
+    }
+}
 
-          <input
-            id="registerPasswordConfirm"
-            type="password"
-            autocomplete="new-password"
-            placeholder="Repita sua senha"
-            minlength="6"
-            required
-          >
 
-          <button
-            type="button"
-            class="password-toggle"
-            data-password-toggle="registerPasswordConfirm"
-            aria-label="Mostrar senha"
-            aria-pressed="false"
-          >
-            <span class="eye-icon" aria-hidden="true"></span>
-          </button>
+/* =========================================================
+   PERFIL
+   ========================================================= */
 
-        </div>
+async function createProfileIfNeeded(name = "") {
 
+    if (!supabaseClient || !currentUser) {
+        return;
+    }
 
-        <div
-          id="registerMessage"
-          class="form-message"
-          role="alert"
-          aria-live="polite"
-        ></div>
+    try {
 
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("id", currentUser.id)
+            .maybeSingle();
 
-        <button
-          id="createAccountBtn"
-          class="btn btn-primary btn-large"
-          type="submit"
-        >
-          Criar minha conta
-        </button>
+        if (error) {
+            console.warn(
+                "Não foi possível consultar perfil:",
+                error
+            );
 
+            return;
+        }
 
-        <button
-          id="backToLoginBtn"
-          class="btn btn-secondary btn-large"
-          type="button"
-        >
-          Já tenho uma conta
-        </button>
+        if (!data) {
 
-      </form>
+            const {
+                error: insertError
+            } = await supabaseClient
+                .from("profiles")
+                .insert({
+                    id: currentUser.id,
+                    name:
+                        name ||
+                        currentUser.user_metadata?.name ||
+                        currentUser.email?.split("@")[0]
+                });
 
+            if (insertError) {
+                console.warn(
+                    "Não foi possível criar perfil:",
+                    insertError
+                );
+            }
+        }
 
-      <div class="security-note">
+    } catch (error) {
 
-        <span>
-          ✓
-        </span>
+        console.warn(
+            "Erro ao criar perfil:",
+            error
+        );
+    }
+}
 
-        Seus dados ficam associados somente à sua conta.
 
-      </div>
+async function loadProfile() {
 
-      <div class="auth-legal-note">Ao criar sua conta, você concorda com os <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>. Para solicitar exclusão, acesse <a href="mailto:controlesfinanceirossuport@gmail.com?subject=Solicita%C3%A7%C3%A3o%20de%20exclus%C3%A3o%20de%20conta%20-%20ControleS&body=Ol%C3%A1%2C%20suporte%20ControleS.%0A%0ASolicito%20a%20exclus%C3%A3o%20da%20minha%20conta%20e%20dos%20dados%20associados.%0A%0AE-mail%20cadastrado%3A%20%5Bpreencher%5D">Exclusão de Dados</a>.</div>
+    if (!supabaseClient || !currentUser) {
+        return;
+    }
 
-    </div>
+    try {
 
-  </div>
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("id", currentUser.id)
+            .maybeSingle();
 
+        if (!error && data) {
+            currentProfile = data;
+        } else {
 
-  <!-- =====================================================
-       APLICAÇÃO
-  ====================================================== -->
+            currentProfile = {
+                id: currentUser.id,
+                name:
+                    currentUser.user_metadata?.name ||
+                    currentUser.email?.split("@")[0] ||
+                    "Usuário"
+            };
 
-  <div
-    id="appView"
-    class="app-shell hidden"
-  >
+            await createProfileIfNeeded(
+                currentProfile.name
+            );
+        }
 
+        updateUserInterface();
 
-    <!-- =================================================
-         SIDEBAR
-    ================================================== -->
+    } catch (error) {
 
-    <aside
-      id="sidebar"
-      class="sidebar"
-      aria-label="Menu principal"
-    >
+        console.warn(
+            "Erro ao carregar perfil:",
+            error
+        );
+    }
+}
 
-      <div class="sidebar-brand">
 
-        <div class="mini-logo">
+function updateUserInterface() {
 
-          <img
-            src="logo-contoles.png"
-            alt="ControleS"
-            onerror="this.style.display='none'"
-          >
+    const name =
+        currentProfile?.name ||
+        currentUser?.user_metadata?.name ||
+        currentUser?.email?.split("@")[0] ||
+        "Usuário";
 
-        </div>
+    const email =
+        currentUser?.email || "";
 
-        <div>
+    const elements = [
+        "userName",
+        "profileName",
+        "dashboardUserName",
+        "welcomeUserName"
+    ];
 
-          <strong>
-            ControleS
-          </strong>
+    elements.forEach(id => {
 
-          <small>
-            Finanças pessoais
-          </small>
+        const element = $(id);
 
-        </div>
+        if (element) {
+            element.textContent = name;
+        }
+    });
 
-      </div>
+    const emailElements = [
+        "userEmail",
+        "profileEmail"
+    ];
 
+    emailElements.forEach(id => {
 
-      <nav
-        class="sidebar-nav"
-        aria-label="Navegação principal"
-      >
+        const element = $(id);
 
-        <button
-          class="nav-item active"
-          data-section="dashboard"
-          type="button"
-        >
+        if (element) {
+            element.textContent = email;
+        }
+    });
 
-          <span>
-            ⌂
-          </span>
+    const initials =
+        name
+            .split(" ")
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(part => part.charAt(0))
+            .join("")
+            .toUpperCase();
 
-          Início
+    const avatar =
+        firstExisting(
+            "userAvatar",
+            "profileAvatar"
+        );
 
-        </button>
+    if (avatar) {
+        avatar.textContent = initials || "U";
+    }
+}
 
 
-        <button
-          class="nav-item"
-          data-section="transactions"
-          type="button"
-        >
+/* =========================================================
+   ENTRAR NO APP
+   ========================================================= */
 
-          <span>
-            ↔
-          </span>
+async function enterApp() {
 
-          Lançamentos
+    if (enteringApp) return;
 
-        </button>
+    enteringApp = true;
 
+    try {
 
-        <button
-          class="nav-item"
-          data-section="receivable"
-          type="button"
-        >
+        closeMobileMenu();
 
-          <span>
-            💰
-          </span>
+        showAppView();
 
-          A Receber
+        await loadProfile();
 
-        </button>
+        await Promise.all([
+            loadTransactions(),
+            loadGoals(),
+            loadBudgets(),
+            loadSubscription()
+        ]);
 
+        updateCategories();
 
-        <button
-          class="nav-item premium-locked"
-          data-section="categories"
-          data-premium-locked="true"
-          type="button"
-        >
-          <span>◈</span>
-          Categorias
-          <b class="nav-lock" aria-label="Recurso Premium bloqueado">🔒</b>
-        </button>
+        updateDashboard();
 
+        renderTransactions();
 
-        <button
-          class="nav-item premium-locked"
-          data-section="reports"
-          
-          type="button"
-        >
-          <span>▥</span>
-          Relatórios
-          <b class="nav-lock" aria-label="Recurso Premium bloqueado">🔒</b>
-        </button>
+        renderReceivables();
 
+        updateReceivableDashboard();
 
-        <button
-          class="nav-item premium-locked"
-          data-section="whatsapp"
-          data-premium-locked="true"
-          type="button"
-        >
-          <span>◉</span>
-          Assessor WhatsApp
-          <b class="nav-lock" aria-label="Recurso Premium bloqueado">🔒</b>
-        </button>
+        renderPremium();
 
-        <button
-          class="nav-item premium-locked"
-          data-section="ai-report"
-          data-premium-locked="true"
-          type="button"
-        >
-          <span>✦</span>
-          Relatório com IA
-          <b class="nav-lock" aria-label="Recurso Premium bloqueado">🔒</b>
-        </button>
+        updatePeriodSummary();
 
+        applyPremiumAccess();
 
-        <button
-          class="nav-item premium-nav"
-          data-section="premium"
-          type="button"
-        >
+    } catch (error) {
 
-          <span>
-            ★
-          </span>ControleS Prime</button>
+        console.error(
+            "Erro ao carregar aplicativo:",
+            error
+        );
 
-      </nav>
+        showToast(
+            "Alguns dados não puderam ser carregados.",
+            "warning"
+        );
 
+    } finally {
 
-      <div class="sidebar-bottom">
+        enteringApp = false;
+    }
+}
 
-        <button
-          id="themeBtn"
-          class="side-action"
-          type="button"
-          aria-label="Alternar tema claro e escuro"
-          aria-pressed="false"
-        >
 
-          <span>
-            ☾
-          </span>
+/* =========================================================
+   VIEWS
+   ========================================================= */
 
-          Tema
+function showWelcomeView() {
+    closeMobileMenu();
+    const welcome = $("welcomeView");
+    const login = firstExisting("loginView", "authView");
+    const register = $("registerView");
+    const app = firstExisting("appView", "mainApp");
+    if (welcome) welcome.classList.remove("hidden");
+    if (login) login.classList.add("hidden");
+    if (register) register.classList.add("hidden");
+    if (app) app.classList.add("hidden");
+}
 
-        </button>
+function showLoginView() {
 
+    closeMobileMenu();
+    const welcome = $("welcomeView");
+    if (welcome) welcome.classList.add("hidden");
 
-        <a
-          id="supportBtn"
-          class="side-action support-action"
-          href="mailto:controlesfinanceirossuport@gmail.com"
-        >
+    const login =
+        firstExisting(
+            "loginView",
+            "authView"
+        );
 
-          <span>
-            ✉
-          </span>
+    const register =
+        $("registerView");
 
-          Suporte
+    const app =
+        firstExisting(
+            "appView",
+            "mainApp"
+        );
 
-        </a>
+    if (login) {
+        login.classList.remove("hidden");
+        login.style.display = "";
+    }
 
+    if (register) {
+        register.classList.add("hidden");
+    }
 
-        <div class="sidebar-legal">
-          <span>LEGAL E PRIVACIDADE</span>
-          <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>
-          <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a>
-          <a href="mailto:controlesfinanceirossuport@gmail.com?subject=Solicita%C3%A7%C3%A3o%20de%20exclus%C3%A3o%20de%20conta%20-%20ControleS&body=Ol%C3%A1%2C%20suporte%20ControleS.%0A%0ASolicito%20a%20exclus%C3%A3o%20da%20minha%20conta%20e%20dos%20dados%20associados.%0A%0AE-mail%20cadastrado%3A%20%5Bpreencher%5D">Exclusão da conta e dos dados</a>
-        </div>
+    if (app) {
+        app.classList.add("hidden");
+    }
+}
 
-        <button
-          id="logoutBtn"
-          class="side-action danger"
-          type="button"
-        >
 
-          <span>
-            ↪
-          </span>
+function showRegisterView() {
 
-          Sair
+    closeMobileMenu();
+    const welcome = $("welcomeView");
+    if (welcome) welcome.classList.add("hidden");
 
-        </button>
+    const login =
+        firstExisting(
+            "loginView",
+            "authView"
+        );
 
-      </div>
+    const register =
+        $("registerView");
 
-    </aside>
+    const app =
+        firstExisting(
+            "appView",
+            "mainApp"
+        );
 
+    if (login) {
+        login.classList.add("hidden");
+    }
 
-    <!-- =================================================
-         OVERLAY MOBILE
-    ================================================== -->
+    if (register) {
+        register.classList.remove("hidden");
+        register.style.display = "";
+    }
 
-    <div
-      id="mobileOverlay"
-      class="mobile-overlay hidden"
-      aria-hidden="true"
-    ></div>
+    if (app) {
+        app.classList.add("hidden");
+    }
+}
 
 
-    <!-- =================================================
-         CONTEÚDO
-    ================================================== -->
+function showAppView() {
 
-    <main class="main-content">
+    const welcome = $("welcomeView");
+    if (welcome) welcome.classList.add("hidden");
 
+    const login =
+        firstExisting(
+            "loginView",
+            "authView"
+        );
 
-      <!-- =================================================
-           TOPBAR
-      ================================================== -->
+    const register =
+        $("registerView");
 
-      <header class="topbar">
+    const app =
+        firstExisting(
+            "appView",
+            "mainApp"
+        );
 
-        <button
-          id="mobileMenuBtn"
-          class="mobile-menu-btn"
-          type="button"
-          aria-label="Abrir menu"
-          aria-expanded="false"
-          aria-controls="sidebar"
-        >
-          ☰
-        </button>
+    if (login) {
+        login.classList.add("hidden");
+    }
 
+    if (register) {
+        register.classList.add("hidden");
+    }
 
-        <div>
+    if (app) {
+        app.classList.remove("hidden");
+        app.style.display = "";
+    }
+}
 
-          <span
-            id="currentDate"
-            class="current-date"
-          ></span>
 
-          <h1 id="pageTitle">
-            Início
-          </h1>
+/* =========================================================
+   LOGOUT
+   ========================================================= */
 
-        </div>
+async function handleLogout() {
 
+    closeMobileMenu();
 
-        <div class="topbar-user">
+    try {
 
-          <div
-            id="userAvatar"
-            class="avatar"
-          >
-            C
-          </div>
+        if (supabaseClient) {
+            await supabaseClient.auth.signOut();
+        }
 
-          <div>
+    } catch (error) {
 
-            <strong id="userName">
-              Usuário
-            </strong>
+        console.error(
+            "Erro ao sair:",
+            error
+        );
 
-            <small id="userEmail"></small>
+    } finally {
 
-          </div>
+        currentUser = null;
+        currentProfile = null;
 
-        </div>
+        transactions = [];
+        goals = [];
+        budgets = [];
+        subscription = null;
 
-      </header>
+        if (financeChart) {
+            financeChart.destroy();
+            financeChart = null;
+        }
 
+        if (categoryChart) {
+            categoryChart.destroy();
+            categoryChart = null;
+        }
 
-      <!-- =================================================
-           DASHBOARD
-      ================================================== -->
+        showWelcomeView();
 
-      <section
-        id="dashboardSection"
-        class="content-section active"
-      >
+        showToast(
+            "Você saiu da sua conta.",
+            "success"
+        );
+    }
+}
 
-        <div class="welcome-row">
 
-          <div>
+/* =========================================================
+   TEMA
+   ========================================================= */
 
-            <span class="eyebrow">
-              VISÃO GERAL
-            </span>
+function loadTheme() {
 
-            <h2 id="welcomeMessage">
-              Olá! 👋
-            </h2>
+    const savedTheme =
+        localStorage.getItem("controles-theme");
 
-            <p>
-              Veja como estão suas finanças.
-            </p>
+    const theme =
+        savedTheme === "dark"
+            ? "dark"
+            : "light";
 
-          </div>
+    document.documentElement.setAttribute(
+        "data-theme",
+        theme
+    );
 
+    document.body.classList.toggle("dark-mode", theme === "dark");
+    document.body.classList.toggle("dark", theme === "dark");
 
-          <button
-            id="addTransactionBtn"
-            class="btn btn-primary"
-            type="button"
-          >
-            + Novo lançamento
-          </button>
+    updateThemeButton();
+}
 
-        </div>
 
+function toggleTheme() {
 
-        <!-- =================================================
-             FILTRO PRINCIPAL DE PERÍODO
-        ================================================== -->
+    const current =
+        document.documentElement.getAttribute(
+            "data-theme"
+        ) || "light";
 
-        <button id="periodQuickBtn" class="period-quick-btn" type="button" aria-expanded="false" aria-controls="dashboardPeriodFilter">
-          <span class="period-quick-icon">◷</span>
-          <span><small>Período</small><strong id="periodQuickLabel">Últimos 30 dias</strong></span>
-          <b>⌄</b>
-        </button>
+    const next =
+        current === "dark"
+            ? "light"
+            : "dark";
 
-        <div
-          id="dashboardPeriodFilter"
-          class="period-filter panel period-sheet-collapsed"
-        >
+    document.documentElement.setAttribute(
+        "data-theme",
+        next
+    );
 
-          <div class="period-filter-header">
+    document.body.classList.toggle("dark-mode", next === "dark");
+    document.body.classList.toggle("dark", next === "dark");
 
-            <div>
+    localStorage.setItem(
+        "controles-theme",
+        next
+    );
 
-              <span class="eyebrow">
-                FILTRO FINANCEIRO
-              </span>
+    updateThemeButton();
+}
 
-              <h3>
-                Período
-              </h3>
 
-              <p>
-                Escolha o período para atualizar seus números,
-                lançamentos e gráficos.
-              </p>
+function updateThemeButton() {
 
+    const button =
+        firstExisting(
+            "themeBtn",
+            "themeToggle"
+        );
+
+    if (!button) return;
+
+    const theme =
+        document.documentElement.getAttribute(
+            "data-theme"
+        );
+
+    const icon =
+        button.querySelector(
+            ".theme-icon"
+        );
+
+    if (icon) {
+        icon.textContent =
+            theme === "dark"
+                ? "☀"
+                : "☾";
+    }
+}
+
+
+/* =========================================================
+   MOSTRAR / OCULTAR SENHA
+   ========================================================= */
+
+function togglePasswordVisibility(button) {
+
+    const targetId =
+        button.dataset.passwordToggle;
+
+    const input =
+        targetId ? $(targetId) : null;
+
+    if (!input) return;
+
+    const isHidden =
+        input.type === "password";
+
+    input.type =
+        isHidden ? "text" : "password";
+
+    button.setAttribute(
+        "aria-pressed",
+        isHidden ? "true" : "false"
+    );
+
+    button.setAttribute(
+        "aria-label",
+        isHidden ? "Ocultar senha" : "Mostrar senha"
+    );
+
+    button.textContent =
+        isHidden ? "○" : "◉";
+}
+
+
+/* =========================================================
+   DATA
+   ========================================================= */
+
+function setCurrentDate() {
+
+    const element =
+        firstExisting(
+            "currentDate",
+            "todayDate"
+        );
+
+    if (!element) return;
+
+    const date = new Date();
+
+    element.textContent =
+        date.toLocaleDateString(
+            "pt-BR",
+            {
+                weekday: "long",
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            }
+        );
+}
+
+
+function setDefaultDate() {
+
+    const input =
+        firstExisting(
+            "transactionDate",
+            "date"
+        );
+
+    if (
+        input &&
+        !input.value
+    ) {
+        input.value = todayISO();
+    }
+}
+
+
+/* =========================================================
+   MENU MOBILE — CORRIGIDO
+   ========================================================= */
+
+function getMobileOverlay() {
+
+    let overlay = $("mobileOverlay");
+
+    if (!overlay) {
+
+        overlay =
+            document.querySelector(
+                ".mobile-overlay"
+            );
+    }
+
+    return overlay;
+}
+
+
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || "")
+        || window.matchMedia?.("(pointer: coarse)")?.matches === true;
+}
+
+function isMobileViewport() {
+    return window.innerWidth <= 720 || isMobileDevice();
+}
+
+// Alguns celulares podem estar com “Site para computador” ativado.
+// Nesse caso o navegador informa uma largura de desktop, mas ainda é um celular.
+// Marcamos o documento para o CSS manter o layout mobile correto.
+function applyDeviceLayout() {
+    document.documentElement.toggleAttribute("data-mobile-device", isMobileDevice());
+}
+
+applyDeviceLayout();
+
+
+function openMobileMenu() {
+
+    const sidebar =
+        $("sidebar");
+
+    const button =
+        $("mobileMenuBtn");
+
+    const overlay =
+        getMobileOverlay();
+
+    if (!sidebar || !isMobileViewport()) {
+        return;
+    }
+
+    sidebar.classList.add(
+        "mobile-open"
+    );
+
+    if (overlay) {
+
+        overlay.classList.remove(
+            "hidden"
+        );
+
+        overlay.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+    }
+
+    document.body.classList.add(
+        "menu-open"
+    );
+
+    if (button) {
+
+        button.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+    }
+}
+
+
+function closeMobileMenu() {
+
+    const sidebar =
+        $("sidebar");
+
+    const button =
+        $("mobileMenuBtn");
+
+    const overlay =
+        getMobileOverlay();
+
+    if (sidebar) {
+
+        sidebar.classList.remove(
+            "mobile-open"
+        );
+    }
+
+    if (overlay) {
+
+        overlay.classList.add(
+            "hidden"
+        );
+
+        overlay.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
+
+    document.body.classList.remove(
+        "menu-open"
+    );
+
+    if (button) {
+
+        button.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+}
+
+
+function toggleMobileMenu() {
+
+    const sidebar =
+        $("sidebar");
+
+    if (!sidebar) return;
+
+    if (
+        sidebar.classList.contains(
+            "mobile-open"
+        )
+    ) {
+
+        closeMobileMenu();
+
+    } else {
+
+        openMobileMenu();
+    }
+}
+
+
+/* =========================================================
+   SEÇÕES
+   ========================================================= */
+
+function showSection(sectionName) {
+
+    if (!sectionName) return;
+
+    const sections =
+        document.querySelectorAll(
+            ".content-section"
+        );
+
+    sections.forEach(section => {
+
+        const isActive =
+            section.id === sectionName ||
+            section.id === `${sectionName}Section`;
+
+        section.classList.toggle(
+            "active",
+            isActive
+        );
+
+        section.classList.toggle(
+            "hidden",
+            !isActive
+        );
+    });
+
+
+    const navItems =
+        document.querySelectorAll(
+            ".nav-item"
+        );
+
+    navItems.forEach(item => {
+
+        item.classList.toggle(
+            "active",
+            item.dataset.section === sectionName
+        );
+    });
+
+
+    const title =
+        firstExisting(
+            "sectionTitle",
+            "pageTitle",
+            "mainTitle"
+        );
+
+    if (title) {
+
+        title.textContent =
+            SECTION_TITLES[sectionName] ||
+            title.textContent;
+    }
+
+
+    closeMobileMenu();
+
+
+    switch (sectionName) {
+
+        case "dashboard":
+            updateDashboard();
+            break;
+
+        case "transactions":
+            renderTransactions();
+            break;
+
+        case "receivable":
+            renderReceivables();
+            break;
+
+        case "categories":
+            updateCategories();
+            break;
+
+        case "reports":
+            renderReports();
+            break;
+
+        case "premium":
+            renderPremium();
+            break;
+    }
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* =========================================================
+   TRANSAÇÕES — CARREGAR
+   ========================================================= */
+
+async function loadTransactions() {
+
+    if (!supabaseClient || !currentUser) {
+        return;
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("transactions")
+            .select("*")
+            .eq("user_id", currentUser.id)
+            .order("date", {
+                ascending: false
+            });
+
+        if (error) {
+            throw error;
+        }
+
+        transactions =
+            Array.isArray(data)
+                ? data
+                : [];
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar transações:",
+            error
+        );
+
+        transactions = [];
+    }
+}
+
+
+/* =========================================================
+   TRANSAÇÕES — CAMPOS
+   ========================================================= */
+
+function getTransactionAmount(transaction) {
+
+    return Number(
+        transaction.amount ??
+        transaction.valor ??
+        transaction.value ??
+        0
+    ) || 0;
+}
+
+
+function getTransactionDate(transaction) {
+
+    return (
+        transaction.date ||
+        transaction.data ||
+        transaction.created_at?.split("T")[0] ||
+        ""
+    );
+}
+
+
+function getTransactionDescription(transaction) {
+
+    return (
+        transaction.description ||
+        transaction.descricao ||
+        transaction.title ||
+        transaction.nome ||
+        "Lançamento"
+    );
+}
+
+
+function getTransactionCategory(transaction) {
+
+    return (
+        transaction.category ||
+        transaction.categoria ||
+        "Outros"
+    );
+}
+
+
+/* =========================================================
+   TRANSAÇÃO RECEBIDA
+   ========================================================= */
+
+function isIncomeReceived(
+    transaction,
+    referenceDate = todayISO()
+) {
+
+    const type =
+        normalizeTransactionType(
+            transaction.type ||
+            transaction.tipo ||
+            transaction.transaction_type
+        );
+
+    if (type !== "income") {
+        return false;
+    }
+
+    const date =
+        getTransactionDate(transaction);
+
+    if (!date) return true;
+
+    return date <= referenceDate;
+}
+
+
+function isFutureReceivable(transaction) {
+
+    const type =
+        normalizeTransactionType(
+            transaction.type ||
+            transaction.tipo ||
+            transaction.transaction_type
+        );
+
+    if (type !== "income") {
+        return false;
+    }
+
+    const date =
+        getTransactionDate(transaction);
+
+    if (!date) return false;
+
+    return date > todayISO();
+}
+
+
+/* =========================================================
+   A RECEBER
+   ========================================================= */
+
+function getReceivableTransactions() {
+
+    return transactions.filter(
+        transaction =>
+            isFutureReceivable(transaction)
+    );
+}
+
+
+function getReceivableSummary() {
+
+    const receivables =
+        getReceivableTransactions();
+
+    const total =
+        receivables.reduce(
+            (sum, transaction) =>
+                sum +
+                getTransactionAmount(transaction),
+            0
+        );
+
+    const dates =
+        receivables
+            .map(getTransactionDate)
+            .filter(Boolean)
+            .sort();
+
+    return {
+        total,
+        count: receivables.length,
+        nextDate: dates[0] || null
+    };
+}
+
+
+function renderReceivables() {
+
+    const list =
+        firstExisting(
+            "receivableList",
+            "receivablesList"
+        );
+
+    const empty =
+        firstExisting(
+            "receivableEmpty",
+            "receivablesEmpty"
+        );
+
+    if (!list) return;
+
+    const receivables =
+        getReceivableTransactions();
+
+    if (!receivables.length) {
+
+        list.innerHTML = "";
+
+        if (empty) {
+            empty.classList.remove("hidden");
+        }
+
+        return;
+    }
+
+    if (empty) {
+        empty.classList.add("hidden");
+    }
+
+    list.innerHTML =
+        receivables
+            .map(transaction => {
+
+                const amount =
+                    getTransactionAmount(
+                        transaction
+                    );
+
+                return `
+                    <div class="transaction-item receivable-item">
+                        <div>
+                            <strong>
+                                ${escapeHTML(
+                                    getTransactionDescription(transaction)
+                                )}
+                            </strong>
+
+                            <small>
+                                ${escapeHTML(
+                                    getTransactionCategory(transaction)
+                                )}
+                                •
+                                ${formatDateBR(
+                                    getTransactionDate(transaction)
+                                )}
+                            </small>
+                        </div>
+
+                        <div>
+                            <strong class="income-value">
+                                + ${formatCurrency(amount)}
+                            </strong>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn btn-small mark-received-btn"
+                            data-receivable-id="${transaction.id}"
+                        >
+                            Recebido
+                        </button>
+                    </div>
+                `;
+            })
+            .join("");
+}
+
+
+function updateReceivableDashboard() {
+
+    const summary =
+        getReceivableSummary();
+
+    const total =
+        firstExisting(
+            "receivableTotal",
+            "dashboardReceivableTotal"
+        );
+
+    const nextDate =
+        firstExisting(
+            "receivableNextDate",
+            "dashboardReceivableNextDate"
+        );
+
+    const count =
+        firstExisting(
+            "receivableCount",
+            "dashboardReceivableCount"
+        );
+
+    if (total) {
+        total.textContent =
+            formatCurrency(summary.total);
+    }
+
+    if (nextDate) {
+
+        nextDate.textContent =
+            summary.nextDate
+                ? formatDateBR(summary.nextDate)
+                : "Nenhum";
+    }
+
+    if (count) {
+        count.textContent =
+            summary.count;
+    }
+}
+
+
+function openNewReceivable() {
+
+    openTransactionModal("income");
+
+    const date =
+        firstExisting(
+            "transactionDate",
+            "date"
+        );
+
+    if (date) {
+        date.value = "";
+    }
+
+    const received =
+        firstExisting(
+            "transactionReceived",
+            "received",
+            "isReceived"
+        );
+
+    if (received) {
+        received.checked = false;
+    }
+}
+
+
+async function markTransactionAsReceived(id) {
+
+    if (!supabaseClient || !currentUser) {
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } = await supabaseClient
+            .from("transactions")
+            .update({
+                date: todayISO()
+            })
+            .eq("id", id)
+            .eq("user_id", currentUser.id);
+
+        if (error) {
+            throw error;
+        }
+
+        showToast(
+            "Receita marcada como recebida.",
+            "success"
+        );
+
+        await loadTransactions();
+
+        updateDashboard();
+        renderTransactions();
+        renderReceivables();
+        updateReceivableDashboard();
+        updatePeriodSummary();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Não foi possível marcar como recebida.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   TRANSAÇÕES — MODAL
+   ========================================================= */
+
+function openTransactionModal(type = "expense", transaction = null) {
+
+    const modal =
+        firstExisting(
+            "transactionModal",
+            "launchModal"
+        );
+
+    if (!modal) return;
+
+    editingTransactionId =
+        transaction?.id || null;
+
+    selectedTransactionType =
+        normalizeTransactionType(type);
+
+    const title =
+        firstExisting(
+            "transactionModalTitle",
+            "modalTitle"
+        );
+
+    if (title) {
+
+        title.textContent =
+            editingTransactionId
+                ? "Editar lançamento"
+                : selectedTransactionType === "income"
+                    ? "Nova receita"
+                    : "Nova despesa";
+    }
+
+
+    setTransactionType(
+        selectedTransactionType
+    );
+
+
+    const description =
+        firstExisting(
+            "transactionDescription",
+            "description",
+            "transactionName"
+        );
+
+    const amount =
+        firstExisting(
+            "transactionAmount",
+            "amount",
+            "value"
+        );
+
+    const date =
+        firstExisting(
+            "transactionDate",
+            "date"
+        );
+
+    const category =
+        firstExisting(
+            "transactionCategory",
+            "category"
+        );
+
+    const received =
+        firstExisting(
+            "transactionReceived",
+            "received",
+            "isReceived"
+        );
+
+
+    if (transaction) {
+
+        if (description) {
+            description.value =
+                getTransactionDescription(
+                    transaction
+                );
+        }
+
+        if (amount) {
+            amount.value =
+                getTransactionAmount(
+                    transaction
+                );
+        }
+
+        if (date) {
+            date.value =
+                getTransactionDate(
+                    transaction
+                );
+        }
+
+        if (category) {
+            category.value =
+                getTransactionCategory(
+                    transaction
+                );
+        }
+
+        if (received) {
+
+            received.checked =
+                isIncomeReceived(
+                    transaction
+                );
+        }
+
+    } else {
+
+        if (description) {
+            description.value = "";
+        }
+
+        if (amount) {
+            amount.value = "";
+        }
+
+        if (date) {
+            date.value = todayISO();
+        }
+
+        if (category) {
+            category.value =
+                selectedTransactionType === "income"
+                    ? "Salário"
+                    : "Alimentação";
+        }
+
+        if (received) {
+
+            received.checked =
+                selectedTransactionType === "expense";
+        }
+    }
+
+
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+}
+
+
+function closeTransactionModal() {
+
+    const modal =
+        firstExisting(
+            "transactionModal",
+            "launchModal"
+        );
+
+    if (modal) {
+        modal.classList.add("hidden");
+        modal.setAttribute("aria-hidden", "true");
+    }
+
+    editingTransactionId = null;
+}
+
+
+function setTransactionType(type) {
+
+    selectedTransactionType =
+        normalizeTransactionType(type);
+
+    const buttons =
+        document.querySelectorAll(
+            "[data-transaction-type]"
+        );
+
+    buttons.forEach(button => {
+
+        button.classList.toggle(
+            "active",
+            normalizeTransactionType(
+                button.dataset.transactionType
+            ) === selectedTransactionType
+        );
+    });
+
+    const typeInput =
+        firstExisting(
+            "transactionType",
+            "type"
+        );
+
+    if (typeInput) {
+        typeInput.value =
+            selectedTransactionType;
+    }
+
+
+    const receivedContainer =
+        firstExisting(
+            "receivedContainer",
+            "transactionReceivedContainer"
+        );
+
+    if (receivedContainer) {
+
+        receivedContainer.style.display =
+            selectedTransactionType === "income"
+                ? ""
+                : "none";
+    }
+}
+
+
+/* =========================================================
+   SALVAR TRANSAÇÃO
+   ========================================================= */
+
+async function saveTransaction(event) {
+
+    if (event) {
+        event.preventDefault();
+    }
+
+    if (!supabaseClient || !currentUser) {
+        showToast(
+            "Faça login novamente.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const description =
+        valueOf(
+            "transactionDescription"
+        ).trim() ||
+        valueOf("description").trim();
+
+
+    const amountRaw =
+        valueOf(
+            "transactionAmount"
+        ) ||
+        valueOf("amount") ||
+        valueOf("value");
+
+
+    const amount =
+        Number(
+            String(amountRaw)
+                .replace(/\./g, "")
+                .replace(",", ".")
+        );
+
+
+    const date =
+        valueOf(
+            "transactionDate"
+        ) ||
+        valueOf("date");
+
+
+    const category =
+        valueOf(
+            "transactionCategory"
+        ) ||
+        valueOf("category") ||
+        "Outros";
+
+
+    const receivedElement =
+        firstExisting(
+            "transactionReceived",
+            "received",
+            "isReceived"
+        );
+
+
+    if (!description) {
+
+        showToast(
+            "Informe uma descrição.",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        showToast(
+            "Informe um valor válido.",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    if (!date) {
+
+        showToast(
+            "Informe a data.",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    const type =
+        databaseTransactionType(
+            selectedTransactionType
+        );
+
+
+    const received =
+        type === "income"
+            ? (
+                receivedElement
+                    ? receivedElement.checked
+                    : date <= todayISO()
+            )
+            : true;
+
+
+    /*
+     * A tabela transactions do projeto não possui as colunas
+     * received / is_received. O estado de recebido é calculado
+     * pela data: receita com data futura = A Receber; receita
+     * com data de hoje/passada = recebida.
+     */
+    const payload = {
+        user_id: currentUser.id,
+        description,
+        amount,
+        date,
+        category,
+        type
+    };
+
+
+    try {
+
+        if (editingTransactionId) {
+
+            const {
+                error
+            } = await supabaseClient
+                .from("transactions")
+                .update(payload)
+                .eq(
+                    "id",
+                    editingTransactionId
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
+
+            if (error) {
+                throw error;
+            }
+
+            showToast(
+                "Lançamento atualizado.",
+                "success"
+            );
+
+        } else {
+
+            const {
+                error
+            } = await supabaseClient
+                .from("transactions")
+                .insert(payload);
+
+            if (error) {
+                throw error;
+            }
+
+            showToast(
+                "Lançamento adicionado.",
+                "success"
+            );
+        }
+
+
+        closeTransactionModal();
+
+        await loadTransactions();
+
+        updateDashboard();
+
+        renderTransactions();
+
+        renderReceivables();
+
+        updateReceivableDashboard();
+
+        updatePeriodSummary();
+
+        renderReports();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            error.message ||
+            "Não foi possível salvar o lançamento.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   EXCLUIR TRANSAÇÃO
+   ========================================================= */
+
+async function deleteTransaction(id) {
+
+    if (!supabaseClient || !currentUser) {
+        return;
+    }
+
+    if (
+        !confirm(
+            "Deseja realmente excluir este lançamento?"
+        )
+    ) {
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } = await supabaseClient
+            .from("transactions")
+            .delete()
+            .eq("id", id)
+            .eq("user_id", currentUser.id);
+
+        if (error) {
+            throw error;
+        }
+
+        showToast(
+            "Lançamento excluído.",
+            "success"
+        );
+
+        await loadTransactions();
+
+        updateDashboard();
+        renderTransactions();
+        renderReceivables();
+        updateReceivableDashboard();
+        updatePeriodSummary();
+        renderReports();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Não foi possível excluir.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   RENDER TRANSAÇÕES
+   ========================================================= */
+
+function getTransactionFilterState() {
+    const search = valueOf("transactionSearch").toLowerCase().trim();
+    const type = valueOf("transactionFilter") || valueOf("transactionTypeFilter") || "all";
+    const category = valueOf("categoryFilter") || valueOf("transactionCategoryFilter") || "all";
+    const from = valueOf("transactionDateFrom");
+    const to = valueOf("transactionDateTo");
+    return { search, type, category, from, to };
+}
+
+function getFilteredTransactions() {
+    const f = getTransactionFilterState();
+    return [...transactions].filter(transaction => {
+        const description = getTransactionDescription(transaction);
+        const category = getTransactionCategory(transaction);
+        const date = getTransactionDate(transaction);
+        const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
+        const haystack = `${description} ${category}`.toLowerCase();
+        if (f.search && !haystack.includes(f.search)) return false;
+        if (f.type && f.type !== "all" && type !== f.type) return false;
+        if (f.category && f.category !== "all" && category !== f.category) return false;
+        if (f.from && date < f.from) return false;
+        if (f.to && date > f.to) return false;
+        return true;
+    });
+}
+
+function renderTransactions() {
+    const list = firstExisting("transactionsList", "transactionList", "launchesList");
+    const empty = $("transactionsEmpty");
+    const countLabel = $("transactionsCountLabel");
+    if (!list) return;
+
+    const filtered = getFilteredTransactions();
+    if (countLabel) countLabel.textContent = `${filtered.length} lançamento${filtered.length === 1 ? "" : "s"} encontrado${filtered.length === 1 ? "" : "s"}`;
+    if (empty) empty.classList.toggle("hidden", filtered.length > 0);
+
+    if (!filtered.length) { list.innerHTML = ""; updateTransactionFilterSummary(0); return; }
+
+    list.innerHTML = filtered.map(transaction => {
+        const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
+        const amount = getTransactionAmount(transaction);
+        const isIncome = type === "income";
+        return `<article class="transaction-item" data-transaction-id="${escapeHTML(transaction.id)}">
+            <div class="transaction-info"><strong>${escapeHTML(getTransactionDescription(transaction))}</strong><small>${escapeHTML(getTransactionCategory(transaction))} • ${formatDateBR(getTransactionDate(transaction))}</small></div>
+            <strong class="${isIncome ? "income-value" : "expense-value"}">${isIncome ? "+" : "-"} ${formatCurrency(amount)}</strong>
+            <div class="transaction-actions"><button type="button" class="edit-transaction-btn" data-edit-transaction="${escapeHTML(transaction.id)}" title="Editar">✎</button><button type="button" class="delete-transaction-btn" data-delete-transaction="${escapeHTML(transaction.id)}" title="Excluir">×</button></div>
+        </article>`;
+    }).join("");
+    updateTransactionFilterSummary(filtered.length);
+}
+
+function updateTransactionFilterSummary(count) {
+    const el = $("transactionFilterSummary");
+    if (!el) return;
+    const f = getTransactionFilterState();
+    const active = [];
+    if (f.search) active.push(`busca: “${f.search}”`);
+    if (f.type !== "all") active.push(f.type === "income" ? "receitas" : "despesas");
+    if (f.category !== "all") active.push(f.category);
+    if (f.from || f.to) active.push(`${formatDateBR(f.from || f.to)}${f.from && f.to ? " até " + formatDateBR(f.to) : ""}`);
+    el.textContent = active.length ? `Filtros ativos: ${active.join(" • ")} — ${count} resultado${count === 1 ? "" : "s"}.` : `Mostrando todos os lançamentos — ${count} resultado${count === 1 ? "" : "s"}.`;
+}
+
+
+/* =========================================================
+   TOTAIS
+   ========================================================= */
+
+function getTotals() {
+
+    let income = 0;
+    let expense = 0;
+
+    const today =
+        todayISO();
+
+
+    transactions.forEach(transaction => {
+
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo ||
+                transaction.transaction_type
+            );
+
+
+        const amount =
+            getTransactionAmount(
+                transaction
+            );
+
+
+        if (type === "income") {
+
+            if (
+                isIncomeReceived(
+                    transaction,
+                    today
+                )
+            ) {
+                income += amount;
+            }
+
+        } else {
+
+            expense += amount;
+        }
+    });
+
+
+    return {
+        income,
+        expense,
+        balance: income - expense
+    };
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+function updateDashboard() {
+
+    const totals =
+        getTotals();
+
+
+    const incomeElements = [
+        "totalIncome",
+        "dashboardIncome",
+        "monthIncome",
+        "monthlyIncome"
+    ];
+
+
+    incomeElements.forEach(id => {
+
+        const element = $(id);
+
+        if (element) {
+            element.textContent =
+                formatCurrency(
+                    totals.income
+                );
+        }
+    });
+
+
+    const expenseElements = [
+        "totalExpense",
+        "dashboardExpense",
+        "monthExpense",
+        "monthlyExpense"
+    ];
+
+
+    expenseElements.forEach(id => {
+
+        const element = $(id);
+
+        if (element) {
+            element.textContent =
+                formatCurrency(
+                    totals.expense
+                );
+        }
+    });
+
+
+    const balanceElements = [
+        "totalBalance",
+        "dashboardBalance",
+        "monthBalance",
+        "monthlyBalance"
+    ];
+
+
+    balanceElements.forEach(id => {
+
+        const element = $(id);
+
+        if (element) {
+            element.textContent =
+                formatCurrency(
+                    totals.balance
+                );
+        }
+    });
+
+
+    updatePeriodSummary();
+
+    updateReceivableDashboard();
+
+    updateMonthlySummary();
+
+    updateExpenseRanking();
+
+    updatePiggyBank();
+    updatePremiumDashboard();
+
+    renderRecentTransactions();
+
+    renderFinanceChart();
+}
+
+
+/* =========================================================
+   LANÇAMENTOS RECENTES
+   ========================================================= */
+
+function renderRecentTransactions() {
+
+    const list =
+        firstExisting(
+            "recentTransactions",
+            "recentTransactionsList",
+            "dashboardTransactions"
+        );
+
+    if (!list) return;
+
+
+    const recent =
+        [...transactions]
+            .sort(
+                (a, b) =>
+                    getTransactionDate(b)
+                        .localeCompare(
+                            getTransactionDate(a)
+                        )
+            )
+            .slice(0, 5);
+
+
+    if (!recent.length) {
+
+        list.innerHTML = `
+            <div class="empty-state">
+                Nenhum lançamento recente.
             </div>
+        `;
+
+        return;
+    }
+
+
+    list.innerHTML =
+        recent
+            .map(transaction => {
+
+                const type =
+                    normalizeTransactionType(
+                        transaction.type ||
+                        transaction.tipo
+                    );
+
+                const amount =
+                    getTransactionAmount(
+                        transaction
+                    );
+
+                return `
+                    <div class="recent-transaction">
+
+                        <div>
+
+                            <strong>
+                                ${escapeHTML(
+                                    getTransactionDescription(transaction)
+                                )}
+                            </strong>
+
+                            <small>
+                                ${escapeHTML(
+                                    getTransactionCategory(transaction)
+                                )}
+                                •
+                                ${formatDateBR(
+                                    getTransactionDate(transaction)
+                                )}
+                            </small>
+
+                        </div>
+
+                        <strong
+                            class="${
+                                type === "income"
+                                    ? "income-value"
+                                    : "expense-value"
+                            }"
+                        >
+                            ${
+                                type === "income"
+                                    ? "+"
+                                    : "-"
+                            }
+                            ${formatCurrency(amount)}
+                        </strong>
+
+                    </div>
+                `;
+            })
+            .join("");
+}
+
+
+/* =========================================================
+   PERÍODO FINANCEIRO — CORRIGIDO
+   ========================================================= */
+
+function getPeriodElements() {
+    return {
+        select: firstExisting("dashboardPeriod", "periodFilter") || document.querySelector("[data-period-filter]"),
+        apply: firstExisting("applyPeriodBtn", "applyPeriod", "btnApplyPeriod") || document.querySelector("[data-apply-period]"),
+        clear: firstExisting("clearPeriodBtn"),
+        customFields: firstExisting("customPeriodFields", "periodCustomFields", "customDateRange"),
+        start: firstExisting("periodStartDate", "periodStart", "customStartDate", "startDate") || document.querySelector("[data-period-start]"),
+        end: firstExisting("periodEndDate", "periodEnd", "customEndDate", "endDate") || document.querySelector("[data-period-end]"),
+        income: firstExisting("incomeValue", "periodIncome", "periodIncomeValue", "periodEarnedValue") || document.querySelector("[data-period-income]"),
+        expense: firstExisting("expenseValue", "periodExpense", "periodExpenseValue", "periodSpentValue") || document.querySelector("[data-period-expense]"),
+        balance: firstExisting("balanceValue", "periodBalance", "periodBalanceValue") || document.querySelector("[data-period-balance]"),
+        label: firstExisting("activePeriodLabel", "periodLabel") || document.querySelector("[data-period-label]")
+    };
+}
+
+
+/* =========================================================
+   INICIALIZAR FILTRO
+   ========================================================= */
+
+function initializePeriodFilter() {
+
+    const {
+        select,
+        customFields,
+        start,
+        end
+    } = getPeriodElements();
+
+    if (!select) return;
+
+    /*
+     * Se o HTML já tiver as opções,
+     * preservamos o que existe.
+     *
+     * Se estiver vazio, criamos as opções
+     * oficiais do ControleS.
+     */
+
+    if (select.options.length === 0) {
+
+        select.innerHTML = `
+            <option value="today">
+                Hoje
+            </option>
+
+            <option value="yesterday">
+                Ontem
+            </option>
+
+            <option value="7days">
+                Últimos 7 dias
+            </option>
+
+            <option value="30days">
+                Últimos 30 dias
+            </option>
+
+            <option value="month">
+                Este mês
+            </option>
 
-          </div>
+            <option value="previousMonth">
+                Mês anterior
+            </option>
 
+            <option value="all">
+                Todo o período
+            </option>
 
-          <div class="period-filter-controls">
+            <option value="custom">
+                Personalizado
+            </option>
+        `;
+    }
 
-            <div class="period-select-group">
+    /*
+     * Caso o HTML já tenha opções antigas,
+     * normalizamos os valores sem destruir
+     * o texto visual existente.
+     */
 
-              <label for="dashboardPeriod">
-                Período
-              </label>
+    const optionMap = {
+        week: "7days",
+        "1week": "7days",
+        "7": "7days",
 
-              <select
-                id="dashboardPeriod"
-                aria-label="Selecionar período financeiro"
-              >
+        month: "month",
+        "1month": "30days",
 
-                <option value="today">
-                  Hoje
-                </option>
+        all: "all",
+        everything: "all",
 
-                <option value="yesterday">
-                  Ontem
-                </option>
+        custom: "custom"
+    };
 
-                <option value="7">
-                  Últimos 7 dias
-                </option>
+    Array.from(select.options).forEach(option => {
 
-                <option
-                  value="30"
-                  selected
-                >
-                  Últimos 30 dias
-                </option>
+        const value =
+            String(option.value || "")
+                .trim()
+                .toLowerCase();
 
-                <option value="month">
-                  Este mês
-                </option>
+        if (optionMap[value]) {
+            option.value = optionMap[value];
+        }
+    });
 
-                <option value="previous-month">
-                  Mês anterior
-                </option>
 
-                <option value="custom">
-                  Personalizado
-                </option>
+    /*
+     * Garante que as opções necessárias
+     * existam mesmo que o HTML esteja com
+     * uma versão antiga.
+     */
 
-                <option value="all">
-                  Todo o período
-                </option>
+    const requiredOptions = [
+        ["today", "Hoje"],
+        ["yesterday", "Ontem"],
+        ["7days", "Últimos 7 dias"],
+        ["30days", "Últimos 30 dias"],
+        ["month", "Este mês"],
+        ["previousMonth", "Mês anterior"],
+        ["all", "Todo o período"],
+        ["custom", "Personalizado"]
+    ];
 
-              </select>
 
-            </div>
+    requiredOptions.forEach(([value, text]) => {
 
+        const exists =
+            Array.from(select.options)
+                .some(option =>
+                    option.value === value
+                );
 
-            <div
-              id="customPeriodFields"
-              class="custom-period-fields hidden"
-            >
+        if (!exists) {
 
-              <div>
+            select.add(
+                new Option(text, value)
+            );
+        }
+    });
 
-                <label for="periodStartDate">
-                  Data inicial
-                </label>
 
-                <input
-                  id="periodStartDate"
-                  type="date"
-                >
+    /*
+     * Período inicial:
+     * Hoje
+     */
 
-              </div>
+    if (!select.value) {
+        select.value = "today";
+    }
 
 
-              <div>
+    /*
+     * Datas personalizadas começam escondidas.
+     */
 
-                <label for="periodEndDate">
-                  Data final
-                </label>
+    if (customFields) {
 
-                <input
-                  id="periodEndDate"
-                  type="date"
-                >
+        const isCustom =
+            select.value === "custom";
 
-              </div>
+        customFields.classList.toggle(
+            "hidden",
+            !isCustom
+        );
 
-            </div>
+        customFields.style.display =
+            isCustom
+                ? "flex"
+                : "none";
+    }
 
 
-            <div class="period-filter-actions">
+    /*
+     * Limites dos campos de data.
+     */
 
-              <button
-                id="applyPeriodBtn"
-                class="btn btn-primary"
-                type="button"
-              >
-                Aplicar período
-              </button>
-
+    if (start) {
+        start.max = todayISO();
+    }
 
-              <button
-                id="clearPeriodBtn"
-                class="btn btn-secondary"
-                type="button"
-              >
-                Limpar
-              </button>
+    if (end) {
+        end.max = todayISO();
+    }
+}
 
-            </div>
 
-          </div>
+/* =========================================================
+   MOSTRAR / ESCONDER PERSONALIZADO
+   ========================================================= */
+
+function toggleCustomPeriodFields() {
+
+    const {
+        select,
+        customFields
+    } = getPeriodElements();
+
+    if (!select || !customFields) {
+        return;
+    }
+
+    const isCustom =
+        select.value === "custom";
 
+    customFields.classList.toggle(
+        "hidden",
+        !isCustom
+    );
+
+    customFields.style.display =
+        isCustom
+            ? "flex"
+            : "none";
+}
+
 
-          <div
-            id="activePeriodLabel"
-            class="active-period-label"
-            aria-live="polite"
-          >
-            Período atual: Últimos 30 dias
-          </div>
+/* =========================================================
+   PRIMEIRO DIA DO MÊS
+   ========================================================= */
 
-        </div>
+function getFirstDayOfMonth(year, month) {
 
+    const date =
+        new Date(
+            year,
+            month,
+            1
+        );
+
+    const y =
+        date.getFullYear();
 
-        <!-- =================================================
-             RESUMO
-        ================================================== -->
+    const m =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    return `${y}-${m}-01`;
+}
 
-        <div class="summary-grid dashboard-summary-single">
 
-          <article class="summary-card balance-card balance-overview-card">
+/* =========================================================
+   ÚLTIMO DIA DO MÊS
+   ========================================================= */
+
+function getLastDayOfMonth(year, month) {
+
+    const date =
+        new Date(
+            year,
+            month + 1,
+            0
+        );
 
-            <div class="balance-overview-top">
-              <div class="balance-main-copy">
-                <span>Saldo do período</span>
-                <strong id="balanceValue">R$ 0,00</strong>
-                <small id="balancePeriodText">Receitas menos despesas</small>
-              </div>
+    const y =
+        date.getFullYear();
 
-              <div class="balance-chart-mark" aria-hidden="true">
-                <i></i><i></i><i></i>
-              </div>
-            </div>
+    const m =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
 
-            <div class="balance-breakdown">
+    const d =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
 
-              <div class="balance-breakdown-item income-breakdown">
-                <span class="balance-breakdown-icon">↑</span>
-                <div>
-                  <small>Receitas</small>
-                  <strong id="incomeValue" class="positive">R$ 0,00</strong>
-                </div>
-                <span id="incomePeriodText" class="sr-only">Total recebido</span>
-              </div>
+    return `${y}-${m}-${d}`;
+}
 
-              <div class="balance-breakdown-item expense-breakdown">
-                <span class="balance-breakdown-icon">↓</span>
-                <div>
-                  <small>Despesas</small>
-                  <strong id="expenseValue" class="negative">R$ 0,00</strong>
-                </div>
-                <span id="expensePeriodText" class="sr-only">Total gasto</span>
-              </div>
 
-            </div>
+/* =========================================================
+   PERÍODO SELECIONADO
+   ========================================================= */
 
-          </article>
+function getSelectedPeriod() {
+    const { select, start, end } = getPeriodElements();
+    if (!select || !select.value) return null;
+    const today = todayISO();
+    switch (select.value) {
+        case "today": return { start: today, end: today, label: "Hoje" };
+        case "yesterday": { const d=changeDate(today,-1); return { start:d,end:d,label:"Ontem" }; }
+        case "7": return { start:changeDate(today,-6), end:today, label:"Últimos 7 dias" };
+        case "30": return { start:changeDate(today,-29), end:today, label:"Últimos 30 dias" };
+        case "week": return { start:changeDate(today,-6), end:today, label:"Última semana" };
+        case "month": return { start:getFirstDayOfCurrentMonth(), end:today, label:"Este mês" };
+        case "previous-month": { const first=new Date(new Date().getFullYear(),new Date().getMonth()-1,1); const last=new Date(new Date().getFullYear(),new Date().getMonth(),0); const f=`${first.getFullYear()}-${String(first.getMonth()+1).padStart(2,"0")}-01`; const l=`${last.getFullYear()}-${String(last.getMonth()+1).padStart(2,"0")}-${String(last.getDate()).padStart(2,"0")}`; return {start:f,end:l,label:"Mês anterior"}; }
+        case "all": return { start:null, end:null, label:"Todo o período" };
+        case "custom": { let a=start?.value||"", b=end?.value||""; if(!a&&!b) return null; if(!a)a=b; if(!b)b=a; if(a>b)[a,b]=[b,a]; return {start:a,end:b,label:`${formatDateBR(a)} até ${formatDateBR(b)}`}; }
+        default: return null;
+    }
+}
 
-        </div>
 
+/* =========================================================
+   TRANSAÇÃO DENTRO DO PERÍODO
+   ========================================================= */
 
-        <!-- =================================================
-             AÇÕES RÁPIDAS
-        ================================================== -->
+function transactionIsInPeriod(
+    transaction,
+    period
+) {
 
-        <div class="quick-actions">
+    if (!period) {
+        return false;
+    }
 
-          <button class="quick-action" data-action="add-income" type="button"><span>＋</span>Adicionar receita</button>
-          <button class="quick-action" data-action="add-expense" type="button"><span>−</span>Adicionar despesa</button>
-          <button id="addGoalBtn" class="quick-action" type="button"><span>◎</span>Nova meta</button>
-          <button class="quick-action" data-section="receivable" type="button"><span>◷</span>A Receber</button>
-          <button class="quick-action" data-section="transactions" type="button"><span>↔</span>Lançamentos</button>
+    const date =
+        String(
+            getTransactionDate(
+                transaction
+            ) || ""
+        ).split("T")[0];
 
-          <button id="addCategoryBtn" class="quick-action premium-home-shortcut" data-premium-locked="true" data-premium-home="true" type="button"><span>◈</span>Nova categoria<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
-          <button class="quick-action premium-home-shortcut" data-section="reports" data-premium-home="true" type="button"><span>▥</span>Relatórios<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
-          <button class="quick-action premium-home-shortcut" data-section="ai-report" data-premium-home="true" type="button"><span>✦</span>Relatório com IA<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
-          <button class="quick-action premium-home-shortcut whatsapp-home-highlight" data-section="whatsapp" data-premium-home="true" type="button"><span class="whatsapp-action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3.2a8.5 8.5 0 0 0-7.3 12.85L3.6 20.4l4.46-1.04A8.5 8.5 0 1 0 12 3.2Zm0 15.35a6.82 6.82 0 0 1-3.48-.95l-.25-.15-2.65.62.67-2.58-.17-.27A6.85 6.85 0 1 1 12 18.55Zm3.76-5.12c-.2-.1-1.2-.59-1.39-.66-.18-.07-.32-.1-.45.1-.14.21-.52.66-.64.8-.12.14-.24.16-.45.06-.2-.1-.87-.32-1.66-1.03a6.2 6.2 0 0 1-1.15-1.43c-.12-.2-.01-.31.09-.42l.3-.35c.1-.12.14-.2.2-.34.07-.14.04-.26-.01-.36-.05-.1-.46-1.1-.63-1.51-.16-.4-.33-.35-.45-.36h-.39c-.14 0-.36.05-.55.26-.18.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.13.1.14 1.45 2.21 3.51 3.1.49.21.87.34 1.17.43.49.16.94.13 1.29.08.4-.06 1.2-.49 1.37-.96.17-.47.17-.87.12-.96-.05-.08-.19-.13-.4-.23Z"/></svg></span>Assessor WhatsApp<i class="premium-diamond" aria-label="Recurso Premium bloqueado">🔒</i></button>
-        </div>
 
-        <article class="home-insight-card" id="homeInsightCard">
-          <div class="home-insight-icon">✦</div>
-          <div class="home-insight-copy">
-            <small>INSIGHT DO CONTROLES</small>
-            <strong id="homeInsightTitle">Seu mês em um olhar</strong>
-            <p id="homeInsightText">Adicione movimentações e o ControleS destaca o que mais importa para você.</p>
-          </div>
-          <button id="homeInsightBtn" type="button" aria-label="Abrir relatório inteligente">›</button>
-        </article>
+    if (!date) {
+        return false;
+    }
 
 
-        <!-- =================================================
-             A RECEBER
-        ================================================== -->
+    /*
+     * Todo o período.
+     */
 
-        <article
-          id="receivableDashboardCard"
-          class="panel receivable-dashboard-card"
-        >
+    if (
+        !period.start &&
+        !period.end
+    ) {
+        return true;
+    }
 
-          <div class="panel-header">
 
-            <div>
+    if (
+        period.start &&
+        date < period.start
+    ) {
+        return false;
+    }
 
-              <h3>
-                💰 A Receber
-              </h3>
 
-              <p>
-                Valores que ainda serão recebidos
-              </p>
+    if (
+        period.end &&
+        date > period.end
+    ) {
+        return false;
+    }
 
-            </div>
 
+    return true;
+}
 
-            <button
-              class="text-button"
-              data-section="receivable"
-              type="button"
-            >
-              Ver detalhes
-            </button>
 
-          </div>
+/* =========================================================
+   CALCULAR RESUMO DO PERÍODO
+   ========================================================= */
 
+function calculatePeriodSummary(period) {
 
-          <div class="receivable-dashboard-content">
+    let income = 0;
+    let expense = 0;
 
-            <div>
 
-              <span>
-                Total a receber
-              </span>
+    if (!Array.isArray(transactions)) {
 
-              <strong
-                id="dashboardReceivableValue"
-                class="positive"
-              >
-                R$ 0,00
-              </strong>
+        return {
+            income: 0,
+            expense: 0,
+            balance: 0
+        };
+    }
 
-            </div>
 
+    transactions.forEach(transaction => {
 
-            <div>
+        if (
+            !transactionIsInPeriod(
+                transaction,
+                period
+            )
+        ) {
+            return;
+        }
 
-              <span>
-                Próximo recebimento
-              </span>
 
-              <strong id="dashboardNextReceivable">
-                —
-              </strong>
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo ||
+                transaction.transaction_type
+            );
 
-            </div>
 
-          </div>
+        const amount =
+            getTransactionAmount(
+                transaction
+            );
 
-        </article>
 
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ) {
+            return;
+        }
 
-        <!-- =================================================
-             PREMIUM DASHBOARD
-        ================================================== -->
 
-        <div
-          id="premiumDashboardContent"
-          class="premium-dashboard hidden"
-        >
+        if (type === "income") {
 
-          <div class="dashboard-grid">
+            /*
+             * Receita futura não entra
+             * como dinheiro recebido.
+             */
 
-            <article class="panel premium-mini-card">
+            if (
+                isIncomeReceived(
+                    transaction
+                )
+            ) {
+                income += amount;
+            }
 
-              <div class="panel-header">
+        } else {
 
-                <div>
+            expense += amount;
+        }
+    });
 
-                  <h3>
-                    🐷 Meu Cofrinho
-                  </h3>
 
-                  <p>
-                    Resultado deste mês
-                  </p>
+    return {
 
-                </div>
+        income,
 
-              </div>
+        expense,
 
+        balance:
+            income - expense
+    };
+}
 
-              <div class="premium-value-box">
 
-                <strong id="monthlySavingsValue">
-                  R$ 0,00
-                </strong>
+/* =========================================================
+   ATUALIZAR CARDS DO PERÍODO
+   ========================================================= */
 
-                <small id="monthlySavingsText">
-                  Quanto sobrou no mês
-                </small>
+function updatePeriodSummary() {
 
-              </div>
+    const elements =
+        getPeriodElements();
 
-            </article>
+    const period =
+        getSelectedPeriod();
 
 
-            <article class="panel premium-mini-card">
+    /*
+     * Se ainda não houver período,
+     * limpamos os cards.
+     */
 
-              <div class="panel-header">
+    if (!period) {
 
-                <div>
+        if (elements.income) {
+            elements.income.textContent =
+                formatCurrency(0);
+        }
 
-                  <h3>
-                    🏆 Maior gasto
-                  </h3>
+        if (elements.expense) {
+            elements.expense.textContent =
+                formatCurrency(0);
+        }
 
-                  <p>
-                    Categoria que mais consumiu
-                  </p>
+        if (elements.balance) {
+            elements.balance.textContent =
+                formatCurrency(0);
+        }
 
-                </div>
+        if (elements.label) {
+            elements.label.textContent =
+                "Escolha um período";
+        }
 
-              </div>
+        return;
+    }
 
 
-              <div class="premium-value-box">
+    const summary =
+        calculatePeriodSummary(
+            period
+        );
 
-                <strong id="topCategoryValue">
-                  —
-                </strong>
 
-                <small id="topCategoryText">
-                  Nenhuma despesa registrada
-                </small>
+    if (elements.income) {
 
-              </div>
+        elements.income.textContent =
+            formatCurrency(
+                summary.income
+            );
+    }
 
-            </article>
 
-          </div>
+    if (elements.expense) {
 
+        elements.expense.textContent =
+            formatCurrency(
+                summary.expense
+            );
+    }
 
-          <article class="panel premium-monthly-panel">
 
-            <div class="panel-header">
+    if (elements.balance) {
 
-              <div>
+        elements.balance.textContent =
+            formatCurrency(
+                summary.balance
+            );
+    }
 
-                <h3>
-                  📅 Resumo mensal
-                </h3>
 
-                <p>
-                  Como está seu mês atual
-                </p>
+    if (elements.label) {
 
-              </div>
+        elements.label.textContent =
+            period.label;
+    }
+}
 
-            </div>
 
+/* =========================================================
+   APLICAR PERÍODO
+   ========================================================= */
 
-            <div class="premium-summary-grid">
+function applySelectedPeriod() {
 
-              <div class="premium-summary-item">
+    const {
+        select,
+        start,
+        end
+    } = getPeriodElements();
 
-                <span>
-                  Receitas do mês
-                </span>
 
-                <strong
-                  id="monthlyIncomeValue"
-                  class="positive"
-                >
-                  R$ 0,00
-                </strong>
+    if (!select || !select.value) {
 
-              </div>
+        showToast(
+            "Escolha um período primeiro.",
+            "warning"
+        );
 
+        return;
+    }
 
-              <div class="premium-summary-item">
 
-                <span>
-                  Despesas do mês
-                </span>
+    /*
+     * Validação do personalizado.
+     */
 
-                <strong
-                  id="monthlyExpenseValue"
-                  class="negative"
-                >
-                  R$ 0,00
-                </strong>
+    if (
+        select.value === "custom"
+    ) {
 
-              </div>
+        if (
+            !start?.value &&
+            !end?.value
+        ) {
 
+            showToast(
+                "Escolha pelo menos uma data.",
+                "warning"
+            );
 
-              <div class="premium-summary-item">
+            return;
+        }
 
-                <span>
-                  Sobra do mês
-                </span>
 
-                <strong id="monthlyBalanceValue">
-                  R$ 0,00
-                </strong>
+        if (
+            start?.value &&
+            end?.value &&
+            start.value > end.value
+        ) {
 
-              </div>
+            showToast(
+                "A data inicial não pode ser maior que a final.",
+                "warning"
+            );
 
-            </div>
+            return;
+        }
+    }
 
-          </article>
 
+    updatePeriodSummary();
 
-          <article class="panel">
 
-            <div class="panel-header">
+    /*
+     * Atualiza também os relatórios
+     * e dashboard caso estejam presentes.
+     */
 
-              <div>
+    updateDashboard();
 
-                <h3>
-                  🏆 Ranking de gastos
-                </h3>
+    renderTransactions();
 
-                <p>
-                  Categorias que mais receberam seu dinheiro
-                </p>
+    renderReports();
 
-              </div>
 
-            </div>
+    showToast(
+        `Período "${getSelectedPeriod()?.label || ""}" aplicado.`,
+        "success"
+    );
+}
 
 
-            <div
-              id="expenseRanking"
-              class="expense-ranking"
-            ></div>
+/* =========================================================
+   EVENTOS DO PERÍODO
+   ========================================================= */
 
-          </article>
+function setupPeriodEvents() {
 
-        </div>
+    const elements =
+        getPeriodElements();
 
+    if (elements.clear && elements.clear.dataset.periodBound !== "true") {
+        elements.clear.dataset.periodBound = "true";
+        elements.clear.addEventListener("click", event => {
+            event.preventDefault();
+            if (elements.select) elements.select.value = "30";
+            if (elements.start) elements.start.value = "";
+            if (elements.end) elements.end.value = "";
+            toggleCustomPeriodFields();
+            updatePeriodSummary();
+            showToast("Filtro de período limpo.", "success");
+        });
+    }
 
-        <!-- =================================================
-             GRÁFICO + LANÇAMENTOS
-        ================================================== -->
 
-        <div class="dashboard-grid">
+    if (elements.select) {
 
-          <article class="panel finance-movement-panel">
+        /*
+         * Evita listeners duplicados caso
+         * essa função seja chamada novamente.
+         */
 
-            <div class="panel-header">
+        if (
+            elements.select.dataset.periodBound !==
+            "true"
+        ) {
 
-              <div>
+            elements.select.dataset.periodBound =
+                "true";
 
-                <h3>
-                  Movimentação financeira
-                </h3>
 
-                <p id="financeChartPeriodText">
-                  Evolução conforme o período selecionado
-                </p>
+            elements.select.addEventListener(
+                "change",
+                () => {
 
-              </div>
+                    toggleCustomPeriodFields();
 
-            </div>
+                    /*
+                     * Para os períodos prontos,
+                     * atualizamos imediatamente.
+                     *
+                     * Personalizado espera o botão
+                     * Aplicar.
+                     */
 
+                    if (
+                        elements.select.value !==
+                        "custom"
+                    ) {
+                        updatePeriodSummary();
+                    }
+                }
+            );
+        }
+    }
 
-            <div class="chart-box">
 
-              <canvas id="financeChart"></canvas>
+    if (elements.apply) {
 
-            </div>
+        if (
+            elements.apply.dataset.periodBound !==
+            "true"
+        ) {
 
-          </article>
+            elements.apply.dataset.periodBound =
+                "true";
 
 
-          <article class="panel recent-transactions-panel">
+            elements.apply.addEventListener(
+                "click",
+                event => {
 
-            <div class="panel-header">
+                    event.preventDefault();
 
-              <div>
+                    applySelectedPeriod();
+                }
+            );
+        }
+    }
 
-                <h3>
-                  Últimos lançamentos
-                </h3>
 
-                <p>
-                  Movimentações do período selecionado
-                </p>
+    /*
+     * Atualiza ao alterar as datas personalizadas.
+     */
 
-              </div>
+    [elements.start, elements.end]
+        .filter(Boolean)
+        .forEach(input => {
 
+            if (
+                input.dataset.periodDateBound ===
+                "true"
+            ) {
+                return;
+            }
 
-              <button
-                class="text-button"
-                data-section="transactions"
-                type="button"
-              >
-                Ver todos
-              </button>
+            input.dataset.periodDateBound =
+                "true";
 
-            </div>
 
+            input.addEventListener(
+                "change",
+                () => {
 
-            <div
-              id="recentTransactions"
-              class="recent-list"
-            ></div>
+                    if (
+                        elements.select?.value ===
+                        "custom"
+                    ) {
+                        updatePeriodSummary();
+                    }
+                }
+            );
+        });
+}
 
-          </article>
 
-        </div>
+/* =========================================================
+   INICIALIZA FILTRO
+   ========================================================= */
 
+function initializePeriodFilter() {
 
+    const {
+        select,
+        customFields,
+        start,
+        end
+    } = getPeriodElements();
 
-      </section>
 
+    if (!select) return;
 
-      <!-- =================================================
-           LANÇAMENTOS
-      ================================================== -->
 
-      <section
-        id="transactionsSection"
-        class="content-section"
-      >
+    /*
+     * Só preenche se o select estiver vazio.
+     * Assim não destrói o design/opções que já
+     * existem no HTML.
+     */
 
-        <div class="section-heading">
+    if (select.options.length === 0) {
 
-          <div>
+        select.innerHTML = `
+            <option value="">
+                Escolher período
+            </option>
 
-            <span class="eyebrow">
-              MOVIMENTAÇÕES
-            </span>
+            <option value="week">
+                1 semana
+            </option>
 
-            <h2>
-              Lançamentos
-            </h2>
+            <option value="month">
+                1 mês
+            </option>
 
-            <p>
-              Controle tudo que entra e sai.
-            </p>
+            <option value="custom">
+                Personalizado
+            </option>
 
-          </div>
+            <option value="all">
+                Tudo
+            </option>
+        `;
+    }
 
 
-          <div class="transactions-heading-actions">
-            <button id="clearTransactionsBtn" class="btn btn-danger-soft" type="button">
-              🗑 Limpar lançamentos
-            </button>
-            <button
-              id="addTransactionBtn2"
-              class="btn btn-primary"
-              type="button"
-            >
-              + Novo lançamento
-            </button>
-          </div>
+    if (customFields) {
 
-        </div>
+        customFields.classList.add(
+            "hidden"
+        );
 
+        customFields.style.display =
+            "none";
+    }
 
-        <!-- =================================================
-             FILTROS DOS LANÇAMENTOS
-        ================================================== -->
 
-        <section class="app-filter-card" aria-labelledby="filterTitle">
-          <div class="app-filter-head">
-            <div class="app-filter-icon" aria-hidden="true">⌕</div>
-            <div>
-              <span class="app-kicker">ORGANIZAR</span>
-              <h3 id="filterTitle">Filtros</h3>
-              <p>Encontre seus lançamentos rapidamente.</p>
-            </div>
-            <button id="clearTransactionFiltersBtn" class="filter-reset" type="button">Limpar</button>
-          </div>
-          <label class="app-search-field" for="transactionSearch">
-            <span aria-hidden="true">⌕</span>
-            <input id="transactionSearch" type="search" placeholder="Buscar por descrição ou categoria" autocomplete="off">
-          </label>
-          <div class="app-filter-grid">
-            <label class="app-select-field" for="transactionFilter"><span>Tipo</span><select id="transactionFilter"><option value="all">Todos</option><option value="income">Receitas</option><option value="expense">Despesas</option></select></label>
-            <label class="app-select-field" for="categoryFilter"><span>Categoria</span><select id="categoryFilter"><option value="all">Todas</option></select></label>
-          </div>
-          <div id="transactionFilterSummary" class="filter-summary" aria-live="polite">Mostrando todos os lançamentos.</div>
-        </section>
+    if (start) {
+        start.max = todayISO();
+    }
 
-        <section class="transactions-app-list" aria-label="Lista de lançamentos">
-          <div id="transactionsList" class="transactions-list"></div>
-          <div id="transactionsEmpty" class="empty-state hidden">
-            <div class="empty-state-icon">↔</div>
-            <h3>Nenhum lançamento encontrado</h3>
-            <p>Ajuste os filtros ou adicione uma nova movimentação.</p>
-          </div>
-        </section>
+    if (end) {
+        end.max = todayISO();
+    }
+}
 
-      </section>
-      <!-- =================================================
-           A RECEBER
-      ================================================== -->
 
-      <section
-        id="receivableSection"
-        class="content-section"
-      >
+/* =========================================================
+   MOSTRAR DATAS PERSONALIZADAS
+   ========================================================= */
 
-        <div class="section-heading">
+function toggleCustomPeriodFields() {
 
-          <div>
+    const {
+        select,
+        customFields
+    } = getPeriodElements();
 
-            <span class="eyebrow">
-              CONTROLE DE RECEBIMENTOS
-            </span>
 
-            <h2>
-              A Receber
-            </h2>
+    if (!select || !customFields) {
+        return;
+    }
 
-            <p>
-              Acompanhe os valores que ainda serão recebidos.
-            </p>
 
-          </div>
+    const isCustom =
+        select.value === "custom";
 
 
-          <button
-            id="addReceivableBtn"
-            class="btn btn-primary"
-            type="button"
-          >
-            + Adicionar a receber
-          </button>
+    customFields.classList.toggle(
+        "hidden",
+        !isCustom
+    );
 
-        </div>
 
+    customFields.style.display =
+        isCustom
+            ? "flex"
+            : "none";
+}
 
-        <div class="summary-grid">
 
-          <article class="summary-card">
+/* =========================================================
+   PERÍODO SELECIONADO
+   ========================================================= */
 
-            <span>
-              Total a receber
-            </span>
+function getSelectedPeriod() {
+    const { select, start, end } = getPeriodElements();
+    if (!select || !select.value) return null;
+    const today = todayISO();
+    switch (select.value) {
+        case "today": return { start: today, end: today, label: "Hoje" };
+        case "yesterday": { const d=changeDate(today,-1); return { start:d,end:d,label:"Ontem" }; }
+        case "7": return { start:changeDate(today,-6), end:today, label:"Últimos 7 dias" };
+        case "30": return { start:changeDate(today,-29), end:today, label:"Últimos 30 dias" };
+        case "week": return { start:changeDate(today,-6), end:today, label:"Última semana" };
+        case "month": return { start:getFirstDayOfCurrentMonth(), end:today, label:"Este mês" };
+        case "previous-month": { const first=new Date(new Date().getFullYear(),new Date().getMonth()-1,1); const last=new Date(new Date().getFullYear(),new Date().getMonth(),0); const f=`${first.getFullYear()}-${String(first.getMonth()+1).padStart(2,"0")}-01`; const l=`${last.getFullYear()}-${String(last.getMonth()+1).padStart(2,"0")}-${String(last.getDate()).padStart(2,"0")}`; return {start:f,end:l,label:"Mês anterior"}; }
+        case "all": return { start:null, end:null, label:"Todo o período" };
+        case "custom": { let a=start?.value||"", b=end?.value||""; if(!a&&!b) return null; if(!a)a=b; if(!b)b=a; if(a>b)[a,b]=[b,a]; return {start:a,end:b,label:`${formatDateBR(a)} até ${formatDateBR(b)}`}; }
+        default: return null;
+    }
+}
 
-            <strong
-              id="receivableTotalValue"
-              class="positive"
-            >
-              R$ 0,00
-            </strong>
 
-            <small>
-              Valores ainda não recebidos
-            </small>
+/* =========================================================
+   TRANSAÇÃO DENTRO DO PERÍODO
+   ========================================================= */
 
-          </article>
+function transactionIsInPeriod(
+    transaction,
+    period
+) {
 
+    if (!period) {
+        return false;
+    }
 
-          <article class="summary-card">
 
-            <span>
-              Quantidade
-            </span>
+    const date =
+        getTransactionDate(
+            transaction
+        );
 
-            <strong id="receivableCount">
-              0
-            </strong>
 
-            <small>
-              Recebimentos pendentes
-            </small>
+    if (!date) {
+        return false;
+    }
 
-          </article>
 
+    if (
+        period.start &&
+        date < period.start
+    ) {
+        return false;
+    }
 
-          <article class="summary-card">
 
-            <span>
-              Próximo recebimento
-            </span>
+    if (
+        period.end &&
+        date > period.end
+    ) {
+        return false;
+    }
 
-            <strong id="receivableNextDate">
-              —
-            </strong>
 
-            <small id="receivableNextDescription">
-              Nenhum recebimento pendente
-            </small>
+    return true;
+}
 
-          </article>
 
-        </div>
+/* =========================================================
+   CALCULAR PERÍODO
+   ========================================================= */
 
+function calculatePeriodSummary(period) {
 
-        <div class="panel table-panel">
+    let income = 0;
+    let expense = 0;
 
-          <div class="panel-header">
 
-            <div>
+    if (!Array.isArray(transactions)) {
 
-              <h3>
-                Contas pendentes
-              </h3>
+        return {
+            income: 0,
+            expense: 0,
+            balance: 0
+        };
+    }
 
-              <p>
-                Valores com recebimento futuro que ainda não entraram no saldo.
-              </p>
 
-            </div>
+    transactions.forEach(transaction => {
 
-          </div>
+        if (
+            !transactionIsInPeriod(
+                transaction,
+                period
+            )
+        ) {
+            return;
+        }
 
 
-          <div id="receivableList" class="receivable-mobile-list"></div>
-          <div id="receivableEmpty" class="receivable-empty-state hidden"><span>◷</span><strong>Nenhum recebimento pendente</strong><small>Quando você adicionar um valor a receber, ele aparecerá aqui.</small></div>
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo ||
+                transaction.transaction_type
+            );
 
 
-          <div
-            id="receivablesEmpty"
-            class="empty-state hidden"
-          >
+        const amount =
+            getTransactionAmount(
+                transaction
+            );
 
-            <div>
-              💰
-            </div>
 
-            <h3>
-              Nenhum valor a receber
-            </h3>
+        if (
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ) {
+            return;
+        }
 
-            <p>
-              Quando você lançar uma receita para uma data futura,
-              ela aparecerá aqui.
-            </p>
 
-          </div>
+        if (type === "income") {
 
-        </div>
+            /*
+             * Receita futura não é considerada
+             * dinheiro ganho.
+             */
 
-      </section>
+            if (
+                isIncomeReceived(
+                    transaction
+                )
+            ) {
 
+                income += amount;
+            }
 
-      <!-- =================================================
-           CATEGORIAS
-      ================================================== -->
+        } else {
 
-      <section
-        id="categoriesSection"
-        class="content-section"
-      >
+            expense += amount;
+        }
+    });
 
-        <div class="section-heading">
 
-          <div>
+    return {
 
-            <span class="eyebrow">
-              ORGANIZAÇÃO
-            </span>
+        income,
 
-            <h2>
-              Categorias
-            </h2>
+        expense,
 
-            <p>
-              Organize seus lançamentos por categoria.
-            </p>
+        balance:
+            income - expense
+    };
+}
 
-          </div>
 
+/* =========================================================
+   ATUALIZAR CARDS DO PERÍODO
+   ========================================================= */
 
-          <button
-            id="addCategoryBtn2"
-            class="btn btn-primary"
-            type="button"
-          >
-            + Nova categoria
-          </button>
+function updatePeriodSummary() {
 
-        </div>
+    const elements =
+        getPeriodElements();
 
 
-        <div
-          id="categoriesGrid"
-          class="categories-grid"
-        ></div>
+    const period =
+        getSelectedPeriod();
 
-      </section>
 
+    if (!period) {
+        return;
+    }
 
-      <!-- =================================================
-           METAS
-      ================================================== -->
 
-      <section
-        id="goalsSection"
-        class="content-section"
-      >
+    const summary =
+        calculatePeriodSummary(
+            period
+        );
 
-        <div class="section-heading">
 
-          <div>
+    if (elements.income) {
 
-            <span class="eyebrow">
-              PLANEJAMENTO
-            </span>
+        elements.income.textContent =
+            formatCurrency(
+                summary.income
+            );
+    }
 
-            <h2>
-              Minhas metas
-            </h2>
 
-            <p>
-              Crie objetivos e acompanhe seu progresso financeiro.
-            </p>
+    if (elements.expense) {
 
-          </div>
+        elements.expense.textContent =
+            formatCurrency(
+                summary.expense
+            );
+    }
 
 
-          <button
-            id="addGoalBtn2"
-            class="btn btn-primary"
-            type="button"
-          >
-            + Nova meta
-          </button>
+    if (elements.balance) {
 
-        </div>
+        elements.balance.textContent =
+            formatCurrency(
+                summary.balance
+            );
+    }
 
 
-        <div
-          id="goalsGrid"
-          class="goals-grid"
-        ></div>
+    if (elements.label) {
 
+        elements.label.textContent =
+            period.label;
+    }
+}
 
-        <div
-          id="goalsEmpty"
-          class="empty-state hidden"
-        >
 
-          <div>
-            ◎
-          </div>
+/* =========================================================
+   APLICAR PERÍODO
+   ========================================================= */
 
-          <h3>
-            Nenhuma meta criada
-          </h3>
+function applySelectedPeriod() {
 
-          <p>
-            Crie sua primeira meta financeira para começar a acompanhar
-            seu progresso.
-          </p>
+    const {
+        select,
+        start,
+        end
+    } = getPeriodElements();
 
 
-          <button
-            id="addGoalEmptyBtn"
-            class="btn btn-primary"
-            type="button"
-          >
-            Criar primeira meta
-          </button>
+    if (!select || !select.value) {
 
-        </div>
+        showToast(
+            "Escolha um período primeiro.",
+            "warning"
+        );
 
-      </section>
+        return;
+    }
 
 
-      <!-- =================================================
-           RELATÓRIOS
-      ================================================== -->
+    if (
+        select.value === "custom"
+    ) {
 
-      <section
-        id="reportsSection"
-        class="content-section"
-      >
+        if (
+            !start?.value &&
+            !end?.value
+        ) {
 
-        <div class="section-heading">
+            showToast(
+                "Escolha a data inicial e a data final.",
+                "warning"
+            );
 
-          <div>
+            return;
+        }
 
-            <span class="eyebrow">
-              ANÁLISE
-            </span>
 
-            <h2>
-              Relatórios
-            </h2>
+        if (
+            start?.value &&
+            end?.value &&
+            start.value > end.value
+        ) {
 
-            <p>
-              Entenda melhor para onde seu dinheiro está indo.
-            </p>
+            showToast(
+                "A data inicial não pode ser maior que a final.",
+                "warning"
+            );
 
-          </div>
+            return;
+        }
+    }
 
-        </div>
 
+    updatePeriodSummary();
 
-        <div
-          class="period-filter panel report-period-filter"
-        >
 
-          <div class="period-filter-header">
+    showToast(
+        "Período aplicado com sucesso.",
+        "success"
+    );
+}
 
-            <div>
 
-              <h3>
-                Período do relatório
-              </h3>
+/* =========================================================
+   EVENTOS DO PERÍODO
+   ========================================================= */
 
-              <p>
-                O relatório acompanha o período financeiro selecionado.
-              </p>
+function setupPeriodEvents() {
 
-            </div>
+    const elements =
+        getPeriodElements();
 
-          </div>
 
+    if (elements.select) {
 
-          <div class="report-period-status">
+        elements.select.addEventListener(
+            "change",
+            () => {
 
-            <span>
-              Período atual
-            </span>
+                toggleCustomPeriodFields();
 
-            <strong id="reportPeriodText">
-              Últimos 30 dias
-            </strong>
+                /*
+                 * Não aplica automaticamente.
+                 * O usuário escolhe e aperta
+                 * Aplicar período.
+                 */
+            }
+        );
+    }
 
-          </div>
 
-        </div>
+    if (elements.apply) {
 
+        elements.apply.addEventListener(
+            "click",
+            applySelectedPeriod
+        );
+    }
+}
 
-        <div
-          id="premiumReportContent"
-          class="premium-report-gate"
-        >
 
-          <div class="premium-lock">
-            ★
-          </div>
+/* =========================================================
+   RESUMO MENSAL
+   ========================================================= */
 
-          <h3>
-            Relatórios ControleS Prime
-          </h3>
+function updateMonthlySummary() {
 
-          <p>
-            Assine o ControleS Prime para desbloquear gráficos, categorias e análises financeiras.
-          </p>
+    const month =
+        new Date().getMonth();
 
-          <button
-            class="btn btn-primary"
-            data-section="premium"
-            type="button"
-          >
-            Conhecer ControleS Prime
-          </button>
+    const year =
+        new Date().getFullYear();
 
-        </div>
 
+    let income = 0;
+    let expense = 0;
 
-        <div id="primeReportsIntro" class="prime-reports-intro"><span class="prime-chip">✦ CONTROLES PRIME</span><h3>Seu dinheiro, em detalhes</h3><p>Compare receitas e despesas, descubra suas maiores categorias e acompanhe sua evolução financeira.</p></div>
 
-        <div id="normalReportContent" hidden>
+    transactions.forEach(transaction => {
 
-          <div class="report-cards">
+        const dateString =
+            getTransactionDate(
+                transaction
+            );
 
-            <article class="report-card">
+        if (!dateString) return;
 
-              <span>
-                Receitas
-              </span>
 
-              <strong id="reportIncomeCard">
-                R$ 0,00
-              </strong>
+        const date =
+            new Date(
+                `${dateString}T00:00:00`
+            );
 
-            </article>
 
+        if (
+            date.getMonth() !== month ||
+            date.getFullYear() !== year
+        ) {
+            return;
+        }
 
-            <article class="report-card">
 
-              <span>
-                Despesas
-              </span>
+        const amount =
+            getTransactionAmount(
+                transaction
+            );
 
-              <strong id="reportExpenseCard">
-                R$ 0,00
-              </strong>
 
-            </article>
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo
+            );
 
 
-            <article class="report-card">
+        if (type === "income") {
 
-              <span>
-                Saldo
-              </span>
+            if (
+                isIncomeReceived(
+                    transaction
+                )
+            ) {
+                income += amount;
+            }
 
-              <strong id="reportBalanceCard">
-                R$ 0,00
-              </strong>
+        } else {
 
-            </article>
+            expense += amount;
+        }
+    });
 
-          </div>
 
+    const balance =
+        income - expense;
 
-          <div class="reports-grid">
 
-            <article class="panel">
+    const incomeElement =
+        firstExisting(
+            "monthlyIncomeSummary",
+            "summaryIncome",
+            "monthIncomeSummary"
+        );
 
-              <div class="panel-header">
+    const expenseElement =
+        firstExisting(
+            "monthlyExpenseSummary",
+            "summaryExpense",
+            "monthExpenseSummary"
+        );
 
-                <div>
+    const balanceElement =
+        firstExisting(
+            "monthlyBalanceSummary",
+            "summaryBalance",
+            "monthBalanceSummary"
+        );
 
-                  <h3>
-                    Por categoria
-                  </h3>
 
-                  <p>
-                    Distribuição das despesas no período
-                  </p>
+    if (incomeElement) {
+        incomeElement.textContent =
+            formatCurrency(income);
+    }
 
-                </div>
 
-              </div>
+    if (expenseElement) {
+        expenseElement.textContent =
+            formatCurrency(expense);
+    }
 
 
-              <div class="chart-box doughnut-box">
+    if (balanceElement) {
+        balanceElement.textContent =
+            formatCurrency(balance);
+    }
+}
 
-                <canvas id="categoryChart"></canvas>
 
-              </div>
+/* =========================================================
+   RANKING DE GASTOS
+   ========================================================= */
 
-            </article>
+function updateExpenseRanking() {
 
+    const container =
+        firstExisting(
+            "expenseRanking",
+            "rankingExpenses",
+            "expenseRankingList"
+        );
 
-            <article class="panel report-values">
 
-              <div class="panel-header">
+    if (!container) return;
 
-                <div>
 
-                  <h3>
-                    Resumo
-                  </h3>
+    const currentMonth =
+        new Date().getMonth();
 
-                  <p>
-                    Valores do período selecionado
-                  </p>
+    const currentYear =
+        new Date().getFullYear();
 
-                </div>
 
-              </div>
+    const ranking = {};
 
 
-              <div class="report-line">
+    transactions.forEach(transaction => {
 
-                <span>
-                  Receitas
-                </span>
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo
+            );
 
-                <strong id="reportIncome">
-                  R$ 0,00
-                </strong>
 
-              </div>
+        if (type !== "expense") {
+            return;
+        }
 
 
-              <div class="report-line">
+        const dateString =
+            getTransactionDate(
+                transaction
+            );
 
-                <span>
-                  Despesas
-                </span>
 
-                <strong id="reportExpense">
-                  R$ 0,00
-                </strong>
+        if (!dateString) return;
 
-              </div>
 
+        const date =
+            new Date(
+                `${dateString}T00:00:00`
+            );
 
-              <div class="report-line total">
 
-                <span>
-                  Saldo
-                </span>
+        if (
+            date.getMonth() !== currentMonth ||
+            date.getFullYear() !== currentYear
+        ) {
+            return;
+        }
 
-                <strong id="reportBalance">
-                  R$ 0,00
-                </strong>
 
-              </div>
+        const category =
+            getTransactionCategory(
+                transaction
+            );
 
-            </article>
 
-          </div>
+        const amount =
+            getTransactionAmount(
+                transaction
+            );
 
 
-          <article
-            id="reportComparison"
-            class="panel"
-          >
+        ranking[category] =
+            (ranking[category] || 0) +
+            amount;
+    });
 
-            <div class="panel-header">
 
-              <div>
+    const items =
+        Object.entries(ranking)
+            .sort(
+                (a, b) =>
+                    b[1] - a[1]
+            )
+            .slice(0, 5);
 
-                <h3>
-                  Comparação com mês anterior
-                </h3>
 
-                <p>
-                  Veja como suas finanças mudaram em relação ao mês passado.
-                </p>
+    const total =
+        items.reduce(
+            (sum, item) =>
+                sum + item[1],
+            0
+        );
 
-              </div>
 
-            </div>
+    if (!items.length) {
 
+        container.innerHTML =
+            "<p>Nenhum gasto neste mês.</p>";
 
-            <div class="report-values">
+        return;
+    }
 
-              <div class="report-line">
 
-                <span>
-                  Receitas
-                </span>
+    container.innerHTML =
+        items
+            .map(
+                ([category, amount], index) => {
 
-                <strong id="comparisonIncome">
-                  —
-                </strong>
+                    const percentage =
+                        total > 0
+                            ? (
+                                amount /
+                                total *
+                                100
+                            )
+                            : 0;
 
-              </div>
 
+                    return `
+                        <div class="ranking-item">
 
-              <div class="report-line">
+                            <div class="ranking-position">
+                                ${index + 1}
+                            </div>
 
-                <span>
-                  Despesas
-                </span>
+                            <div class="ranking-info">
 
-                <strong id="comparisonExpense">
-                  —
-                </strong>
+                                <strong>
+                                    ${escapeHTML(category)}
+                                </strong>
 
-              </div>
+                                <span>
+                                    ${formatCurrency(amount)}
+                                </span>
 
+                                <small>
+                                    ${percentage.toFixed(1)}%
+                                </small>
 
-              <div class="report-line total">
+                            </div>
 
-                <span>
-                  Saldo
-                </span>
+                        </div>
+                    `;
+                }
+            )
+            .join("");
+}
 
-                <strong id="comparisonBalance">
-                  —
-                </strong>
 
-              </div>
+/* =========================================================
+   RESUMO / COFRINHO / RANKING NO DASHBOARD
+   ========================================================= */
 
-            </div>
+function updatePremiumDashboard() {
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
 
-          </article>
+    let income = 0;
+    let expense = 0;
+    const ranking = {};
 
+    transactions.forEach(transaction => {
+        const dateString = getTransactionDate(transaction);
+        if (!dateString) return;
 
-          <article
-            id="reportAnalysis"
-            class="panel"
-          >
+        const date = new Date(`${dateString}T00:00:00`);
+        if (date.getMonth() !== month || date.getFullYear() !== year) return;
 
-            <div class="panel-header">
+        const amount = getTransactionAmount(transaction);
+        if (!Number.isFinite(amount) || amount <= 0) return;
 
-              <div>
+        const type = normalizeTransactionType(
+            transaction.type || transaction.tipo || transaction.transaction_type
+        );
 
-                <h3>
-                  Análise do ControleS
-                </h3>
+        if (type === "income") {
+            if (isIncomeReceived(transaction)) income += amount;
+        } else {
+            expense += amount;
+            const category = getTransactionCategory(transaction);
+            ranking[category] = (ranking[category] || 0) + amount;
+        }
+    });
 
-                <p>
-                  Uma análise simples do seu desempenho financeiro.
-                </p>
+    const balance = income - expense;
 
-              </div>
+    const savings = firstExisting("monthlySavingsValue", "piggyBankAmount", "cofrinhoAmount");
+    if (savings) savings.textContent = formatCurrency(Math.max(0, balance));
 
-            </div>
+    const savingsText = $("monthlySavingsText");
+    if (savingsText) {
+        savingsText.textContent = balance >= 0
+            ? "Quanto sobrou no mês"
+            : "Despesas acima das receitas";
+    }
 
+    const incomeEl = $("monthlyIncomeValue");
+    const expenseEl = $("monthlyExpenseValue");
+    const balanceEl = $("monthlyBalanceValue");
+    if (incomeEl) incomeEl.textContent = formatCurrency(income);
+    if (expenseEl) expenseEl.textContent = formatCurrency(expense);
+    if (balanceEl) balanceEl.textContent = formatCurrency(balance);
 
-            <div
-              id="automaticReportAnalysis"
-              class="report-analysis"
-            >
+    const entries = Object.entries(ranking).sort((a,b) => b[1] - a[1]).slice(0, 5);
 
-              <p>
-                Adicione lançamentos para gerar sua análise financeira.
-              </p>
+    const topCategory = $("topCategoryValue");
+    const topCategoryText = $("topCategoryText");
+    if (topCategory) topCategory.textContent = entries.length ? formatCurrency(entries[0][1]) : "—";
+    if (topCategoryText) topCategoryText.textContent = entries.length ? entries[0][0] : "Nenhuma despesa registrada";
 
-            </div>
+    const rankingEl = $("expenseRanking");
+    if (rankingEl) {
+        rankingEl.innerHTML = entries.length
+            ? entries.map(([category, amount], index) => {
+                const percent = expense > 0 ? (amount / expense) * 100 : 0;
+                return `<div class="expense-ranking-item">
+                    <div class="expense-ranking-main">
+                        <strong>${index + 1}. ${escapeHTML(category)}</strong>
+                        <span>${formatCurrency(amount)}</span>
+                    </div>
+                    <div class="expense-ranking-bar"><span style="width:${Math.min(100, percent)}%"></span></div>
+                    <small>${percent.toFixed(1)}% das despesas</small>
+                </div>`;
+            }).join("")
+            : `<div class="empty-state">Nenhum gasto registrado neste mês.</div>`;
+    }
+}
 
-          </article>
 
-        </div>
+/* =========================================================
+   COFRINHO
+   ========================================================= */
 
-      </section>
+function updatePiggyBank() {
 
+    const currentMonth =
+        new Date().getMonth();
 
-      <!-- ASSISTENTE WHATSAPP — DESIGN PROFISSIONAL -->
-      <section id="whatsappSection" class="content-section">
-        <div class="smart-feature-page whatsapp-feature-page">
-          <div class="smart-feature-header">
-            <div>
-              <span class="smart-eyebrow">CONTROLES PREMIUM • AUTOMAÇÃO</span>
-              <h2>Assessor WhatsApp</h2>
-              <p>Uma central financeira no WhatsApp para consultar saldo, gastos, valores a receber e registrar movimentações por mensagem.</p>
-            </div>
-            <div id="whatsappIntegrationStatus" class="smart-status status-pending"><span></span> Integração em configuração</div>
-          </div>
+    const currentYear =
+        new Date().getFullYear();
 
-          <div class="whatsapp-dashboard">
-            <div class="phone-mockup" aria-label="Prévia do Assessor WhatsApp">
-              <div class="phone-top">
-                <div class="phone-avatar">C</div>
-                <div><strong>ControleS</strong><small>Assessor financeiro</small></div>
-                <span class="phone-online">●</span>
-              </div>
-              <div id="whatsappPreviewChat" class="phone-chat">
-                <div class="chat-time">EXEMPLO DE CONVERSA</div>
-                <div class="chat-bubble user">Quanto eu gastei este mês?</div>
-                <div class="chat-bubble bot"><span class="bot-label">CONTROLES</span><strong id="waPreviewExpense">R$ 0,00</strong> em despesas no período.<br><small id="waPreviewCategory">Cadastre lançamentos para ver sua maior categoria.</small></div>
-                <div class="chat-bubble user">Quanto tenho a receber?</div>
-                <div class="chat-bubble bot success-bubble"><span class="bot-label">CONTROLES</span><strong id="waPreviewReceivable">R$ 0,00</strong><br><small id="waPreviewReceivableText">Nenhum valor futuro encontrado.</small></div>
-              </div>
-              <div class="phone-input"><span>Converse com o ControleS...</span><b>➤</b></div>
-            </div>
 
-            <div class="smart-feature-side">
-              <div class="feature-title-row"><span class="premium-pill">PREMIUM</span><span class="feature-version">ASSISTENTE 1.0</span></div>
-              <h3>Seu financeiro em uma conversa</h3>
-              <div class="feature-benefit"><i>↗</i><div><b>Registrar movimentações</b><small>Ex.: “Gastei R$ 45,90 no posto hoje”.</small></div></div>
-              <div class="feature-benefit"><i>▥</i><div><b>Consultar seus números</b><small>Saldo, despesas, receitas, categorias e valores a receber.</small></div></div>
-              <div class="feature-benefit"><i>✦</i><div><b>Resumo instantâneo</b><small>Respostas curtas e organizadas com base nos dados da sua conta.</small></div></div>
-              <div class="integration-box">
-                <div><span class="integration-dot"></span><strong>Status da integração</strong></div>
-                <p id="whatsappStatusText">A interface está pronta. Para conversar pelo WhatsApp de verdade, ainda é necessário conectar a API oficial e o webhook do ControleS.</p>
-              </div>
-              <button id="whatsappPrimaryBtn" class="btn btn-premium feature-premium-btn" type="button">Ver status da integração</button>
-              <small class="feature-security">🔒 O acesso financeiro permanece vinculado à conta autenticada do ControleS.</small>
-            </div>
-          </div>
-        </div>
-      </section>
+    let income = 0;
+    let expense = 0;
 
-      <!-- RELATÓRIO INTELIGENTE — FUNCIONAL -->
-      <section id="ai-reportSection" class="content-section">
-        <div class="smart-feature-page ai-feature-page">
-          <div class="smart-feature-header">
-            <div>
-              <span class="smart-eyebrow">CONTROLES PREMIUM • INTELIGÊNCIA FINANCEIRA</span>
-              <h2>Relatório Inteligente</h2>
-              <p>Uma leitura automática dos seus lançamentos com comparação mensal, categoria de maior gasto, saldo, tendência e pontos de atenção.</p>
-            </div>
-            <div class="smart-status ai-status"><span>✦</span> Atualizado com seus dados</div>
-          </div>
 
-          <div class="ai-toolbar">
-            <div><small>PERÍODO ANALISADO</small><strong id="aiPeriodLabel">Mês atual</strong></div>
-            <button id="generateAIReportBtn" class="btn btn-primary" type="button">✦ Gerar nova análise</button>
-          </div>
+    transactions.forEach(transaction => {
 
-          <div class="ai-dashboard-preview">
-            <div class="ai-main-card">
-              <div class="ai-card-head"><div><span>RESUMO INTELIGENTE</span><h3 id="aiHeadline">Seu mês em poucos segundos</h3></div><div class="ai-spark">✦</div></div>
-              <div class="ai-metrics">
-                <div><small>Total recebido</small><b id="aiIncomeValue">R$ 0,00</b><span id="aiIncomeNote">Receitas confirmadas</span></div>
-                <div><small>Total gasto</small><b id="aiExpenseValue">R$ 0,00</b><span id="aiExpenseTrend">Aguardando análise</span></div>
-                <div><small>Saldo do período</small><b id="aiBalanceValue">R$ 0,00</b><span id="aiBalanceNote">Receitas menos despesas</span></div>
-                <div><small>A receber</small><b id="aiReceivableValue">R$ 0,00</b><span id="aiReceivableNote">Receitas futuras</span></div>
-              </div>
-              <div class="ai-chart-demo">
-                <div class="chart-head"><b>Distribuição dos gastos</b><small id="aiChartCaption">Principais categorias</small></div>
-                <div id="aiCategoryBars" class="ai-category-bars"><div class="ai-empty-mini">Adicione despesas para visualizar.</div></div>
-              </div>
-            </div>
+        const dateString =
+            getTransactionDate(
+                transaction
+            );
 
-            <div class="ai-insights-panel">
-              <div class="feature-title-row"><span class="premium-pill">PREMIUM</span><span id="aiReportBadge" class="feature-version">ANÁLISE LOCAL</span></div>
-              <h3>Destaques do seu financeiro</h3>
-              <div id="aiInsightsList" class="ai-insights-list">
-                <div class="ai-insight-pro"><i>01</i><div><b>Sem dados suficientes</b><small>Adicione lançamentos para gerar uma análise personalizada.</small></div></div>
-              </div>
-              <div class="ai-score-card">
-                <div><small>ÍNDICE DO PERÍODO</small><strong id="aiHealthScore">—</strong></div>
-                <p id="aiHealthText">O índice aparecerá quando houver dados financeiros no período.</p>
-              </div>
-              <small class="feature-security">A análise usa os lançamentos da sua conta. Ela é informativa e não substitui orientação financeira profissional.</small>
-            </div>
-          </div>
-        </div>
-      </section>
 
+        if (!dateString) return;
 
-      <!-- PERFIL / CONFIGURAÇÕES — MOBILE APP -->
-      <section id="profileSection" class="content-section">
-        <div class="mobile-profile-page">
-          <div class="profile-app-head">
-            <div class="profile-app-avatar" id="profileAvatar">C</div>
-            <div><span class="app-kicker">MINHA CONTA</span><h2 id="profileName">Usuário</h2><p id="profileEmail"></p></div>
-          </div>
-          <div class="profile-app-card">
-            
-            <button type="button" class="profile-row" data-section="receivable"><span class="profile-row-icon">◷</span><span><b>A Receber</b><small>Pagamentos e receitas futuras</small></span><i>›</i></button>
-            <button type="button" class="profile-row" data-section="categories"><span class="profile-row-icon">◇</span><span><b>Categorias</b><small>Organize receitas e despesas</small></span><i>›</i></button>
-            <button type="button" class="profile-row" data-section="whatsapp"><span class="profile-row-icon whatsapp-profile-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3.2a8.5 8.5 0 0 0-7.3 12.85L3.6 20.4l4.46-1.04A8.5 8.5 0 1 0 12 3.2Zm0 15.35a6.82 6.82 0 0 1-3.48-.95l-.25-.15-2.65.62.67-2.58-.17-.27A6.85 6.85 0 1 1 12 18.55Zm3.76-5.12c-.2-.1-1.2-.59-1.39-.66-.18-.07-.32-.1-.45.1-.14.21-.52.66-.64.8-.12.14-.24.16-.45.06-.2-.1-.87-.32-1.66-1.03a6.2 6.2 0 0 1-1.15-1.43c-.12-.2-.01-.31.09-.42l.3-.35c.1-.12.14-.2.2-.34.07-.14.04-.26-.01-.36-.05-.1-.46-1.1-.63-1.51-.16-.4-.33-.35-.45-.36h-.39c-.14 0-.36.05-.55.26-.18.2-.72.7-.72 1.72 0 1.01.74 1.99.84 2.13.1.14 1.45 2.21 3.51 3.1.49.21.87.34 1.17.43.49.16.94.13 1.29.08.4-.06 1.2-.49 1.37-.96.17-.47.17-.87.12-.96-.05-.08-.19-.13-.4-.23Z"/></svg></span><span><b>Assessor WhatsApp</b><small>Seu financeiro por conversa</small></span><i>›</i></button>
-            <button type="button" class="profile-row" data-section="ai-report"><span class="profile-row-icon">✦</span><span><b>Relatório Inteligente</b><small>Análise automática do seu mês</small></span><i>›</i></button>
-            <button type="button" class="profile-row" data-section="premium"><span class="profile-row-icon orange">★</span><span><b>ControleS Premium</b><small>Plano, assinatura e restauração</small></span><i>›</i></button>
-          </div>
-          <h3 class="profile-group-title">Configurações</h3>
-          <div class="profile-app-card">
-            <button id="profileThemeBtn" type="button" class="profile-row"><span class="profile-row-icon">☾</span><span><b>Aparência</b><small>Alternar tema do aplicativo</small></span><i>›</i></button>
-            <a class="profile-row" href="mailto:controlesfinanceirossuport@gmail.com"><span class="profile-row-icon">✉</span><span><b>Suporte</b><small>Fale com o ControleS</small></span><i>›</i></a>
-            <button id="profileClearTransactionsBtn" type="button" class="profile-row"><span class="profile-row-icon">⌫</span><span><b>Limpar lançamentos</b><small>Hoje, mês atual ou todo período</small></span><i>›</i></button>
-          </div>
-          <h3 class="profile-group-title">Legal e privacidade</h3>
-          <div class="profile-app-card">
-            <a class="profile-row" href="privacidade.html" target="_blank" rel="noopener"><span><b>Política de Privacidade</b><small>Como seus dados são tratados</small></span><i>›</i></a>
-            <a class="profile-row" href="termos.html" target="_blank" rel="noopener"><span><b>Termos de Uso</b><small>Regras de utilização do ControleS</small></span><i>›</i></a>
-            <a class="profile-row" href="mailto:controlesfinanceirossuport@gmail.com?subject=Solicita%C3%A7%C3%A3o%20de%20exclus%C3%A3o%20de%20conta%20-%20ControleS&body=Ol%C3%A1%2C%20suporte%20ControleS.%0A%0ASolicito%20a%20exclus%C3%A3o%20da%20minha%20conta%20e%20dos%20dados%20associados.%0A%0AE-mail%20cadastrado%3A%20%5Bpreencher%5D"><span><b>Exclusão da conta e dos dados</b><small>Solicite a remoção das suas informações</small></span><i>›</i></a>
-          </div>
-          <button id="profileLogoutBtn" class="profile-logout" type="button">Sair da conta</button>
-          <div class="profile-signature"><strong>ControleS</strong><small>Seu dinheiro sob controle.</small></div>
-        </div>
-      </section>
 
-      <!-- =================================================
-           PREMIUM
-      ================================================== -->
+        const date =
+            new Date(
+                `${dateString}T00:00:00`
+            );
 
-      <section
-        id="premiumSection"
-        class="content-section"
-      >
 
-        <div class="premium-hero">
+        if (
+            date.getMonth() !== currentMonth ||
+            date.getFullYear() !== currentYear
+        ) {
+            return;
+        }
 
-          <div class="premium-badge">
-            ★ PREMIUM
-          </div>
 
+        const amount =
+            getTransactionAmount(
+                transaction
+            );
 
-          <h2>
-            ControleS completo, sem anúncios.
-          </h2>
 
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo
+            );
 
-          <p>
-            Use o ControleS grátis com anúncios ou assine o Premium para remover anúncios e desbloquear todos os recursos.
-          </p>
 
+        if (type === "income") {
 
-          <div class="premium-price">
+            if (
+                isIncomeReceived(
+                    transaction
+                )
+            ) {
+                income += amount;
+            }
+
+        } else {
+
+            expense += amount;
+        }
+    });
+
+
+    const saved =
+        income - expense;
+
+
+    const element =
+        firstExisting(
+            "piggyBankAmount",
+            "cofrinhoAmount",
+            "monthlyPiggyBank"
+        );
+
+
+    if (element) {
+
+        element.textContent =
+            formatCurrency(
+                Math.max(0, saved)
+            );
+    }
+}
+
+
+/* =========================================================
+   GRÁFICO FINANCEIRO
+   ========================================================= */
+
+function renderFinanceChart() {
+
+    const canvas =
+        firstExisting(
+            "financeChart",
+            "financialChart"
+        );
+
+
+    if (!canvas) return;
+
+
+    if (
+        typeof Chart === "undefined"
+    ) {
+        return;
+    }
+
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    if (financeChart) {
+
+        financeChart.destroy();
+
+        financeChart = null;
+    }
+
+
+    const labels = [];
+    const incomes = [];
+    const expenses = [];
+
+
+    for (let i = 6; i >= 0; i--) {
+
+        const date =
+            changeDate(
+                todayISO(),
+                -i
+            );
+
+
+        labels.push(
+            formatDateBR(date)
+        );
+
+
+        let income = 0;
+        let expense = 0;
+
+
+        transactions.forEach(transaction => {
+
+            if (
+                getTransactionDate(
+                    transaction
+                ) !== date
+            ) {
+                return;
+            }
+
+
+            const amount =
+                getTransactionAmount(
+                    transaction
+                );
+
+
+            const type =
+                normalizeTransactionType(
+                    transaction.type ||
+                    transaction.tipo
+                );
+
+
+            if (type === "income") {
+
+                if (
+                    isIncomeReceived(
+                        transaction
+                    )
+                ) {
+                    income += amount;
+                }
+
+            } else {
+
+                expense += amount;
+            }
+        });
+
+
+        incomes.push(income);
+        expenses.push(expense);
+    }
+
+
+    financeChart =
+        new Chart(
+            ctx,
+            {
+                type: "bar",
+
+                data: {
+                    labels,
+
+                    datasets: [
+                        {
+                            label: "Receitas",
+                            data: incomes
+                        },
+                        {
+                            label: "Despesas",
+                            data: expenses
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            }
+        );
+}
+
+
+/* =========================================================
+   GRÁFICO DE CATEGORIAS
+   ========================================================= */
+
+function renderCategoryChart() {
+
+    const canvas =
+        firstExisting(
+            "categoryChart",
+            "categoriesChart"
+        );
+
+
+    if (
+        !canvas ||
+        typeof Chart === "undefined"
+    ) {
+        return;
+    }
+
+
+    if (categoryChart) {
+
+        categoryChart.destroy();
+
+        categoryChart = null;
+    }
+
+
+    const categories = {};
+
+
+    transactions.forEach(transaction => {
+
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo
+            );
+
+
+        if (type !== "expense") {
+            return;
+        }
+
+
+        const category =
+            getTransactionCategory(
+                transaction
+            );
+
+
+        const amount =
+            getTransactionAmount(
+                transaction
+            );
+
+
+        categories[category] =
+            (categories[category] || 0) +
+            amount;
+    });
+
+
+    const labels =
+        Object.keys(categories);
+
+
+    const values =
+        Object.values(categories);
+
+
+    categoryChart =
+        new Chart(
+            canvas.getContext("2d"),
+            {
+                type: "doughnut",
+
+                data: {
+                    labels,
+
+                    datasets: [
+                        {
+                            data: values
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            }
+        );
+}
+
+
+/* =========================================================
+   CATEGORIAS
+   ========================================================= */
+
+function loadLocalCategories() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "controles-categories"
+            );
+
+
+        if (saved) {
+
+            const parsed =
+                JSON.parse(saved);
+
+
+            if (
+                Array.isArray(parsed)
+            ) {
+                customCategories =
+                    parsed;
+            }
+        }
+
+    } catch (error) {
+
+        customCategories = [];
+    }
+}
+
+
+function saveLocalCategories() {
+
+    localStorage.setItem(
+        "controles-categories",
+        JSON.stringify(
+            customCategories
+        )
+    );
+}
+
+
+function getAllCategories() {
+
+    return [
+        ...new Set([
+            ...DEFAULT_CATEGORIES,
+            ...customCategories
+        ])
+    ];
+}
+
+
+function updateCategories() {
+    const categories = getAllCategories();
+    const select = firstExisting("transactionCategory", "category");
+    if (select) {
+        const current = select.value;
+        select.innerHTML = categories.map(category => `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`).join("");
+        if (categories.includes(current)) select.value = current;
+    }
+    const filter = firstExisting("categoryFilter", "transactionCategoryFilter");
+    if (filter) {
+        const current = filter.value;
+        filter.innerHTML = `<option value="all">Todas as categorias</option>` + categories.map(category => `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`).join("");
+        if (categories.includes(current)) filter.value = current;
+    }
+    const list = firstExisting("categoriesGrid", "categoriesList", "categoryList");
+    if (!list) return;
+    list.innerHTML = categories.map(category => `<article class="category-item"><span>◈</span><strong>${escapeHTML(category)}</strong>${DEFAULT_CATEGORIES.includes(category) ? "" : `<button type="button" class="delete-category-btn" data-delete-category="${escapeHTML(category)}">×</button>`}</article>`).join("");
+}
+
+
+function saveCategory(event) {
+
+    if (event) {
+        event.preventDefault();
+    }
+
+
+    const input =
+        firstExisting(
+            "newCategory",
+            "categoryName"
+        );
+
+
+    if (!input) return;
+
+
+    const name =
+        input.value.trim();
+
+
+    if (!name) {
+
+        showToast(
+            "Digite o nome da categoria.",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    const exists =
+        getAllCategories()
+            .some(
+                category =>
+                    category.toLowerCase() ===
+                    name.toLowerCase()
+            );
+
+
+    if (exists) {
+
+        showToast(
+            "Essa categoria já existe.",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    customCategories.push(name);
+
+    saveLocalCategories();
+
+    updateCategories();
+
+
+    input.value = "";
+
+
+    closeModal(
+        "categoryModal"
+    );
+
+
+    showToast(
+        "Categoria adicionada.",
+        "success"
+    );
+}
+
+
+function deleteCategory(name) {
+
+    if (
+        !confirm(
+            `Excluir a categoria "${name}"?`
+        )
+    ) {
+        return;
+    }
+
+
+    customCategories =
+        customCategories.filter(
+            category =>
+                category !== name
+        );
+
+
+    saveLocalCategories();
+
+    updateCategories();
+
+
+    showToast(
+        "Categoria excluída.",
+        "success"
+    );
+}
+
+
+async function saveGoal(event) {
+    if (event) event.preventDefault();
+    if (!supabaseClient || !currentUser) { showToast("Faça login novamente.", "error"); return; }
+    const name = valueOf("goalName").trim();
+    const target = Number(valueOf("goalTarget"));
+    const current = Number(valueOf("goalCurrent")) || 0;
+    const deadline = valueOf("goalDeadline") || null;
+    if (!name || !Number.isFinite(target) || target <= 0 || current < 0) { showToast("Preencha os dados da meta corretamente.", "warning"); return; }
+    try {
+        const { error } = await supabaseClient.from("goals").insert({ user_id: currentUser.id, name, target_amount: target, current_amount: current, deadline });
+        if (error) throw error;
+        showToast("Meta criada com sucesso.", "success");
+        $("goalForm")?.reset();
+        closeModal("goalModal");
+        await loadGoals();
+        renderGoals();
+    } catch (error) { console.error(error); showToast(error.message || "Não foi possível criar a meta.", "error"); }
+}
+
+
+/* =========================================================
+   RELATÓRIOS
+   ========================================================= */
+
+function renderReports() {
+    applyPremiumAccess();
+
+    const period = getSelectedPeriod();
+    const summary = period ? calculatePeriodSummary(period) : getTotals();
+
+    const reportPeriod = $("reportPeriodText");
+    if (reportPeriod && period) reportPeriod.textContent = period.label;
+
+    ["reportIncomeCard", "reportIncome"].forEach(id => {
+        const el = $(id);
+        if (el) el.textContent = formatCurrency(summary.income);
+    });
+    ["reportExpenseCard", "reportExpense"].forEach(id => {
+        const el = $(id);
+        if (el) el.textContent = formatCurrency(summary.expense);
+    });
+    ["reportBalanceCard", "reportBalance"].forEach(id => {
+        const el = $(id);
+        if (el) el.textContent = formatCurrency(summary.balance);
+    });
+
+    updateMonthlySummary();
+    updateExpenseRanking();
+    renderCategoryChart();
+    renderMonthlyComparison();
+    renderAutomaticAnalysis();
+}
+
+
+function getMonthlyTotals(year, month) {
+
+    let income = 0;
+    let expense = 0;
+
+
+    transactions.forEach(transaction => {
+
+        const dateString =
+            getTransactionDate(
+                transaction
+            );
+
+
+        if (!dateString) return;
+
+
+        const date =
+            new Date(
+                `${dateString}T00:00:00`
+            );
+
+
+        if (
+            date.getFullYear() !== year ||
+            date.getMonth() !== month
+        ) {
+            return;
+        }
+
+
+        const amount =
+            getTransactionAmount(
+                transaction
+            );
+
+
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo
+            );
+
+
+        if (type === "income") {
+
+            if (
+                isIncomeReceived(
+                    transaction
+                )
+            ) {
+                income += amount;
+            }
+
+        } else {
+
+            expense += amount;
+        }
+    });
+
+
+    return {
+        income,
+        expense,
+        balance: income - expense
+    };
+}
+
+
+function renderMonthlyComparison() {
+
+    const container =
+        firstExisting(
+            "monthlyComparison",
+            "comparisonChart"
+        );
+
+
+    if (!container) return;
+
+
+    const now =
+        new Date();
+
+
+    const current =
+        getMonthlyTotals(
+            now.getFullYear(),
+            now.getMonth()
+        );
+
+
+    const previousDate =
+        new Date(
+            now.getFullYear(),
+            now.getMonth() - 1,
+            1
+        );
+
+
+    const previous =
+        getMonthlyTotals(
+            previousDate.getFullYear(),
+            previousDate.getMonth()
+        );
+
+
+    container.innerHTML = `
+        <div class="comparison-item">
 
             <strong>
-              R$ 29,99
+                Este mês
             </strong>
 
             <span>
-              / mês
+                Receitas:
+                ${formatCurrency(current.income)}
             </span>
 
-          </div>
-          <div class="premium-trial-note"><strong>7 dias grátis</strong><span>Depois, R$ 29,99/mês. Cancele quando quiser.</span></div>
+            <span>
+                Despesas:
+                ${formatCurrency(current.expense)}
+            </span>
 
-
-          <button
-            id="activatePremiumBtn"
-            class="btn btn-premium btn-large"
-            type="button"
-          >
-            Experimentar 7 dias grátis
-          </button>
-
-          <button
-            id="restorePurchasesBtn"
-            class="premium-restore-button"
-            type="button"
-          >
-            Restaurar compras
-          </button>
-
-          <small id="premiumStatusText">
-            Plano gratuito
-          </small>
+            <span>
+                Saldo:
+                ${formatCurrency(current.balance)}
+            </span>
 
         </div>
 
 
-        <div class="premium-preview-grid">
-          <article class="premium-preview-card ai-preview-card">
-            <div class="preview-card-head"><span class="preview-icon">✦</span><div><small>RELATÓRIO INTELIGENTE</small><h3>Entenda seu mês em segundos</h3></div><span class="premium-chip">PREMIUM</span></div>
-            <div class="preview-insight"><b>Seu dinheiro explicado de forma simples</b><p>Compare receitas e despesas, descubra sua maior categoria de gastos e receba pontos de atenção automaticamente.</p></div>
-            <div class="preview-blur"><span>Maior gasto do mês</span><b>Alimentação • 28%</b><i></i></div>
-            <button class="premium-preview-cta" type="button" data-premium-preview>🔒 Desbloquear análise completa</button>
-          </article>
-          <article class="premium-preview-card whatsapp-preview-card">
-            <div class="preview-card-head"><span class="preview-icon">◉</span><div><small>ASSESSOR WHATSAPP</small><h3>Seu financeiro em uma conversa</h3></div><span class="premium-chip">PREMIUM</span></div>
-            <div class="mini-chat"><div class="mini-msg user">Quanto gastei este mês?</div><div class="mini-msg bot"><b>ControleS</b><span>Você gastou R$ 1.749,50. Alimentação foi sua maior categoria.</span></div><div class="mini-msg user">Adicione R$ 45 de combustível.</div><div class="mini-msg bot"><b>ControleS</b><span>Despesa registrada ✓</span></div></div>
-            <p class="preview-caption">Consulte saldo, gastos e valores a receber e registre movimentações pelo WhatsApp.</p>
-            <button class="premium-preview-cta" type="button" data-premium-preview>🔒 Desbloquear Assessor WhatsApp</button>
-          </article>
-        </div>
-        <div class="premium-features premium-features-new">
-          <article><span>✓</span><div><strong>Sem anúncios</strong><p>Experiência limpa e sem interrupções.</p></div></article>
-          <article><span>✓</span><div><strong>Categorias personalizadas</strong><p>Organize receitas e despesas do seu jeito.</p></div></article>
-          <article><span>✓</span><div><strong>Relatórios completos</strong><p>Acompanhe a evolução da sua vida financeira.</p></div></article>
-        </div>
-        <div class="premium-bottom-cta"><strong>Teste todos os recursos por 7 dias</strong><small>Depois, R$ 29,99/mês.</small><button type="button" class="btn btn-premium btn-large" data-premium-preview>Experimentar 7 dias grátis</button></div>
+        <div class="comparison-item">
 
-      </section>
+            <strong>
+                Mês anterior
+            </strong>
 
+            <span>
+                Receitas:
+                ${formatCurrency(previous.income)}
+            </span>
 
-    </main>
+            <span>
+                Despesas:
+                ${formatCurrency(previous.expense)}
+            </span>
 
-    <nav class="controles-bottom-bar" aria-label="Navegação do aplicativo">
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-home active" data-bottom-section="dashboard"><span>⌂</span><small>Início</small></button>
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-transactions" data-bottom-section="transactions"><span>↔</span><small>Lançamentos</small></button>
-      <button type="button" class="bottom-add-button controles-fab" id="mobileAddButton" aria-label="Adicionar lançamento"><span>＋</span></button>
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-reports" data-bottom-section="reports"><span>⌁</span><small>Relatórios</small></button>
-      <button type="button" class="bottom-nav-item controles-nav controles-nav-profile" data-bottom-section="profile"><span>♙</span><small>Perfil</small></button>
-    </nav>
-
-  </div>
-
-
-  <!-- =====================================================
-       MODAL — LANÇAMENTO
-  ====================================================== -->
-
-  <div
-    id="transactionModal"
-    class="modal hidden"
-    aria-hidden="true"
-  >
-
-    <div
-      class="modal-card"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="transactionModalTitle"
-    >
-
-      <button
-        class="modal-close"
-        data-close-modal
-        type="button"
-        aria-label="Fechar"
-      >
-        ×
-      </button>
-
-
-      <h2 id="transactionModalTitle">
-        Novo lançamento
-      </h2>
-
-
-      <p>
-        Preencha os dados da movimentação.
-      </p>
-
-
-      <form id="transactionForm">
-
-        <input
-          id="transactionId"
-          type="hidden"
-        >
-
-
-        <div class="type-buttons">
-
-          <button
-            type="button"
-            class="type-button active income"
-            data-transaction-type="income"
-          >
-            Receita
-          </button>
-
-
-          <button
-            type="button"
-            class="type-button expense"
-            data-transaction-type="expense"
-          >
-            Despesa
-          </button>
+            <span>
+                Saldo:
+                ${formatCurrency(previous.balance)}
+            </span>
 
         </div>
+    `;
+}
 
 
-        <input
-          id="transactionType"
-          type="hidden"
-          value="income"
-        >
+/* =========================================================
+   ANÁLISE AUTOMÁTICA
+   ========================================================= */
 
+function renderAutomaticAnalysis() {
 
-        <label for="transactionDescription">
-          Descrição
-        </label>
+    const element =
+        firstExisting(
+            "automaticAnalysis",
+            "financialAnalysis",
+            "analysisText"
+        );
 
-        <input
-          id="transactionDescription"
-          type="text"
-          placeholder="Ex.: Salário"
-          required
-        >
 
+    if (!element) return;
 
-        <label for="transactionAmount">
-          Valor
-        </label>
 
-        <input
-          id="transactionAmount"
-          type="number"
-          step="0.01"
-          min="0.01"
-          inputmode="decimal"
-          placeholder="0,00"
-          required
-        >
+    const totals =
+        getTotals();
 
 
-        <label for="transactionDate">
-          Data do lançamento
-        </label>
+    let message = "";
 
-        <input
-          id="transactionDate"
-          type="date"
-          required
-        >
 
+    if (
+        totals.income === 0 &&
+        totals.expense === 0
+    ) {
 
-        <div
-          id="receivableDateGroup"
-          class="receivable-date-group"
-        >
+        message =
+            "Ainda não existem dados suficientes para gerar uma análise.";
 
-          <label for="transactionReceivableDate">
-            Data de recebimento
-          </label>
+    } else if (
+        totals.balance < 0
+    ) {
 
-          <input
-            id="transactionReceivableDate"
-            type="date"
-          >
+        message =
+            "Suas despesas estão maiores que suas receitas. Vale a pena revisar os principais gastos.";
 
-          <small>
-            Se a receita só será recebida no futuro,
-            ela ficará em <strong>A Receber</strong> e
-            não entrará no saldo atual.
-          </small>
+    } else if (
+        totals.expense >
+        totals.income * 0.8
+    ) {
 
-        </div>
+        message =
+            "Seu saldo está positivo, mas grande parte da sua renda já está comprometida com despesas.";
 
+    } else {
 
-        <label for="transactionCategory">
-          Categoria
-        </label>
+        message =
+            "Sua situação financeira está positiva. Continue acompanhando seus gastos e mantendo uma reserva.";
+    }
 
-        <select
-          id="transactionCategory"
-          required
-        ></select>
 
+    element.textContent =
+        message;
+}
 
-        <label for="transactionNotes">
-          Observações
-        </label>
 
-        <textarea
-          id="transactionNotes"
-          rows="3"
-          placeholder="Ex.: Detalhes sobre o recebimento"
-        ></textarea>
+/* =========================================================
+   PREMIUM
+   ========================================================= */
 
+async function getRevenueCatPlugin() {
+    return window.Capacitor?.Plugins?.Purchases || null;
+}
 
-        <div
-          id="transactionMessage"
-          class="form-message"
-          role="alert"
-          aria-live="polite"
-        ></div>
 
+function revenueCatReadyForRealPurchases() {
+    return (
+        REVENUECAT_ANDROID_API_KEY &&
+        !REVENUECAT_ANDROID_API_KEY.includes("COLE_AQUI")
+    );
+}
 
-        <button
-          id="saveTransactionBtn"
-          class="btn btn-primary btn-large"
-          type="submit"
-        >
-          Salvar lançamento
-        </button>
 
-      </form>
+async function configureRevenueCat() {
+    if (revenueCatConfigured) return true;
+    if (!currentUser || !revenueCatReadyForRealPurchases()) return false;
 
-    </div>
+    const Purchases = await getRevenueCatPlugin();
+    if (!Purchases) {
+        console.warn("Plugin RevenueCat não disponível.");
+        return false;
+    }
 
-  </div>
+    try {
+        await Purchases.configure({
+            apiKey: REVENUECAT_ANDROID_API_KEY,
+            appUserID: currentUser.id
+        });
+        revenueCatConfigured = true;
+        return true;
+    } catch (error) {
+        console.error("Erro ao configurar RevenueCat:", error);
+        return false;
+    }
+}
+
+
+function setSubscriptionFromCustomerInfo(customerInfo) {
+    const entitlement =
+        customerInfo?.entitlements?.active?.[REVENUECAT_ENTITLEMENT_ID];
+
+    if (entitlement) {
+        subscription = {
+            status: "active",
+            plan: "premium",
+            expires_at: entitlement.expirationDate || null,
+            source: "google_play"
+        };
+    } else {
+        subscription = null;
+    }
+}
+
+
+async function loadSubscription() {
+    // A tabela antiga do Supabase não libera mais o Premium.
+    // O acesso passa a depender do entitlement confirmado pela loja.
+    subscription = null;
+
+    if (!currentUser) return;
+
+    if (!(await configureRevenueCat())) {
+        renderPremium();
+        return;
+    }
+
+    try {
+        const Purchases = await getRevenueCatPlugin();
+        const result = await Purchases.getCustomerInfo();
+        const customerInfo = result?.customerInfo || result;
+        setSubscriptionFromCustomerInfo(customerInfo);
+
+        const offerings = await Purchases.getOfferings();
+        const current = offerings?.current;
+        revenueCatPackage =
+            current?.monthly ||
+            current?.availablePackages?.[0] ||
+            null;
+    } catch (error) {
+        console.warn("Erro ao consultar assinatura na Google Play:", error);
+        subscription = null;
+    }
+}
+
+
+const PREMIUM_ADMIN_EMAIL = "controlesfinanceirossuport@gmail.com";
+
+function isPremiumActive() {
+    const email = String(currentUser?.email || "").trim().toLowerCase();
+    if (email === PREMIUM_ADMIN_EMAIL) return true;
+
+    const status = String(subscription?.status || "").trim().toLowerCase();
+    if (!["active", "trial", "premium"].includes(status)) return false;
+
+    if (subscription?.expires_at) {
+        return new Date(subscription.expires_at) > new Date();
+    }
+    return true;
+}
+
+
+function renderPremium() {
+    const status = firstExisting(
+        "premiumStatusText",
+        "premiumStatus",
+        "subscriptionStatus"
+    );
+
+    if (status) {
+        if (isPremiumActive()) {
+            status.textContent = "Premium ativo pela Google Play";
+        } else if (!revenueCatReadyForRealPurchases()) {
+            status.textContent = "Assinatura será ativada após configurar a Play Store";
+        } else {
+            status.textContent = "Plano gratuito";
+        }
+    }
+
+    const buyButton = $("activatePremiumBtn");
+    if (buyButton) {
+        buyButton.textContent = isPremiumActive()
+            ? "Premium ativo"
+            : "Assinar Premium — R$ 29,99/mês";
+        buyButton.disabled = isPremiumActive();
+    }
+}
+
+
+async function purchasePremium() {
+    if (!currentUser) {
+        showToast("Faça login novamente.", "warning");
+        return;
+    }
+
+    if (!revenueCatReadyForRealPurchases()) {
+        showToast(
+            "A assinatura ainda precisa ser conectada à Google Play.",
+            "warning"
+        );
+        return;
+    }
+
+    try {
+        if (!(await configureRevenueCat())) {
+            throw new Error("RevenueCat não configurado");
+        }
+
+        const Purchases = await getRevenueCatPlugin();
+        if (!revenueCatPackage) {
+            const offerings = await Purchases.getOfferings();
+            revenueCatPackage =
+                offerings?.current?.monthly ||
+                offerings?.current?.availablePackages?.[0] ||
+                null;
+        }
+
+        if (!revenueCatPackage) {
+            showToast("Plano mensal ainda não disponível na loja.", "warning");
+            return;
+        }
+
+        const result = await Purchases.purchasePackage({
+            aPackage: revenueCatPackage
+        });
+
+        setSubscriptionFromCustomerInfo(result?.customerInfo);
+        renderPremium();
+        applyPremiumAccess();
+
+        if (isPremiumActive()) {
+            showToast("Premium ativado com sucesso!", "success");
+        }
+    } catch (error) {
+        if (error?.userCancelled) return;
+        console.error("Erro na compra Premium:", error);
+        showToast("Não foi possível concluir a assinatura.", "error");
+    }
+}
+
+
+async function restorePremiumPurchases() {
+    if (!revenueCatReadyForRealPurchases()) {
+        showToast("A Google Play ainda não foi configurada.", "warning");
+        return;
+    }
+
+    try {
+        if (!(await configureRevenueCat())) {
+            throw new Error("RevenueCat não configurado");
+        }
+
+        const Purchases = await getRevenueCatPlugin();
+        const result = await Purchases.restorePurchases();
+        const customerInfo = result?.customerInfo || result;
+        setSubscriptionFromCustomerInfo(customerInfo);
+        renderPremium();
+        applyPremiumAccess();
+
+        showToast(
+            isPremiumActive()
+                ? "Compra restaurada. Premium ativo!"
+                : "Nenhuma assinatura Premium ativa foi encontrada.",
+            isPremiumActive() ? "success" : "warning"
+        );
+    } catch (error) {
+        console.error("Erro ao restaurar compras:", error);
+        showToast("Não foi possível restaurar as compras.", "error");
+    }
+}
+
+
+/* =========================================================
+   METAS
+   ========================================================= */
+
+async function loadGoals() {
+
+    if (!supabaseClient || !currentUser) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("goals")
+            .select("*")
+            .eq("user_id", currentUser.id)
+            .order("created_at", {
+                ascending: false
+            });
+
+
+        if (error) {
+            console.warn(error);
+            goals = [];
+            return;
+        }
+
+
+        goals =
+            Array.isArray(data)
+                ? data
+                : [];
+
+        renderGoals();
+
+    } catch (error) {
+
+        console.warn(
+            "Erro ao carregar metas:",
+            error
+        );
+    }
+}
+
+
+function renderGoals() {
+
+    const list =
+        firstExisting(
+            "goalsList",
+            "goalList"
+        );
+
+
+    if (!list) return;
+
+
+    if (!goals.length) {
+
+        list.innerHTML = `
+            <div class="empty-state">
+                Nenhuma meta cadastrada.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    list.innerHTML =
+        goals
+            .map(goal => {
+
+                const target =
+                    Number(
+                        goal.target_amount ??
+                        goal.valor_meta ??
+                        0
+                    );
+
+
+                const current =
+                    Number(
+                        goal.current_amount ??
+                        goal.valor_atual ??
+                        0
+                    );
+
+
+                const percentage =
+                    target > 0
+                        ? Math.min(
+                            100,
+                            current /
+                            target *
+                            100
+                        )
+                        : 0;
+
+
+                return `
+                    <div class="goal-item">
+
+                        <strong>
+                            ${escapeHTML(
+                                goal.name ||
+                                goal.nome ||
+                                "Meta"
+                            )}
+                        </strong>
+
+                        <div class="goal-progress">
+                            <div
+                                class="goal-progress-bar"
+                                style="width:${percentage}%"
+                            ></div>
+                        </div>
+
+                        <small>
+                            ${formatCurrency(current)}
+                            de
+                            ${formatCurrency(target)}
+                        </small>
+
+                    </div>
+                `;
+            })
+            .join("");
+}
 
 
-  <!-- =====================================================
-       MODAL — CATEGORIA
-  ====================================================== -->
+/* =========================================================
+   ORÇAMENTOS
+   ========================================================= */
 
-  <div
-    id="categoryModal"
-    class="modal hidden"
-    aria-hidden="true"
-  >
+async function loadBudgets() {
 
-    <div
-      class="modal-card"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="categoryModalTitle"
-    >
+    if (!supabaseClient || !currentUser) {
+        return;
+    }
 
-      <button
-        class="modal-close"
-        data-close-modal
-        type="button"
-        aria-label="Fechar"
-      >
-        ×
-      </button>
 
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("budgets")
+            .select("*")
+            .eq("user_id", currentUser.id);
 
-      <h2 id="categoryModalTitle">
-        Nova categoria
-      </h2>
 
+        if (error) {
 
-      <p>
-        Crie uma categoria personalizada.
-      </p>
+            console.warn(
+                "Não foi possível carregar orçamentos:",
+                error
+            );
 
+            budgets = [];
 
-      <form id="categoryForm">
+            return;
+        }
 
-        <label for="categoryName">
-          Nome
-        </label>
 
-        <input
-          id="categoryName"
-          type="text"
-          placeholder="Ex.: Viagem"
-          required
-        >
+        budgets =
+            Array.isArray(data)
+                ? data
+                : [];
 
+    } catch (error) {
 
-        <label for="categoryType">
-          Tipo
-        </label>
+        console.warn(
+            "Erro nos orçamentos:",
+            error
+        );
+    }
+}
 
-        <select id="categoryType">
 
-          <option value="expense">
-            Despesa
-          </option>
+/* =========================================================
+   MODAIS
+   ========================================================= */
 
-          <option value="income">
-            Receita
-          </option>
+function openModal(id) {
 
-        </select>
+    const modal = $(id);
 
+    if (!modal) return;
 
-        <div
-          id="categoryMessage"
-          class="form-message"
-          role="alert"
-          aria-live="polite"
-        ></div>
+    modal.classList.remove(
+        "hidden"
+    );
+}
 
 
-        <button
-          class="btn btn-primary btn-large"
-          type="submit"
-        >
-          Salvar categoria
-        </button>
+function closeModal(id) {
 
-      </form>
+    const modal = $(id);
 
-    </div>
+    if (!modal) return;
 
-  </div>
+    modal.classList.add(
+        "hidden"
+    );
+}
 
 
-  <!-- =====================================================
-       MODAL — META
-  ====================================================== -->
+/* =========================================================
+   EVENTOS
+   ========================================================= */
 
-  <div
-    id="goalModal"
-    class="modal hidden"
-    aria-hidden="true"
-  >
+function setupEvents() {
 
-    <div
-      class="modal-card"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="goalModalTitle"
-    >
+    /*
+     * Evita que setupEvents seja executado
+     * duas vezes e crie listeners duplicados.
+     */
 
-      <button
-        class="modal-close"
-        data-close-modal
-        type="button"
-        aria-label="Fechar"
-      >
-        ×
-      </button>
+    if (eventsBound) {
+        return;
+    }
 
+    eventsBound = true;
 
-      <h2 id="goalModalTitle">
-        Nova meta
-      </h2>
 
+    /* -----------------------------------------
+       LOGIN
+       ----------------------------------------- */
 
-      <p>
-        Defina um objetivo financeiro.
-      </p>
+    const loginForm =
+        firstExisting(
+            "loginForm"
+        );
 
+    if (loginForm) {
 
-      <form id="goalForm">
+        loginForm.addEventListener(
+            "submit",
+            handleLogin
+        );
+    }
 
-        <label for="goalName">
-          Nome da meta
-        </label>
 
-        <input
-          id="goalName"
-          type="text"
-          placeholder="Ex.: Viagem"
-          required
-        >
+    /* -----------------------------------------
+       CADASTRO
+       ----------------------------------------- */
 
+    const registerForm =
+        firstExisting(
+            "registerForm"
+        );
 
-        <label for="goalTarget">
-          Valor da meta
-        </label>
+    if (registerForm) {
 
-        <input
-          id="goalTarget"
-          type="number"
-          step="0.01"
-          min="0.01"
-          inputmode="decimal"
-          placeholder="0,00"
-          required
-        >
+        registerForm.addEventListener(
+            "submit",
+            handleRegister
+        );
+    }
 
 
-        <label for="goalCurrent">
-          Valor já guardado
-        </label>
+    /* -----------------------------------------
+       TROCA LOGIN <-> CADASTRO
+       ----------------------------------------- */
 
-        <input
-          id="goalCurrent"
-          type="number"
-          step="0.01"
-          min="0"
-          value="0"
-          inputmode="decimal"
-          placeholder="0,00"
-        >
+    const registerBtn =
+        $("registerBtn");
 
+    if (registerBtn) {
 
-        <label for="goalDeadline">
-          Prazo
-        </label>
+        registerBtn.addEventListener(
+            "click",
+            event => {
 
-        <input
-          id="goalDeadline"
-          type="date"
-        >
+                event.preventDefault();
 
+                showRegisterView();
+            }
+        );
+    }
 
-        <div
-          id="goalMessage"
-          class="form-message"
-          role="alert"
-          aria-live="polite"
-        ></div>
 
+    const backToLoginBtn =
+        $("backToLoginBtn");
 
-        <button
-          class="btn btn-primary btn-large"
-          type="submit"
-        >
-          Criar meta
-        </button>
+    if (backToLoginBtn) {
 
-      </form>
+        backToLoginBtn.addEventListener(
+            "click",
+            event => {
 
-    </div>
+                event.preventDefault();
 
-  </div>
+                showLoginView();
+            }
+        );
+    }
 
 
-  <!-- =====================================================
-       MODAL — NOVA RECEITA A RECEBER
-  ====================================================== -->
+    /* -----------------------------------------
+       MOSTRAR / OCULTAR SENHA
+       ----------------------------------------- */
 
-  <div
-    id="receivableModal"
-    class="modal hidden"
-    aria-hidden="true"
-  >
+    const passwordToggles =
+        document.querySelectorAll(
+            "[data-password-toggle]"
+        );
 
-    <div
-      class="modal-card"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="receivableModalTitle"
-    >
+    passwordToggles.forEach(button => {
 
-      <button
-        class="modal-close"
-        data-close-modal
-        type="button"
-        aria-label="Fechar"
-      >
-        ×
-      </button>
+        button.addEventListener(
+            "click",
+            event => {
 
+                event.preventDefault();
 
-      <h2 id="receivableModalTitle">
-        Adicionar a receber
-      </h2>
+                togglePasswordVisibility(button);
+            }
+        );
+    });
 
 
-      <p>
-        Cadastre um valor que será recebido futuramente.
-      </p>
+    /* -----------------------------------------
+       LOGOUT
+       ----------------------------------------- */
 
+    const logoutBtn =
+        firstExisting(
+            "logoutBtn"
+        );
 
-      <form id="receivableForm">
+    if (logoutBtn) {
 
-        <label for="receivableDescription">
-          Descrição
-        </label>
+        logoutBtn.addEventListener(
+            "click",
+            event => {
 
-        <input
-          id="receivableDescription"
-          type="text"
-          placeholder="Ex.: Pagamento de cliente"
-          required
-        >
+                event.preventDefault();
 
+                handleLogout();
+            }
+        );
+    }
 
-        <label for="receivableAmount">
-          Valor
-        </label>
 
-        <input
-          id="receivableAmount"
-          type="number"
-          step="0.01"
-          min="0.01"
-          inputmode="decimal"
-          placeholder="0,00"
-          required
-        >
-<label for="receivableDate">
-          Data de recebimento
-        </label>
+    /* -----------------------------------------
+       TEMA
+       ----------------------------------------- */
 
-        <input
-          id="receivableDate"
-          type="date"
-          required
-        >
+    const themeBtn =
+        firstExisting(
+            "themeBtn",
+            "themeToggle"
+        );
 
+    if (themeBtn) {
 
-        <label for="receivableCategory">
-          Categoria <small>(opcional)</small>
-        </label>
+        themeBtn.addEventListener(
+            "click",
+            toggleTheme
+        );
+    }
 
-        <select
-          id="receivableCategory"
-        ></select>
 
+    /* -----------------------------------------
+       MENU MOBILE
+       ----------------------------------------- */
 
-        <label for="receivableNotes">
-          Observações <small>(opcional)</small>
-        </label>
+    const mobileMenuBtn =
+        $("mobileMenuBtn");
 
-        <textarea
-          id="receivableNotes"
-          rows="3"
-          placeholder="Opcional"
-        ></textarea>
 
+    if (mobileMenuBtn) {
 
-        <div
-          id="receivableMessage"
-          class="form-message"
-          role="alert"
-          aria-live="polite"
-        ></div>
+        mobileMenuBtn.setAttribute(
+            "aria-expanded",
+            "false"
+        );
 
 
-        <button
-          id="saveReceivableBtn"
-          class="btn btn-primary btn-large"
-          type="submit"
-        >
-          Adicionar a receber
-        </button>
+        mobileMenuBtn.addEventListener(
+            "click",
+            event => {
 
-      </form>
+                event.preventDefault();
+                event.stopPropagation();
 
-    </div>
+                toggleMobileMenu();
+            }
+        );
+    }
 
-  </div>
 
+    /* -----------------------------------------
+       OVERLAY
+       ----------------------------------------- */
 
-  <!-- CONFIRMAÇÃO DE RECEBIMENTO -->
-  <div id="receivableConfirmModal" class="modal hidden" aria-hidden="true">
-    <div class="modal-card receivable-confirm-card" role="dialog" aria-modal="true" aria-labelledby="receivableConfirmTitle">
-      <div class="confirm-receivable-icon">✓</div>
-      <h2 id="receivableConfirmTitle">Você recebeu este valor?</h2>
-      <p id="receivableConfirmText">Confirme para atualizar seu saldo.</p>
-      <div class="receivable-confirm-actions">
-        <button id="receivableConfirmNo" class="btn btn-secondary" type="button">Ainda não</button>
-        <button id="receivableConfirmYes" class="btn btn-primary" type="button">Sim, recebi</button>
-      </div>
-    </div>
-  </div>
+    const overlay =
+        getMobileOverlay();
 
 
-  <!-- =====================================================
-       MODAL — PREMIUM
-  ====================================================== -->
+    if (overlay) {
 
-  <div
-    id="premiumModal"
-    class="modal hidden"
-    aria-hidden="true"
-  >
+        overlay.addEventListener(
+            "click",
+            event => {
 
-    <div
-      class="modal-card premium-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="premiumModalTitle"
-    >
+                event.preventDefault();
+                event.stopPropagation();
 
-      <button
-        class="modal-close"
-        data-close-modal
-        type="button"
-        aria-label="Fechar"
-      >
-        ×
-      </button>
-
-
-      <div class="premium-icon">
-        ★
-      </div>
+                closeMobileMenu();
+            }
+        );
+    }
 
 
-      <h2 id="premiumModalTitle">
-        ControleS Premium
-      </h2>
+    /* -----------------------------------------
+       EVENTO GLOBAL DE CLIQUES
+       ----------------------------------------- */
 
+    document.addEventListener(
+        "click",
+        event => {
 
-      <p>
-        Assine o ControleS Premium pela Google Play para liberar
-        todos os recursos Premium enquanto a assinatura estiver ativa.
-      </p>
+            const target =
+                event.target;
 
 
-      <div class="trial-box">
-
-        <strong>
-          R$ 29,99
-        </strong>
-
-        <span>
-          por mês
-        </span>
-
-      </div>
-
-
-      <div
-        id="premiumMessage"
-        class="form-message"
-        role="alert"
-        aria-live="polite"
-      ></div>
-
-
-      <button
-        id="confirmPremiumBtn"
-        class="btn btn-premium btn-large"
-        type="button"
-      >
-        Começar 7 dias grátis
-      </button>
-
-      <button
-        class="premium-restore-button"
-        type="button"
-        data-restore-purchases
-      >
-        Restaurar compras
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       LIMPAR LANÇAMENTOS
-  ====================================================== -->
-  <div id="clearTransactionsModal" class="modal hidden" aria-hidden="true">
-    <div class="modal-card clear-transactions-modal-card" role="dialog" aria-modal="true" aria-labelledby="clearTransactionsTitle">
-      <button class="modal-close" type="button" data-close-modal="clearTransactionsModal" aria-label="Fechar">×</button>
-      <span class="eyebrow">ORGANIZAÇÃO</span>
-      <h2 id="clearTransactionsTitle">Limpar lançamentos</h2>
-      <p class="clear-transactions-description">Escolha o período que deseja apagar. Valores cadastrados em <strong>A Receber</strong> não serão excluídos.</p>
-      <div class="clear-transactions-options">
-        <button type="button" class="clear-period-option" data-clear-transactions="today"><span class="clear-option-icon">☀</span><span><strong>Hoje</strong><small>Apaga somente os lançamentos de hoje.</small></span><b>›</b></button>
-        <button type="button" class="clear-period-option" data-clear-transactions="week"><span class="clear-option-icon">7</span><span><strong>Últimos 7 dias</strong><small>Apaga os lançamentos da última semana.</small></span><b>›</b></button>
-        <button type="button" class="clear-period-option" data-clear-transactions="month"><span class="clear-option-icon">▦</span><span><strong>Mês atual</strong><small>Apaga os lançamentos deste mês.</small></span><b>›</b></button>
-        <button type="button" class="clear-period-option danger" data-clear-transactions="all"><span class="clear-option-icon">⌫</span><span><strong>Todo o período</strong><small>Apaga todo o histórico de lançamentos.</small></span><b>›</b></button>
-      </div>
-      <div class="clear-warning">⚠ Você verá uma confirmação antes da exclusão. Essa ação não pode ser desfeita.</div>
-    </div>
-  </div>
-
-  <div id="confirmDeleteModal" class="modal hidden" aria-hidden="true">
-    <div class="modal-card confirm-delete-card" role="dialog" aria-modal="true" aria-labelledby="confirmDeleteTitle">
-      <div class="confirm-delete-icon">!</div>
-      <h2 id="confirmDeleteTitle">Confirmar exclusão</h2>
-      <p id="confirmDeleteText">Esta ação não pode ser desfeita.</p>
-      <div class="confirm-delete-actions">
-        <button id="cancelDeleteBtn" type="button" class="btn btn-secondary">Cancelar</button>
-        <button id="confirmDeleteBtn" type="button" class="btn btn-danger">Excluir</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- =====================================================
-       TOAST
-  ====================================================== -->
-
-  <div
-    id="toast"
-    class="toast"
-    role="status"
-    aria-live="polite"
-  ></div>
-
-
-  <!-- =====================================================
-       JAVASCRIPT
-  ====================================================== -->
-
-  <script src="app.js"></script>
-
-
-<!-- CONTROLES: APARÊNCIA + WHATSAPP FLUTUANTE -->
-<div id="appearanceModal" class="ct-appearance-modal" aria-hidden="true">
-  <div class="ct-appearance-backdrop" data-close-appearance="true"></div>
-  <section class="ct-appearance-sheet" role="dialog" aria-modal="true" aria-labelledby="appearanceTitle">
-    <div class="ct-sheet-handle"></div>
-    <div class="ct-appearance-head">
-      <div>
-        <span>PERSONALIZAÇÃO</span>
-        <h2 id="appearanceTitle">Aparência</h2>
-        <p>Escolha como o ControleS deve aparecer.</p>
-      </div>
-      <button type="button" class="ct-appearance-close" id="appearanceClose" aria-label="Fechar">×</button>
-    </div>
-
-    <div class="ct-theme-options">
-      <button type="button" class="ct-theme-option" data-theme-choice="light">
-        <span class="ct-theme-icon">☀</span>
-        <span class="ct-theme-copy"><strong>Claro</strong><small>Visual claro e limpo</small></span>
-        <span class="ct-theme-check">✓</span>
-      </button>
-
-      <button type="button" class="ct-theme-option" data-theme-choice="dark">
-        <span class="ct-theme-icon">☾</span>
-        <span class="ct-theme-copy"><strong>Escuro</strong><small>Visual financeiro escuro</small></span>
-        <span class="ct-theme-check">✓</span>
-      </button>
-
-      <button type="button" class="ct-theme-option" data-theme-choice="system">
-        <span class="ct-theme-icon">◐</span>
-        <span class="ct-theme-copy"><strong>Automático</strong><small>Segue o tema do aparelho</small></span>
-        <span class="ct-theme-check">✓</span>
-      </button>
-    </div>
-  </section>
-</div>
-
-<button type="button" id="whatsappFloatingButton" class="ct-whatsapp-float" aria-label="Abrir Assessor WhatsApp">
-  <svg viewBox="0 0 32 32" aria-hidden="true">
-    <path fill="currentColor" d="M16.04 3C9.4 3 4 8.25 4 14.7c0 2.28.68 4.5 1.96 6.4L4 29l8.12-2.12a12.3 12.3 0 0 0 3.91.64h.01C22.68 27.52 28 22.27 28 15.8 28 9.35 22.68 3 16.04 3Zm0 22.55c-1.2 0-2.38-.2-3.5-.6l-.5-.18-4.82 1.26 1.29-4.56-.32-.5a9.55 9.55 0 0 1-1.5-5.16c0-5.27 4.2-9.56 9.36-9.56 5.15 0 9.35 4.29 9.35 9.56 0 5.26-4.2 9.74-9.36 9.74Zm5.13-7.16c-.28-.14-1.66-.81-1.92-.9-.26-.1-.45-.14-.64.14-.19.28-.73.9-.9 1.08-.16.19-.33.21-.61.07-.28-.14-1.18-.43-2.25-1.38a8.35 8.35 0 0 1-1.56-1.9c-.16-.28-.02-.43.12-.57.13-.13.28-.33.42-.5.14-.16.19-.28.28-.47.1-.19.05-.35-.02-.5-.07-.14-.64-1.53-.88-2.1-.23-.55-.47-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 1-1 2.43 0 1.43 1.04 2.81 1.19 3 .14.19 2.05 3.2 5.08 4.36.71.3 1.27.49 1.7.63.72.23 1.37.2 1.88.12.57-.08 1.66-.68 1.9-1.34.23-.66.23-1.22.16-1.34-.07-.12-.26-.19-.54-.33Z"/>
-  </svg>
-</button>
-
-</body>
-
-</html>
+            if (
+                !target ||
+                typeof target.closest !==
+                "function"
+            ) {
+                return;
+            }
+
+
+            /* ------------------------------
+               NAVEGAÇÃO
+               ------------------------------ */
+
+            const nav =
+                target.closest(
+                    ".nav-item[data-section]"
+                );
+
+
+            if (
+                nav &&
+                !target.closest(".modal")
+            ) {
+
+                event.preventDefault();
+
+                const section =
+                    nav.dataset.section;
+
+                if (section) {
+                    showSection(section);
+                }
+
+                return;
+            }
+
+
+            /* ------------------------------
+               BOTÕES GENÉRICOS DATA-SECTION
+               ------------------------------ */
+
+            const sectionButton =
+                target.closest(
+                    "button[data-section]"
+                );
+
+
+            if (
+                sectionButton &&
+                !target.closest(".modal")
+            ) {
+
+                event.preventDefault();
+
+                showSection(
+                    sectionButton.dataset.section
+                );
+
+                return;
+            }
+
+
+            /* ------------------------------
+               FECHAR MENU AO CLICAR FORA
+               ------------------------------ */
+
+            const sidebar =
+                $("sidebar");
+
+
+            if (
+                isMobileViewport() &&
+                sidebar &&
+                sidebar.classList.contains(
+                    "mobile-open"
+                )
+            ) {
+
+                const clickedInsideSidebar =
+                    target.closest(
+                        "#sidebar"
+                    );
+
+
+                const clickedButton =
+                    target.closest(
+                        "#mobileMenuBtn"
+                    );
+
+
+                const clickedOverlay =
+                    target.closest(
+                        "#mobileOverlay,.mobile-overlay"
+                    );
+
+
+                if (
+                    !clickedInsideSidebar &&
+                    !clickedButton &&
+                    !clickedOverlay
+                ) {
+
+                    closeMobileMenu();
+                }
+            }
+
+
+            /* ------------------------------
+               EDITAR
+               ------------------------------ */
+
+            const editButton =
+                target.closest(
+                    "[data-edit-transaction]"
+                );
+
+
+            if (editButton) {
+
+                const id =
+                    editButton.dataset
+                        .editTransaction;
+
+
+                const transaction =
+                    transactions.find(
+                        item =>
+                            String(item.id) ===
+                            String(id)
+                    );
+
+
+                if (transaction) {
+
+                    openTransactionModal(
+                        transaction.type,
+                        transaction
+                    );
+                }
+
+                return;
+            }
+
+
+            /* ------------------------------
+               EXCLUIR
+               ------------------------------ */
+
+            const deleteButton =
+                target.closest(
+                    "[data-delete-transaction]"
+                );
+
+
+            if (deleteButton) {
+
+                deleteTransaction(
+                    deleteButton.dataset
+                        .deleteTransaction
+                );
+
+                return;
+            }
+
+
+            /* ------------------------------
+               RECEBIDO
+               ------------------------------ */
+
+            const receivedButton =
+                target.closest(
+                    "[data-receivable-id]"
+                );
+
+
+            if (receivedButton) {
+
+                markTransactionAsReceived(
+                    receivedButton.dataset
+                        .receivableId
+                );
+
+                return;
+            }
+
+
+            /* ------------------------------
+               EXCLUIR CATEGORIA
+               ------------------------------ */
+
+            const deleteCategoryButton =
+                target.closest(
+                    "[data-delete-category]"
+                );
+
+
+            if (deleteCategoryButton) {
+
+                deleteCategory(
+                    deleteCategoryButton.dataset
+                        .deleteCategory
+                );
+
+                return;
+            }
+        }
+    );
+
+
+    /* -----------------------------------------
+       TIPO DA TRANSAÇÃO
+       ----------------------------------------- */
+
+    document
+        .querySelectorAll(
+            "[data-transaction-type]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    setTransactionType(
+                        button.dataset
+                            .transactionType
+                    );
+                }
+            );
+        });
+
+
+    /* -----------------------------------------
+       FORM TRANSAÇÃO
+       ----------------------------------------- */
+
+    const transactionForm =
+        firstExisting(
+            "transactionForm",
+            "launchForm"
+        );
+
+
+    if (transactionForm) {
+
+        transactionForm.addEventListener(
+            "submit",
+            saveTransaction
+        );
+    }
+
+
+    /* -----------------------------------------
+       BOTÕES NOVO LANÇAMENTO
+       ----------------------------------------- */
+
+    const newTransactionButtons =
+        document.querySelectorAll(
+            "#newTransactionBtn," +
+            "#newLaunchBtn," +
+            "#addTransactionBtn," +
+            "#addTransactionBtn2," +
+            "[data-new-transaction]"
+        );
+
+
+    newTransactionButtons.forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    openTransactionModal(
+                        "expense"
+                    );
+                }
+            );
+        }
+    );
+
+
+    /* -----------------------------------------
+       NOVA RECEITA
+       ----------------------------------------- */
+
+    document
+        .querySelectorAll(
+            "[data-new-income]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    openTransactionModal(
+                        "income"
+                    );
+                }
+            );
+        });
+
+
+    /* -----------------------------------------
+       NOVA DESPESA
+       ----------------------------------------- */
+
+    document
+        .querySelectorAll(
+            "[data-new-expense]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    openTransactionModal(
+                        "expense"
+                    );
+                }
+            );
+        });
+
+
+    /* -----------------------------------------
+       NOVO A RECEBER
+       ----------------------------------------- */
+
+    document
+        .querySelectorAll(
+            "[data-new-receivable]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    openNewReceivable();
+                }
+            );
+        });
+
+
+    /* -----------------------------------------
+       CATEGORIA
+       ----------------------------------------- */
+
+    const categoryForm =
+        firstExisting(
+            "categoryForm"
+        );
+
+
+    if (categoryForm) {
+
+        categoryForm.addEventListener(
+            "submit",
+            saveCategory
+        );
+    }
+
+
+    /* -----------------------------------------
+       PESQUISA
+       ----------------------------------------- */
+
+    const searchInput =
+        firstExisting(
+            "transactionSearch"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            renderTransactions
+        );
+    }
+
+
+    /* -----------------------------------------
+       FILTRO TIPO
+       ----------------------------------------- */
+
+    const typeFilter =
+        firstExisting(
+            "transactionTypeFilter",
+            "transactionFilter"
+        );
+
+
+    if (typeFilter) {
+
+        typeFilter.addEventListener(
+            "change",
+            renderTransactions
+        );
+    }
+
+
+    /* -----------------------------------------
+       FILTRO CATEGORIA
+       ----------------------------------------- */
+
+    const categoryFilter =
+        firstExisting(
+            "transactionCategoryFilter",
+            "categoryFilter"
+        );
+
+
+    if (categoryFilter) {
+
+        categoryFilter.addEventListener(
+            "change",
+            renderTransactions
+        );
+    }
+
+
+    /* -----------------------------------------
+       BOTÕES DO DASHBOARD / AÇÕES
+       ----------------------------------------- */
+    ["addTransactionBtn", "addTransactionBtn2"].forEach(id => {
+        const button = $(id);
+        if (button && !button.dataset.bound) { button.dataset.bound = "true"; button.addEventListener("click", e => { e.preventDefault(); openTransactionModal("expense"); }); }
+    });
+    ["addCategoryBtn", "addCategoryBtn2"].forEach(id => {
+        const button = $(id);
+        if (button && !button.dataset.bound) { button.dataset.bound = "true"; button.addEventListener("click", e => { e.preventDefault(); openModal("categoryModal"); }); }
+    });
+    const goalButton = $("addGoalBtn");
+    if (goalButton && !goalButton.dataset.bound) { goalButton.dataset.bound = "true"; goalButton.addEventListener("click", e => { e.preventDefault(); openModal("goalModal"); }); }
+    const receivableButton = $("addReceivableBtn");
+    if (receivableButton && !receivableButton.dataset.bound) { receivableButton.dataset.bound = "true"; receivableButton.addEventListener("click", e => { e.preventDefault(); openNewReceivable(); }); }
+    const goalForm = $("goalForm");
+    if (goalForm && !goalForm.dataset.bound) { goalForm.dataset.bound = "true"; goalForm.addEventListener("submit", saveGoal); }
+    const confirmPremium = $("confirmPremiumBtn");
+    if (confirmPremium && !confirmPremium.dataset.bound) { confirmPremium.dataset.bound = "true"; confirmPremium.addEventListener("click", purchasePremium); }
+    const clearFilters = $("clearTransactionFiltersBtn");
+    if (clearFilters && !clearFilters.dataset.bound) { clearFilters.dataset.bound = "true"; clearFilters.addEventListener("click", () => { ["transactionSearch","transactionFilter","categoryFilter","transactionDateFrom","transactionDateTo"].forEach(id => { const el=$(id); if(el) el.value = id === "transactionFilter" || id === "categoryFilter" ? "all" : ""; }); renderTransactions(); }); }
+    ["transactionFilter","categoryFilter","transactionDateFrom","transactionDateTo"].forEach(id => { const el=$(id); if(el && !el.dataset.bound){ el.dataset.bound="true"; el.addEventListener("change", renderTransactions); }});
+
+    /* -----------------------------------------
+       FECHAR MODAIS
+       ----------------------------------------- */
+
+    document
+        .querySelectorAll(
+            "[data-close-modal]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    const modalId = button.dataset.closeModal;
+
+                    if (modalId) {
+                        closeModal(modalId);
+                    } else {
+                        const modal = button.closest(".modal");
+                        if (modal) {
+                            modal.classList.add("hidden");
+                            modal.setAttribute("aria-hidden", "true");
+                        }
+
+                        if (modal?.id === "transactionModal") {
+                            editingTransactionId = null;
+                        }
+                    }
+                }
+            );
+        });
+
+
+    /* -----------------------------------------
+       ESC
+       ----------------------------------------- */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key !== "Escape") {
+                return;
+            }
+
+
+            const sidebar =
+                $("sidebar");
+
+
+            if (
+                sidebar &&
+                sidebar.classList.contains(
+                    "mobile-open"
+                )
+            ) {
+
+                closeMobileMenu();
+
+                return;
+            }
+
+
+            document
+                .querySelectorAll(
+                    ".modal:not(.hidden)"
+                )
+                .forEach(modal => {
+
+                    modal.classList.add(
+                        "hidden"
+                    );
+                });
+        }
+    );
+
+
+    /* -----------------------------------------
+       RESIZE
+       ----------------------------------------- */
+
+    window.addEventListener(
+        "resize",
+        () => {
+
+            applyDeviceLayout();
+
+            if (!isMobileViewport()) {
+                closeMobileMenu();
+            }
+        }
+    );
+
+
+    /*
+     * Começa sempre com o menu fechado.
+     */
+
+    closeMobileMenu();
+}
+
+
+/* =========================================================
+   BOTÃO DE MOSTRAR/ESCONDER SENHA
+   ========================================================= */
+
+function setupPasswordToggles() {
+
+    document
+        .querySelectorAll(
+            "[data-toggle-password]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const targetId =
+                        button.dataset
+                            .togglePassword;
+
+
+                    const input =
+                        $(targetId);
+
+
+                    if (!input) return;
+
+
+                    input.type =
+                        input.type === "password"
+                            ? "text"
+                            : "password";
+                }
+            );
+        });
+}
+
+
+/* =========================================================
+   ABRIR MODAIS PELO ID
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const target =
+            event.target;
+
+
+        if (
+            !target ||
+            typeof target.closest !==
+            "function"
+        ) {
+            return;
+        }
+
+
+        const openButton =
+            target.closest(
+                "[data-open-modal]"
+            );
+
+
+        if (openButton) {
+
+            event.preventDefault();
+
+            openModal(
+                openButton.dataset
+                    .openModal
+            );
+
+            return;
+        }
+
+
+        const closeButton =
+            target.closest(
+                "[data-close]"
+            );
+
+
+        if (closeButton) {
+
+            event.preventDefault();
+
+            closeModal(
+                closeButton.dataset.close
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   FECHAR MODAL CLICANDO NO FUNDO
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const target =
+            event.target;
+
+
+        if (
+            target &&
+            target.classList &&
+            target.classList.contains(
+                "modal"
+            )
+        ) {
+
+            target.classList.add(
+                "hidden"
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   BOTÃO ADICIONAR RECEITA / DESPESA
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const target =
+            event.target;
+
+
+        if (
+            !target ||
+            typeof target.closest !==
+            "function"
+        ) {
+            return;
+        }
+
+
+        const incomeButton =
+            target.closest(
+                "#addIncomeBtn,[data-add-income]"
+            );
+
+
+        if (incomeButton) {
+
+            event.preventDefault();
+
+            openTransactionModal(
+                "income"
+            );
+
+            return;
+        }
+
+
+        const expenseButton =
+            target.closest(
+                "#addExpenseBtn,[data-add-expense]"
+            );
+
+
+        if (expenseButton) {
+
+            event.preventDefault();
+
+            openTransactionModal(
+                "expense"
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   BOTÃO NOVA CATEGORIA
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const target =
+            event.target;
+
+
+        if (
+            !target ||
+            typeof target.closest !==
+            "function"
+        ) {
+            return;
+        }
+
+
+        const button =
+            target.closest(
+                "#newCategoryBtn,[data-new-category]"
+            );
+
+
+        if (button) {
+
+            event.preventDefault();
+
+            openModal(
+                "categoryModal"
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   BOTÃO NOVA META
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const target =
+            event.target;
+
+
+        if (
+            !target ||
+            typeof target.closest !==
+            "function"
+        ) {
+            return;
+        }
+
+
+        const button =
+            target.closest(
+                "#newGoalBtn,[data-new-goal]"
+            );
+
+
+        if (button) {
+
+            event.preventDefault();
+
+            openModal(
+                "goalModal"
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   PREMIUM
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const target =
+            event.target;
+
+
+        if (
+            !target ||
+            typeof target.closest !==
+            "function"
+        ) {
+            return;
+        }
+
+
+        const buyButton =
+            target.closest(
+                "#activatePremiumBtn," +
+                "#confirmPremiumBtn," +
+                "[data-purchase-premium]"
+            );
+
+        if (buyButton) {
+            event.preventDefault();
+            purchasePremium();
+            return;
+        }
+
+        const restoreButton =
+            target.closest(
+                "#restorePurchasesBtn," +
+                "[data-restore-purchases]"
+            );
+
+        if (restoreButton) {
+            event.preventDefault();
+            restorePremiumPurchases();
+        }
+    }
+);
+
+
+/* =========================================================
+   EXPORTAR DADOS
+   ========================================================= */
+
+function exportTransactionsCSV() {
+
+    if (!transactions.length) {
+
+        showToast(
+            "Não existem lançamentos para exportar.",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    const rows = [
+        [
+            "Data",
+            "Descrição",
+            "Categoria",
+            "Tipo",
+            "Valor"
+        ]
+    ];
+
+
+    transactions.forEach(transaction => {
+
+        const type =
+            normalizeTransactionType(
+                transaction.type ||
+                transaction.tipo
+            );
+
+
+        rows.push([
+            getTransactionDate(transaction),
+
+            getTransactionDescription(
+                transaction
+            ),
+
+            getTransactionCategory(
+                transaction
+            ),
+
+            type === "income"
+                ? "Receita"
+                : "Despesa",
+
+            getTransactionAmount(
+                transaction
+            )
+        ]);
+    });
+
+
+    const csv =
+        rows
+            .map(row =>
+                row
+                    .map(value =>
+                        `"${String(value)
+                            .replace(/"/g, '""')}"`
+                    )
+                    .join(";")
+            )
+            .join("\n");
+
+
+    const blob =
+        new Blob(
+            [
+                "\ufeff" + csv
+            ],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href = url;
+
+    link.download =
+        "controles-lancamentos.csv";
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+    link.remove();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+}
+
+
+/* =========================================================
+   EXPORTAR
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const target =
+            event.target;
+
+
+        if (
+            !target ||
+            typeof target.closest !==
+            "function"
+        ) {
+            return;
+        }
+
+
+        const button =
+            target.closest(
+                "#exportTransactionsBtn," +
+                "[data-export-transactions]"
+            );
+
+
+        if (button) {
+
+            event.preventDefault();
+
+            exportTransactionsCSV();
+        }
+    }
+);
+
+
+
+
+/* =========================================================
+   CONTROLES — ACESSO PREMIUM
+   GRÁTIS:
+   - Início
+   - Lançamentos
+   - A Receber
+
+   PREMIUM:
+   - Categorias
+   - Relatórios
+   - Assessor WhatsApp
+   - Relatório com IA
+   ========================================================= */
+
+
+function openPremiumAccess() {
+
+    closeMobileMenu();
+
+    showToast(
+        "🔒 Este recurso faz parte do ControleS Premium.",
+        "warning"
+    );
+
+    showSection("premium");
+}
+
+
+function applyPremiumAccess() {
+
+    const premium =
+        isPremiumActive();
+
+
+    document.body.classList.toggle(
+        "free-plan",
+        !premium
+    );
+
+    document.body.classList.toggle(
+        "premium-plan",
+        premium
+    );
+
+
+    /* =====================================================
+       MENUS PREMIUM
+       ===================================================== */
+
+    const blockedSections = [
+        "categories",
+        "reports",
+        "whatsapp",
+        "ai-report"
+    ];
+
+
+    document
+        .querySelectorAll(
+            ".nav-item[data-section]"
+        )
+        .forEach(button => {
+
+            const section =
+                button.dataset.section;
+
+            const locked =
+                !premium &&
+                blockedSections.includes(
+                    section
+                );
+
+
+            button.classList.toggle(
+                "premium-locked",
+                locked
+            );
+
+
+            if (locked) {
+
+                button.setAttribute(
+                    "data-premium-locked",
+                    "true"
+                );
+
+            } else {
+
+                button.removeAttribute(
+                    "data-premium-locked"
+                );
+            }
+        });
+
+
+    /* =====================================================
+       AÇÕES PREMIUM
+       ===================================================== */
+
+    [
+        "addCategoryBtn",
+        "addCategoryBtn2"
+    ].forEach(id => {
+
+        const button = $(id);
+
+        if (!button) return;
+
+
+        button.classList.toggle(
+            "premium-locked",
+            !premium
+        );
+
+
+        button.classList.toggle(
+            "premium-content-hidden",
+            !premium
+        );
+
+
+        if (!premium) {
+
+            button.setAttribute(
+                "data-premium-locked",
+                "true"
+            );
+
+        } else {
+
+            button.removeAttribute(
+                "data-premium-locked"
+            );
+        }
+    });
+
+
+    /* =====================================================
+       CONTEÚDO PREMIUM DO DASHBOARD
+       ===================================================== */
+
+    const premiumContent = [
+        "#receivableDashboardCard",
+        "#premiumDashboardContent"
+    ];
+
+
+    premiumContent.forEach(selector => {
+
+        document
+            .querySelectorAll(selector)
+            .forEach(element => {
+
+                element.classList.toggle(
+                    "premium-content-hidden",
+                    !premium
+                );
+            });
+    });
+
+
+    // Relatórios: exibe conteúdo e oculta o aviso apenas com Premium ativo.
+    const reportGate = $("premiumReportContent");
+    const reportBody = $("normalReportContent");
+    const reportIntro = $("primeReportsIntro");
+    if (reportGate) reportGate.hidden = premium;
+    if (reportBody) reportBody.hidden = !premium;
+    if (reportIntro) reportIntro.hidden = !premium;
+
+    // Cadeados visuais não devem aparecer para assinantes Premium.
+    document.querySelectorAll(".nav-item .nav-lock").forEach(lock => {
+        lock.hidden = premium;
+        lock.style.display = premium ? "none" : "";
+    });
+
+    /* No plano grátis, o resumo e os últimos lançamentos continuam visíveis.
+       Apenas o gráfico avançado fica reservado ao Premium. */
+    const financeCanvas = $("financeChart");
+    const financePanel = financeCanvas ? financeCanvas.closest("article.panel") : null;
+
+    if (financePanel) {
+        financePanel.classList.toggle("premium-content-hidden", !premium);
+    }
+
+    const summaryGrid = document.querySelector("#dashboardSection > .summary-grid");
+    if (summaryGrid) {
+        summaryGrid.classList.remove("premium-content-hidden");
+    }
+
+    const recentList = $("recentTransactions");
+    const recentPanel = recentList ? recentList.closest("article.panel") : null;
+    if (recentPanel) {
+        recentPanel.classList.remove("premium-content-hidden");
+    }
+
+
+    /* Lançamentos e A Receber continuam disponíveis no plano grátis. */
+    [
+        "addTransactionBtn",
+        "addTransactionBtn2",
+        "addReceivableBtn"
+    ].forEach(id => {
+        const button = $(id);
+        if (!button) return;
+        button.classList.remove("premium-content-hidden", "premium-locked");
+        button.removeAttribute("data-premium-locked");
+    });
+
+
+    /* =====================================================
+       RECEITA E DESPESA SEMPRE LIVRES
+       ===================================================== */
+
+    const quickActions =
+        document.querySelector(
+            ".quick-actions"
+        );
+
+
+    if (quickActions) {
+
+        quickActions.classList.remove(
+            "premium-content-hidden"
+        );
+
+        quickActions.style.display =
+            "grid";
+    }
+
+
+    document
+        .querySelectorAll(
+            '.quick-action[data-action="add-income"],' +
+            '.quick-action[data-action="add-expense"]'
+        )
+        .forEach(button => {
+
+            button.classList.remove(
+                "premium-content-hidden",
+                "premium-locked"
+            );
+
+            button.removeAttribute(
+                "data-premium-locked"
+            );
+
+            button.style.display = "";
+            button.style.opacity = "1";
+        });
+}
+
+
+/* =========================================================
+   BLOQUEIO DOS CLIQUES PREMIUM
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        /*
+         * Premium ativo:
+         * sistema funciona normalmente.
+         */
+
+        if (isPremiumActive()) {
+            return;
+        }
+
+
+        const target =
+            event.target;
+
+
+        if (
+            !target ||
+            typeof target.closest !== "function"
+        ) {
+            return;
+        }
+
+
+        /* =================================================
+           RECEITA / DESPESA — GRÁTIS
+           ================================================= */
+
+        const freeAction =
+            target.closest(
+                '.quick-action[data-action="add-income"],' +
+                '.quick-action[data-action="add-expense"],' +
+                '#addIncomeBtn,' +
+                '#addExpenseBtn,' +
+                '[data-add-income],' +
+                '[data-add-expense]'
+            );
+
+
+        if (freeAction) {
+
+            event.preventDefault();
+
+            /*
+             * Impede os listeners antigos
+             * de executarem novamente o clique.
+             */
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+
+            const isIncome =
+                freeAction.matches(
+                    '.quick-action[data-action="add-income"],' +
+                    '#addIncomeBtn,' +
+                    '[data-add-income]'
+                );
+
+
+            openTransactionModal(
+                isIncome
+                    ? "income"
+                    : "expense"
+            );
+
+
+            return;
+        }
+
+
+        /* =================================================
+           PREMIUM CONTINUA ACESSÍVEL
+           ================================================= */
+
+        const premiumPage =
+            target.closest(
+                '[data-section="premium"]'
+            );
+
+
+        if (premiumPage) {
+            return;
+        }
+
+
+        /* =================================================
+           LANÇAMENTOS E A RECEBER — SEMPRE GRÁTIS
+           ================================================= */
+
+        const freeSection =
+            target.closest(
+                '[data-section="transactions"],' +
+                '[data-section="receivable"]'
+            );
+
+        if (freeSection) {
+            return;
+        }
+
+
+        const freeFinancialAction =
+            target.closest(
+                '#addTransactionBtn,' +
+                '#addTransactionBtn2,' +
+                '#addReceivableBtn,' +
+                '[data-edit-transaction],' +
+                '[data-delete-transaction],' +
+                '[data-edit-receivable],' +
+                '[data-delete-receivable],' +
+                '[data-mark-received],' +
+                '[data-receivable-action]'
+            );
+
+        if (freeFinancialAction) {
+            return;
+        }
+
+
+        /* =================================================
+           SEÇÕES BLOQUEADAS
+           ================================================= */
+
+        const blockedSection =
+            target.closest(
+                '[data-section="categories"],' +
+                '[data-section="reports"],' +
+                '[data-section="whatsapp"],' +
+                '[data-section="ai-report"]'
+            );
+
+
+        /* =================================================
+           AÇÕES BLOQUEADAS
+           ================================================= */
+
+        const blockedAction =
+            target.closest(
+                '[data-premium-locked="true"],' +
+                '#addCategoryBtn,' +
+                '#addCategoryBtn2,' +
+                '[data-delete-category],' +
+                '#exportTransactionsBtn,' +
+                '[data-export-transactions]'
+            );
+
+
+        if (
+            blockedSection ||
+            blockedAction
+        ) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            event.stopImmediatePropagation();
+
+
+            openPremiumAccess();
+
+            return;
+        }
+
+    },
+    true
+);
+
+
+/* =========================================================
+   ESTILO PREMIUM
+   ========================================================= */
+
+(function createPremiumAccessStyles() {
+
+    if (
+        document.getElementById(
+            "controlesPremiumAccessStyles"
+        )
+    ) {
+        return;
+    }
+
+
+    const style =
+        document.createElement(
+            "style"
+        );
+
+
+    style.id =
+        "controlesPremiumAccessStyles";
+
+
+    style.textContent = `
+
+        .premium-content-hidden {
+            display: none !important;
+        }
+
+
+        .premium-locked {
+            position: relative;
+            opacity: .68;
+        }
+
+
+        /* O cadeado visual já existe no HTML.
+           Não adicionamos outro via CSS para evitar cadeado duplicado. */
+        .free-plan
+        .nav-item.premium-locked::after {
+            content: none;
+        }
+
+
+        .free-plan .quick-actions {
+            display: grid !important;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+        }
+
+
+        .free-plan
+        .quick-action[data-action="add-income"],
+
+        .free-plan
+        .quick-action[data-action="add-expense"] {
+
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+
+        @media screen and (max-width: 400px) {
+
+            .free-plan .quick-actions {
+
+                grid-template-columns:
+                    1fr;
+            }
+        }
+    `;
+
+
+    document.head.appendChild(
+        style
+    );
+
+})();
+
+
+/* =========================================================
+   ATUALIZAR ACESSO AO VOLTAR PARA A TELA
+   ========================================================= */
+
+window.addEventListener(
+    "focus",
+    () => {
+
+        if (currentUser) {
+
+            applyPremiumAccess();
+        }
+    }
+);
+
+/* =========================================================
+   FIM DO APP.JS
+   ========================================================= */
+
+/* =========================================================
+   CONTROLES — RELATÓRIO INTELIGENTE / WHATSAPP — PATCH 6.0
+   ========================================================= */
+
+function getAIReportPeriod() {
+    const now = new Date();
+    const start = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-01`;
+    return { start, end: todayISO(), label: now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) };
+}
+
+function buildAIReportData() {
+    const period = getAIReportPeriod();
+    const current = calculatePeriodSummary(period);
+    const previousDate = new Date();
+    previousDate.setMonth(previousDate.getMonth() - 1);
+    const previous = getMonthlyTotals(previousDate.getFullYear(), previousDate.getMonth());
+    const ranking = {};
+
+    transactions.forEach(transaction => {
+        if (!transactionIsInPeriod(transaction, period)) return;
+        const type = normalizeTransactionType(transaction.type || transaction.tipo || transaction.transaction_type);
+        if (type !== "expense") return;
+        const category = getTransactionCategory(transaction);
+        ranking[category] = (ranking[category] || 0) + getTransactionAmount(transaction);
+    });
+
+    const categories = Object.entries(ranking).sort((a,b) => b[1] - a[1]);
+    const receivable = getReceivableSummary();
+    return { period, current, previous, categories, receivable };
+}
+
+function renderAIReport(showMessage = false) {
+    const data = buildAIReportData();
+    const { period, current, previous, categories, receivable } = data;
+    const setText = (id, text) => { const el = $(id); if (el) el.textContent = text; };
+
+    setText("aiPeriodLabel", period.label.charAt(0).toUpperCase() + period.label.slice(1));
+    setText("aiIncomeValue", formatCurrency(current.income));
+    setText("aiExpenseValue", formatCurrency(current.expense));
+    setText("aiBalanceValue", formatCurrency(current.balance));
+    setText("aiReceivableValue", formatCurrency(receivable.total));
+
+    const expenseDelta = previous.expense > 0 ? ((current.expense - previous.expense) / previous.expense) * 100 : null;
+    if (expenseDelta === null) setText("aiExpenseTrend", "Sem base no mês anterior");
+    else if (expenseDelta > 0) setText("aiExpenseTrend", `↑ ${Math.abs(expenseDelta).toFixed(1)}% vs. mês anterior`);
+    else if (expenseDelta < 0) setText("aiExpenseTrend", `↓ ${Math.abs(expenseDelta).toFixed(1)}% vs. mês anterior`);
+    else setText("aiExpenseTrend", "Mesmo nível do mês anterior");
+
+    const headline = current.income === 0 && current.expense === 0
+        ? "Adicione lançamentos para começar"
+        : current.balance >= 0
+            ? "Seu mês está com saldo positivo"
+            : "Seus gastos superaram suas receitas";
+    setText("aiHeadline", headline);
+
+    const bars = $("aiCategoryBars");
+    if (bars) {
+        if (!categories.length) {
+            bars.innerHTML = '<div class="ai-empty-mini">Adicione despesas para visualizar.</div>';
+        } else {
+            const max = categories[0][1] || 1;
+            bars.innerHTML = categories.slice(0,5).map(([name, value]) => `
+                <div class="ai-category-row">
+                    <div><strong>${escapeHTML(name)}</strong><span>${formatCurrency(value)}</span></div>
+                    <div class="ai-category-track"><i style="width:${Math.max(5, (value/max)*100)}%"></i></div>
+                </div>`).join("");
+        }
+    }
+
+    const insights = [];
+    if (categories.length) insights.push(["01", `${categories[0][0]} lidera seus gastos`, `${formatCurrency(categories[0][1])} gastos nessa categoria neste mês.`]);
+    if (expenseDelta !== null) insights.push(["02", expenseDelta <= 0 ? "Seus gastos diminuíram" : "Seus gastos aumentaram", `${Math.abs(expenseDelta).toFixed(1)}% em relação ao mês anterior.`]);
+    if (receivable.total > 0) insights.push(["03", "Você tem valores a receber", `${formatCurrency(receivable.total)} previstos em ${receivable.count} lançamento(s).`]);
+    if (!insights.length && (current.income || current.expense)) insights.push(["01", "Acompanhamento iniciado", "Continue registrando movimentações para enriquecer sua análise."]);
+
+    const list = $("aiInsightsList");
+    if (list) {
+        list.innerHTML = insights.length ? insights.map(([n,t,d], idx) => `
+            <div class="ai-insight-pro ${idx === 1 && expenseDelta <= 0 ? "positive" : ""}">
+                <i>${n}</i><div><b>${escapeHTML(t)}</b><small>${escapeHTML(d)}</small></div>
+            </div>`).join("") : '<div class="ai-insight-pro"><i>01</i><div><b>Sem dados suficientes</b><small>Adicione lançamentos para gerar uma análise personalizada.</small></div></div>';
+    }
+
+    let score = null;
+    if (current.income > 0 || current.expense > 0) {
+        const ratio = current.income > 0 ? current.expense / current.income : 2;
+        score = Math.max(0, Math.min(100, Math.round(100 - Math.max(0, ratio - .5) * 80)));
+    }
+    setText("aiHealthScore", score === null ? "—" : `${score}/100`);
+    setText("aiHealthText", score === null ? "O índice aparecerá quando houver dados financeiros no período." : score >= 75 ? "Boa margem entre receitas e despesas no período." : score >= 50 ? "Atenção ao peso das despesas sobre sua renda." : "As despesas estão pressionando bastante o seu orçamento.");
+    setText("aiReportBadge", "ATUALIZADO AGORA");
+
+    if (showMessage) showToast("Análise atualizada com seus lançamentos.", "success");
+}
+
+function updateWhatsAppPreview() {
+    const totals = getMonthlyTotals(new Date().getFullYear(), new Date().getMonth());
+    const ranking = {};
+    transactions.forEach(t => {
+        const d = getTransactionDate(t); if (!d) return;
+        const dt = new Date(`${d}T00:00:00`); const now = new Date();
+        if (dt.getMonth() !== now.getMonth() || dt.getFullYear() !== now.getFullYear()) return;
+        if (normalizeTransactionType(t.type || t.tipo) !== "expense") return;
+        const c = getTransactionCategory(t); ranking[c] = (ranking[c] || 0) + getTransactionAmount(t);
+    });
+    const top = Object.entries(ranking).sort((a,b)=>b[1]-a[1])[0];
+    const expense = $("waPreviewExpense"); if (expense) expense.textContent = formatCurrency(totals.expense);
+    const cat = $("waPreviewCategory"); if (cat) cat.textContent = top ? `${top[0]} é sua maior categoria no mês.` : "Cadastre lançamentos para ver sua maior categoria.";
+}
+
+(function bindSmartFeatureButtons(){
+    document.addEventListener("click", event => {
+        const ai = event.target.closest?.("#generateAIReportBtn");
+        if (ai) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); renderAIReport(true); return; }
+        const wa = event.target.closest?.("#whatsappPrimaryBtn");
+        if (wa) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); updateWhatsAppPreview(); showToast("A interface está pronta. Falta conectar a API oficial do WhatsApp.", "info"); }
+    });
+})();
+
+const _showSectionControleS = showSection;
+showSection = function(sectionName) {
+    _showSectionControleS(sectionName);
+    if (sectionName === "ai-report" && isPremiumActive()) renderAIReport(false);
+    if (sectionName === "whatsapp" && isPremiumActive()) updateWhatsAppPreview();
+};
+
+
+/* =========================================================
+   CONTROLES — NAVEGAÇÃO MOBILE DA DEMO / PERFIL
+   ========================================================= */
+(function setupDemoMobileNavigation(){
+  function syncBottomNav(section){
+    document.querySelectorAll('[data-bottom-section]').forEach(btn=>btn.classList.toggle('active',btn.dataset.bottomSection===section));
+  }
+  document.addEventListener('click', async function(event){
+    const bottom=event.target.closest?.('[data-bottom-section]');
+    if(bottom){event.preventDefault();const section=bottom.dataset.bottomSection;showSection(section);syncBottomNav(section);return;}
+    if(event.target.closest?.('#mobileAddButton')){event.preventDefault();openTransactionModal('expense');return;}
+    if(event.target.closest?.('#profileThemeBtn')){event.preventDefault();toggleTheme();return;}
+    if(event.target.closest?.('#profileClearTransactionsBtn')){event.preventDefault();openClearTransactionsModal();return;}
+    if(event.target.closest?.('#profileLogoutBtn')){event.preventDefault();await handleLogout();return;}
+  });
+  const originalShowSection=window.showSection;
+  if(typeof originalShowSection==='function'){
+    window.showSection=function(sectionName){originalShowSection(sectionName);syncBottomNav(sectionName);};
+  }
+})();
+
+/* Saudação mobile com o nome real da conta */
+(function enhanceMobileGreeting(){
+  const original=window.updateUserInterface;
+  if(typeof original!=='function') return;
+  window.updateUserInterface=function(){
+    original();
+    const name=currentProfile?.name||currentUser?.user_metadata?.name||currentUser?.email?.split('@')[0]||'Usuário';
+    const first=String(name).trim().split(/\s+/)[0];
+    const welcome=document.getElementById('welcomeMessage');
+    if(welcome) welcome.textContent=`Olá, ${first} 👋`;
+  };
+})();
+
+
+/* =========================================================
+   CONTROLES — PATCH MOBILE 7.0
+   Boas-vindas, limpeza por período e navegação
+   ========================================================= */
+(function setupMobileV7(){
+    document.addEventListener("click", async (event) => {
+        if (event.target.closest?.("#welcomeLoginBtn")) { event.preventDefault(); showLoginView(); return; }
+        if (event.target.closest?.("#welcomeRegisterBtn")) { event.preventDefault(); showRegisterView(); return; }
+        if (event.target.closest?.("#clearTransactionsBtn")) { event.preventDefault(); openClearTransactionsModal(); return; }
+        const clearButton = event.target.closest?.("[data-clear-transactions]");
+        if (clearButton) { event.preventDefault(); await clearTransactionsByPeriod(clearButton.dataset.clearTransactions); }
+    });
+})();
+
+function openClearTransactionsModal(){
+    const modal = $("clearTransactionsModal");
+    if (!modal) return;
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+}
+
+function closeClearTransactionsModal(){
+    const modal = $("clearTransactionsModal");
+    if (!modal) return;
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+}
+
+function requestDeleteConfirmation(message){
+    return new Promise(resolve => {
+        const modal = $("confirmDeleteModal");
+        const text = $("confirmDeleteText");
+        const cancel = $("cancelDeleteBtn");
+        const confirmBtn = $("confirmDeleteBtn");
+        if (!modal || !cancel || !confirmBtn) { resolve(false); return; }
+        if (text) text.textContent = message;
+        modal.classList.remove("hidden");
+        modal.setAttribute("aria-hidden", "false");
+        const finish = value => {
+            modal.classList.add("hidden");
+            modal.setAttribute("aria-hidden", "true");
+            cancel.onclick = null; confirmBtn.onclick = null;
+            resolve(value);
+        };
+        cancel.onclick = () => finish(false);
+        confirmBtn.onclick = () => finish(true);
+    });
+}
+
+async function clearTransactionsByPeriod(period){
+    if (!supabaseClient || !currentUser) return;
+    const today = todayISO();
+    const startOfWeek = (() => { const d = new Date(); d.setDate(d.getDate()-6); return d.toISOString().slice(0,10); })();
+    const monthStart = today.slice(0,7) + "-01";
+    const labels = { today:"de hoje", week:"dos últimos 7 dias", month:"deste mês", all:"de todo o período" };
+    const confirmed = await requestDeleteConfirmation(`Excluir os lançamentos ${labels[period] || "selecionados"}? Esta ação não pode ser desfeita.`);
+    if (!confirmed) return;
+    try {
+        let query = supabaseClient.from("transactions").delete().eq("user_id", currentUser.id);
+        if (period === "today") query = query.eq("date", today);
+        else if (period === "week") query = query.gte("date", startOfWeek).lte("date", today);
+        else if (period === "month") query = query.gte("date", monthStart).lte("date", today);
+        else if (period !== "all") return;
+        const { error } = await query;
+        if (error) throw error;
+        closeClearTransactionsModal();
+        await loadTransactions();
+        updateDashboard(); renderTransactions(); renderReceivables(); updateReceivableDashboard(); updatePeriodSummary(); renderReports();
+        showToast("Lançamentos excluídos com sucesso.", "success");
+    } catch (error) {
+        console.error(error);
+        showToast(error.message || "Não foi possível excluir os lançamentos.", "error");
+    }
+}
+
+/* =========================================================
+   CONTROLES MOBILE 10 — CORREÇÕES DE AÇÕES RÁPIDAS E MODAIS
+   ========================================================= */
+(function controlesMobile10Fixes(){
+  function openCleanModal(id){
+    const modal=document.getElementById(id); if(!modal)return;
+    modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false');
+    const card=modal.querySelector('.modal-card'); if(card) card.scrollTop=0;
+  }
+  function prepareCategory(){
+    const form=document.getElementById('categoryForm'); if(form) form.reset();
+    const msg=document.getElementById('categoryMessage'); if(msg) msg.textContent='';
+    openCleanModal('categoryModal');
+    setTimeout(()=>document.getElementById('categoryName')?.focus({preventScroll:true}),120);
+  }
+  function prepareGoal(){
+    const form=document.getElementById('goalForm'); if(form) form.reset();
+    const msg=document.getElementById('goalMessage'); if(msg) msg.textContent='';
+    openCleanModal('goalModal');
+    setTimeout(()=>document.getElementById('goalName')?.focus({preventScroll:true}),120);
+  }
+  document.addEventListener('click',function(e){
+    const el=e.target.closest?.('button,a'); if(!el)return;
+    const action=el.dataset.action;
+    if(action==='add-income'){e.preventDefault();e.stopPropagation();openTransactionModal('income');return;}
+    if(action==='add-expense'){e.preventDefault();e.stopPropagation();openTransactionModal('expense');return;}
+    if(el.id==='addCategoryBtn'||el.id==='addCategoryBtn2'||el.matches('[data-new-category]')){e.preventDefault();e.stopPropagation();prepareCategory();return;}
+    if(el.id==='addGoalBtn'||el.id==='newGoalBtn'||el.matches('[data-new-goal]')){e.preventDefault();e.stopPropagation();prepareGoal();return;}
+  },true);
+  document.addEventListener('click',function(e){
+    const typeBtn=e.target.closest?.('[data-transaction-type]'); if(!typeBtn)return;
+    const type=typeBtn.dataset.transactionType; setTransactionType(type);
+    const title=document.getElementById('transactionModalTitle');
+    if(title&&!editingTransactionId) title.textContent=normalizeTransactionType(type)==='income'?'Nova receita':'Nova despesa';
+  });
+})();
+
+
+/* CONTROLES MOBILE 11 — CTAs de demonstração Premium */
+document.addEventListener('click', function(e){
+  const btn=e.target.closest?.('[data-premium-preview]');
+  if(!btn) return;
+  e.preventDefault();
+  const activate=document.getElementById('activatePremiumBtn');
+  if(activate){ activate.click(); return; }
+  const modal=document.getElementById('premiumModal');
+  if(modal){ modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false'); }
+});
+
+
+/* =========================================================
+   CONTROLES MOBILE 12 — INTERAÇÕES DA HOME E LOGIN
+   ========================================================= */
+(function(){
+  const $m12=id=>document.getElementById(id);
+  const filter=$m12('dashboardPeriodFilter');
+  const quick=$m12('periodQuickBtn');
+  const quickLabel=$m12('periodQuickLabel');
+  const activeLabel=$m12('activePeriodLabel');
+  function syncPeriodLabel(){
+    if(!quickLabel) return;
+    const select=$m12('dashboardPeriod');
+    const txt=select && select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : 'Últimos 30 dias';
+    quickLabel.textContent=txt;
+  }
+  function setFilter(open){
+    if(!filter||!quick) return;
+    filter.classList.toggle('period-sheet-collapsed',!open);
+    quick.setAttribute('aria-expanded',String(open));
+  }
+  quick?.addEventListener('click',()=>setFilter(filter?.classList.contains('period-sheet-collapsed')));
+  $m12('applyPeriodBtn')?.addEventListener('click',()=>{syncPeriodLabel();setTimeout(()=>setFilter(false),120);});
+  $m12('clearPeriodBtn')?.addEventListener('click',()=>{setTimeout(()=>{syncPeriodLabel();setFilter(false)},120);});
+  $m12('dashboardPeriod')?.addEventListener('change',syncPeriodLabel);
+  syncPeriodLabel();
+
+  // Insight abre a análise; o bloqueio Premium existente continua valendo.
+  $m12('homeInsightBtn')?.addEventListener('click',()=>{
+    const nav=document.querySelector('[data-section="ai-report"]');
+    if(nav) nav.click();
+  });
+
+  // Atualiza o texto do insight com os valores já calculados na Home.
+  function moneyText(id){return ($m12(id)?.textContent||'R$ 0,00').trim()}
+  function updateInsight(){
+    const title=$m12('homeInsightTitle'), text=$m12('homeInsightText');
+    if(!title||!text) return;
+    const income=moneyText('incomeValue'), expense=moneyText('expenseValue');
+    title.textContent='Resumo do período';
+    text.textContent=`Você recebeu ${income} e gastou ${expense}. Toque para ver a análise inteligente.`;
+  }
+  ['incomeValue','expenseValue'].forEach(id=>{const el=$m12(id);if(el)new MutationObserver(updateInsight).observe(el,{childList:true,subtree:true,characterData:true})});
+  updateInsight();
+
+  // Feedback moderno do olho da senha, preservando o listener original.
+  document.querySelectorAll('[data-password-toggle]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const input=$m12(btn.getAttribute('data-password-toggle'));
+      setTimeout(()=>{
+        const visible=input?.type==='text';
+        btn.setAttribute('aria-pressed',String(visible));
+        btn.setAttribute('aria-label',visible?'Ocultar senha':'Mostrar senha');
+      },0);
+    });
+  });
+})();
+
+/* =========================================================
+   CONTROLES MOBILE 15.1 — CADEADO PREMIUM NOS ATALHOS
+   ========================================================= */
+(function controlesPremiumShortcutLock(){
+  function syncPremiumShortcutLocks(){
+    const premium = typeof isPremiumActive === 'function' && isPremiumActive();
+    document.querySelectorAll('[data-premium-home="true"]').forEach(btn=>{
+      btn.classList.toggle('premium-locked', !premium);
+      if(!premium) btn.setAttribute('data-premium-locked','true');
+      else btn.removeAttribute('data-premium-locked');
+      const lock=btn.querySelector('.premium-diamond');
+      if(lock){
+        lock.setAttribute('aria-label', premium ? 'Premium desbloqueado' : 'Recurso Premium bloqueado');
+        lock.title=premium ? 'Premium desbloqueado' : 'Recurso Premium';
+      }
+    });
+    document.querySelectorAll('.nav-lock').forEach(lock=>{
+      lock.setAttribute('aria-label', premium ? 'Premium desbloqueado' : 'Recurso Premium bloqueado');
+      lock.title=premium ? 'Premium desbloqueado' : 'Recurso Premium';
+    });
+  }
+  document.addEventListener('click',function(e){
+    const shortcut=e.target.closest?.('[data-premium-home="true"]');
+    if(!shortcut) return;
+    const premium=typeof isPremiumActive === 'function' && isPremiumActive();
+    if(!premium){
+      e.preventDefault();e.stopImmediatePropagation();
+      if(typeof openPremiumAccess === 'function') openPremiumAccess();
+    }
+  },true);
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(syncPremiumShortcutLocks,100));
+  window.addEventListener('load',()=>setTimeout(syncPremiumShortcutLocks,250));
+  const oldApply=window.applyPremiumAccess;
+  if(typeof oldApply==='function'){
+    window.applyPremiumAccess=function(){const r=oldApply.apply(this,arguments);syncPremiumShortcutLocks();return r;};
+  }
+})();
+
+
+/* =========================================================
+   CONTROLES — NAVEGAÇÃO DE SEGURANÇA
+   Garante ação nos botões declarativos sem duplicar eventos.
+   ========================================================= */
+document.addEventListener("click", function controlesNavigationFallback(event){
+  const button = event.target.closest("button[data-section]");
+  if (!button) return;
+
+  const section = button.dataset.section;
+  if (!section) return;
+
+  /* Os listeners principais continuam tendo prioridade.
+     Este fallback só atua quando a navegação declarativa existe. */
+  if (button.dataset.premiumLocked === "true" && typeof isPremiumActive === "function" && !isPremiumActive()){
+    if (typeof openPremiumAccess === "function") openPremiumAccess();
+    return;
+  }
+
+  if (typeof showSection === "function"){
+    showSection(section);
+  }
+});
+
+
+/* =========================================================
+   CONTROLES — APARÊNCIA + WHATSAPP FLUTUANTE
+   ========================================================= */
+(function(){
+  const STORAGE_KEY = "controles_theme_preference";
+  const root = document.documentElement;
+  const systemDark = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+
+  function savedTheme(){
+    return localStorage.getItem(STORAGE_KEY) || "dark";
+  }
+
+  function effectiveTheme(choice){
+    if(choice === "system"){
+      return systemDark && systemDark.matches ? "dark" : "light";
+    }
+    return choice === "light" ? "light" : "dark";
+  }
+
+  function applyTheme(choice, save){
+    const valid = ["light","dark","system"].includes(choice) ? choice : "dark";
+    root.dataset.controlesTheme = effectiveTheme(valid);
+    root.dataset.controlesThemeChoice = valid;
+    if(save) localStorage.setItem(STORAGE_KEY, valid);
+
+    document.querySelectorAll("[data-theme-choice]").forEach(btn=>{
+      btn.classList.toggle("active", btn.dataset.themeChoice === valid);
+    });
+  }
+
+  applyTheme(savedTheme(), false);
+
+  if(systemDark){
+    const onSystemChange = () => {
+      if(savedTheme() === "system") applyTheme("system", false);
+    };
+    if(systemDark.addEventListener) systemDark.addEventListener("change", onSystemChange);
+    else if(systemDark.addListener) systemDark.addListener(onSystemChange);
+  }
+
+  function appearanceTrigger(){
+    return Array.from(document.querySelectorAll("button, a, [role='button']")).find(el=>{
+      const txt = (el.textContent || "").trim().toLowerCase();
+      return txt.includes("aparência") || txt.includes("aparencia");
+    });
+  }
+
+  function openAppearance(){
+    const modal = document.getElementById("appearanceModal");
+    if(!modal) return;
+    applyTheme(savedTheme(), false);
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden","false");
+  }
+
+  function closeAppearance(){
+    const modal = document.getElementById("appearanceModal");
+    if(!modal) return;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden","true");
+  }
+
+  document.addEventListener("click", function(e){
+    const trigger = e.target.closest("button, a, [role='button']");
+    const appTrigger = appearanceTrigger();
+
+    if(trigger && appTrigger && trigger === appTrigger){
+      e.preventDefault();
+      e.stopPropagation();
+      openAppearance();
+      return;
+    }
+
+    if(e.target.closest("#appearanceClose") || e.target.closest("[data-close-appearance='true']")){
+      closeAppearance();
+      return;
+    }
+
+    const themeButton = e.target.closest("[data-theme-choice]");
+    if(themeButton){
+      applyTheme(themeButton.dataset.themeChoice, true);
+      setTimeout(closeAppearance, 160);
+      return;
+    }
+
+    const whatsappButton = e.target.closest("#whatsappFloatingButton");
+    if(whatsappButton){
+      e.preventDefault();
+
+      /* Por enquanto abre a área interna do Assessor WhatsApp.
+         Quando o número/API definitivo estiver pronto, substitua este bloco
+         pelo redirecionamento da integração oficial. */
+      if(typeof showSection === "function"){
+        showSection("whatsapp");
+        return;
+      }
+
+      const internalWhatsapp = document.querySelector('[data-section="whatsapp"]');
+      if(internalWhatsapp) internalWhatsapp.click();
+    }
+  }, true);
+})();
+
+
+/* =========================================================
+   CONTROLES — ESTADO PREMIUM DA BOLHA WHATSAPP
+   ========================================================= */
+(function(){
+  function ctUserIsPremium(){
+    try{
+      if(typeof isPremiumActive === "function") return !!isPremiumActive();
+    }catch(e){}
+
+    /* Fallback visual: procura estados já usados pelo próprio app. */
+    const body = document.body;
+    if(body && (body.classList.contains("premium-user") || body.dataset.premium === "true")){
+      return true;
+    }
+    return false;
+  }
+
+  function syncWhatsappFloatingLock(){
+    const btn=document.getElementById("whatsappFloatingButton");
+    if(!btn) return;
+    const premium=ctUserIsPremium();
+    btn.classList.toggle("ct-free-locked",!premium);
+    btn.setAttribute("aria-label", premium ? "Abrir Assessor WhatsApp" : "Assessor WhatsApp — recurso Premium");
+  }
+
+  document.addEventListener("DOMContentLoaded",syncWhatsappFloatingLock);
+  window.addEventListener("load",syncWhatsappFloatingLock);
+
+  /* Atualiza também após mudanças de tela/login/assinatura. */
+  document.addEventListener("click",function(){
+    setTimeout(syncWhatsappFloatingLock,120);
+  });
+
+  /* Usuário grátis: clicar na bolha respeita o gate Premium existente. */
+  document.addEventListener("click",function(e){
+    const btn=e.target.closest("#whatsappFloatingButton");
+    if(!btn || ctUserIsPremium()) return;
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    if(typeof openPremiumAccess === "function"){
+      openPremiumAccess();
+      return;
+    }
+
+    const premiumButton=document.querySelector('[data-section="premium"]');
+    if(premiumButton) premiumButton.click();
+  },true);
+})();
+
+
+/* CONTROLES — WhatsApp flutuante sem cadeado visual */
+(function(){
+  function cleanWhatsappBubble(){
+    const btn=document.getElementById("whatsappFloatingButton");
+    if(!btn) return;
+    btn.classList.remove("ct-free-locked");
+    const lock=btn.querySelector(".ct-whatsapp-lock");
+    if(lock) lock.remove();
+    btn.setAttribute("aria-label","Abrir Assessor WhatsApp");
+  }
+  document.addEventListener("DOMContentLoaded",cleanWhatsappBubble);
+  window.addEventListener("load",cleanWhatsappBubble);
+  setTimeout(cleanWhatsappBubble,250);
+})();
