@@ -51,22 +51,6 @@ Carregando mensagens mais antigas…
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* =========================================================
    CONTROLES — PREMIUM MINT 6.0
    Dark + Esmeralda + Menta + Laranja
@@ -6256,8 +6240,7 @@ html[data-controles-theme="light"] #transactionsSection .transaction-card{
     grid-template-columns:1fr 1fr!important;
   }
 }
-/* Apenas visibilidade dos cadeados para assinantes Premium; sem alterar layout. */
-body.premium-plan .nav-lock,body.premium-plan .premium-diamond{display:none!important}
-#normalReportContent[hidden],#premiumReportContent[hidden],#primeReportsIntro[hidden]{display:none!important}
-                        
+
+
+
 
