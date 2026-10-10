@@ -105,7 +105,7 @@ const SECTION_TITLES = {
     reports: "Relatórios",
     whatsapp: "Assessor WhatsApp",
     "ai-report": "Relatório com IA",
-    premium: "ControleS Prime"
+    premium: "Premium"
 };
 
 
@@ -4431,10 +4431,7 @@ function renderCategoryChart() {
 
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#d9f4ed', font: { size: 12 } } }
-                    }
+                    maintainAspectRatio: false
                 }
             }
         );
@@ -4647,8 +4644,6 @@ async function saveGoal(event) {
    ========================================================= */
 
 function renderReports() {
-    syncPrimeReports();
-    if (!isPremiumActive()) return;
 
     const period = getSelectedPeriod();
     const summary = period ? calculatePeriodSummary(period) : getTotals();
@@ -5008,7 +5003,7 @@ function renderPremium() {
 
     if (status) {
         if (isPremiumActive()) {
-            status.textContent = "ControleS Prime ativo pela Google Play";
+            status.textContent = "Premium ativo pela Google Play";
         } else if (!revenueCatReadyForRealPurchases()) {
             status.textContent = "Assinatura será ativada após configurar a Play Store";
         } else {
@@ -5019,8 +5014,8 @@ function renderPremium() {
     const buyButton = $("activatePremiumBtn");
     if (buyButton) {
         buyButton.textContent = isPremiumActive()
-            ? "ControleS Prime ativo"
-            : "Assinar ControleS Prime — R$ 29,99/mês";
+            ? "Premium ativo"
+            : "Assinar Premium — R$ 29,99/mês";
         buyButton.disabled = isPremiumActive();
     }
 }
@@ -6598,8 +6593,37 @@ function openPremiumAccess() {
 }
 
 
+/* Exibe relatórios completos apenas quando a assinatura estiver ativa. */
+function syncPremiumReportsVisibility(premium = isPremiumActive()) {
+    const report = document.getElementById("normalReportContent");
+    const gate = document.getElementById("premiumReportContent");
+    const intro = document.getElementById("primeReportsIntro");
+    if (report) {
+        report.hidden = !premium;
+        report.classList.toggle("hidden", !premium);
+        report.style.display = premium ? "" : "none";
+    }
+    if (gate) {
+        gate.hidden = premium;
+        gate.classList.toggle("hidden", premium);
+        gate.style.display = premium ? "none" : "";
+    }
+    if (intro) {
+        intro.hidden = !premium;
+        intro.classList.toggle("hidden", !premium);
+        intro.style.display = premium ? "" : "none";
+    }
+    document.querySelectorAll(".premium-diamond, .nav-lock").forEach(lock => {
+        lock.hidden = premium;
+        lock.style.display = premium ? "none" : "";
+        lock.setAttribute("aria-hidden", premium ? "true" : "false");
+    });
+    if (premium && document.getElementById("reportsSection")?.classList.contains("active")) {
+        renderReports();
+    }
+}
+
 function applyPremiumAccess() {
-    syncPrimeReports();
 
     const premium =
         isPremiumActive();
@@ -6615,6 +6639,8 @@ function applyPremiumAccess() {
         premium
     );
 
+    syncPremiumReportsVisibility(premium);
+
 
     /* =====================================================
        MENUS PREMIUM
@@ -6622,6 +6648,7 @@ function applyPremiumAccess() {
 
     const blockedSections = [
         "categories",
+        "reports",
         "whatsapp",
         "ai-report"
     ];
@@ -7440,6 +7467,8 @@ document.addEventListener('click', function(e){
       else btn.removeAttribute('data-premium-locked');
       const lock=btn.querySelector('.premium-diamond');
       if(lock){
+        lock.hidden = premium;
+        lock.style.display = premium ? 'none' : '';
         lock.setAttribute('aria-label', premium ? 'Premium desbloqueado' : 'Recurso Premium bloqueado');
         lock.title=premium ? 'Premium desbloqueado' : 'Recurso Premium';
       }
@@ -7662,15 +7691,4 @@ document.addEventListener("click", function controlesNavigationFallback(event){
   setTimeout(cleanWhatsappBubble,250);
 })();
 
-/* ControleS Prime: bloqueio visual e acesso aos relatórios */
-function syncPrimeReports() {
-    const active = isPremiumActive();
-    const gate = document.getElementById('premiumReportContent');
-    const content = document.getElementById('normalReportContent');
-    const intro = document.getElementById('primeReportsIntro');
-    if (gate) { gate.classList.toggle('hidden', active); gate.hidden = active; }
-    if (content) { content.classList.toggle('prime-reports-locked', !active); content.hidden = !active; }
-    if (intro) intro.hidden = active;
-    const reportsNav = document.querySelectorAll('[data-section="reports"], [data-bottom-section="reports"]');
-    reportsNav.forEach(el => { el.removeAttribute('data-premium-locked'); el.classList.remove('premium-locked'); });
-}
+
