@@ -6358,3 +6358,74 @@ html body #appView #dashboardSection article.balance-card.balance-overview-card:
  html body #appView #dashboardSection article.balance-card.balance-overview-card::before,
  html body #appView #dashboardSection article.balance-card.balance-overview-card::after{animation:none!important;}
 }
+
+
+/* CONTROLES — RELATÓRIOS OPÇÃO B | Verde-escuro com contraste real.
+   Escopo exclusivo da seção de relatórios: saldo e navegação preservados. */
+html body #appView #reportsSection .report-cards > .report-card {
+  background:linear-gradient(145deg,#154d3d 0%,#092b23 100%)!important;
+  color:#f7fff9!important; border:1px solid rgba(105,218,166,.34)!important;
+  box-shadow:0 12px 26px rgba(0,0,0,.23),inset 0 1px 0 rgba(255,255,255,.05)!important;
+}
+html body #appView #reportsSection .report-cards > .report-card:nth-child(2) {
+  background:linear-gradient(145deg,#3b302c 0%,#242521 100%)!important;
+  border-color:rgba(255,151,127,.28)!important;
+}
+html body #appView #reportsSection .report-cards > .report-card:nth-child(3) {
+  background:linear-gradient(145deg,#164d48 0%,#0a2c32 100%)!important;
+  border-color:rgba(132,218,211,.33)!important;
+}
+html body #appView #reportsSection .report-cards > .report-card span,
+html body #appView #reportsSection .report-cards > .report-card small {
+  color:#d6eee3!important; opacity:1!important; font-weight:650!important;
+}
+html body #appView #reportsSection .report-cards > .report-card strong {
+  color:#f9fffd!important; opacity:1!important; text-shadow:0 1px 5px rgba(0,0,0,.2)!important;
+}
+html body #appView #reportsSection .report-cards > .report-card:first-child strong {color:#66f0b3!important;}
+html body #appView #reportsSection .report-cards > .report-card:nth-child(2) strong {color:#ff9d91!important;}
+html body #appView #reportsSection .report-cards > .report-card:nth-child(3) strong {color:#f8fffc!important;}
+html body #appView #reportsSection .period-filter.panel,
+html body #appView #reportsSection .reports-grid > .panel,
+html body #appView #reportsSection .report-values,
+html body #appView #reportsSection .prime-reports-intro {
+  background:linear-gradient(150deg,#153d31 0%,#0b261e 100%)!important;
+  color:#f4fff9!important; border:1px solid rgba(119,219,171,.25)!important;
+}
+html body #appView #reportsSection .panel h3,
+html body #appView #reportsSection .period-filter h3,
+html body #appView #reportsSection .prime-reports-intro h3,
+html body #appView #reportsSection .report-line strong {color:#f8fffb!important;}
+html body #appView #reportsSection .panel p,
+html body #appView #reportsSection .period-filter p,
+html body #appView #reportsSection .prime-reports-intro p,
+html body #appView #reportsSection .report-line span {color:#c8e8d8!important;}
+html body #appView #reportsSection input,
+html body #appView #reportsSection select {color:#f5fff9!important;background:#143b2e!important;border-color:rgba(136,226,185,.3)!important;}
+html body #appView #reportsSection select option {color:#fff;background:#143b2e;}
+
+
+/* CONTROLES — CORREÇÃO DIRETA DOS RETÂNGULOS BRANCOS NOS RELATÓRIOS */
+html body #appView #reportsSection .report-line,
+html body #appView #reportsSection .report-values .report-line,
+html body #appView #reportsSection #reportComparison .report-line {
+  background:linear-gradient(120deg,#123b30,#0b2923)!important;
+  border:1px solid rgba(110,214,169,.23)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
+  color:#f4fff9!important;
+}
+html body #appView #reportsSection .report-line span,
+html body #appView #reportsSection #reportComparison .report-line span {color:#d7f2e5!important;opacity:1!important;font-weight:650!important;}
+html body #appView #reportsSection .report-line strong,
+html body #appView #reportsSection #reportComparison .report-line strong {color:#f7fffc!important;opacity:1!important;font-weight:800!important;}
+html body #appView #reportsSection .report-line:has(#reportIncome) strong,
+html body #appView #reportsSection .report-line:has(#comparisonIncome) strong {color:#61edac!important;}
+html body #appView #reportsSection .report-line:has(#reportExpense) strong,
+html body #appView #reportsSection .report-line:has(#comparisonExpense) strong {color:#ff9c90!important;}
+html body #appView #reportsSection .report-line.total {background:linear-gradient(120deg,#164c3b,#0c3028)!important;border-color:rgba(104,236,170,.34)!important;}
+html body #appView #reportsSection #automaticReportAnalysis.report-analysis,
+html body #appView #reportsSection #automaticReportAnalysis.report-analysis p {
+  background:linear-gradient(135deg,#133b30,#0a2922)!important;
+  color:#e0f7ec!important;opacity:1!important;
+}
+html body #appView #reportsSection #automaticReportAnalysis.report-analysis {border:1px solid rgba(110,214,169,.23)!important;border-radius:18px!important;}
