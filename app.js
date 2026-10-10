@@ -51,22 +51,6 @@ Carregando mensagens mais antigas…
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* =========================================================
    CONTROLES 1.0 — APP.JS
    =========================================================
@@ -1460,6 +1444,7 @@ function showSection(sectionName) {
             break;
 
         case "reports":
+            applyPremiumAccess();
             renderReports();
             break;
 
@@ -4712,26 +4697,7 @@ async function saveGoal(event) {
    RELATÓRIOS
    ========================================================= */
 
-
-/* CONTROLES — RELATORIOS: liberar somente para assinatura ativa. */
-function syncPremiumReportAccess() {
-    const premium = isPremiumActive();
-    const gate = document.getElementById('premiumReportContent');
-    const content = document.getElementById('normalReportContent');
-    const intro = document.getElementById('primeReportsIntro');
-    if (gate) gate.hidden = premium;
-    if (content) content.hidden = !premium;
-    if (intro) intro.hidden = !premium;
-    document.body.classList.toggle('premium-plan', premium);
-    document.body.classList.toggle('free-plan', !premium);
-    document.querySelectorAll('.nav-lock, .premium-diamond').forEach(lock => {
-        lock.hidden = premium;
-        lock.setAttribute('aria-hidden', premium ? 'true' : 'false');
-    });
-}
-
 function renderReports() {
-    syncPremiumReportAccess();
 
     const period = getSelectedPeriod();
     const summary = period ? calculatePeriodSummary(period) : getTotals();
@@ -6682,7 +6648,6 @@ function openPremiumAccess() {
 
 
 function applyPremiumAccess() {
-    syncPremiumReportAccess();
 
     const premium =
         isPremiumActive();
@@ -6697,6 +6662,20 @@ function applyPremiumAccess() {
         "premium-plan",
         premium
     );
+
+    // Premium: esconder apenas os cadeados e o aviso de assinatura.
+    // Nenhum estilo do layout é alterado.
+    document.querySelectorAll('.nav-item .nav-lock, .premium-home-shortcut .premium-diamond')
+        .forEach(lock => { lock.style.display = premium ? 'none' : ''; });
+
+    const reportGate = document.getElementById('premiumReportContent');
+    if (reportGate) reportGate.style.setProperty('display', premium ? 'none' : '', premium ? 'important' : '');
+
+    // Quando Premium estiver ativo, garantir que o relatório use os lançamentos carregados.
+    if (premium && document.getElementById('reportsSection')?.classList.contains('active')) {
+        renderReports();
+    }
+
 
 
     /* =====================================================
@@ -7745,5 +7724,6 @@ document.addEventListener("click", function controlesNavigationFallback(event){
   window.addEventListener("load",cleanWhatsappBubble);
   setTimeout(cleanWhatsappBubble,250);
 })();
-                        
+
+
 
