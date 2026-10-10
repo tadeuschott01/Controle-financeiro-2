@@ -1,3 +1,72 @@
+
+Carregando mensagens mais antigas…
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* =========================================================
    CONTROLES 1.0 — APP.JS
    =========================================================
@@ -4643,7 +4712,26 @@ async function saveGoal(event) {
    RELATÓRIOS
    ========================================================= */
 
+
+/* CONTROLES — RELATORIOS: liberar somente para assinatura ativa. */
+function syncPremiumReportAccess() {
+    const premium = isPremiumActive();
+    const gate = document.getElementById('premiumReportContent');
+    const content = document.getElementById('normalReportContent');
+    const intro = document.getElementById('primeReportsIntro');
+    if (gate) gate.hidden = premium;
+    if (content) content.hidden = !premium;
+    if (intro) intro.hidden = !premium;
+    document.body.classList.toggle('premium-plan', premium);
+    document.body.classList.toggle('free-plan', !premium);
+    document.querySelectorAll('.nav-lock, .premium-diamond').forEach(lock => {
+        lock.hidden = premium;
+        lock.setAttribute('aria-hidden', premium ? 'true' : 'false');
+    });
+}
+
 function renderReports() {
+    syncPremiumReportAccess();
 
     const period = getSelectedPeriod();
     const summary = period ? calculatePeriodSummary(period) : getTotals();
@@ -6593,37 +6681,8 @@ function openPremiumAccess() {
 }
 
 
-/* Exibe relatórios completos apenas quando a assinatura estiver ativa. */
-function syncPremiumReportsVisibility(premium = isPremiumActive()) {
-    const report = document.getElementById("normalReportContent");
-    const gate = document.getElementById("premiumReportContent");
-    const intro = document.getElementById("primeReportsIntro");
-    if (report) {
-        report.hidden = !premium;
-        report.classList.toggle("hidden", !premium);
-        report.style.display = premium ? "" : "none";
-    }
-    if (gate) {
-        gate.hidden = premium;
-        gate.classList.toggle("hidden", premium);
-        gate.style.display = premium ? "none" : "";
-    }
-    if (intro) {
-        intro.hidden = !premium;
-        intro.classList.toggle("hidden", !premium);
-        intro.style.display = premium ? "" : "none";
-    }
-    document.querySelectorAll(".premium-diamond, .nav-lock").forEach(lock => {
-        lock.hidden = premium;
-        lock.style.display = premium ? "none" : "";
-        lock.setAttribute("aria-hidden", premium ? "true" : "false");
-    });
-    if (premium && document.getElementById("reportsSection")?.classList.contains("active")) {
-        renderReports();
-    }
-}
-
 function applyPremiumAccess() {
+    syncPremiumReportAccess();
 
     const premium =
         isPremiumActive();
@@ -6638,8 +6697,6 @@ function applyPremiumAccess() {
         "premium-plan",
         premium
     );
-
-    syncPremiumReportsVisibility(premium);
 
 
     /* =====================================================
@@ -7467,8 +7524,6 @@ document.addEventListener('click', function(e){
       else btn.removeAttribute('data-premium-locked');
       const lock=btn.querySelector('.premium-diamond');
       if(lock){
-        lock.hidden = premium;
-        lock.style.display = premium ? 'none' : '';
         lock.setAttribute('aria-label', premium ? 'Premium desbloqueado' : 'Recurso Premium bloqueado');
         lock.title=premium ? 'Premium desbloqueado' : 'Recurso Premium';
       }
@@ -7690,5 +7745,5 @@ document.addEventListener("click", function controlesNavigationFallback(event){
   window.addEventListener("load",cleanWhatsappBubble);
   setTimeout(cleanWhatsappBubble,250);
 })();
-
+                        
 
