@@ -1,3 +1,56 @@
+
+Carregando mensagens mais antigas…
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* =========================================================
    CONTROLES 1.0 — APP.JS
    =========================================================
@@ -1391,7 +1444,6 @@ function showSection(sectionName) {
             break;
 
         case "reports":
-            applyPremiumAccess();
             renderReports();
             break;
 
@@ -4645,6 +4697,7 @@ async function saveGoal(event) {
    ========================================================= */
 
 function renderReports() {
+    applyPremiumAccess();
 
     const period = getSelectedPeriod();
     const summary = period ? calculatePeriodSummary(period) : getTotals();
@@ -6610,20 +6663,6 @@ function applyPremiumAccess() {
         premium
     );
 
-    // Premium: esconder apenas os cadeados e o aviso de assinatura.
-    // Nenhum estilo do layout é alterado.
-    document.querySelectorAll('.nav-item .nav-lock, .premium-home-shortcut .premium-diamond')
-        .forEach(lock => { lock.style.display = premium ? 'none' : ''; });
-
-    const reportGate = document.getElementById('premiumReportContent');
-    if (reportGate) reportGate.style.setProperty('display', premium ? 'none' : '', premium ? 'important' : '');
-
-    // Quando Premium estiver ativo, garantir que o relatório use os lançamentos carregados.
-    if (premium && document.getElementById('reportsSection')?.classList.contains('active')) {
-        renderReports();
-    }
-
-
 
     /* =====================================================
        MENUS PREMIUM
@@ -6740,6 +6779,20 @@ function applyPremiumAccess() {
             });
     });
 
+
+    // Relatórios: exibe conteúdo e oculta o aviso apenas com Premium ativo.
+    const reportGate = $("premiumReportContent");
+    const reportBody = $("normalReportContent");
+    const reportIntro = $("primeReportsIntro");
+    if (reportGate) reportGate.hidden = premium;
+    if (reportBody) reportBody.hidden = !premium;
+    if (reportIntro) reportIntro.hidden = !premium;
+
+    // Cadeados visuais não devem aparecer para assinantes Premium.
+    document.querySelectorAll(".nav-item .nav-lock").forEach(lock => {
+        lock.hidden = premium;
+        lock.style.display = premium ? "none" : "";
+    });
 
     /* No plano grátis, o resumo e os últimos lançamentos continuam visíveis.
        Apenas o gráfico avançado fica reservado ao Premium. */
@@ -7671,6 +7724,5 @@ document.addEventListener("click", function controlesNavigationFallback(event){
   window.addEventListener("load",cleanWhatsappBubble);
   setTimeout(cleanWhatsappBubble,250);
 })();
-
 
 
