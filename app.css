@@ -1,3 +1,72 @@
+
+Carregando mensagens mais antigas…
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* =========================================================
    CONTROLES — PREMIUM MINT 6.0
    Dark + Esmeralda + Menta + Laranja
@@ -6187,16 +6256,8 @@ html[data-controles-theme="light"] #transactionsSection .transaction-card{
     grid-template-columns:1fr 1fr!important;
   }
 }
-/* CONTROLES — PREMIUM: esconder totalmente os cadeados no plano ativo */
-body.premium-plan .premium-diamond,
-body.premium-plan .nav-lock,
-body.premium-plan .premium-diamond::before,
-body.premium-plan .premium-diamond::after,
-body.premium-plan .nav-lock::before,
-body.premium-plan .nav-lock::after {
-  display: none !important;
-  content: none !important;
-}
-#normalReportContent[hidden], #premiumReportContent[hidden], #primeReportsIntro[hidden] { display: none !important; }
-
+/* Apenas visibilidade dos cadeados para assinantes Premium; sem alterar layout. */
+body.premium-plan .nav-lock,body.premium-plan .premium-diamond{display:none!important}
+#normalReportContent[hidden],#premiumReportContent[hidden],#primeReportsIntro[hidden]{display:none!important}
+                        
 
