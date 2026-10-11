@@ -7209,7 +7209,7 @@ function updateWhatsAppPreview() {
         const ai = event.target.closest?.("#generateAIReportBtn");
         if (ai) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); renderAIReport(true); return; }
         const wa = event.target.closest?.("#whatsappPrimaryBtn");
-        if (wa) { event.preventDefault(); if (!isPremiumActive()) return openPremiumAccess(); updateWhatsAppPreview(); showToast("A interface está pronta. Falta conectar a API oficial do WhatsApp.", "info"); }
+        if (wa) { event.preventDefault(); event.stopPropagation(); updateWhatsAppPreview(); iniciarVinculacaoWhatsApp(); }
     });
 })();
 
@@ -7642,6 +7642,8 @@ document.addEventListener("click", function controlesNavigationFallback(event){
   document.addEventListener("click",function(e){
     const btn=e.target.closest("#whatsappFloatingButton");
     if(!btn || ctUserIsPremium()) return;
+    // O acesso continua protegido pelo servidor, que permite apenas o UID de teste.
+    if (typeof currentUser !== "undefined" && currentUser) return;
 
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -7671,3 +7673,36 @@ document.addEventListener("click", function controlesNavigationFallback(event){
   window.addEventListener("load",cleanWhatsappBubble);
   setTimeout(cleanWhatsappBubble,250);
 })();
+
+/* =========================================================
+   CONTROLES — VINCULAÇÃO WHATSAPP (TESTE AUTORIZADO)
+   O servidor valida o JWT e o WHATSAPP_TEST_USER_ID.
+   Não colocar service_role ou segredos neste arquivo.
+   ========================================================= */
+async function iniciarVinculacaoWhatsApp() {
+    if (!supabaseClient || !currentUser) {
+        showToast("Entre na sua conta ControleS primeiro.", "warning");
+        return;
+    }
+    try {
+        const { data, error } = await supabaseClient.auth.getSession();
+        if (error || !data?.session?.access_token) throw new Error("Faça login novamente.");
+        const response = await fetch("https://controles-whatsapp.onrender.com/whatsapp/link-code", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${data.session.access_token}` }
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.detail || "Não foi possível gerar o código.");
+        const message = result.message || `VINCULAR ${result.code}`;
+        // O código expira em 10 minutos. O usuário envia do próprio número.
+        const copied = window.confirm(`Envie esta mensagem ao WhatsApp oficial do ControleS em até 10 minutos:\n\n${message}\n\nOK: copiar mensagem. Cancelar: fechar.`);
+        if (copied) {
+            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(message);
+            else window.prompt("Copie a mensagem e envie ao WhatsApp ControleS:", message);
+            showToast("Código preparado. Envie ao WhatsApp ControleS.", "success");
+        }
+    } catch (error) {
+        console.error("Erro ao vincular WhatsApp:", error);
+        showToast(error.message || "Falha na vinculação do WhatsApp.", "error");
+    }
+}
