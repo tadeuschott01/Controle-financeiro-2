@@ -193,6 +193,36 @@ def parse_financial_message(text):
     return {"type": "receita" if verb.lower() == "recebi" else "despesa", "amount": amount, "description": description.strip(), "category": "Outros", "date": datetime.now(timezone.utc).date().isoformat()}
 
 
+def whatsapp_menu():
+    return ("💚 *ControleS — Como usar*\n\n"
+            "💸 Gastei 50 no mercado\n"
+            "💰 Recebi 150 de um serviço\n"
+            "📊 Saldo — consultar seu saldo\n"
+            "📂 Categorias — ver suas categorias\n"
+            "❓ Menu ou Ajuda — ver estas instruções")
+
+
+def consulta_whatsapp(user_id, command):
+    if command in ("oi", "olá", "ola", "menu", "ajuda", "comandos", "bom dia", "boa tarde", "boa noite"):
+        return whatsapp_menu()
+    if command in ("saldo", "meu saldo", "consultar saldo"):
+        rows = supabase_request("transactions", query="user_id=eq." + quote(user_id, safe="") + "&select=type,amount") or []
+        receitas = sum(float(r.get("amount") or 0) for r in rows if r.get("type") == "receita")
+        despesas = sum(float(r.get("amount") or 0) for r in rows if r.get("type") == "despesa")
+        return f"📊 *Seu saldo*\nReceitas: {dinheiro(receitas)}\nDespesas: {dinheiro(despesas)}\nSaldo: {dinheiro(receitas - despesas)}"
+    if command in ("categorias", "ver categorias", "minhas categorias"):
+        rows = supabase_request("categories", query="user_id=eq." + quote(user_id, safe="") + "&select=name,type&order=name.asc") or []
+        if not rows:
+            return "📂 Você ainda não tem categorias cadastradas no ControleS."
+        lines = ["📂 *Suas categorias no ControleS*"]
+        for row in rows[:50]:
+            name = str(row.get("name") or "").strip()
+            if name:
+                lines.append(("💰 " if row.get("type") == "receita" else "💸 ") + name)
+        return "\n".join(lines)
+    return None
+
+
 def handle_linked_finances(number, text, message_id):
     linked = try_link_number(number, text)
     if linked is not None:
@@ -204,9 +234,13 @@ def handle_linked_finances(number, text, message_id):
     user_id = links[0]["user_id"]
     if not WHATSAPP_TEST_USER_ID or user_id != WHATSAPP_TEST_USER_ID:
         return "Este recurso está disponível apenas para testes autorizados."
+    command = text.strip().casefold()
+    help_response = consulta_whatsapp(user_id, command)
+    if help_response is not None:
+        return help_response
     transaction = parse_financial_message(text)
     if not transaction:
-        return "Envie, por exemplo: Gastei 50 no mercado ou Recebi 100 de um serviço."
+        return "Não entendi. Envie *Menu* para ver os comandos disponíveis."
     if not message_id:
         return "Não foi possível identificar esta mensagem. Tente novamente."
     # Idempotência: Meta pode reenviar o mesmo evento.
