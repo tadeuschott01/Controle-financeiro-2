@@ -5,10 +5,16 @@
 
 import os
 import json
+import hmac
+import hashlib
+import secrets
+import re
+from datetime import datetime, timedelta, timezone
+from urllib.parse import quote
 import urllib.request
 import urllib.error
 
-from fastapi import FastAPI, Request, Response, HTTPException
+from fastapi import FastAPI, Request, Response, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -72,6 +78,142 @@ GRAPH_API_VERSION = os.getenv(
     "GRAPH_API_VERSION",
     "v23.0"
 )
+
+
+# Supabase: credenciais apenas no servidor (Render).
+SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+WHATSAPP_APP_SECRET = os.getenv("WHATSAPP_APP_SECRET", "")
+WHATSAPP_LINK_SECRET = os.getenv("WHATSAPP_LINK_SECRET", "")
+# ID UUID da conta autorizada a testar. Sem ele, lançamentos ficam bloqueados.
+WHATSAPP_TEST_USER_ID = os.getenv("WHATSAPP_TEST_USER_ID", "").strip()
+
+
+def supabase_request(table, method="GET", query="", payload=None, prefer=None, bearer=None):
+    if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
+        raise RuntimeError("Supabase não configurado no Render")
+    url = f"{SUPABASE_URL}/rest/v1/{table}{('?' + query) if query else ''}"
+    data = json.dumps(payload).encode("utf-8") if payload is not None else None
+    req = urllib.request.Request(url, data=data, method=method)
+    req.add_header("apikey", SUPABASE_SERVICE_ROLE_KEY)
+    req.add_header("Authorization", f"Bearer {bearer or SUPABASE_SERVICE_ROLE_KEY}")
+    req.add_header("Content-Type", "application/json")
+    if prefer:
+        req.add_header("Prefer", prefer)
+    with urllib.request.urlopen(req, timeout=12) as res:
+        body = res.read().decode("utf-8")
+        return json.loads(body) if body else None
+
+
+def authenticated_user_id(authorization):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(401, "Entre na sua conta ControleS")
+    token = authorization.split(" ", 1)[1].strip()
+    if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
+        raise HTTPException(503, "Supabase não configurado")
+    req = urllib.request.Request(f"{SUPABASE_URL}/auth/v1/user")
+    req.add_header("apikey", SUPABASE_SERVICE_ROLE_KEY)
+    req.add_header("Authorization", f"Bearer {token}")
+    try:
+        with urllib.request.urlopen(req, timeout=12) as res:
+            user = json.loads(res.read().decode("utf-8"))
+        return user["id"]
+    except (urllib.error.HTTPError, KeyError, ValueError):
+        raise HTTPException(401, "Sessão inválida; faça login novamente")
+
+
+def code_hash(code):
+    return hmac.new(WHATSAPP_LINK_SECRET.encode(), code.encode(), hashlib.sha256).hexdigest()
+
+
+@app.post("/whatsapp/link-code")
+def create_whatsapp_link_code(authorization: Optional[str] = Header(None)):
+    """Exige login Supabase; devolve código temporário para enviar no WhatsApp."""
+    if not WHATSAPP_LINK_SECRET or not WHATSAPP_TEST_USER_ID:
+        raise HTTPException(503, "Modo de teste não configurado")
+    user_id = authenticated_user_id(authorization)
+    if user_id != WHATSAPP_TEST_USER_ID:
+        raise HTTPException(403, "Teste restrito à conta autorizada")
+    code = f"{secrets.randbelow(1000000):06d}"
+    expires = (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat()
+    try:
+        supabase_request("whatsapp_pair_codes", "POST", payload={
+            "user_id": user_id, "code_hash": code_hash(code), "expires_at": expires
+        }, prefer="return=minimal")
+    except Exception:
+        raise HTTPException(503, "Não foi possível criar código")
+    return {"code": code, "expires_in_seconds": 600, "message": f"VINCULAR {code}"}
+
+
+def try_link_number(number, text):
+    match = re.fullmatch(r"\s*VINCULAR\s+(\d{6})\s*", text, flags=re.I)
+    if not match:
+        return None
+    if not WHATSAPP_LINK_SECRET or not WHATSAPP_TEST_USER_ID:
+        return "Vinculação indisponível no momento."
+    now = datetime.now(timezone.utc).isoformat()
+    q = "code_hash=eq." + quote(code_hash(match.group(1)), safe="") + "&used_at=is.null&expires_at=gt." + quote(now, safe="") + "&select=id,user_id&limit=1"
+    codes = supabase_request("whatsapp_pair_codes", query=q) or []
+    if not codes or codes[0]["user_id"] != WHATSAPP_TEST_USER_ID:
+        return "Código inválido ou expirado. Gere outro no ControleS."
+    code = codes[0]
+    # Impede vincular um número que já pertence a outra conta.
+    existing = supabase_request("whatsapp_links", query="phone=eq." + quote(number, safe="") + "&select=user_id") or []
+    if existing and existing[0]["user_id"] != code["user_id"]:
+        return "Este número já está vinculado a outra conta."
+    # Impede um código reutilizado em concorrência: PATCH condicional e retorno.
+    used = supabase_request("whatsapp_pair_codes", "PATCH", "id=eq." + quote(code["id"], safe="") + "&used_at=is.null&select=id", {"used_at": now}, "return=representation") or []
+    if not used:
+        return "Código já utilizado. Gere outro no ControleS."
+    supabase_request("whatsapp_links", "POST", payload={"phone": number, "user_id": code["user_id"]}, prefer="resolution=merge-duplicates,return=minimal")
+    return "✅ WhatsApp vinculado à sua conta ControleS!"
+
+
+def parse_financial_message(text):
+    # Aceita somente padrões claros; evita lançar valores ambíguos.
+    match = re.fullmatch(r"\s*(gastei|paguei|recebi)\s+(?:r\$\s*)?(\d+(?:[.,]\d{1,2})?)\s+(?:no|na|com|de|do|da|em|por)?\s*(.{2,90})\s*", text, re.I)
+    if not match:
+        return None
+    verb, raw, description = match.groups()
+    amount = float(raw.replace(",", "."))
+    if amount <= 0 or amount > 1000000:
+        return None
+    return {"type": "receita" if verb.lower() == "recebi" else "despesa", "amount": amount, "description": description.strip(), "category": "Outros", "date": datetime.now(timezone.utc).date().isoformat()}
+
+
+def handle_linked_finances(number, text, message_id):
+    linked = try_link_number(number, text)
+    if linked is not None:
+        return linked
+    links = supabase_request("whatsapp_links", query="phone=eq." + quote(number, safe="") + "&select=user_id&limit=1") or []
+    if not links:
+        return "Para usar o WhatsApp, primeiro vincule sua conta pelo aplicativo ControleS."
+    user_id = links[0]["user_id"]
+    if not WHATSAPP_TEST_USER_ID or user_id != WHATSAPP_TEST_USER_ID:
+        return "Este recurso está disponível apenas para testes autorizados."
+    transaction = parse_financial_message(text)
+    if not transaction:
+        return "Envie, por exemplo: Gastei 50 no mercado ou Recebi 100 de um serviço."
+    if not message_id:
+        return "Não foi possível identificar esta mensagem. Tente novamente."
+    # Idempotência: Meta pode reenviar o mesmo evento.
+    try:
+        supabase_request("whatsapp_processed_messages", "POST", payload={"message_id": message_id, "user_id": user_id}, prefer="return=minimal")
+    except urllib.error.HTTPError as exc:
+        if exc.code == 409:
+            return None
+        raise
+    transaction["user_id"] = user_id
+    try:
+        supabase_request("transactions", "POST", payload=transaction, prefer="return=minimal")
+    except Exception:
+        # Permite reprocessar caso o lançamento falhe (evita marcar como processado antes de salvar).
+        try:
+            supabase_request("whatsapp_processed_messages", "DELETE", "message_id=eq." + quote(message_id, safe=""))
+        except Exception:
+            pass
+        raise
+    return f"✅ {('Receita' if transaction['type'] == 'receita' else 'Despesa')} de {dinheiro(transaction['amount'])} registrada: {transaction['description']}."
 
 
 # ============================================================
@@ -711,168 +853,36 @@ def gerar_resposta_whatsapp(
 # ============================================================
 
 @app.post("/webhook")
-async def receber_webhook(
-    request: Request
-):
-
+async def receber_webhook(request: Request):
+    if not WHATSAPP_APP_SECRET:
+        raise HTTPException(503, "WHATSAPP_APP_SECRET não configurado")
+    body = await request.body()
+    signature = request.headers.get("X-Hub-Signature-256", "")
+    expected = "sha256=" + hmac.new(WHATSAPP_APP_SECRET.encode(), body, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(signature, expected):
+        raise HTTPException(403, "Assinatura Meta inválida")
     try:
-
-        dados = await request.json()
-
-        print(
-            "========================================"
-        )
-
-        print(
-            "EVENTO RECEBIDO DO WHATSAPP"
-        )
-
-        print(
-            "========================================"
-        )
-
-        print(
-            json.dumps(
-                dados,
-                ensure_ascii=False
-            )
-        )
-
-
-        # ----------------------------------------------------
-        # ENTRY
-        # ----------------------------------------------------
-
-        entries = dados.get(
-            "entry",
-            []
-        )
+        payload = json.loads(body)
+    except ValueError:
+        raise HTTPException(400, "JSON inválido")
+    for entry in payload.get("entry", []):
+        for change in entry.get("changes", []):
+            for message in change.get("value", {}).get("messages", []):
+                if message.get("type") != "text":
+                    continue
+                number = message.get("from")
+                text = message.get("text", {}).get("body", "")
+                if not number or not text:
+                    continue
+                try:
+                    response = handle_linked_finances(number, text, message.get("id"))
+                    if response:
+                        enviar_mensagem_whatsapp(number, response)
+                except Exception as exc:
+                    print("Falha ao processar mensagem WhatsApp:", type(exc).__name__)
+                    # Erros transitórios devem resultar em reenvio do evento pela Meta.
+                    raise HTTPException(503, "Erro temporário no processamento")
+    return {"status": "ok"}
 
 
-        for entry in entries:
-
-            changes = entry.get(
-                "changes",
-                []
-            )
-
-
-            for change in changes:
-
-                value = change.get(
-                    "value",
-                    {}
-                )
-
-
-                messages = value.get(
-                    "messages",
-                    []
-                )
-
-
-                for mensagem in messages:
-
-                    numero_usuario = mensagem.get(
-                        "from"
-                    )
-
-                    tipo_mensagem = mensagem.get(
-                        "type"
-                    )
-
-
-                    # ----------------------------------------
-                    # SOMENTE TEXTO POR ENQUANTO
-                    # ----------------------------------------
-
-                    if tipo_mensagem != "text":
-
-                        continue
-
-
-                    texto = mensagem.get(
-                        "text",
-                        {}
-                    ).get(
-                        "body",
-                        ""
-                    )
-
-
-                    print(
-                        "Número:",
-                        numero_usuario
-                    )
-
-                    print(
-                        "Mensagem:",
-                        texto
-                    )
-
-
-                    if (
-                        numero_usuario
-                        and texto
-                    ):
-
-                        resposta = gerar_resposta_whatsapp(
-                            texto
-                        )
-
-                        enviar_mensagem_whatsapp(
-                            numero_usuario,
-                            resposta
-                        )
-
-
-        # A Meta espera HTTP 200 rapidamente.
-        return {
-            "status": "ok"
-        }
-
-
-    except Exception as erro:
-
-        print(
-            "Erro ao processar webhook:",
-            erro
-        )
-
-        # Mantemos resposta controlada para evitar
-        # reenvios desnecessários durante os testes.
-        return {
-            "status": "ok"
-        }
-
-
-# ============================================================
-# ROTA MANUAL PARA TESTAR ENVIO
-# ============================================================
-
-@app.post("/whatsapp/enviar")
-def enviar_whatsapp(
-    dados: MensagemWhatsApp
-):
-
-    enviado = enviar_mensagem_whatsapp(
-        dados.numero,
-        dados.mensagem
-    )
-
-
-    if not enviado:
-
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                "Não foi possível enviar a mensagem. "
-                "Confira as variáveis do WhatsApp no Render."
-            )
-        )
-
-
-    return {
-        "status": "enviado",
-        "numero": dados.numero
-    }
+# A rota /whatsapp/enviar foi desativada por não exigir autenticação.
