@@ -7694,15 +7694,34 @@ async function iniciarVinculacaoWhatsApp() {
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.detail || "Não foi possível gerar o código.");
         const message = result.message || `VINCULAR ${result.code}`;
-        // O código expira em 10 minutos. O usuário envia do próprio número.
-        const copied = window.confirm(`Envie esta mensagem ao WhatsApp oficial do ControleS em até 10 minutos:\n\n${message}\n\nOK: copiar mensagem. Cancelar: fechar.`);
-        if (copied) {
-            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(message);
-            else window.prompt("Copie a mensagem e envie ao WhatsApp ControleS:", message);
-            showToast("Código preparado. Envie ao WhatsApp ControleS.", "success");
-        }
+        // Abre a conversa oficial com a mensagem temporária já preenchida.
+        const url = `https://wa.me/5522992116812?text=${encodeURIComponent(message)}`;
+        const popup = window.open(url, "_blank", "noopener,noreferrer");
+        if (!popup) window.location.href = url;
+        showToast("WhatsApp aberto! Toque em Enviar para vincular sua conta.", "success");
     } catch (error) {
         console.error("Erro ao vincular WhatsApp:", error);
         showToast(error.message || "Falha na vinculação do WhatsApp.", "error");
     }
+}
+
+
+/* ControleS: guia de comandos no aplicativo (chame mostrarAjudaWhatsApp()). */
+function mostrarAjudaWhatsApp() {
+    let modal = document.getElementById("ct-wa-help-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "ct-wa-help-modal";
+        modal.setAttribute("role", "dialog");
+        modal.setAttribute("aria-modal", "true");
+        modal.setAttribute("aria-label", "Como usar o WhatsApp ControleS");
+        modal.style.cssText = "position:fixed;inset:0;z-index:99999;background:#0009;display:flex;align-items:center;justify-content:center;padding:20px";
+        const panel = document.createElement("div");
+        panel.style.cssText = "background:#fff;color:#183b2a;border-radius:18px;padding:24px;width:min(100%,420px);font:15px/1.6 system-ui;box-shadow:0 10px 30px #0003";
+        panel.innerHTML = `<h2 style="margin:0 0 12px">💚 Como usar o WhatsApp</h2><p>Envie estas mensagens ao ControleS:</p><p>💸 <b>Gastei 50 no mercado</b><br>💰 <b>Recebi 150 de um serviço</b><br>📊 <b>Saldo</b><br>📂 <b>Categorias</b><br>❓ <b>Menu</b> ou <b>Ajuda</b></p><button type="button" style="background:#176f48;color:white;border:0;border-radius:10px;padding:12px 18px;cursor:pointer;width:100%">Entendi</button>`;
+        panel.querySelector("button").addEventListener("click", () => modal.remove());
+        modal.addEventListener("click", e => { if (e.target === modal) modal.remove(); });
+        modal.appendChild(panel);
+    }
+    document.body.appendChild(modal);
 }
