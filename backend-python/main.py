@@ -149,12 +149,14 @@ def try_link_number(number, text):
     match = re.fullmatch(r"\s*VINCULAR\s+(\d{6})\s*", text, flags=re.I)
     if not match:
         return None
+    print("ControleS: comando VINCULAR reconhecido")
     if not WHATSAPP_LINK_SECRET or not WHATSAPP_TEST_USER_ID:
         return "Vinculação indisponível no momento."
     now = datetime.now(timezone.utc).isoformat()
     q = "code_hash=eq." + quote(code_hash(match.group(1)), safe="") + "&used_at=is.null&expires_at=gt." + quote(now, safe="") + "&select=id,user_id&limit=1"
     codes = supabase_request("whatsapp_pair_codes", query=q) or []
     if not codes or codes[0]["user_id"] != WHATSAPP_TEST_USER_ID:
+        print("ControleS: código ausente, expirado ou usuário não autorizado")
         return "Código inválido ou expirado. Gere outro no ControleS."
     code = codes[0]
     # Impede vincular um número que já pertence a outra conta.
@@ -165,7 +167,17 @@ def try_link_number(number, text):
     used = supabase_request("whatsapp_pair_codes", "PATCH", "id=eq." + quote(code["id"], safe="") + "&used_at=is.null&select=id", {"used_at": now}, "return=representation") or []
     if not used:
         return "Código já utilizado. Gere outro no ControleS."
-    supabase_request("whatsapp_links", "POST", payload={"phone": number, "user_id": code["user_id"]}, prefer="resolution=merge-duplicates,return=minimal")
+    # PATCH primeiro: funciona mesmo quando não existe UNIQUE(phone) no banco.
+    updated = supabase_request(
+        "whatsapp_links", "PATCH",
+        "phone=eq." + quote(number, safe="") + "&select=phone",
+        {"user_id": code["user_id"]}, "return=representation"
+    ) or []
+    if not updated:
+        supabase_request("whatsapp_links", "POST", payload={
+            "phone": number, "user_id": code["user_id"]
+        }, prefer="return=minimal")
+    print("ControleS: vinculação salva no Supabase")
     return "✅ WhatsApp vinculado à sua conta ControleS!"
 
 
@@ -187,6 +199,7 @@ def handle_linked_finances(number, text, message_id):
         return linked
     links = supabase_request("whatsapp_links", query="phone=eq." + quote(number, safe="") + "&select=user_id&limit=1") or []
     if not links:
+        print("ControleS: número ainda não vinculado; comando não correspondeu a VINCULAR")
         return "Para usar o WhatsApp, primeiro vincule sua conta pelo aplicativo ControleS."
     user_id = links[0]["user_id"]
     if not WHATSAPP_TEST_USER_ID or user_id != WHATSAPP_TEST_USER_ID:
@@ -764,10 +777,7 @@ def enviar_mensagem_whatsapp(
                 "utf-8"
             )
 
-            print(
-                "Mensagem enviada:",
-                resultado
-            )
+            print("ControleS: resposta aceita pela API da Meta")
 
             return True
 
@@ -875,11 +885,13 @@ async def receber_webhook(request: Request):
                 if not number or not text:
                     continue
                 try:
+                    # Apenas metadados; nunca imprime telefone, código ou conteúdo.
+                    print("ControleS: mensagem recebida; tipo=texto; comando_vincular=", bool(re.fullmatch(r"\s*VINCULAR\s+\d{6}\s*", text, re.I)))
                     response = handle_linked_finances(number, text, message.get("id"))
                     if response:
                         enviar_mensagem_whatsapp(number, response)
                 except Exception as exc:
-                    print("Falha ao processar mensagem WhatsApp:", type(exc).__name__)
+                    print("Falha ao processar mensagem WhatsApp:", type(exc).__name__, str(exc)[:240])
                     # Erros transitórios devem resultar em reenvio do evento pela Meta.
                     raise HTTPException(503, "Erro temporário no processamento")
     return {"status": "ok"}
