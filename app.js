@@ -310,17 +310,11 @@ function closeTrialWelcome() {
 function showTrialWelcomeIfEligible() {
     const overlay = document.getElementById("trialWelcomeOverlay");
     if (!overlay || !currentUser || isPremiumActive()) return;
-    const key = `controles-trial-invite-${currentUser.id}`;
-    try {
-        if (sessionStorage.getItem(key)) return;
-        sessionStorage.setItem(key, "shown");
-    } catch (error) {
-        if (window.__ctTrialShown) return;
-        window.__ctTrialShown = true;
-    }
+    // Exibe novamente a cada entrada no aplicativo, mesmo após fechar antes.
+    // O X e o botão "Agora não" continuam fechando normalmente.
     overlay.hidden = false;
+    overlay.removeAttribute("hidden");
     overlay.setAttribute("aria-hidden", "false");
-    document.getElementById("ctTrialClose")?.focus();
 }
 
 document.addEventListener("click", event => {
@@ -873,7 +867,7 @@ async function enterApp() {
         updatePeriodSummary();
 
         applyPremiumAccess();
-        showTrialWelcomeIfEligible();
+        requestAnimationFrame(() => showTrialWelcomeIfEligible());
 
     } catch (error) {
 
@@ -6752,6 +6746,10 @@ function applyPremiumAccess() {
 
         // Mostrar a opção para usuários grátis, com cadeado e bloqueio de acesso.
         button.classList.remove("premium-content-hidden");
+        button.hidden = false;
+        button.style.removeProperty("display");
+        button.style.removeProperty("visibility");
+        button.style.removeProperty("opacity");
 
 
         if (!premium) {
