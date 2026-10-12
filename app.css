@@ -6498,3 +6498,22 @@ html body #appView #reportsSection #automaticReportAnalysis.report-analysis p {
 #addCategoryBtn2.premium-locked{display:inline-flex!important;visibility:visible!important;align-items:center;gap:8px;opacity:1!important;cursor:pointer}
 #addCategoryBtn2 .category-premium-lock{font-size:13px}
 body.premium-plan #addCategoryBtn2 .category-premium-lock{display:none}
+
+/* CORREÇÃO — Nova categoria aparece também no plano grátis */
+#dashboardSection .quick-actions #addCategoryBtn,
+#categoriesSection #addCategoryBtn2 {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+#dashboardSection .quick-actions #addCategoryBtn {
+  position: relative !important;
+  align-items: center !important;
+  min-width: 0 !important;
+}
+body:not(.premium-plan) #addCategoryBtn .premium-diamond,
+body:not(.premium-plan) #addCategoryBtn2 .category-premium-lock {
+  display: inline-flex !important;
+  visibility: visible !important;
+}
