@@ -10,6 +10,7 @@ import hashlib
 import secrets
 import re
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from urllib.parse import quote
 import urllib.request
 import urllib.error
@@ -184,6 +185,7 @@ def parse_financial_message(text):
 def whatsapp_menu():
     return ("💚 *ControleS — Comandos*\n\n"
             "📊 Saldo — consultar receitas e despesas\n"
+            "🗓️ Resumo do mês — movimentações deste mês\n"
             "📁 Categorias — categorias usadas nos lançamentos\n"
             "💸 Gastei 50 no mercado\n"
             "💰 Recebi 150 de um serviço\n"
@@ -211,6 +213,27 @@ def handle_linked_finances(number, text, message_id):
         income = sum(abs(float(r.get("amount") or 0)) for r in rows if str(r.get("type", "")).lower() in ("receita", "income", "entrada"))
         expense = sum(abs(float(r.get("amount") or 0)) for r in rows if str(r.get("type", "")).lower() in ("despesa", "expense", "saida", "saída"))
         return f"📊 *Seu saldo*\nReceitas: {dinheiro(income)}\nDespesas: {dinheiro(expense)}\nSaldo: {dinheiro(income-expense)}"
+
+    if command in ("resumo do mês", "resumo do mes", "resumo mensal", "resumo"): 
+        # Período calculado no fuso do usuário; comparação com coluna date do app.
+        hoje = datetime.now(ZoneInfo("America/Sao_Paulo")).date()
+        inicio = hoje.replace(day=1)
+        proximo = (inicio.replace(year=inicio.year + 1, month=1)
+                   if inicio.month == 12 else inicio.replace(month=inicio.month + 1))
+        query = (user_filter + "&date=gte." + inicio.isoformat()
+                 + "&date=lt." + proximo.isoformat()
+                 + "&select=type,amount")
+        rows = supabase_request("transactions", query=query) or []
+        income = sum(abs(float(r.get("amount") or 0)) for r in rows
+                     if str(r.get("type", "")).lower() in ("receita", "income", "entrada"))
+        expense = sum(abs(float(r.get("amount") or 0)) for r in rows
+                      if str(r.get("type", "")).lower() in ("despesa", "expense", "saida", "saída"))
+        periodo = hoje.strftime("%m/%Y")
+        return (f"🗓️ *Resumo do mês — {periodo}*\n\n"
+                f"💰 Receitas: {dinheiro(income)}\n"
+                f"💸 Despesas: {dinheiro(expense)}\n"
+                f"📊 Saldo: {dinheiro(income - expense)}\n"
+                f"🧾 Lançamentos: {len(rows)}")
 
     if command in ("categorias", "categoria", "ver categorias", "minhas categorias", "ver minhas categorias", "ver suas categorias"):
         rows = supabase_request("transactions", query=user_filter + "&select=category") or []
