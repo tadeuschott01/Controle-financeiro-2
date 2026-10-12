@@ -6546,3 +6546,49 @@ body:not(.premium-plan) #dashboardSection .quick-actions #addCategoryBtn::after 
   content: none !important;
   display: none !important;
 }
+
+/* CORREÇÃO FINAL: Nova categoria = mesmo bloqueio dos outros Premium,
+   inclusive quando o tema claro está ativo. */
+html body:not(.premium-plan) #appView #dashboardSection .quick-actions #addCategoryBtn,
+html[data-theme="light"] body:not(.premium-plan) #appView #dashboardSection .quick-actions #addCategoryBtn,
+html[data-controles-theme="light"] body:not(.premium-plan) #appView #dashboardSection .quick-actions #addCategoryBtn {
+  background: #aeb3b1 !important;
+  border: 1px solid #9ca8a3 !important;
+  color: #163b30 !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,.13) !important;
+  position: relative !important;
+  filter: none !important;
+}
+html body:not(.premium-plan) #appView #dashboardSection #addCategoryBtn > span:first-child {
+  opacity: .55 !important;
+  filter: saturate(.6) !important;
+}
+/* Fixar cadeado no mesmo canto dos cartões Relatórios e IA. */
+html body:not(.premium-plan) #appView #dashboardSection #addCategoryBtn .premium-diamond {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: 29px !important;
+  height: 29px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 11px !important;
+  background: rgba(30,48,41,.13) !important;
+  font-size: 0 !important;
+  line-height: 1 !important;
+  z-index: 5 !important;
+}
+html body:not(.premium-plan) #appView #dashboardSection #addCategoryBtn .premium-diamond::after {
+  content: none !important;
+  display: none !important;
+}
+html body:not(.premium-plan) #appView #dashboardSection #addCategoryBtn .premium-diamond::before {
+  content: '🔒' !important;
+  display: block !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
