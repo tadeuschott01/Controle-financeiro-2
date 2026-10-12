@@ -45,6 +45,7 @@ const REVENUECAT_ANDROID_API_KEY = "COLE_AQUI_SUA_CHAVE_PUBLICA_ANDROID_REVENUEC
 const REVENUECAT_ENTITLEMENT_ID = "premium";
 let revenueCatConfigured = false;
 let revenueCatPackage = null;
+let selectedPremiumPlan = "monthly";
 
 
 /* =========================================================
@@ -264,6 +265,36 @@ function showToast(message, type = "info") {
     }, 3000);
 }
 
+
+
+/* Seleção explícita: nunca substituir o anual pelo mensal silenciosamente. */
+function getSelectedRevenueCatPackage(offering) {
+    if (!offering) return null;
+    const packages = offering.availablePackages || [];
+    const identifier = selectedPremiumPlan === "annual" ? "$rc_annual" : "$rc_monthly";
+    const direct = selectedPremiumPlan === "annual" ? offering.annual : offering.monthly;
+    return direct || packages.find(item => item.identifier === identifier) || null;
+}
+function selectPremiumPlan(plan) {
+    if (plan !== "monthly" && plan !== "annual") return;
+    selectedPremiumPlan = plan;
+    revenueCatPackage = null;
+    document.querySelectorAll("[data-plan-choice]").forEach(button => {
+        const active = button.dataset.planChoice === plan;
+        button.classList.toggle("selected", active);
+        button.setAttribute("aria-pressed", String(active));
+    });
+    const note = document.getElementById("ctTrialPlanNote");
+    if (note) note.textContent = plan === "annual"
+        ? "Plano anual: R$ 298,80 cobrados por ano. O teste gratuito depende da oferta e da elegibilidade na Google Play."
+        : "*Após o teste mensal, R$ 29,99/mês. Teste sujeito à elegibilidade e à oferta da Google Play. Cancele quando quiser.";
+    const button = document.getElementById("confirmPremiumBtn");
+    if (button && !isPremiumActive()) button.textContent = plan === "annual" ? "Assinar plano anual" : "Começar 7 dias grátis*";
+}
+document.addEventListener("click", event => {
+    const button = event.target?.closest?.("[data-plan-choice]");
+    if (button) selectPremiumPlan(button.dataset.planChoice);
+});
 
 /* =========================================================
    CONVITE PREMIUM NA ENTRADA
@@ -5011,10 +5042,7 @@ async function loadSubscription() {
 
         const offerings = await Purchases.getOfferings();
         const current = offerings?.current;
-        revenueCatPackage =
-            current?.monthly ||
-            current?.availablePackages?.[0] ||
-            null;
+        revenueCatPackage = getSelectedRevenueCatPackage(current);
     } catch (error) {
         console.warn("Erro ao consultar assinatura na Google Play:", error);
         subscription = null;
@@ -5059,7 +5087,7 @@ function renderPremium() {
     if (buyButton) {
         buyButton.textContent = isPremiumActive()
             ? "Premium ativo"
-            : "Assinar Premium — R$ 29,99/mês";
+            : (selectedPremiumPlan === "annual" ? "Assinar Premium — R$ 298,80/ano" : "Começar 7 dias grátis*");
         buyButton.disabled = isPremiumActive();
     }
 }
@@ -5085,16 +5113,14 @@ async function purchasePremium() {
         }
 
         const Purchases = await getRevenueCatPlugin();
+        revenueCatPackage = null; // Buscar sempre o pacote correspondente ao plano escolhido.
         if (!revenueCatPackage) {
             const offerings = await Purchases.getOfferings();
-            revenueCatPackage =
-                offerings?.current?.monthly ||
-                offerings?.current?.availablePackages?.[0] ||
-                null;
+            revenueCatPackage = getSelectedRevenueCatPackage(offerings?.current);
         }
 
         if (!revenueCatPackage) {
-            showToast("Plano mensal ainda não disponível na loja.", "warning");
+            showToast("Plano selecionado ainda não disponível na loja.", "warning");
             return;
         }
 
@@ -6724,10 +6750,8 @@ function applyPremiumAccess() {
         );
 
 
-        button.classList.toggle(
-            "premium-content-hidden",
-            !premium
-        );
+        // Mostrar a opção para usuários grátis, com cadeado e bloqueio de acesso.
+        button.classList.remove("premium-content-hidden");
 
 
         if (!premium) {
