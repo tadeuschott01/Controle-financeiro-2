@@ -89,6 +89,45 @@ WHATSAPP_LINK_SECRET = os.getenv("WHATSAPP_LINK_SECRET", "")
 # ID UUID da conta autorizada a testar. Sem ele, lançamentos ficam bloqueados.
 WHATSAPP_TEST_USER_ID = os.getenv("WHATSAPP_TEST_USER_ID", "").strip()
 
+# Chave privada: configure apenas em Environment no Render.
+REVENUECAT_SECRET_API_KEY = os.getenv("REVENUECAT_SECRET_API_KEY", "").strip()
+REVENUECAT_ENTITLEMENT_ID = "controles_pro"
+
+
+def revenuecat_premium_ativo(user_id):
+    """Consulta o entitlement no RevenueCat; em falha, não libera acesso."""
+    if not REVENUECAT_SECRET_API_KEY:
+        raise RuntimeError("RevenueCat não configurado no Render")
+    url = "https://api.revenuecat.com/v1/subscribers/" + quote(str(user_id), safe="")
+    req = urllib.request.Request(url, headers={
+        "Authorization": "Bearer " + REVENUECAT_SECRET_API_KEY,
+        "Accept": "application/json",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=12) as response:
+            data = json.load(response)
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return False
+        raise RuntimeError("Falha ao consultar assinatura no RevenueCat") from None
+    except (urllib.error.URLError, TimeoutError, ValueError):
+        raise RuntimeError("RevenueCat indisponível") from None
+
+    entitlement = (data.get("subscriber") or {}).get("entitlements", {}).get(REVENUECAT_ENTITLEMENT_ID)
+    if not isinstance(entitlement, dict):
+        return False
+    expires = entitlement.get("expires_date")
+    if not expires:
+        return True  # entitlement vitalício, se houver
+    try:
+        expiry = datetime.fromisoformat(expires.replace("Z", "+00:00"))
+        if expiry.tzinfo is None:
+            expiry = expiry.replace(tzinfo=timezone.utc)
+        return expiry > datetime.now(timezone.utc)
+    except (ValueError, TypeError):
+        return False
+
+
 
 def supabase_request(table, method="GET", query="", payload=None, prefer=None, bearer=None):
     if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
@@ -130,11 +169,15 @@ def code_hash(code):
 @app.post("/whatsapp/link-code")
 def create_whatsapp_link_code(authorization: Optional[str] = Header(None)):
     """Exige login Supabase; devolve código temporário para enviar no WhatsApp."""
-    if not WHATSAPP_LINK_SECRET or not WHATSAPP_TEST_USER_ID:
+    if not WHATSAPP_LINK_SECRET:
         raise HTTPException(503, "Modo de teste não configurado")
     user_id = authenticated_user_id(authorization)
-    if user_id != WHATSAPP_TEST_USER_ID:
-        raise HTTPException(403, "Teste restrito à conta autorizada")
+    try:
+        active = revenuecat_premium_ativo(user_id)
+    except RuntimeError:
+        raise HTTPException(503, "Não foi possível verificar a assinatura Premium")
+    if not active:
+        raise HTTPException(403, "Assinatura ControleS Pro necessária")
     code = f"{secrets.randbelow(1000000):06d}"
     expires = (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat()
     try:
@@ -150,14 +193,16 @@ def try_link_number(number, text):
     match = re.fullmatch(r"\s*VINCULAR\s+(\d{6})\s*", text, flags=re.I)
     if not match:
         return None
-    if not WHATSAPP_LINK_SECRET or not WHATSAPP_TEST_USER_ID:
+    if not WHATSAPP_LINK_SECRET:
         return "Vinculação indisponível no momento."
     now = datetime.now(timezone.utc).isoformat()
     q = "code_hash=eq." + quote(code_hash(match.group(1)), safe="") + "&used_at=is.null&expires_at=gt." + quote(now, safe="") + "&select=id,user_id&limit=1"
     codes = supabase_request("whatsapp_pair_codes", query=q) or []
-    if not codes or codes[0]["user_id"] != WHATSAPP_TEST_USER_ID:
+    if not codes:
         return "Código inválido ou expirado. Gere outro no ControleS."
     code = codes[0]
+    if not revenuecat_premium_ativo(code["user_id"]):
+        return "🔒 Ative o ControleS Pro para vincular o WhatsApp."
     # Impede vincular um número que já pertence a outra conta.
     existing = supabase_request("whatsapp_links", query="phone=eq." + quote(number, safe="") + "&select=user_id") or []
     if existing and existing[0]["user_id"] != code["user_id"]:
@@ -200,8 +245,8 @@ def handle_linked_finances(number, text, message_id):
     if not links:
         return "Para usar o WhatsApp, primeiro vincule sua conta pelo aplicativo ControleS."
     user_id = links[0]["user_id"]
-    if not WHATSAPP_TEST_USER_ID or user_id != WHATSAPP_TEST_USER_ID:
-        return "Este recurso está disponível apenas para testes autorizados."
+    if not revenuecat_premium_ativo(user_id):
+        return "🔒 O assessor WhatsApp é exclusivo do ControleS Pro. Ative ou renove sua assinatura no aplicativo."
 
     command = re.sub(r"\s+", " ", text.strip().lower())
     if command in ("oi", "olá", "ola", "menu", "ajuda", "bom dia", "boa tarde", "boa noite"):
