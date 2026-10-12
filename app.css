@@ -6517,3 +6517,32 @@ body:not(.premium-plan) #addCategoryBtn2 .category-premium-lock {
   display: inline-flex !important;
   visibility: visible !important;
 }
+
+/* =========================================================
+   CONTROLES — NOVA CATEGORIA COM VISUAL PREMIUM BLOQUEADO
+   Mantém o mesmo efeito acinzentado dos demais atalhos
+   Premium na tela inicial, sem bloquear o clique.
+   ========================================================= */
+body:not(.premium-plan) #dashboardSection .quick-actions #addCategoryBtn {
+  background: #aeb5b2 !important;
+  border-color: #9ca9a3 !important;
+  color: #163b30 !important;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, .13) !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+}
+body:not(.premium-plan) #dashboardSection .quick-actions #addCategoryBtn > span:first-child {
+  opacity: .55 !important;
+  filter: saturate(.6) !important;
+}
+body:not(.premium-plan) #dashboardSection .quick-actions #addCategoryBtn .premium-diamond {
+  display: grid !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 2 !important;
+}
+/* Evita sobrepor um segundo cadeado ao já existente. */
+body:not(.premium-plan) #dashboardSection .quick-actions #addCategoryBtn::after {
+  content: none !important;
+  display: none !important;
+}
