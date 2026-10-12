@@ -37,12 +37,12 @@ let supabaseClient = null;
 /* =========================================================
    GOOGLE PLAY / REVENUECAT
    =========================================================
-   Preencha REVENUECAT_ANDROID_API_KEY depois de criar o app
-   no RevenueCat. O entitlement deve se chamar "premium".
+   Chave publica Android configurada no RevenueCat.
+   Entitlement utilizado: "controles_pro".
 ========================================================= */
 
-const REVENUECAT_ANDROID_API_KEY = "COLE_AQUI_SUA_CHAVE_PUBLICA_ANDROID_REVENUECAT";
-const REVENUECAT_ENTITLEMENT_ID = "premium";
+const REVENUECAT_ANDROID_API_KEY = "goog_PtZnDowvaaZffoMpbBWSimILGbW";
+const REVENUECAT_ENTITLEMENT_ID = "controles_pro";
 let revenueCatConfigured = false;
 let revenueCatPackage = null;
 
