@@ -1548,7 +1548,7 @@
             class="btn btn-primary"
             type="button"
           >
-            + Nova categoria
+            + Nova categoria <span class="category-premium-lock" aria-label="Recurso Premium">🔒</span>
           </button>
 
         </div>
@@ -2700,7 +2700,10 @@
       <h2 id="ctTrialTitle">Seu dinheiro merece<br><em>mais controle.</em></h2>
       <div class="ct-trial-offer"><strong>7 dias grátis</strong><span>para conhecer todos os recursos</span></div>
       <p id="ctTrialDescription">Relatórios completos, categorias personalizadas e seu assessor financeiro no WhatsApp.</p>
-      <div class="ct-trial-price">Depois do teste, <strong>R$ 29,99/mês</strong>.<br><small>Cancele quando quiser. Sujeito à disponibilidade da oferta na Google Play.</small></div>
+      <div class="ct-plan-grid" role="group" aria-label="Escolha o plano Premium">
+        <button class="ct-plan-choice selected" type="button" data-plan-choice="monthly" aria-pressed="true"><span>Mensal</span><strong>R$ 29,99/mês</strong><small>7 dias grátis*</small></button>
+        <button class="ct-plan-choice" type="button" data-plan-choice="annual" aria-pressed="false"><span>Anual <b>Economize 17%</b></span><strong>R$ 298,80/ano</strong><small>Equivale a R$ 24,90/mês</small></button>
+      </div><div class="ct-trial-price"><small id="ctTrialPlanNote">*Após o teste mensal, R$ 29,99/mês. Teste sujeito à elegibilidade e à oferta da Google Play. Cancele quando quiser.</small></div>
       <button id="ctTrialExplore" class="ct-trial-action" type="button">Conhecer o Premium <span aria-hidden="true">→</span></button>
       <button id="ctTrialLater" class="ct-trial-later" type="button">Agora não</button>
     </div>
@@ -2749,17 +2752,11 @@
       </p>
 
 
-      <div class="trial-box">
-
-        <strong>
-          R$ 29,99
-        </strong>
-
-        <span>
-          por mês
-        </span>
-
+      <div class="ct-premium-plans" role="group" aria-label="Plano de assinatura">
+        <button type="button" class="ct-plan-choice selected" data-plan-choice="monthly" aria-pressed="true"><span>Mensal</span><strong>R$ 29,99/mês</strong><small>7 dias grátis*</small></button>
+        <button type="button" class="ct-plan-choice" data-plan-choice="annual" aria-pressed="false"><span>Anual <b>Economize 17%</b></span><strong>R$ 298,80/ano</strong><small>R$ 24,90/mês equivalente</small></button>
       </div>
+      <small class="ct-premium-disclaimer">*Teste sujeito à elegibilidade e configuração na Google Play. Após o teste mensal, R$ 29,99/mês. Plano anual cobrado R$ 298,80 por ano.</small>
 
 
       <div
@@ -2838,7 +2835,7 @@
        JAVASCRIPT
   ====================================================== -->
 
-  <script src="app.js?v=trial-relatorios-20261012-v1"></script>
+  <script src="app.js?v=planos-20261012-v2"></script>
 
 
 <!-- CONTROLES: APARÊNCIA + WHATSAPP FLUTUANTE -->
