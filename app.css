@@ -6486,3 +6486,15 @@ html body #appView #reportsSection #automaticReportAnalysis.report-analysis p {
 .ct-trial-action{display:flex;justify-content:center;align-items:center;gap:10px;width:100%;min-height:52px;padding:12px 15px;border:0;border-radius:15px;background:linear-gradient(110deg,#ffa94e,#f48226);color:#fff;font-weight:800;font-size:14px;box-shadow:0 9px 25px rgba(238,123,27,.24)}
 .ct-trial-later{margin-top:13px;background:none;border:0;color:#c7e7d5;font-size:12px;font-weight:600;padding:9px 14px}
 @media(max-width:380px){.ct-trial-card{padding:25px 19px 17px}.ct-trial-offer strong{font-size:24px}}
+
+/* ControleS — seletor de planos mensal e anual */
+.ct-plan-grid,.ct-premium-plans{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0 14px}
+.ct-plan-choice{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;text-align:left;min-width:0;padding:12px 10px;border-radius:15px;border:1px solid rgba(135,211,169,.33);background:rgba(255,255,255,.07);color:#fff;transition:border-color .2s,background .2s}
+.ct-plan-choice.selected{border:2px solid #ffad5a;background:rgba(255,150,58,.16)}
+.ct-plan-choice span{font-size:12px;font-weight:800;color:#e3f5e9}.ct-plan-choice strong{font-size:clamp(12px,3.4vw,16px);color:#fff;white-space:nowrap}.ct-plan-choice small{font-size:10px;color:#d4eadc}.ct-plan-choice b{font-size:9px;color:#ffbd7e;font-weight:700}
+.ct-premium-disclaimer{display:block;font-size:11px;line-height:1.5;margin:0 0 13px;color:#bed4c7}.ct-premium-plans .ct-plan-choice{background:#164a37}.ct-premium-plans .ct-plan-choice.selected{background:#276044}
+
+/* Categoria: botão visível para contas grátis, com bloqueio Premium */
+#addCategoryBtn2.premium-locked{display:inline-flex!important;visibility:visible!important;align-items:center;gap:8px;opacity:1!important;cursor:pointer}
+#addCategoryBtn2 .category-premium-lock{font-size:13px}
+body.premium-plan #addCategoryBtn2 .category-premium-lock{display:none}
