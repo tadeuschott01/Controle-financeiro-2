@@ -43,7 +43,7 @@
 
   <link
     rel="stylesheet"
-    href="app.css?v=contraste-relatorios-20261010-v3"
+    href="app.css?v=trial-relatorios-20261012-v1"
   >
 </head>
 
@@ -1705,36 +1705,6 @@
         </div>
 
 
-        <div
-          id="premiumReportContent"
-          class="premium-report-gate"
-        >
-
-          <div class="premium-lock">
-            ★
-          </div>
-
-          <h3>
-            Relatórios ControleS Prime
-          </h3>
-
-          <p>
-            Assine o ControleS Prime para desbloquear gráficos, categorias e análises financeiras.
-          </p>
-
-          <button
-            class="btn btn-primary"
-            data-section="premium"
-            type="button"
-          >
-            Conhecer ControleS Prime
-          </button>
-
-        </div>
-
-
-        <div id="primeReportsIntro" class="prime-reports-intro"><span class="prime-chip">✦ CONTROLES PRIME</span><h3>Seu dinheiro, em detalhes</h3><p>Compare receitas e despesas, descubra suas maiores categorias e acompanhe sua evolução financeira.</p></div>
-
         <div id="normalReportContent" hidden>
 
           <div class="report-cards">
@@ -2018,7 +1988,7 @@
                 <div><span class="integration-dot"></span><strong>Status da integração</strong></div>
                 <p id="whatsappStatusText">A interface está pronta. Para conversar pelo WhatsApp de verdade, ainda é necessário conectar a API oficial e o webhook do ControleS.</p>
               </div>
-              <button id="whatsappPrimaryBtn" class="btn btn-premium feature-premium-btn" type="button">Vincular meu WhatsApp</button>
+              <button id="whatsappPrimaryBtn" class="btn btn-premium feature-premium-btn" type="button">Ver status da integração</button>
               <small class="feature-security">🔒 O acesso financeiro permanece vinculado à conta autenticada do ControleS.</small>
             </div>
           </div>
@@ -2720,6 +2690,22 @@
   </div>
 
 
+
+  <!-- Convite Premium na entrada — exibido uma vez por sessão para usuários grátis -->
+  <div id="trialWelcomeOverlay" class="ct-trial-overlay" hidden aria-hidden="true">
+    <div class="ct-trial-card" role="dialog" aria-modal="true" aria-labelledby="ctTrialTitle" aria-describedby="ctTrialDescription">
+      <button id="ctTrialClose" class="ct-trial-close" type="button" aria-label="Fechar oferta">×</button>
+      <div class="ct-trial-symbol" aria-hidden="true">✦</div>
+      <span class="ct-trial-kicker">CONTROLES PREMIUM</span>
+      <h2 id="ctTrialTitle">Seu dinheiro merece<br><em>mais controle.</em></h2>
+      <div class="ct-trial-offer"><strong>7 dias grátis</strong><span>para conhecer todos os recursos</span></div>
+      <p id="ctTrialDescription">Relatórios completos, categorias personalizadas e seu assessor financeiro no WhatsApp.</p>
+      <div class="ct-trial-price">Depois do teste, <strong>R$ 29,99/mês</strong>.<br><small>Cancele quando quiser. Sujeito à disponibilidade da oferta na Google Play.</small></div>
+      <button id="ctTrialExplore" class="ct-trial-action" type="button">Conhecer o Premium <span aria-hidden="true">→</span></button>
+      <button id="ctTrialLater" class="ct-trial-later" type="button">Agora não</button>
+    </div>
+  </div>
+
   <!-- =====================================================
        MODAL — PREMIUM
   ====================================================== -->
@@ -2852,7 +2838,7 @@
        JAVASCRIPT
   ====================================================== -->
 
-  <script src="app.js?v=whatsapp-link-20261011-v1"></script>
+  <script src="app.js?v=trial-relatorios-20261012-v1"></script>
 
 
 <!-- CONTROLES: APARÊNCIA + WHATSAPP FLUTUANTE -->
