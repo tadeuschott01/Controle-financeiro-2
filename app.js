@@ -37,12 +37,12 @@ let supabaseClient = null;
 /* =========================================================
    GOOGLE PLAY / REVENUECAT
    =========================================================
-   Chave publica Android configurada no RevenueCat.
-   Entitlement utilizado: "controles_pro".
+   Preencha REVENUECAT_ANDROID_API_KEY depois de criar o app
+   no RevenueCat. O entitlement deve se chamar "premium".
 ========================================================= */
 
-const REVENUECAT_ANDROID_API_KEY = "goog_PtZnDowvaaZffoMpbBWSimILGbW";
-const REVENUECAT_ENTITLEMENT_ID = "controles_pro";
+const REVENUECAT_ANDROID_API_KEY = "COLE_AQUI_SUA_CHAVE_PUBLICA_ANDROID_REVENUECAT";
+const REVENUECAT_ENTITLEMENT_ID = "premium";
 let revenueCatConfigured = false;
 let revenueCatPackage = null;
 
@@ -264,6 +264,48 @@ function showToast(message, type = "info") {
     }, 3000);
 }
 
+
+/* =========================================================
+   CONVITE PREMIUM NA ENTRADA
+   Apresentação apenas; a compra real depende da Google Play.
+   ========================================================= */
+function closeTrialWelcome() {
+    const overlay = document.getElementById("trialWelcomeOverlay");
+    if (!overlay) return;
+    overlay.hidden = true;
+    overlay.setAttribute("aria-hidden", "true");
+}
+
+function showTrialWelcomeIfEligible() {
+    const overlay = document.getElementById("trialWelcomeOverlay");
+    if (!overlay || !currentUser || isPremiumActive()) return;
+    const key = `controles-trial-invite-${currentUser.id}`;
+    try {
+        if (sessionStorage.getItem(key)) return;
+        sessionStorage.setItem(key, "shown");
+    } catch (error) {
+        if (window.__ctTrialShown) return;
+        window.__ctTrialShown = true;
+    }
+    overlay.hidden = false;
+    overlay.setAttribute("aria-hidden", "false");
+    document.getElementById("ctTrialClose")?.focus();
+}
+
+document.addEventListener("click", event => {
+    const target = event.target;
+    if (target?.closest?.("#ctTrialClose, #ctTrialLater")) {
+        closeTrialWelcome();
+    } else if (target?.closest?.("#ctTrialExplore")) {
+        closeTrialWelcome();
+        showSection("premium");
+    } else if (target?.id === "trialWelcomeOverlay") {
+        closeTrialWelcome();
+    }
+});
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeTrialWelcome();
+});
 
 /* =========================================================
    DOM READY
@@ -800,6 +842,7 @@ async function enterApp() {
         updatePeriodSummary();
 
         applyPremiumAccess();
+        showTrialWelcomeIfEligible();
 
     } catch (error) {
 
@@ -6730,10 +6773,8 @@ function applyPremiumAccess() {
     // Relatórios: exibe conteúdo e oculta o aviso apenas com Premium ativo.
     const reportGate = $("premiumReportContent");
     const reportBody = $("normalReportContent");
-    const reportIntro = $("primeReportsIntro");
     if (reportGate) reportGate.hidden = premium;
     if (reportBody) reportBody.hidden = !premium;
-    if (reportIntro) reportIntro.hidden = !premium;
 
     // Cadeados visuais não devem aparecer para assinantes Premium.
     document.querySelectorAll(".nav-item .nav-lock").forEach(lock => {
