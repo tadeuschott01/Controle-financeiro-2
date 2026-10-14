@@ -6592,3 +6592,22 @@ html body:not(.premium-plan) #appView #dashboardSection #addCategoryBtn .premium
   font-size: 16px !important;
   line-height: 1 !important;
 }
+/* CONTROLES — JANELA DE VINCULAÇÃO WHATSAPP */
+.ct-wa-modal-open { overflow: hidden; }
+.ct-wa-link-overlay[hidden] { display: none !important; }
+.ct-wa-link-overlay { position:fixed; inset:0; z-index:999999; background:rgba(2,19,13,.72); display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(7px); }
+.ct-wa-link-dialog { position:relative; width:min(100%,420px); max-height:90dvh; overflow:auto; background:#fff; color:#153d2d; border-radius:26px; padding:32px 24px 24px; box-shadow:0 28px 80px rgba(0,0,0,.32); text-align:center; font-family:Inter,system-ui,sans-serif; }
+.ct-wa-link-close { position:absolute; right:15px; top:12px; width:35px; height:35px; border:0; border-radius:50%; background:#edf5ef; color:#335f49; font-size:26px; line-height:1; }
+.ct-wa-link-icon { display:grid; place-items:center; margin:0 auto 12px; width:60px; height:60px; border-radius:19px; background:#dff5e7; color:#0b8553; font-size:34px; }
+.ct-wa-link-kicker { font-size:10px; font-weight:800; letter-spacing:1.7px; color:#128257; margin-bottom:9px; }
+.ct-wa-link-dialog h2 { color:#103c29; font-size:22px; line-height:1.2; margin:0 0 10px; font-weight:800; }
+.ct-wa-link-desc { font-size:13px; line-height:1.65; color:#64766c; margin:0 0 21px; }
+.ct-wa-link-code-box { padding:19px 12px; background:#f0f8f3; border:1px solid #d7e9dd; border-radius:17px; display:flex; flex-direction:column; gap:8px; margin-bottom:17px; }
+.ct-wa-link-code-box span { font-size:10px; font-weight:800; letter-spacing:1px; color:#658373; }
+.ct-wa-link-code-box strong { font-size:34px; letter-spacing:5px; color:#0c5638; font-variant-numeric:tabular-nums; }
+.ct-wa-link-code-box small { font-size:11px; color:#698575; }
+.ct-wa-link-primary { width:100%; padding:15px; border:0; border-radius:13px; color:white; background:#0c8755; font-size:13px; font-weight:750; }
+.ct-wa-link-primary:disabled { opacity:.55; cursor:wait; }
+.ct-wa-link-feedback { color:#547463; font-size:12px; line-height:1.5; min-height:34px; margin:12px 0; }
+.ct-wa-link-secondary { width:100%; padding:12px; border:1px solid #d8e8dd; border-radius:12px; background:white; color:#0c7549; font-weight:700; font-size:12px; }
+.ct-wa-link-footnote { font-size:10px; line-height:1.5; color:#89998f; margin:15px 0 0; }
