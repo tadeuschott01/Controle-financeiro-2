@@ -1,27 +1,213 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#071610">
-  <meta name="description" content="ControleS — Seu dinheiro sob controle.">
-  <title>ControleS | Seu dinheiro sob controle</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="script.js"></script>
-</head>
-<body>
-  <div class="glow" aria-hidden="true"></div>
-  <header class="site-header"><a class="brand" href="./index.html" aria-label="ControleS, início"><span class="brand-symbol">C↗</span> Controle<span>S</span></a><nav id="headerNav"><a href="#planos">Planos</a><a href="#recursos">Recursos</a><button class="btn btn-outline" id="headerLogin" type="button">Entrar</button></nav></header>
-  <main>
-    <section id="landing" class="landing">
-      <div class="hero"><div class="eyebrow">CONTROLES • FINANÇAS INTELIGENTES</div><h1>Seu dinheiro.<br><em>Sob controle.</em></h1><p>Um único sistema para organizar suas finanças e acompanhar a evolução do seu negócio. Comece com o Básico e avance para o Pro quando precisar.</p><div class="hero-actions"><button class="btn btn-primary" id="heroRegister" type="button">Criar minha conta <span>→</span></button><button class="btn btn-outline" id="heroLogin" type="button">Já tenho conta</button></div><div class="hero-points"><span>✓ Um único acesso</span><span>✓ Dois planos</span><span>✓ Seus dados em um só lugar</span></div></div>
-      <div class="hero-preview" aria-label="Prévia ilustrativa do painel"><div class="preview-top"><span class="preview-mark">C↗ ControleS</span><span class="preview-dot">● ● ●</span></div><span class="preview-label">VISÃO GERAL</span><h3>Suas finanças em um só lugar</h3><div class="preview-balance"><small>Saldo disponível</small><strong>R$ —</strong><span>Conecte sua conta para visualizar</span></div><div class="preview-tiles"><div><small>Receitas</small><b>↗</b></div><div><small>Despesas</small><b>↘</b></div></div><div class="preview-note">Prévia visual — sem dados fictícios de sua conta</div></div>
-    </section>
-    <section id="planos" class="section"><div class="section-head"><span class="eyebrow">ESCOLHA SEU PLANO</span><h2>Um ControleS. Duas possibilidades.</h2><p>O mesmo login e a mesma experiência, com recursos liberados de acordo com sua assinatura.</p></div><div class="plans"><article class="plan"><span class="plan-tag">ESSENCIAL</span><h3>ControleS Básico</h3><p class="plan-desc">Mais focado no controle financeiro pessoal. Ideal para organizar o dinheiro do dia a dia, receitas, despesas e metas.</p><div class="price">R$ 49,99 <small>/mês</small></div><ul><li>Dashboard e lançamentos</li><li>Receitas, despesas e valores a receber</li><li>Metas, cofrinho e categorias</li><li>Relatórios e gráficos existentes</li><li>Assessor financeiro e WhatsApp existentes</li></ul><button class="btn btn-outline plan-btn" data-start="basic" type="button">Começar com o Básico</button></article><article class="plan featured"><span class="plan-tag">ACESSO COMPLETO</span><h3>ControleS Pro</h3><p class="plan-desc">Mais focado na gestão financeira de empresas. Para quem precisa acompanhar custos, vendas e decisões do negócio.</p><div class="price">R$ 89,99 <small>/mês</small></div><ul><li>Tudo do Básico</li><li>Vendas, clientes, fornecedores e estoque</li><li>Gestão financeira e relatórios avançados</li><li>Missões Financeiras Personalizadas</li><li>Mapa do Futuro Financeiro</li></ul><button class="btn btn-primary plan-btn" data-start="pro" type="button">Conhecer o Pro</button></article></div><p class="plans-disclaimer">A contratação e a liberação automática das assinaturas ainda dependem da integração de pagamentos.</p></section>
-    <section id="recursos" class="section features"><div class="section-head"><span class="eyebrow">FEITO PARA EVOLUIR COM VOCÊ</span><h2>Do dia a dia à gestão completa</h2></div><div class="feature-grid"><div><span>◈</span><h3>Organização financeira</h3><p>Visualize seus lançamentos, categorias e metas em um só lugar.</p></div><div><span>✦</span><h3>Assessor ControleS</h3><p>O mesmo assessor financeiro já existente, integrado à sua conta.</p></div><div><span>↗</span><h3>Evolua para o Pro</h3><p>Desbloqueie ferramentas avançadas sem precisar criar outra conta.</p></div></div></section>
-    </section>
-    <section id="auth" class="auth-section hidden"><div class="auth-card"><button class="back-link" id="backHome" type="button">← Voltar</button><span class="eyebrow">BEM-VINDO AO CONTROLES</span><h2 id="authTitle">Entre na sua conta</h2><p>Seu acesso é o mesmo para o Básico e o Pro.</p><form id="authForm"><div id="nameGroup" class="hidden"><label for="authName">Nome</label><input id="authName" autocomplete="name" placeholder="Seu nome"></div><label for="authEmail">E-mail</label><input id="authEmail" type="email" autocomplete="email" required placeholder="seu@email.com"><label for="authPassword">Senha</label><input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="Sua senha"><button id="authSubmit" class="btn btn-primary full" type="submit">Entrar</button></form><button class="switch-auth" id="switchAuth" type="button">Ainda não tem conta? Criar conta</button><p id="authMessage" class="message" role="status" aria-live="polite"></p></div></section>
-    <section id="dashboard" class="dashboard hidden"><div class="dash-top"><div><span class="eyebrow">PAINEL CONTROLES</span><h2>Olá, <span id="displayName">usuário</span> 👋</h2><p>Você está conectado à sua conta.</p></div><div class="dash-actions"><span class="plan-pill" id="planPill">Plano não verificado</span><button class="btn btn-outline" id="logoutBtn" type="button">Sair</button></div></div><div id="accessNotice" class="notice">A autenticação está ativa. A validação de assinatura precisa ser conectada ao backend antes de liberar recursos pagos.</div><div class="dash-grid"><article class="dash-card"><span class="card-icon">◉</span><h3>Meu financeiro</h3><p>Seus lançamentos e dados atuais permanecem no aplicativo existente.</p><a id="existingAppLink" class="card-link" href="../app.html">Abrir aplicativo atual →</a></article><article class="dash-card"><span class="card-icon">✦</span><h3>Assessor financeiro</h3><p>Vamos aproveitar o assessor e o WhatsApp já implementados, sem criar outro.</p><span class="card-foot">Integração web pendente</span></article><article class="dash-card locked"><span class="card-icon">▣</span><span class="lock-label">🔒 Pro</span><h3>Gestão avançada</h3><p>Vendas, estoque, clientes, fornecedores e relatórios gerenciais.</p><span class="card-foot">Em desenvolvimento</span></article><article class="dash-card locked"><span class="card-icon">◎</span><span class="lock-label">🔒 Pro</span><h3>Missões Financeiras</h3><p>Objetivos personalizados com acompanhamento de progresso.</p><span class="card-foot">Em desenvolvimento</span></article><article class="dash-card locked"><span class="card-icon">↗</span><span class="lock-label">🔒 Pro</span><h3>Mapa do Futuro</h3><p>Projeções e cenários financeiros para planejar os próximos meses.</p><span class="card-foot">Em desenvolvimento</span></article></div></section>
-  </main><footer><span>© <span id="year"></span> ControleS</span><span>Seu dinheiro sob controle.</span></footer>
-</body></html>
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <meta content="#081710" name="theme-color"/>
+  <title>
+   ControleS | Seu dinheiro sob controle
+  </title>
+  <link href="style.css" rel="stylesheet"/>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  </script>
+  <script defer="" src="script.js">
+  </script>
+ </head>
+ <body>
+  <div class="public" id="publicView">
+   <header class="public-header">
+    <strong class="brand">
+     Controle
+     <span>
+      S
+     </span>
+    </strong>
+    <button class="btn ghost" id="openLogin">
+     Entrar
+    </button>
+   </header>
+   <main class="hero">
+    <span class="eyebrow">
+     FINANÇAS INTELIGENTES
+    </span>
+    <h1>
+     Seu dinheiro.
+     <br/>
+     <em>
+      Sob controle.
+     </em>
+    </h1>
+    <p>
+     Um sistema financeiro completo, com acesso único e recursos para cada fase da sua vida ou negócio.
+    </p>
+    <div class="actions">
+     <button class="btn primary" id="openRegister">
+      Criar conta
+     </button>
+     <button class="btn ghost" id="openPlans">
+      Conhecer planos
+     </button>
+    </div>
+   </main>
+   <section class="plans" id="publicPlans">
+    <article>
+     <span class="eyebrow">
+      PARA O DIA A DIA
+     </span>
+     <h2>
+      Básico
+     </h2>
+     <p>
+      Mais focado no controle financeiro pessoal.
+     </p>
+     <h3>
+      R$ 49,99
+      <small>
+       /mês
+      </small>
+     </h3>
+     <p>
+      Dashboard, lançamentos, metas, cofrinho, relatórios e assessor financeiro.
+     </p>
+    </article>
+    <article class="featured">
+     <span class="eyebrow">
+      ACESSO COMPLETO
+     </span>
+     <h2>
+      Pro
+     </h2>
+     <p>
+      Mais focado na gestão financeira de empresas.
+     </p>
+     <h3>
+      R$ 89,99
+      <small>
+       /mês
+      </small>
+     </h3>
+     <p>
+      Tudo do Básico, além de vendas, estoque, clientes, fornecedores, missões e projeções.
+     </p>
+    </article>
+   </section>
+  </div>
+  <section class="auth hidden" id="authView">
+   <form class="auth-card" id="authForm">
+    <button class="link" id="backPublic" type="button">
+     ← Voltar
+    </button>
+    <h2 id="authTitle">
+     Entrar no ControleS
+    </h2>
+    <p>
+     Uma conta para os planos Básico e Pro.
+    </p>
+    <label class="hidden" id="nameField">
+     Nome
+     <input autocomplete="name" id="authName"/>
+    </label>
+    <label>
+     E-mail
+     <input autocomplete="email" id="authEmail" required="" type="email"/>
+    </label>
+    <label>
+     Senha
+     <input autocomplete="current-password" id="authPassword" minlength="6" required="" type="password"/>
+    </label>
+    <button class="btn primary full" id="authSubmit">
+     Entrar
+    </button>
+    <button class="link" id="switchAuth" type="button">
+     Criar uma conta
+    </button>
+    <p class="message" id="authMessage" role="status">
+    </p>
+   </form>
+  </section>
+  <div class="app hidden" id="appView">
+   <aside class="sidebar">
+    <div class="brand">
+     Controle
+     <span>
+      S
+     </span>
+    </div>
+    <p class="muted">
+     Seu dinheiro sob controle.
+    </p>
+    <nav id="sideNav">
+     <button class="active" data-page="inicio">
+      ⌂   Início
+     </button>
+     <button data-page="lancamentos">
+      ↔   Lançamentos
+     </button>
+     <button data-page="receber">
+      ◷   A receber
+     </button>
+     <button data-page="metas">
+      ◎   Metas e cofrinho
+     </button>
+     <button data-page="relatorios">
+      ▥   Relatórios
+     </button>
+     <button data-page="assessor">
+      ✦   Assessor IA
+     </button>
+     <button data-page="vendas">
+      ▣   Vendas e estoque
+      <b>
+       PRO
+      </b>
+     </button>
+     <button data-page="missoes">
+      ◈   Missões
+      <b>
+       PRO
+      </b>
+     </button>
+     <button data-page="futuro">
+      ↗   Mapa do futuro
+      <b>
+       PRO
+      </b>
+     </button>
+     <button data-page="planos">
+      ★   Planos
+     </button>
+    </nav>
+    <div class="sidebar-bottom">
+     <small id="userEmail">
+     </small>
+     <button class="btn ghost full" id="logout">
+      Sair
+     </button>
+    </div>
+   </aside>
+   <main class="workspace">
+    <header class="topbar">
+     <button class="btn ghost mobile-only" id="mobileNav">
+      ☰
+     </button>
+     <div>
+      <span class="eyebrow">
+       PAINEL CONTROLES
+      </span>
+      <h1 id="pageTitle">
+       Início
+      </h1>
+     </div>
+     <span class="plan-badge" id="planBadge">
+      Sem assinatura verificada
+     </span>
+    </header>
+    <div class="notice" id="statusMessage" role="status">
+    </div>
+    <div id="pageContent">
+    </div>
+   </main>
+  </div>
+ </body>
+</html>
+
