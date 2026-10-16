@@ -25,49 +25,30 @@
     </header>
     <p id="publicStatus" class="public-status" role="status" hidden></p>
     <main>
-      <section class="hero container">
-        <div class="hero-copy">
-          <span class="eyebrow"><span class="status-dot"></span> GESTÃO FINANCEIRA EM UM SÓ LUGAR</span>
-          <h1>Organize suas finanças.<br><em>Tenha clareza para crescer.</em></h1>
-          <p>Receitas, despesas, metas e relatórios reunidos em uma experiência simples. Para sua vida financeira e para a evolução do seu negócio.</p>
-          <div class="actions">
-            <button id="openRegister" class="btn primary large" type="button">Criar minha conta <span>↗</span></button>
-            <button id="openPlans" class="btn soft large" type="button">Conhecer planos</button>
-          </div>
-          <div class="hero-foot"><span>✓ Uma conta para tudo</span><span>✓ Dados sincronizados</span><span>✓ Sem instalar aplicativo</span></div>
+      <section class="hero-v2" id="inicio-publico"><div class="container hero-layout">
+        <div class="hero-copy-v2"><span class="hero-kicker"><span class="pulse"></span> PLATAFORMA DE GESTÃO FINANCEIRA</span>
+          <h1>Seu dinheiro sob controle.<br><span>Suas decisões com clareza.</span></h1>
+          <p>Organize receitas, despesas, metas e resultados em um único lugar. Um site financeiro completo para sua rotina e para o crescimento do seu negócio.</p>
+          <div class="hero-actions"><button class="btn cta-orange" id="openRegister" type="button">Criar minha conta <span>↗</span></button><button class="btn cta-outline" id="openLoginHero" type="button">Já tenho uma conta</button></div>
+          <div class="hero-points"><span>✓ Acesso pelo navegador</span><span>✓ Painel organizado</span><span>✓ Uma única conta</span></div>
         </div>
-        <div class="hero-visual" aria-label="Prévia ilustrativa do painel ControleS">
-          <div class="preview-window">
-            <div class="preview-top"><span class="preview-logo">◈ &nbsp; ControleS</span><span>● ● ●</span></div>
-            <div class="preview-body">
-              <span class="preview-label">VISÃO GERAL</span><h3>Seu painel financeiro</h3>
-              <div class="preview-cards"><div><small>Saldo</small><b>R$ 8.450,00</b><span class="preview-up">↗ Visão consolidada</span></div><div><small>Receitas</small><b>R$ 12.500</b><span>Entradas</span></div></div>
-              <div class="preview-chart"><div class="chart-title">Acompanhamento financeiro <span>Últimos meses</span></div><div class="chart-bars"><i style="height:38%"></i><i style="height:64%"></i><i style="height:48%"></i><i style="height:80%"></i><i style="height:57%"></i><i style="height:92%"></i><i style="height:72%"></i></div><div class="chart-months"><span>JAN</span><span>FEV</span><span>MAR</span><span>ABR</span><span>MAI</span><span>JUN</span><span>JUL</span></div></div>
-            </div>
-          </div>
-          <div class="float-chip">✦ Mais organização, menos complicação</div>
+        <div class="hero-display" aria-label="Demonstração ilustrativa do painel financeiro">
+          <div class="mock-shell"><div class="mock-sidebar"><img src="logo-controles.png" alt=""/><span class="mock-active">▦</span><span>◈</span><span>▤</span><span>◎</span></div>
+          <div class="mock-main"><div class="mock-top"><div><small>CONTROLES / VISÃO GERAL</small><strong>Resumo financeiro</strong></div><span class="mock-avatar">CS</span></div>
+          <div class="mock-balance"><small>SALDO FINANCEIRO</small><strong>R$ 12.480,00</strong><span>↗ Acompanhe sua evolução</span></div>
+          <div class="mock-metrics"><div><small>Receitas</small><strong>R$ 18.250</strong><span>↗ Entradas</span></div><div><small>Despesas</small><strong>R$ 5.770</strong><span>↘ Saídas</span></div></div>
+          <div class="mock-chart"><div class="mock-chart-head"><strong>Evolução financeira</strong><span>Últimos meses</span></div><div class="mock-bars"><i style="height:43%"></i><i style="height:67%"></i><i style="height:55%"></i><i style="height:79%"></i><i style="height:62%"></i><i style="height:91%"></i><i style="height:75%"></i></div><div class="mock-labels"><span>JAN</span><span>FEV</span><span>MAR</span><span>ABR</span><span>MAI</span><span>JUN</span><span>JUL</span></div></div>
+          </div></div><div class="mock-float"><span>✦</span><div><strong>Mais controle, menos preocupação</strong><small>Seu financeiro em um só lugar</small></div></div>
         </div>
-      </section>
-      <section id="recursos" class="features-section">
-        <div class="container">
-          <div class="section-intro"><span class="eyebrow">TUDO NO MESMO SISTEMA</span><h2>Mais controle. Menos planilhas.</h2><p>Ferramentas para acompanhar seu dinheiro com tranquilidade, do básico ao avançado.</p></div>
-          <div class="feature-grid">
-            <article class="feature-card"><span class="feature-icon">↗</span><h3>Receitas e despesas</h3><p>Visualize suas movimentações em um painel organizado.</p></article>
-            <article class="feature-card"><span class="feature-icon">◎</span><h3>Metas financeiras</h3><p>Acompanhe objetivos e seu progresso em um só lugar.</p></article>
-            <article class="feature-card"><span class="feature-icon">▥</span><h3>Relatórios</h3><p>Enxergue padrões e entenda para onde vai seu dinheiro.</p></article>
-            <article class="feature-card"><span class="feature-icon">◈</span><h3>Gestão empresarial</h3><p>Recursos avançados planejados para o ControleS Pro.</p></article>
-          </div>
-        </div>
-      </section>
-      <section class="pricing-section container" id="publicPlans">
-        <div class="section-intro"><span class="eyebrow">PLANOS CONTROLES WEB</span><h2>Escolha o plano para você.</h2><p>Uma única conta. Recursos de acordo com suas necessidades.</p></div>
-        <div class="plans">
-          <article><span class="plan-tag">FINANÇAS PESSOAIS</span><h2>Básico</h2><p>Mais focado em organizar as finanças do dia a dia.</p><h3>R$ 49,99 <small>/mês</small></h3><ul><li>Dashboard financeiro</li><li>Receitas e despesas</li><li>Metas e cofrinho</li><li>Relatórios e assessor financeiro</li></ul><span class="plan-hint">Contratação online em preparação</span></article>
-          <article class="featured"><span class="plan-tag">GESTÃO EMPRESARIAL</span><h2>Pro</h2><p>Mais focado em empresas e gestão avançada.</p><h3>R$ 89,99 <small>/mês</small></h3><ul><li>Tudo do plano Básico</li><li>Vendas, estoque e fornecedores</li><li>Missões financeiras personalizadas</li><li>Mapa do futuro financeiro</li></ul><span class="plan-hint">Contratação online em preparação</span></article>
-        </div>
-      </section>
+      </div></section>
+      <section class="trust-strip"><div class="container"><span>UMA PLATAFORMA, VÁRIAS POSSIBILIDADES</span><div><b>Finanças pessoais</b><i></i><b>Organização</b><i></i><b>Gestão empresarial</b><i></i><b>Visão de futuro</b></div></div></section>
+      <section id="recursos" class="public-section resources-v2"><div class="container"><div class="section-lead"><span class="section-label">RECURSOS PARA SUA ROTINA</span><h2>Mais clareza para cuidar<br>do que realmente importa.</h2><p>Da organização diária ao acompanhamento de resultados, tudo começa com informações simples de entender.</p></div>
+      <div class="resources-grid"><article class="resource-feature"><span class="resource-ico">↗</span><h3>Receitas e despesas</h3><p>Tenha uma visão organizada de tudo o que entra e sai.</p><span class="resource-detail">ACOMPANHAMENTO FINANCEIRO</span></article><article class="resource-feature"><span class="resource-ico orange">◎</span><h3>Metas e cofrinho</h3><p>Acompanhe seus objetivos e visualize seu progresso.</p><span class="resource-detail">PLANEJAMENTO</span></article><article class="resource-feature"><span class="resource-ico">▥</span><h3>Relatórios</h3><p>Entenda categorias, movimentações e resultados.</p><span class="resource-detail">VISÃO DE RESULTADOS</span></article><article class="resource-feature"><span class="resource-ico orange">▣</span><h3>Gestão Pro</h3><p>Recursos empresariais avançados em desenvolvimento.</p><span class="resource-detail">PARA SEU NEGÓCIO</span></article></div></div></section>
+      <section class="public-section showcase-v2"><div class="container showcase-layout"><div class="showcase-visual"><div class="showcase-card"><div class="showcase-head"><span>CONTROLES / RELATÓRIOS</span><b>Visão por categoria</b></div><div class="showcase-total"><span>Despesas analisadas</span><strong>R$ 4.320,00</strong></div><div class="showcase-row"><span><i style="background:#14a16a"></i> Moradia</span><b>42%</b></div><div class="showcase-track"><span style="width:42%;background:#14a16a"></span></div><div class="showcase-row"><span><i style="background:#fa952c"></i> Alimentação</span><b>30%</b></div><div class="showcase-track"><span style="width:30%;background:#fa952c"></span></div><div class="showcase-row"><span><i style="background:#8fa9e9"></i> Transporte</span><b>18%</b></div><div class="showcase-track"><span style="width:18%;background:#8fa9e9"></span></div></div></div><div class="showcase-copy"><span class="section-label">INFORMAÇÃO QUE FAZ SENTIDO</span><h2>Entenda seu financeiro de verdade.</h2><p>O ControleS reúne movimentações e informações em uma interface feita para facilitar o acompanhamento das suas finanças.</p><div class="showcase-benefit"><span>✓</span> Tudo organizado em um único painel</div><div class="showcase-benefit"><span>✓</span> Visualização clara de receitas e despesas</div><div class="showcase-benefit"><span>✓</span> Acesso pelo computador e celular</div><button class="btn cta-green" id="openRegisterShowcase">Começar agora ↗</button></div></div></section>
+      <section class="public-section plans-v2" id="publicPlans"><div class="container"><div class="section-lead center"><span class="section-label">PLANOS CONTROLES WEB</span><h2>Uma solução para cada momento.</h2><p>Uma conta, um painel. Escolha os recursos que combinam com sua necessidade.</p></div><div class="pricing-grid"><article class="pricing-card"><span class="pricing-type">FINANÇAS PESSOAIS</span><h3>Básico</h3><p>Para acompanhar seu dinheiro no dia a dia.</p><div class="price"><strong>R$ 49,99</strong><span>/mês</span></div><div class="pricing-divider"></div><ul><li>Visão geral financeira</li><li>Receitas e despesas</li><li>Metas e cofrinho</li><li>Relatórios e assessor financeiro*</li></ul><div class="pricing-unavailable">Contratação online em preparação</div></article><article class="pricing-card premium"><div class="popular-tag">MAIS RECURSOS</div><span class="pricing-type">GESTÃO EMPRESARIAL</span><h3>Pro</h3><p>Para quem precisa ir além do controle pessoal.</p><div class="price"><strong>R$ 89,99</strong><span>/mês</span></div><div class="pricing-divider"></div><ul><li>Tudo do Básico</li><li>Vendas e estoque*</li><li>Clientes e fornecedores*</li><li>Missões e mapa do futuro*</li></ul><div class="pricing-unavailable">Contratação online em preparação</div></article></div><p class="pricing-footnote">* Integrações e funcionalidades em desenvolvimento. A contratação online ainda não está disponível.</p></div></section>
+      <section class="closing-cta"><div class="container"><div><span class="section-label">COMECE PELO CONTROLE</span><h2>Uma vida financeira mais organizada começa aqui.</h2><p>Crie sua conta e conheça o ControleS por dentro.</p></div><button id="openRegisterFooter" class="btn cta-orange">Criar minha conta ↗</button></div></section>
     </main>
-    <footer class="site-footer"><div class="container"><span class="brand"><img class="brand-logo" src="logo-controles.png" alt="">Controle<span>S</span></span><span>Seu dinheiro sob controle.</span></div></footer>
+    <footer class="site-footer"><div class="container"><span class="brand"><img class="brand-logo" src="logo-controles.png" alt="">Controle<span>S</span></span><span>Seu dinheiro sob controle. <span class="footer-note">© 2026 ControleS</span></span></div></footer>
   </div>
   <section id="authView" class="auth hidden">
     <form id="authForm" class="auth-card">
