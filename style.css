@@ -1,12 +1,12 @@
 /* CONTROLES WEB — Estilos organizados por seção */
 :root {
-    --bg:#07120e;
-    --surface:#10241b;
-    --surface2:#173427;
-    --line:#2b4839;
-    --text:#f1fff6;
-    --muted:#a0b7a9;
-    --green:#19b77c;
+    --bg:#f3f8f5;
+    --surface:#ffffff;
+    --surface2:#eaf4ee;
+    --line:#d5e6dc;
+    --text:#183329;
+    --muted:#61796c;
+    --green:#12885c;
     --orange:#ff8b31;
     --red:#ff938c
 }
@@ -509,4 +509,52 @@ input,select {
     .card strong.amount {
         font-size:25px
     }
+}
+
+/* ==========================================================
+   TEMA CLARO — CONTROLES WEB
+   Cards brancos, fundo suave e navegação de alto contraste.
+   ========================================================== */
+body { background: var(--bg); color: var(--text); }
+.public-header { background: rgba(255,255,255,.86); border-bottom: 1px solid var(--line); }
+.hero { color: var(--text); }
+.hero em, .eyebrow { color: #087b56; }
+.btn { background: #ffffff; color: #17392b; border-color: #c9dfd2; }
+.btn.primary { background: linear-gradient(125deg,#087b55,#16a575); color: #fff; }
+.btn.ghost { background: #f2f8f4; color: #1e4c37; }
+.link { color: #087a53; }
+.plans article, .auth-card, .card {
+    background: #fff;
+    border: 1px solid #d9e8de;
+    box-shadow: 0 8px 24px rgba(20,69,44,.06);
+}
+.plans article.featured { background: #f2fbf5; border: 2px solid #2b9b70; }
+input, select, textarea {
+    background: #fff;
+    border: 1px solid #c9dbd0;
+    color: #19382a;
+}
+input:focus, select:focus, textarea:focus {
+    outline: 2px solid #70c4a1;
+    outline-offset: 1px;
+}
+.sidebar { background: #ffffff; border-right: 1px solid #d8e7dd; box-shadow: 2px 0 15px rgba(10,58,33,.04); }
+.sidebar nav button { color: #436655; }
+.sidebar nav button:hover { background: #eaf5ed; color: #086a49; }
+.sidebar nav button.active { background: #d9f1e3; color: #076644; font-weight: 800; }
+.sidebar nav b { color: #a85717; }
+.topbar { color: #173b2a; }
+.plan-badge { background: #e4f3e9; color: #176b49; border: 1px solid #c9e8d5; }
+.notice { background: #eaf7ee; border: 1px solid #b9ddc6; color: #24583b; }
+.card.accent { background: linear-gradient(125deg,#dff5e8,#eaf6fa); color: #143b30; border-color: #bfe5d1; }
+.card.accent p { color: #416f5d; }
+.data-table th { background: #f0f7f2; color: #436655; }
+.data-table td { color: #284737; }
+.positive { color: #08784d; }
+.negative { color: #c04444; }
+.locked { background: #fff; border: 1px dashed #b9d7c3; color: #284737; }
+.progress { background: #e6f0e9; }
+@media (max-width: 700px) {
+    .public-header { padding: 16px; }
+    .workspace { padding-top: 22px; }
 }
