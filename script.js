@@ -1,87 +1,41 @@
 'use strict';
-/* ControleS Web — primeira base. NÃO autoriza recursos pagos pelo navegador. */
+// ControleS Web. O navegador não pode conceder planos pagos.
 const SUPABASE_URL = 'https://sbiqhbxtrjrzpawdqqmy.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8';
+const SUPABASE_KEY = 'sb_publishable_IJbB2nttwg70Ah1KG77Q9A_5HdR25f8';
 const $ = id => document.getElementById(id);
-let client = null;
-let isRegister = false;
-let busy = false;
-const views = ['landing','auth','dashboard'];
-function showView(view) {
-  for (const id of views) $(id).classList.toggle('hidden',id !== view);
-  $('headerNav').classList.toggle('hidden',view === 'dashboard');
-  window.scrollTo({top:0,behavior:'instant'});
-}
-function setMessage(message, isError=false) {
-  $('authMessage').textContent = message;
-  $('authMessage').style.color = isError ? '#ffaaa2' : '#a2e8c3';
-}
-function openAuth(register=false) {
-  isRegister = register;
-  $('authTitle').textContent = register ? 'Crie sua conta' : 'Entre na sua conta';
-  $('nameGroup').classList.toggle('hidden',!register);
-  $('authName').required = register;
-  $('authPassword').autocomplete = register ? 'new-password' : 'current-password';
-  $('authSubmit').textContent = register ? 'Criar conta' : 'Entrar';
-  $('switchAuth').textContent = register ? 'Já tem uma conta? Entrar' : 'Ainda não tem conta? Criar conta';
-  setMessage('');
-  showView('auth');
-}
-function safeName(user) {
-  const candidate = user?.user_metadata?.name || user?.email?.split('@')[0] || 'usuário';
-  return String(candidate).slice(0,60);
-}
-function showDashboard(user) {
-  $('displayName').textContent = safeName(user);
-  // Sem verificação no servidor, nunca afirmar que o usuário possui Básico ou Pro.
-  $('planPill').textContent = 'Plano não verificado';
-  showView('dashboard');
-}
-async function syncSession() {
-  if (!client) return;
-  const {data,error} = await client.auth.getUser();
-  if (error || !data?.user) { showView('landing'); return; }
-  showDashboard(data.user);
-}
-async function submitAuth(event) {
-  event.preventDefault();
-  if (!client || busy) return;
-  const email = $('authEmail').value.trim();
-  const password = $('authPassword').value;
-  if (password.length < 6) {setMessage('A senha precisa ter pelo menos 6 caracteres.',true);return;}
-  busy=true; $('authSubmit').disabled=true; setMessage('Aguarde...');
-  try {
-    if (isRegister) {
-      const name = $('authName').value.trim();
-      if (!name) throw new Error('Informe seu nome.');
-      const {data,error} = await client.auth.signUp({email,password,options:{data:{name}}});
-      if (error) throw error;
-      if (data?.session) showDashboard(data.user);
-      else {openAuth(false);setMessage('Cadastro enviado. Confirme seu e-mail, se solicitado, antes de entrar.');}
-    } else {
-      const {data,error} = await client.auth.signInWithPassword({email,password});
-      if (error) throw error;
-      showDashboard(data.user);
-    }
-  } catch (error) {setMessage(error?.message || 'Não foi possível concluir.',true);}
-  finally {busy=false;$('authSubmit').disabled=false;}
-}
-function init() {
-  $('year').textContent = new Date().getFullYear();
-  $('headerLogin').addEventListener('click',()=>openAuth(false));
-  $('heroLogin').addEventListener('click',()=>openAuth(false));
-  $('heroRegister').addEventListener('click',()=>openAuth(true));
-  $('backHome').addEventListener('click',()=>showView('landing'));
-  $('switchAuth').addEventListener('click',()=>openAuth(!isRegister));
-  $('authForm').addEventListener('submit',submitAuth);
-  document.querySelectorAll('[data-start]').forEach(button=>button.addEventListener('click',()=>openAuth(true)));
-  $('logoutBtn').addEventListener('click',async()=>{if(client)await client.auth.signOut();showView('landing');});
-  if (!window.supabase?.createClient) {console.error('Biblioteca Supabase indisponível.');return;}
-  client = window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-  client.auth.onAuthStateChange((event)=>{
-    if(event==='SIGNED_OUT') showView('landing');
-    if(event==='SIGNED_IN') queueMicrotask(syncSession);
-  });
-  syncSession();
-}
+const money = value => Number(value || 0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const today = () => new Date().toISOString().slice(0,10);
+let client, user, page='inicio', registerMode=false, transactions=[], goals=[], verifiedPlan=null;
+const labels={inicio:'Início',lancamentos:'Lançamentos',receber:'A receber',metas:'Metas e cofrinho',relatorios:'Relatórios',assessor:'Assessor IA',vendas:'Vendas e estoque',missoes:'Missões financeiras',futuro:'Mapa do futuro',planos:'Planos e assinatura'};
+const proPages=new Set(['vendas','missoes','futuro']);
+
+// ===== Navegação e autenticação =====
+function view(name){['publicView','authView','appView'].forEach(id=>$(id).classList.toggle('hidden',id!==name));}
+function notice(message){$('statusMessage').textContent=message||'';}
+function auth(register=false){registerMode=register;$('authTitle').textContent=register?'Criar conta':'Entrar no ControleS';$('nameField').classList.toggle('hidden',!register);$('authName').required=register;$('authSubmit').textContent=register?'Criar conta':'Entrar';$('switchAuth').textContent=register?'Já tenho conta':'Criar uma conta';$('authMessage').textContent='';view('authView');}
+async function authenticate(event){event.preventDefault();const btn=$('authSubmit');btn.disabled=true;try{const email=$('authEmail').value.trim(),password=$('authPassword').value;const response=registerMode?await client.auth.signUp({email,password,options:{data:{name:$('authName').value.trim()}}}):await client.auth.signInWithPassword({email,password});if(response.error)throw response.error;if(response.data.session)await enter(response.data.user);else{$('authMessage').textContent='Conta criada. Confirme seu e-mail para entrar, caso solicitado.';auth(false);$('authMessage').textContent='Confira seu e-mail para confirmar o cadastro.';}}catch(e){$('authMessage').textContent=e.message||'Erro ao autenticar.';}finally{btn.disabled=false;}}
+async function enter(current){user=current;view('appView');$('userEmail').textContent=user.email||'';verifiedPlan=null;$('planBadge').textContent='Sem assinatura verificada';notice('Você já pode explorar o ControleS e conhecer os planos. A liberação de recursos pagos depende de assinatura validada no servidor.');await loadData();render('inicio');}
+async function loadData(){if(!user)return;const [tx,gl]=await Promise.all([client.from('transactions').select('*').eq('user_id',user.id).order('date',{ascending:false}).limit(1000),client.from('goals').select('*').eq('user_id',user.id).limit(100)]);transactions=tx.error?[]:(tx.data||[]);goals=gl.error?[]:(gl.data||[]);if(tx.error)notice('Não foi possível carregar lançamentos: '+tx.error.message);}
+function authorized(){return verifiedPlan==='basic'||verifiedPlan==='pro';}
+function render(name){page=name;$('pageTitle').textContent=labels[name];document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===name));$('sideNav').closest('.sidebar').classList.remove('open');const area=$('pageContent');if(proPages.has(name)&&verifiedPlan!=='pro'){area.innerHTML=locked('Este recurso faz parte do ControleS Pro.');return;}const pages={inicio:home,lancamentos:launches,receber:receivables,metas:goalsPage,relatorios:reports,assessor:advisor,vendas:()=>locked('Gestão de vendas, clientes, fornecedores e estoque em desenvolvimento.'),missoes:()=>locked('Missões personalizadas serão integradas aos seus dados financeiros.'),futuro:()=>locked('Projeções e cenários financeiros serão integrados aos seus dados.'),planos:plans};area.innerHTML=pages[name]();}
+function locked(text){return `<div class="locked"><h3>🔒 Recurso não disponível</h3><p>${escapeHtml(text)}</p><button class="btn primary" data-action="plans">Ver planos</button></div>`;}
+
+// ===== Dados financeiros =====
+function totals(){return transactions.reduce((a,t)=>{const n=Number(t.amount)||0;if(['income','receita'].includes(String(t.type).toLowerCase()))a.income+=n;else a.expense+=n;return a;},{income:0,expense:0});}
+function home(){const {income,expense}=totals();return `<div class="grid"><article class="card accent"><p>Saldo dos lançamentos</p><strong class="amount">${money(income-expense)}</strong></article><article class="card"><p>Receitas</p><strong class="amount positive">${money(income)}</strong></article><article class="card"><p>Despesas</p><strong class="amount negative">${money(expense)}</strong></article></div><h2 class="section-title">Bem-vindo ao ControleS</h2><div class="card"><h3>Seu painel está dentro do site</h3><p>Use o menu lateral para acessar seus lançamentos, valores a receber, metas e relatórios. Nenhuma página encaminha para o aplicativo.</p>${!authorized()?'<p>Você ainda não tem uma assinatura web verificada. Pode consultar seus dados existentes, mas os recursos pagos não serão liberados sem validação.</p><button class="btn primary" data-action="plans">Conhecer Básico e Pro</button>':''}</div><h2 class="section-title">Últimos lançamentos</h2>${transactionTable(transactions.slice(0,6))}`;}
+function transactionTable(items){if(!items.length)return '<div class="card empty">Nenhum lançamento encontrado.</div>';return `<div class="card table-wrap"><table class="data-table"><thead><tr><th>Descrição</th><th>Categoria</th><th>Data</th><th>Valor</th></tr></thead><tbody>${items.map(t=>`<tr><td>${escapeHtml(t.description)}</td><td>${escapeHtml(t.category)}</td><td>${escapeHtml(t.date)}</td><td class="${['income','receita'].includes(String(t.type).toLowerCase())?'positive':'negative'}">${money(t.amount)}</td></tr>`).join('')}</tbody></table></div>`;}
+function launches(){return `<div class="toolbar"><p class="muted">Lançamentos sincronizados com o Supabase.</p>${authorized()?'<button class="btn primary" data-action="newTransaction">+ Novo lançamento</button>':''}</div>${authorized()?'<div id="transactionEditor"></div>':'<div class="notice">A criação de lançamentos pelo site requer assinatura web validada.</div>'}${transactionTable(transactions)}`;}
+function receivables(){const incoming=transactions.filter(t=>['income','receita'].includes(String(t.type).toLowerCase())&&new Date(t.date+'T00:00:00')>new Date());return `<div class="card"><h3>Receitas com data futura</h3><p>Visualização inicial de valores a receber. A lógica completa de recebimento do aplicativo será integrada em uma próxima etapa.</p></div>${transactionTable(incoming)}`;}
+function goalsPage(){return `<div class="grid">${goals.length?goals.map(g=>{const current=Number(g.current_amount)||0,target=Number(g.target_amount)||0,percent=target?Math.min(100,Math.max(0,100*current/target)):0;return `<article class="card"><h3>${escapeHtml(g.name)}</h3><p>${money(current)} de ${money(target)}</p><div class="progress"><span style="width:${percent}%"></span></div></article>`;}).join(''):'<div class="card"><h3>Metas e cofrinho</h3><p>Você ainda não tem metas cadastradas ou elas não puderam ser carregadas.</p></div>'}</div>`;}
+function reports(){const byCategory={};for(const t of transactions){if(['income','receita'].includes(String(t.type).toLowerCase()))continue;const key=t.category||'Outros';byCategory[key]=(byCategory[key]||0)+(Number(t.amount)||0);}return `<div class="card"><h3>Despesas por categoria</h3><div class="list">${Object.entries(byCategory).sort((a,b)=>b[1]-a[1]).map(([key,value])=>`<div class="list-item"><span>${escapeHtml(key)}</span><strong>${money(value)}</strong></div>`).join('')||'<p>Nenhuma despesa cadastrada.</p>'}</div></div>`;}
+function advisor(){return `<div class="card"><h3>Assessor financeiro ControleS</h3><p>O mesmo assessor do aplicativo será reutilizado aqui. A integração web segura com o serviço existente ainda está pendente; não vamos criar outro assistente ou outro número.</p></div>`;}
+
+// ===== Planos Básico e Pro =====
+function plans(){return `<div class="plans" style="padding:0;margin:0;max-width:none"><article><span class="eyebrow">MAIS FOCADO NO PESSOAL</span><h2>Básico</h2><h3>R$ 49,99 <small>/mês</small></h3><p>Controle financeiro do dia a dia, metas, lançamentos, relatórios e assessor.</p><p>Assinatura online ainda não configurada.</p></article><article class="featured"><span class="eyebrow">MAIS FOCADO EM EMPRESAS</span><h2>Pro</h2><h3>R$ 89,99 <small>/mês</small></h3><p>Todos os recursos do Básico, mais gestão de vendas, estoque, missões e projeções.</p><p>Assinatura online ainda não configurada.</p></article></div><p class="muted">Os botões de cobrança serão ativados somente depois da integração de pagamentos e da verificação segura da assinatura.</p>`;}
+function transactionForm(){return `<form id="transactionForm" class="card"><h3>Novo lançamento</h3><div class="form-grid"><label>Descrição<input name="description" required maxlength="120"></label><label>Valor<input name="amount" type="number" min="0.01" step="0.01" required></label><label>Tipo<select name="type"><option value="despesa">Despesa</option><option value="receita">Receita</option></select></label><label>Categoria<input name="category" value="Outros" required></label><label>Data<input name="date" type="date" value="${today()}" required></label></div><div class="form-actions"><button class="btn primary">Salvar lançamento</button><button class="btn ghost" type="button" data-action="cancelTransaction">Cancelar</button></div><p id="transactionMessage" role="status"></p></form>`;}
+async function saveTransaction(e){e.preventDefault();if(!authorized())return;const form=e.target;const data=Object.fromEntries(new FormData(form));const payload={user_id:user.id,description:data.description.trim(),amount:Number(data.amount),type:data.type,category:data.category.trim(),date:data.date};const {error}=await client.from('transactions').insert(payload);if(error){$('transactionMessage').textContent=error.message;return;}await loadData();render('lancamentos');notice('Lançamento salvo.');}
+
+// ===== Inicialização =====
+function init(){client=window.supabase?.createClient(SUPABASE_URL,SUPABASE_KEY);if(!client){alert('Não foi possível carregar o Supabase.');return;}$('openLogin').onclick=()=>auth();$('openRegister').onclick=()=>auth(true);$('openPlans').onclick=()=>document.querySelector('#publicPlans').scrollIntoView({behavior:'smooth'});$('backPublic').onclick=()=>view('publicView');$('switchAuth').onclick=()=>auth(!registerMode);$('authForm').onsubmit=authenticate;$('logout').onclick=async()=>{await client.auth.signOut();user=null;view('publicView');};$('mobileNav').onclick=()=>document.querySelector('.sidebar').classList.toggle('open');$('sideNav').onclick=e=>{const button=e.target.closest('[data-page]');if(button)render(button.dataset.page);};$('pageContent').addEventListener('click',e=>{const button=e.target.closest('[data-action]');if(!button)return;if(button.dataset.action==='plans')render('planos');if(button.dataset.action==='newTransaction')$('transactionEditor').innerHTML=transactionForm();if(button.dataset.action==='cancelTransaction')$('transactionEditor').innerHTML='';});$('pageContent').addEventListener('submit',e=>{if(e.target.id==='transactionForm')saveTransaction(e);});client.auth.getUser().then(({data})=>data?.user?enter(data.user):view('publicView'));}
 document.addEventListener('DOMContentLoaded',init);
