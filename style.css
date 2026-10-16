@@ -166,3 +166,371 @@ a{color:inherit;text-decoration:none}
 @media(max-width:1050px){.hero{gap:20px}.feature-grid{grid-template-columns:repeat(2,1fr)}.dashboard-columns{grid-template-columns:1fr}.sidebar{width:224px}.workspace{padding:25px}}
 @media(max-width:760px){.container{width:min(100% - 32px,1180px)}.public-header{height:72px}.public-nav{gap:12px}.public-nav>a{display:none}.hero{grid-template-columns:1fr;padding-top:45px;padding-bottom:70px}.hero-copy h1{letter-spacing:-1.5px}.hero-visual{max-width:520px;margin:auto;padding:15px}.float-chip{left:0}.plans{grid-template-columns:1fr}.features-section,.pricing-section{padding-top:65px;padding-bottom:65px}.sidebar{position:fixed;z-index:30;left:0;top:0;bottom:0;transform:translateX(-110%);transition:transform .25s;box-shadow:0 0 40px rgba(0,0,0,.07)}.sidebar.open{transform:translateX(0)}.workspace{padding:20px 16px}.mobile-only{display:inline-flex}.topbar h1{font-size:24px}.plan-badge{max-width:145px}.grid{grid-template-columns:1fr}.welcome-panel{padding:25px;display:block}.welcome-panel .btn{margin-top:18px}.form-grid{grid-template-columns:1fr}.auth-card{padding:27px}.site-footer .container{gap:12px;flex-wrap:wrap;padding:20px 0}}
 @media(max-width:430px){.feature-grid{grid-template-columns:1fr}.hero-foot{gap:8px}.preview-cards b{font-size:16px}.chart-bars{gap:7px}.chart-bars i{width:18px}.actions .btn{width:100%}.welcome-panel h2{font-size:21px}}
+
+
+/* ============================================================
+   06. REFINAMENTO VISUAL — TEMA VERDE PETRÓLEO PROFISSIONAL
+   Tons um pouco mais escuros, sem transformar em tema preto.
+   ============================================================ */
+:root {
+  --bg: #e9efed;
+  --surface: #f8fbf9;
+  --surface2: #e2ebe6;
+  --line: #cfded6;
+  --text: #172c25;
+  --muted: #526c5e;
+  --green: #0d7554;
+  --green-dark: #084b39;
+  --green-soft: #d8eae0;
+  --shadow: 0 10px 32px rgba(12, 45, 32, .09);
+}
+body { background: var(--bg); }
+.public { background: #eef3f0; }
+.public-header {
+  background: rgba(241, 246, 243, .97);
+  border-bottom-color: #d7e4dc;
+}
+.public-nav { color: #334f40; }
+.hero {
+  background: radial-gradient(ellipse at 85% 42%, #d3e6da 0%, transparent 50%);
+}
+.hero-copy h1 { color: #102b21; }
+.hero-copy > p { color: #496656; }
+.hero-foot { color: #4e695b; }
+.preview-window { box-shadow: 0 30px 75px rgba(9, 53, 37, .19); }
+.preview-body { background: #ecf3ef; }
+.preview-cards > div, .preview-chart { background: #f8fbf9; }
+.features-section { background: #e2ebe5; }
+.feature-card, .plans article, .card {
+  background: #f8fbf9;
+  border-color: #cfddd4;
+  box-shadow: var(--shadow);
+}
+.feature-card:hover, .quick-panel:hover {
+  border-color: #a8c9b5;
+}
+.plans article.featured {
+  background: #e1f0e7;
+  border-color: #8ec6a6;
+}
+.plan-hint { background: #d7e8dd; color: #3d604b; }
+.site-footer { background: #dce9e0; }
+.auth { background: radial-gradient(circle at 15% 12%, #c8e2d1, transparent 43%), #e6eee8; }
+.auth-card { background: #f8fbf9; border-color: #cbded2; }
+.app { background: #e9efed; }
+.sidebar {
+  background: linear-gradient(180deg, #0b3328 0%, #092a22 100%);
+  border-right-color: #194a3a;
+  box-shadow: 5px 0 22px rgba(7, 42, 30, .09);
+  overflow: hidden;
+}
+.sidebar > .brand { color: #f0faf3; }
+.sidebar > .brand > span { color: #55d9a0; }
+.sidebar-tagline { color: #9ec3ae; }
+.sidebar-label { color: #88b49c; }
+.sidebar nav button { color: #d0e2d7; }
+.sidebar nav button:hover { background: #164a37; color: white; }
+.sidebar nav button.active { background: #176c4d; color: white; }
+.sidebar nav button b { color: #a7e5c0; background: #25513d; }
+.sidebar-bottom { border-top-color: #285444; }
+.sidebar-bottom small { color: #b6d2c0; }
+.sidebar-bottom .btn.outline {
+  color: #eaf8ee;
+  border-color: #3c7258;
+  background: #154a37;
+}
+.sidebar-bottom .btn.outline:hover { background: #1d6448; }
+.workspace { background: #e9efed; }
+.topbar { border-bottom: 1px solid #d2ded6; padding-bottom: 20px; }
+.topbar h1 { color: #153427; }
+.plan-badge { background: #d4e6d9; color: #285740; }
+.welcome-panel {
+  background: linear-gradient(115deg, #073c2f 0%, #126c50 60%, #197b5b 100%);
+  box-shadow: 0 16px 36px rgba(6, 58, 40, .2);
+}
+.metric { border-color: #d0ddd4; }
+.metric p, .metric small { color: #5a7263; }
+.quick-link { background: transparent; }
+.upgrade-note { background: #e1efe6; border-color: #c5decd; }
+.data-table th { color: #5c7766; }
+.data-table td { color: #284d38; }
+.notice:not(:empty) { background: #dcebe1; border-color: #bdd7c6; }
+
+/* Rolagem estável: o conteúdo principal rola normalmente;
+   o menu lateral pode rolar de forma independente. */
+html { overflow-x: hidden; }
+body { overflow-x: hidden; overflow-y: auto; }
+.sidebar nav {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #407a60 transparent;
+}
+.sidebar nav::-webkit-scrollbar { width: 6px; }
+.sidebar nav::-webkit-scrollbar-thumb { background: #407a60; border-radius: 8px; }
+.workspace { min-height: 100vh; overflow: visible; }
+@media (max-width: 760px) {
+  .sidebar { overflow-y: auto; }
+  .sidebar nav { overflow-y: visible; flex: none; }
+  .sidebar-bottom { margin-top: 18px; }
+  .hero { background: radial-gradient(ellipse at 60% 65%, #d3e6da, transparent 65%); }
+}
+
+
+/* 07 — Identidade oficial ControleS: petróleo, laranja e verde */
+:root {
+  --bg: #e5ede9;
+  --surface: #f7faf8;
+  --surface2: #e0ebe4;
+  --line: #cbdcd1;
+  --text: #102c23;
+  --muted: #557065;
+  --green: #06a96a;
+  --green-dark: #086347;
+  --green-soft: #d9f3e4;
+  --brand-orange: #ff7518;
+  --brand-yellow: #ffb51b;
+  --brand-mint: #31e88c;
+}
+.brand-logo { width: 34px; height: 34px; object-fit: contain; border-radius: 9px; margin-right: 9px; vertical-align: middle; }
+.brand-logo-small { width: 36px; height: 36px; object-fit: contain; border-radius: 10px; margin-right: 10px; vertical-align: middle; }
+.brand { display: inline-flex; align-items: center; }
+.sidebar .brand { color: #f9fff9; }
+.sidebar .brand > span:last-child { color: #42e996; }
+.sidebar { background: linear-gradient(180deg,#052d23 0%,#03241d 100%); }
+.sidebar nav button.active { background: linear-gradient(100deg,#0c7c53,#075d45); border-left: 3px solid #ff9c22; }
+.sidebar nav button:hover { background: #10513d; }
+.btn.primary { background: linear-gradient(110deg,#06a86a,#078d60); color: #fff; }
+.btn.primary:hover { background: linear-gradient(110deg,#078e5c,#086d4d); }
+.welcome-panel { background: linear-gradient(110deg,#052d23 0%,#075d43 70%,#0b8157 100%); border-left: 4px solid var(--brand-orange); }
+.hero-copy h1 em { color: #0c9866; }
+.hero .eyebrow { color: #0b7552; }
+.hero-visual:before { background: radial-gradient(circle,#bfead0,transparent 68%); }
+.preview-cards > div:first-child { background: linear-gradient(130deg,#063b2d,#0d8a5d); }
+.preview-logo { color: #08744d; }
+.chart-bars i:nth-child(even) { background: linear-gradient(180deg,#0d9d68,#a2e8bd); }
+.chart-bars i:nth-child(odd) { background: linear-gradient(180deg,#ffad29,#ffdba0); }
+.feature-icon, .metric-icon { background: #d8f2e3; color: #078b5b; }
+.feature-card { border-top: 3px solid #e6a44b; }
+.plans article.featured { border-top: 4px solid var(--brand-orange); }
+.plans article.featured .plan-tag { color: #a64b0c; }
+.metric-icon.expense { background: #fff0df; color: #e27921; }
+.negative { color: #ce6530 !important; }
+.upgrade-note { border-left: 3px solid #ffac2c; }
+.status-dot { background: #0bb979; }
+.site-footer { border-top: 3px solid #f3a43c; }
+@media(max-width:760px) {
+  .sidebar { overflow-y: auto; max-height: 100dvh; }
+  .sidebar nav { min-height: auto; }
+}
+
+/* ==========================================================
+   08. LAYOUT REFINADO — CONTROLES WEB
+   Melhor hierarquia, espaçamento, proporções e rolagem.
+   ========================================================== */
+:root{
+  --bg:#e6ece8;
+  --surface:#f8faf9;
+  --line:#d1dfd6;
+  --text:#102d22;
+  --muted:#5d7466;
+  --shadow:0 7px 24px rgba(6,43,29,.065);
+}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{min-width:320px}
+.public-header{height:78px;position:sticky;top:0;z-index:20;backdrop-filter:blur(16px);box-shadow:0 1px 0 rgba(14,58,39,.06)}
+.public-header .brand{font-size:23px}
+.public-nav{gap:28px}
+.public-nav>a{font-size:13px}
+.hero{min-height:580px;padding-top:68px;padding-bottom:76px;gap:64px;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}
+.hero-copy h1{font-size:clamp(38px,4.2vw,58px);line-height:1.13;letter-spacing:-2px;max-width:700px}
+.hero-copy>p{font-size:16px;line-height:1.75;max-width:520px}
+.hero-visual{padding:16px 12px}
+.preview-window{transform:rotate(-1deg);border-radius:18px}
+.preview-body{padding:22px}
+.preview-cards b{font-size:18px}
+.features-section{padding:76px 0 82px}
+.section-intro{margin-bottom:34px}
+.section-intro h2{line-height:1.25}
+.feature-grid{gap:18px}
+.feature-card{min-height:212px;padding:27px 23px;border-radius:15px;transition:transform .2s ease,box-shadow .2s ease}
+.feature-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(8,51,32,.09)}
+.pricing-section{padding-top:78px;padding-bottom:90px}
+.plans{gap:22px}
+.plans article{padding:31px;border-radius:16px}
+.site-footer .container{min-height:92px}
+.auth-card{border-radius:18px}
+.app{align-items:stretch}
+.sidebar{width:260px;padding:25px 14px 18px;height:100dvh;min-height:0;position:sticky;top:0;overscroll-behavior:contain}
+.sidebar>.brand{padding:0 12px}
+.sidebar nav{display:flex;flex-direction:column;gap:2px;min-height:0;overflow-y:auto;scrollbar-gutter:stable;padding-right:2px}
+.sidebar nav button{flex-shrink:0;padding:11px 12px;font-size:12.5px;line-height:1.35;border-radius:9px}
+.sidebar-label{flex-shrink:0;margin:11px 0 7px}
+.sidebar-label.secondary{margin-top:18px}
+.sidebar-bottom{flex-shrink:0;background:transparent;padding-top:13px}
+.workspace{max-width:none;width:calc(100% - 260px);padding:28px clamp(22px,3vw,52px) 64px}
+.workspace>#pageContent{width:100%;max-width:1480px;margin:0 auto}
+.topbar{max-width:1480px;margin:0 auto 24px;padding-bottom:18px}
+.topbar h1{font-size:26px}
+.welcome-panel{min-height:168px;padding:30px 35px;border-radius:16px}
+.welcome-panel h2{font-size:23px;line-height:1.3}
+.welcome-panel p{line-height:1.6}
+.metrics{margin-top:18px;gap:16px}
+.metric{min-height:170px;padding:22px;border-radius:14px}
+.metric .amount{font-size:clamp(21px,2.2vw,29px);overflow-wrap:anywhere}
+.dashboard-columns{margin-top:27px;gap:18px;grid-template-columns:minmax(0,1.75fr) minmax(280px,.85fr);align-items:start}
+.dashboard-columns>section{min-width:0}
+.quick-panel{padding:23px}
+.quick-link{padding:12px 0}
+.data-table{min-width:520px}
+.table-wrap{max-width:100%;scrollbar-width:thin;scrollbar-color:#9cbaa7 transparent}
+.data-table th{white-space:nowrap}
+.card{border-radius:14px}
+.btn{transition:background .18s ease,transform .18s ease,box-shadow .18s ease}
+.btn:hover{box-shadow:0 4px 13px rgba(12,85,55,.11)}
+#pageContent>.grid:not(.metrics){align-items:stretch}
+#pageContent>.grid:not(.metrics)>.card{min-width:0}
+@media(max-width:1120px){
+  .hero{gap:28px}
+  .sidebar{width:230px}
+  .workspace{width:calc(100% - 230px);padding:24px 25px 48px}
+  .dashboard-columns{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .public-header{height:68px}
+  .hero{grid-template-columns:1fr;min-height:0;gap:25px;padding-top:42px;padding-bottom:65px}
+  .hero-copy h1{font-size:clamp(35px,8vw,49px);letter-spacing:-1.5px}
+  .hero-visual{width:100%;max-width:540px}
+  .features-section,.pricing-section{padding-top:62px;padding-bottom:65px}
+  .sidebar{width:min(288px,84vw);height:100dvh;min-height:0;position:fixed;top:0;bottom:0;left:0;overflow:hidden;z-index:40}
+  .sidebar nav{overflow-y:auto;flex:1;min-height:0}
+  .sidebar-bottom{margin-top:0}
+  .workspace{width:100%;padding:18px 15px 48px}
+  .topbar{margin-bottom:18px}
+  .topbar h1{font-size:22px}
+  .welcome-panel{padding:23px;min-height:0}
+  .metrics{gap:12px}
+  .metric{min-height:145px}
+  .dashboard-columns{gap:18px}
+  .section-heading{align-items:center}
+  .section-heading h2{font-size:18px}
+  .feature-card{min-height:0}
+  .site-footer .container{min-height:80px}
+}
+@media(max-width:430px){
+  .public-header .brand{font-size:21px}
+  .public-nav .btn{padding:9px 12px}
+  .hero-copy>p{font-size:15px}
+  .float-chip{font-size:10px;padding:10px}
+  .topbar .eyebrow{font-size:9px}
+  .plan-badge{font-size:10px;max-width:126px}
+}
+
+
+/* ==============================================================
+   CONTROLES — CAMADA FINANCEIRA PREMIUM (2026)
+   Base: verde-petróleo + laranja da identidade visual oficial.
+   ============================================================== */
+:root{
+  --bg:#dce5df;--surface:#edf3ef;--surface2:#d6e4da;
+  --line:#c0d1c6;--text:#112d24;--muted:#4c6657;
+  --green:#09895e;--green-dark:#064c38;--green-soft:#d5e9db;
+  --brand-orange:#ff831b;--brand-yellow:#ffb72b;
+  --shadow:0 12px 32px rgba(2,36,24,.10);
+}
+body{background:#dce5df;color:var(--text)}
+.public{background:#071f19;color:#f2f8f4}
+.public-header{background:#08261f!important;border-bottom:1px solid rgba(194,229,208,.13)!important;box-shadow:none!important}
+.public-header .brand,.public-nav,.public-nav a{color:#f0f8f3}
+.public-nav a:hover{color:#ffaf4d}
+.public-nav .btn.outline{background:transparent;color:#f6f9f6;border-color:#49695a}
+.public-nav .btn.outline:hover{background:#163c2f}
+.hero{position:relative;min-height:665px;background:radial-gradient(ellipse at 74% 52%,#134735 0%,#092b22 39%,#071f19 75%)!important;isolation:isolate}
+.hero:before{content:"";position:absolute;left:0;bottom:0;width:47%;height:2px;background:linear-gradient(90deg,#ff8d23,transparent)}
+.hero .eyebrow{color:#ffb75d!important;letter-spacing:.14em}
+.hero-copy h1{color:#fff!important;font-size:clamp(39px,4.25vw,62px);line-height:1.12;letter-spacing:-2.1px}
+.hero-copy h1 em{color:#ff9c35!important}
+.hero-copy>p{color:#b7d0c1!important;font-size:17px;line-height:1.8}
+.hero-foot{color:#b6cfc0!important}
+.status-dot{background:#ff9229;box-shadow:0 0 0 5px rgba(255,147,43,.12)}
+.hero .btn.primary{background:linear-gradient(120deg,#ff982d,#f06e16)!important;color:#13241b!important;box-shadow:0 12px 27px rgba(235,113,22,.20)}
+.hero .btn.primary:hover{background:linear-gradient(120deg,#ffb348,#ff8a27)!important}
+.hero .btn.soft{background:transparent!important;color:#eff9f0!important;border:1px solid #5c8069}
+.hero .btn.soft:hover{background:#1c4938!important}
+.hero-visual:before{background:radial-gradient(circle,#225d41,transparent 67%)!important}
+.preview-window{border:1px solid #46705a;background:#edf5ef;box-shadow:0 28px 85px rgba(0,0,0,.33);transform:rotate(-1deg)}
+.preview-top{background:#102d23;color:#8cae9a;border-color:#244d3a}
+.preview-logo{color:#e9fff0}
+.preview-body{background:#e9f0ea}
+.preview-label{color:#627e6c}
+.preview-body h3{color:#163626}
+.preview-cards{grid-template-columns:1.2fr 1fr 1fr;gap:9px}
+.preview-cards>div{padding:14px 11px;background:#f9fbf8;border:1px solid #d6e3d8;min-width:0}
+.preview-cards>div:first-child{background:linear-gradient(135deg,#064b37,#087b52);color:#fff}
+.preview-cards b{font-size:clamp(13px,1.25vw,19px);white-space:nowrap}
+.preview-cards small,.preview-cards span{font-size:10px}
+.preview-cards .preview-expense b{color:#d26732}
+.preview-chart{background:#f9fbf8;border-color:#d5e1d8}
+.chart-bars i:nth-child(odd){background:linear-gradient(180deg,#11a873,#a4dfba)}
+.chart-bars i:nth-child(even){background:linear-gradient(180deg,#ffa23e,#ffd4a3)}
+.float-chip{background:#173e2d;color:#ffb457;border-color:#3b7152;box-shadow:0 16px 38px rgba(0,0,0,.22)}
+.features-section{background:#e1eae3!important;color:#142e22;padding-top:88px;padding-bottom:94px}
+.features-section .eyebrow,.pricing-section .eyebrow{color:#a75413}
+.feature-card{background:#f1f6f2!important;border:1px solid #c7d9cc;border-top:3px solid #f29a3c!important;box-shadow:0 9px 25px rgba(4,45,25,.07)}
+.feature-card h3{color:#173728}
+.feature-card p,.section-intro p{color:#547061}
+.feature-icon{background:#e1efe5!important;color:#0b8054!important}
+.pricing-section{background:#dce5df;color:#152f23;max-width:none!important;width:100%!important;padding:90px max(24px,calc((100% - 1180px)/2)) 110px}
+.plans article{background:#eef4ef!important;border:1px solid #c0d5c6!important;box-shadow:0 14px 30px rgba(5,42,27,.07)}
+.plans article.featured{background:#e4f0e7!important;border:2px solid #138457!important;border-top:5px solid #ff982d!important}
+.plans .plan-tag{color:#0d7651}
+.plan-hint{background:#d9e7dc;color:#486452}
+.site-footer{background:#09251c!important;border-top:2px solid #ff8b25!important;color:#e8f3eb}
+.site-footer .brand{color:#fff}
+.site-footer .brand>span{color:#ff9e35}
+.site-footer .container>span:last-child{color:#b5cbbd}
+.auth{background:radial-gradient(circle at 15% 15%,#215b3f,transparent 45%),#071f19!important}
+.auth-card{background:#f0f5f0!important;border:1px solid #bfd4c5;box-shadow:0 35px 80px rgba(0,0,0,.25)}
+.auth-symbol{background:#113e2c}
+.app{background:#dce5df}
+.sidebar{background:linear-gradient(180deg,#082d22,#051e18)!important;border-right:1px solid #174533!important}
+.sidebar nav button.active{background:#115d41!important;color:#fff!important;border-left:3px solid #ff8e25}
+.sidebar nav button:hover{background:#164b36!important}
+.sidebar .brand{color:#fff}
+.sidebar .brand>span{color:#ff9e38!important}
+.sidebar-label{color:#9dc5ad!important}
+.sidebar nav button{color:#d4e5d8!important}
+.sidebar nav button b{background:#34513b;color:#ffc07a}
+.sidebar-bottom small{color:#a9c7b1}
+.sidebar-bottom .btn.outline{background:#173e2e;color:#f1f8f2;border-color:#39674e}
+.workspace{background:#dce5df!important}
+.topbar{border-bottom:1px solid #bfd0c4}
+.topbar h1{color:#0b2c1d}
+.plan-badge{background:#cbded0;color:#22583b}
+.card{background:#f1f6f2!important;border:1px solid #c5d6c9!important;box-shadow:var(--shadow)}
+.welcome-panel{background:linear-gradient(115deg,#073326,#0a5b40)!important;border-left:4px solid #ff962c!important}
+.welcome-panel .eyebrow{color:#ffc381!important}
+.metric-icon{background:#dceee2;color:#087b53}
+.metric-icon.expense{background:#fce9d9;color:#d9762c}
+.negative{color:#c86b34!important}
+.upgrade-note{background:#dceee1;border-left:3px solid #ff9a30}
+.quick-link{background:transparent}
+.notice:not(:empty){background:#d6e8da;border-color:#b4d0ba}
+/* Rolagem do documento e do menu independentes, sem corte vertical */
+html,body{height:auto;min-height:100%;overflow-x:hidden}
+body{overflow-y:auto}
+.sidebar{height:100dvh;min-height:0;overflow:hidden}
+.sidebar nav{overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:#52876a transparent}
+.workspace{min-height:100vh;overflow:visible}
+@media(max-width:760px){
+ .hero{min-height:0;padding-top:56px;padding-bottom:72px}
+ .hero-copy h1{font-size:clamp(35px,8vw,48px)}
+ .preview-cards{grid-template-columns:1fr 1fr}
+ .preview-cards .preview-expense{grid-column:1/-1}
+ .sidebar{position:fixed;height:100dvh;overflow:hidden}
+ .sidebar nav{overflow-y:auto;flex:1;min-height:0}
+ .sidebar-bottom{flex-shrink:0;margin-top:0}
+ .pricing-section{padding:70px 16px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
