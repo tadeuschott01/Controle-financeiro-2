@@ -75,4 +75,13 @@ if(button.dataset.action==='goReports')render('relatorios');if(button.dataset.ac
     return data?.user?enter(data.user):view('publicView');
   }).catch(err=>{console.error(err);view('publicView');});
 }
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape')document.querySelector('.sidebar')?.classList.remove('open');
+});
+document.addEventListener('click',event=>{
+  const sidebar=document.querySelector('.sidebar');
+  if(!sidebar?.classList.contains('open'))return;
+  if(event.target.closest('#mobileNav')||event.target.closest('.sidebar'))return;
+  sidebar.classList.remove('open');
+});
 document.addEventListener('DOMContentLoaded',init);
