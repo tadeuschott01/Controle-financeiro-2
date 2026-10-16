@@ -26,26 +26,12 @@ function home(){
   const {income,expense}=totals();
   const balance=income-expense;
   const greeting=new Date().getHours()<12?'Bom dia':new Date().getHours()<18?'Boa tarde':'Boa noite';
-  return `<section class="welcome-panel">
-    <div><span class="eyebrow">VISÃO GERAL DAS FINANÇAS</span><h2>${greeting}! Seu dinheiro, mais organizado.</h2>
-    <p>Acompanhe suas movimentações e explore os recursos do ControleS em um único lugar.</p></div>
-    <button class="btn light" data-action="goLaunches">Ver lançamentos →</button>
-  </section>
-  <div class="grid metrics">
-    <article class="card metric"><span class="metric-icon balance">◈</span><p>Saldo dos lançamentos</p><strong class="amount">${money(balance)}</strong><small>Receitas menos despesas</small></article>
-    <article class="card metric"><span class="metric-icon income">↗</span><p>Receitas</p><strong class="amount positive">${money(income)}</strong><small>Total registrado</small></article>
-    <article class="card metric"><span class="metric-icon expense">↘</span><p>Despesas</p><strong class="amount negative">${money(expense)}</strong><small>Total registrado</small></article>
-  </div>
-  <div class="dashboard-columns"><section>
-    <div class="section-heading"><div><span class="eyebrow">MOVIMENTAÇÕES</span><h2>Últimos lançamentos</h2></div><button class="text-action" data-action="goLaunches">Ver todos →</button></div>
-    ${transactionTable(transactions.slice(0,6))}
-  </section>
-  <aside class="quick-panel card"><span class="eyebrow">ACESSO RÁPIDO</span><h3>Seu espaço financeiro</h3>
-    <button data-action="goLaunches" class="quick-link"><span>↔</span><span>Lançamentos<small>Consulte suas movimentações</small></span><b>→</b></button>
-    <button data-action="goGoals" class="quick-link"><span>◎</span><span>Metas e cofrinho<small>Acompanhe seus objetivos</small></span><b>→</b></button>
-    <button data-action="goReports" class="quick-link"><span>▥</span><span>Relatórios<small>Entenda seus resultados</small></span><b>→</b></button>
-    ${!authorized()?'<div class="upgrade-note"><b>Explore o ControleS</b><p>Conheça os planos para liberar recursos adicionais.</p><button class="btn primary full" data-action="plans">Conhecer planos</button></div>':''}
-  </aside></div>`;
+  return `<section class="dashboard-welcome"><div><span class="dash-overline">PAINEL FINANCEIRO</span><h2>${greeting}! Vamos organizar suas finanças?</h2><p>Veja um resumo dos seus lançamentos e acompanhe seus próximos passos.</p></div><button class="btn dash-outline" data-action="goLaunches">Ver lançamentos ↗</button></section>
+  <div class="dash-stat-grid"><article class="dash-stat primary"><div class="dash-stat-head"><span>SALDO DOS LANÇAMENTOS</span><span class="dash-stat-symbol">◈</span></div><strong>${money(balance)}</strong><small>Receitas menos despesas registradas</small></article>
+  <article class="dash-stat"><div class="dash-stat-head"><span>RECEITAS</span><span class="dash-stat-symbol green">↗</span></div><strong class="positive">${money(income)}</strong><small>Entradas registradas</small></article>
+  <article class="dash-stat"><div class="dash-stat-head"><span>DESPESAS</span><span class="dash-stat-symbol orange">↘</span></div><strong class="expense-number">${money(expense)}</strong><small>Saídas registradas</small></article></div>
+  <div class="dash-lower"><section class="dash-history"><div class="dash-section-head"><div><span class="dash-overline">SEU HISTÓRICO</span><h3>Últimas movimentações</h3></div><button class="text-action" data-action="goLaunches">Ver todas →</button></div>${transactionTable(transactions.slice(0,6))}</section>
+  <aside class="dash-side"><div class="dash-quick"><span class="dash-overline">ACESSO RÁPIDO</span><h3>O que deseja fazer?</h3><button data-action="goLaunches"><span class="quick-ico">↔</span><span>Lançamentos<small>Consulte entradas e saídas</small></span><b>→</b></button><button data-action="goGoals"><span class="quick-ico">◎</span><span>Metas e cofrinho<small>Seus objetivos financeiros</small></span><b>→</b></button><button data-action="goReports"><span class="quick-ico">▥</span><span>Relatórios<small>Entenda seus resultados</small></span><b>→</b></button></div>${!authorized()?'<div class="dash-upgrade"><span>✦ CONTROLES WEB</span><h3>Conheça nossos planos</h3><p>Descubra os recursos disponíveis para sua organização financeira.</p><button class="btn cta-orange" data-action="plans">Ver planos ↗</button></div>':''}</aside></div>`;
 }
 function transactionTable(items){if(!items.length)return '<div class="card empty">Nenhum lançamento encontrado.</div>';return `<div class="card table-wrap"><table class="data-table"><thead><tr><th>Descrição</th><th>Categoria</th><th>Data</th><th>Valor</th></tr></thead><tbody>${items.map(t=>`<tr><td>${escapeHtml(t.description)}</td><td>${escapeHtml(t.category)}</td><td>${escapeHtml(t.date)}</td><td class="${['income','receita'].includes(String(t.type).toLowerCase())?'positive':'negative'}">${money(t.amount)}</td></tr>`).join('')}</tbody></table></div>`;}
 function launches(){return `<div class="toolbar"><p class="muted">Lançamentos sincronizados com o Supabase.</p>${authorized()?'<button class="btn primary" data-action="newTransaction">+ Novo lançamento</button>':''}</div>${authorized()?'<div id="transactionEditor"></div>':'<div class="notice">A criação de lançamentos pelo site requer assinatura web validada.</div>'}${transactionTable(transactions)}`;}
@@ -61,7 +47,7 @@ function transactionForm(){return `<form id="transactionForm" class="card"><h3>N
 async function saveTransaction(e){e.preventDefault();if(!authorized())return;const form=e.target;const data=Object.fromEntries(new FormData(form));const payload={user_id:user.id,description:data.description.trim(),amount:Number(data.amount),type:data.type,category:data.category.trim(),date:data.date};const {error}=await client.from('transactions').insert(payload);if(error){$('transactionMessage').textContent=error.message;return;}await loadData();render('lancamentos');notice('Lançamento salvo.');}
 function init(){
   client=window.supabase?.createClient(SUPABASE_URL,SUPABASE_KEY);
-  $('openLogin').onclick=()=>auth();$('openRegister').onclick=()=>auth(true);$('openPlans').onclick=()=>document.querySelector('#publicPlans').scrollIntoView({behavior:'smooth'});$('backPublic').onclick=()=>view('publicView');$('switchAuth').onclick=()=>auth(!registerMode);$('authForm').onsubmit=e=>{
+  $('openLogin').onclick=()=>auth();['openLoginHero'].forEach(id=>{const el=$(id);if(el)el.onclick=()=>auth();});['openRegisterShowcase','openRegisterFooter'].forEach(id=>{const el=$(id);if(el)el.onclick=()=>auth(true);});$('openRegister').onclick=()=>auth(true);$('openPlans').onclick=()=>document.querySelector('#publicPlans').scrollIntoView({behavior:'smooth'});$('backPublic').onclick=()=>view('publicView');$('switchAuth').onclick=()=>auth(!registerMode);$('authForm').onsubmit=e=>{
     if(!client){e.preventDefault();$('authMessage').textContent='Não foi possível conectar ao serviço de login. Atualize a página e tente novamente.';return;}
     authenticate(e);
   };$('logout').onclick=async()=>{await client.auth.signOut();user=null;view('publicView');};$('mobileNav').onclick=()=>document.querySelector('.sidebar').classList.toggle('open');
@@ -70,10 +56,10 @@ function init(){
     document.body.classList.toggle('dark-app',dark);
     themeButton.textContent=dark?'☀  Tema claro':'☾  Tema escuro';
     themeButton.setAttribute('aria-pressed',String(dark));
-    try{localStorage.setItem('controles-web-dark',dark?'1':'0');}catch(e){}
+    try{localStorage.setItem('controles-web-light-preference',dark?'dark':'light');}catch(e){}
   };
-  let dark=true;
-  try{dark=localStorage.getItem('controles-web-dark')!=='0';}catch(e){}
+  let dark=false;
+  try{dark=localStorage.getItem('controles-web-light-preference')==='dark';}catch(e){}
   setTheme(dark);
   themeButton.onclick=()=>setTheme(!document.body.classList.contains('dark-app'));
 $('sideNav').onclick=e=>{const button=e.target.closest('[data-page]');if(button)render(button.dataset.page);};$('pageContent').addEventListener('click',e=>{const button=e.target.closest('[data-action]');if(!button)return;if(button.dataset.action==='plans')render('planos');
