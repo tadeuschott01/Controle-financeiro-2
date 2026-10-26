@@ -92,6 +92,8 @@ WHATSAPP_TEST_USER_ID = os.getenv("WHATSAPP_TEST_USER_ID", "").strip()
 # Chave privada: configure apenas em Environment no Render.
 REVENUECAT_SECRET_API_KEY = os.getenv("REVENUECAT_SECRET_API_KEY", "").strip()
 REVENUECAT_ENTITLEMENT_ID = "controles_pro"
+# Deve corresponder ao e-mail administrador reconhecido pelo aplicativo.
+PREMIUM_ADMIN_EMAIL = os.getenv("PREMIUM_ADMIN_EMAIL", "controlesfinanceirossuport@gmail.com").strip().lower()
 
 
 def revenuecat_premium_ativo(user_id):
@@ -162,6 +164,32 @@ def authenticated_user_id(authorization):
         raise HTTPException(401, "Sessão inválida; faça login novamente")
 
 
+def supabase_user_email(user_id):
+    """Obtém o e-mail confirmado/autoritativo do usuário no Supabase Auth."""
+    if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
+        raise RuntimeError("Supabase não configurado no Render")
+    url = f"{SUPABASE_URL}/auth/v1/admin/users/{quote(str(user_id), safe='')}"
+    req = urllib.request.Request(url, headers={
+        "apikey": SUPABASE_SERVICE_ROLE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+        "Accept": "application/json",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=12) as response:
+            data = json.load(response)
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, ValueError):
+        raise RuntimeError("Não foi possível verificar a conta no Supabase") from None
+    return str(data.get("email") or "").strip().lower()
+
+
+def premium_ativo_para_usuario(user_id):
+    """Mantém a exceção administrativa do app; demais contas exigem entitlement válido."""
+    email = supabase_user_email(user_id)
+    if email and email == PREMIUM_ADMIN_EMAIL:
+        return True
+    return revenuecat_premium_ativo(user_id)
+
+
 def code_hash(code):
     return hmac.new(WHATSAPP_LINK_SECRET.encode(), code.encode(), hashlib.sha256).hexdigest()
 
@@ -173,7 +201,7 @@ def create_whatsapp_link_code(authorization: Optional[str] = Header(None)):
         raise HTTPException(503, "Modo de teste não configurado")
     user_id = authenticated_user_id(authorization)
     try:
-        active = revenuecat_premium_ativo(user_id)
+        active = premium_ativo_para_usuario(user_id)
     except RuntimeError:
         raise HTTPException(503, "Não foi possível verificar a assinatura Premium")
     if not active:
@@ -201,7 +229,7 @@ def try_link_number(number, text):
     if not codes:
         return "Código inválido ou expirado. Gere outro no ControleS."
     code = codes[0]
-    if not revenuecat_premium_ativo(code["user_id"]):
+    if not premium_ativo_para_usuario(code["user_id"]):
         return "🔒 Ative o ControleS Pro para vincular o WhatsApp."
     # Impede vincular um número que já pertence a outra conta.
     existing = supabase_request("whatsapp_links", query="phone=eq." + quote(number, safe="") + "&select=user_id") or []
@@ -245,7 +273,7 @@ def handle_linked_finances(number, text, message_id):
     if not links:
         return "Para usar o WhatsApp, primeiro vincule sua conta pelo aplicativo ControleS."
     user_id = links[0]["user_id"]
-    if not revenuecat_premium_ativo(user_id):
+    if not premium_ativo_para_usuario(user_id):
         return "🔒 O assessor WhatsApp é exclusivo do ControleS Pro. Ative ou renove sua assinatura no aplicativo."
 
     command = re.sub(r"\s+", " ", text.strip().lower())
