@@ -7742,102 +7742,30 @@ document.addEventListener("click", function controlesNavigationFallback(event){
    O servidor valida o JWT e o WHATSAPP_TEST_USER_ID.
    Não colocar service_role ou segredos neste arquivo.
    ========================================================= */
-/* Modal de vinculação: substitui o confirm nativo. */
-let ctLinkPending = false;
-function ctEnsureLinkModal() {
-    let overlay = document.getElementById("ctWhatsappLinkOverlay");
-    if (overlay) return overlay;
-    overlay = document.createElement("div");
-    overlay.id = "ctWhatsappLinkOverlay";
-    overlay.className = "ct-wa-link-overlay";
-    overlay.hidden = true;
-    overlay.innerHTML = `
-      <section class="ct-wa-link-dialog" role="dialog" aria-modal="true" aria-labelledby="ctWaLinkTitle">
-        <button type="button" class="ct-wa-link-close" id="ctWaLinkClose" aria-label="Fechar">×</button>
-        <div class="ct-wa-link-icon" aria-hidden="true">✆</div>
-        <div class="ct-wa-link-kicker">CONTROLES • ASSISTENTE</div>
-        <h2 id="ctWaLinkTitle">Conectar ao WhatsApp</h2>
-        <p class="ct-wa-link-desc">Envie o código abaixo ao número oficial do ControleS para vincular sua conta.</p>
-        <div class="ct-wa-link-code-box">
-          <span>SEU CÓDIGO DE VINCULAÇÃO</span>
-          <strong id="ctWaLinkCode">••••••</strong>
-          <small id="ctWaLinkExpiry">Válido por 10 minutos</small>
-        </div>
-        <button type="button" id="ctWaLinkCopy" class="ct-wa-link-primary">Copiar mensagem de vinculação</button>
-        <p id="ctWaLinkFeedback" class="ct-wa-link-feedback" role="status" aria-live="polite"></p>
-        <button type="button" id="ctWaLinkDone" class="ct-wa-link-secondary">Já enviei a mensagem</button>
-        <p class="ct-wa-link-footnote">Por segurança, o código só funciona uma vez. Envie a mensagem pelo número que deseja vincular.</p>
-      </section>`;
-    document.body.appendChild(overlay);
-    const close = () => { overlay.hidden = true; document.body.classList.remove("ct-wa-modal-open"); };
-    overlay.querySelector("#ctWaLinkClose").addEventListener("click", close);
-    overlay.querySelector("#ctWaLinkDone").addEventListener("click", close);
-    overlay.addEventListener("click", e => { if (e.target === overlay) close(); });
-    return overlay;
-}
-async function ctCopyLinkMessage(message) {
-    if (navigator.clipboard?.writeText) {
-        try { await navigator.clipboard.writeText(message); return true; } catch (_) {}
-    }
-    const field = document.createElement("textarea");
-    field.value = message;
-    field.style.position = "fixed";
-    field.style.opacity = "0";
-    document.body.appendChild(field);
-    field.select();
-    let success = false;
-    try { success = document.execCommand("copy"); } catch (_) {}
-    field.remove();
-    return success;
-}
 async function iniciarVinculacaoWhatsApp() {
-    if (ctLinkPending) return;
     if (!supabaseClient || !currentUser) {
         showToast("Entre na sua conta ControleS primeiro.", "warning");
         return;
     }
-    ctLinkPending = true;
-    const overlay = ctEnsureLinkModal();
-    overlay.hidden = false;
-    document.body.classList.add("ct-wa-modal-open");
-    const codeEl = overlay.querySelector("#ctWaLinkCode");
-    const expiryEl = overlay.querySelector("#ctWaLinkExpiry");
-    const feedback = overlay.querySelector("#ctWaLinkFeedback");
-    const copyBtn = overlay.querySelector("#ctWaLinkCopy");
-    codeEl.textContent = "••••••";
-    expiryEl.textContent = "Aguarde um instante";
-    feedback.textContent = "Gerando código seguro…";
-    copyBtn.disabled = true;
     try {
         const { data, error } = await supabaseClient.auth.getSession();
         if (error || !data?.session?.access_token) throw new Error("Faça login novamente.");
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 25000);
-        let response;
-        try {
-            response = await fetch("https://controles-whatsapp.onrender.com/whatsapp/link-code", {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${data.session.access_token}` },
-                signal: controller.signal
-            });
-        } finally { clearTimeout(timeout); }
+        const response = await fetch("https://controles-whatsapp.onrender.com/whatsapp/link-code", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${data.session.access_token}` }
+        });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.detail || "Não foi possível gerar o código.");
-        const code = String(result.code || "");
-        if (!/^\d{6}$/.test(code)) throw new Error("Código recebido é inválido.");
-        const message = `VINCULAR ${code}`;
-        codeEl.textContent = code;
-        expiryEl.textContent = "Válido por 10 minutos";
-        feedback.textContent = "Código pronto! Copie e envie ao WhatsApp oficial do ControleS.";
-        copyBtn.disabled = false;
-        copyBtn.onclick = async () => {
-            const ok = await ctCopyLinkMessage(message);
-            feedback.textContent = ok ? "Mensagem copiada! Abra o WhatsApp oficial do ControleS e cole na conversa." : "Não foi possível copiar automaticamente. Selecione o código e envie: " + message;
-        };
+        const message = result.message || `VINCULAR ${result.code}`;
+        // O código expira em 10 minutos. O usuário envia do próprio número.
+        const copied = window.confirm(`Envie esta mensagem ao WhatsApp oficial do ControleS em até 10 minutos:\n\n${message}\n\nOK: copiar mensagem. Cancelar: fechar.`);
+        if (copied) {
+            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(message);
+            else window.prompt("Copie a mensagem e envie ao WhatsApp ControleS:", message);
+            showToast("Código preparado. Envie ao WhatsApp ControleS.", "success");
+        }
     } catch (error) {
         console.error("Erro ao vincular WhatsApp:", error);
-        codeEl.textContent = "—";
-        expiryEl.textContent = "Tente novamente";
-        feedback.textContent = error.name === "AbortError" ? "O servidor demorou para responder. Tente novamente em instantes." : (error.message || "Falha na vinculação do WhatsApp.");
-    } finally { ctLinkPending = false; }
+        showToast(error.message || "Falha na vinculação do WhatsApp.", "error");
+    }
 }
