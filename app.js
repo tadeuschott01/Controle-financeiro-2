@@ -7757,15 +7757,114 @@ async function iniciarVinculacaoWhatsApp() {
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.detail || "Não foi possível gerar o código.");
         const message = result.message || `VINCULAR ${result.code}`;
-        // O código expira em 10 minutos. O usuário envia do próprio número.
-        const copied = window.confirm(`Envie esta mensagem ao WhatsApp oficial do ControleS em até 10 minutos:\n\n${message}\n\nOK: copiar mensagem. Cancelar: fechar.`);
-        if (copied) {
-            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(message);
-            else window.prompt("Copie a mensagem e envie ao WhatsApp ControleS:", message);
-            showToast("Código preparado. Envie ao WhatsApp ControleS.", "success");
-        }
+        // Modal personalizado ControleS. O código continua expirando em 10 minutos.
+        await mostrarModalVinculacaoWhatsApp(message);
     } catch (error) {
         console.error("Erro ao vincular WhatsApp:", error);
         showToast(error.message || "Falha na vinculação do WhatsApp.", "error");
     }
 }
+
+/* CONTROLES — Modal visual para vinculação do WhatsApp */
+function mostrarModalVinculacaoWhatsApp(message) {
+    return new Promise((resolve) => {
+        const existing = document.getElementById("ctWhatsappLinkModal");
+        if (existing) existing.remove();
+
+        if (!document.getElementById("ctWhatsappLinkModalStyles")) {
+            const style = document.createElement("style");
+            style.id = "ctWhatsappLinkModalStyles";
+            style.textContent = `
+              .ct-wa-overlay{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,12,8,.70);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:ctWaFade .18s ease-out}
+              .ct-wa-modal{width:min(100%,520px);overflow:hidden;border:1px solid rgba(36,205,142,.65);border-radius:28px;background:linear-gradient(145deg,#003b2b 0%,#00281f 100%);box-shadow:0 24px 80px rgba(0,0,0,.45),0 0 0 5px rgba(0,184,116,.08);font-family:inherit;animation:ctWaRise .22s ease-out}
+              .ct-wa-head{display:flex;align-items:center;gap:15px;padding:24px 22px 20px;color:#fff;position:relative}
+              .ct-wa-brand-icon{width:74px;height:74px;flex:0 0 74px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#12c987,#006b48);border:5px solid rgba(25,218,151,.22);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2),0 5px 22px rgba(0,190,120,.18)}
+              .ct-wa-brand-icon svg{width:42px;height:42px;fill:#fff}
+              .ct-wa-headline{font-size:17px;font-weight:700;line-height:1.3;color:#fff}.ct-wa-brand-name{display:block;margin-top:3px;font-size:28px;font-weight:850;letter-spacing:-.6px;color:#20d89a}
+              .ct-wa-close{margin-left:auto;align-self:flex-start;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:#d4e7e0;font-size:25px;cursor:pointer}
+              .ct-wa-body{background:linear-gradient(150deg,#fff 0%,#e0fbf2 100%);padding:24px 22px 22px;border-radius:28px 28px 0 0;color:#0b3027}
+              .ct-wa-instruction{margin:0 0 18px;font-size:16px;line-height:1.55;color:#183b32}
+              .ct-wa-code-row{display:flex;align-items:center;gap:12px;padding:17px 15px;border-radius:20px;background:#d9f5eb;border:1px solid #c5ecdf}
+              .ct-wa-copy-icon{width:34px;height:34px;flex:0 0 34px;color:#08734f}
+              .ct-wa-code{min-width:0;flex:1;font-size:clamp(16px,4vw,22px);font-weight:850;letter-spacing:.2px;overflow-wrap:anywhere;color:#063d2d}
+              .ct-wa-copy-btn{border:0;border-radius:999px;padding:10px 13px;background:#b9ead8;color:#08754f;font:700 13px inherit;cursor:pointer;white-space:nowrap}
+              .ct-wa-copy-btn:focus-visible,.ct-wa-close:focus-visible,.ct-wa-done:focus-visible{outline:3px solid #ffd36a;outline-offset:3px}
+              .ct-wa-note{display:flex;align-items:flex-start;gap:10px;margin-top:17px;padding:13px 14px;border-radius:16px;background:#d9f3eb;color:#52756b;font-size:13px;line-height:1.45}.ct-wa-note-icon{display:grid;place-items:center;flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#079b68;color:#fff;font-weight:800}
+              .ct-wa-done{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:21px;padding:16px;border:0;border-radius:999px;background:linear-gradient(100deg,#05b977,#00734c);color:#fff;font:800 17px inherit;box-shadow:0 8px 18px rgba(0,139,88,.2);cursor:pointer}
+              .ct-wa-check{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#fff;color:#078356;font-size:17px}
+              @keyframes ctWaFade{from{opacity:0}to{opacity:1}}@keyframes ctWaRise{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+              @media(max-width:420px){.ct-wa-overlay{padding:12px}.ct-wa-head{padding:20px 16px 17px;gap:12px}.ct-wa-brand-icon{width:60px;height:60px;flex-basis:60px}.ct-wa-brand-icon svg{width:35px;height:35px}.ct-wa-brand-name{font-size:24px}.ct-wa-body{padding:21px 16px 18px}.ct-wa-code-row{gap:8px;padding:13px 11px}.ct-wa-copy-btn{padding:10px;font-size:12px}}
+              @media(prefers-reduced-motion:reduce){.ct-wa-overlay,.ct-wa-modal{animation:none}}
+            `;
+            document.head.appendChild(style);
+        }
+
+        const overlay = document.createElement("div");
+        overlay.id = "ctWhatsappLinkModal";
+        overlay.className = "ct-wa-overlay";
+        overlay.setAttribute("role", "presentation");
+        overlay.innerHTML = `
+          <section class="ct-wa-modal" role="dialog" aria-modal="true" aria-labelledby="ctWaTitle" aria-describedby="ctWaInstruction">
+            <header class="ct-wa-head">
+              <div class="ct-wa-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.52 3.48A11.8 11.8 0 0 0 12.1 0C5.55 0 .22 5.33.22 11.88c0 2.1.55 4.15 1.6 5.96L.12 24l6.32-1.66a11.9 11.9 0 0 0 5.66 1.44h.01c6.55 0 11.88-5.33 11.89-11.88a11.8 11.8 0 0 0-3.48-8.42ZM12.1 21.76h-.01a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.75.98 1-3.66-.24-.38a9.85 9.85 0 1 1 8.4 4.65Zm5.41-7.38c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.09 4.49.71.31 1.27.5 1.7.64.72.23 1.37.2 1.88.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z"/></svg></div>
+              <div><div class="ct-wa-headline" id="ctWaTitle">Mensagem oficial do</div><span class="ct-wa-brand-name">ControleS</span></div>
+              <button class="ct-wa-close" type="button" aria-label="Fechar">×</button>
+            </header>
+            <div class="ct-wa-body">
+              <p class="ct-wa-instruction" id="ctWaInstruction">Envie esta mensagem ao WhatsApp oficial do ControleS em até <strong>10 minutos</strong>:</p>
+              <div class="ct-wa-code-row">
+                <svg class="ct-wa-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
+                <div class="ct-wa-code" id="ctWaMessage"></div>
+                <button class="ct-wa-copy-btn" type="button" id="ctWaCopyBtn">▢ Copiar</button>
+              </div>
+              <div class="ct-wa-note"><span class="ct-wa-note-icon">i</span><span>Toque em <strong>Copiar</strong>, abra o WhatsApp oficial do ControleS e envie a mensagem exatamente como aparece acima.</span></div>
+              <button class="ct-wa-done" type="button" id="ctWaDone"><span class="ct-wa-check">✓</span> Entendi</button>
+            </div>
+          </section>`;
+        document.body.appendChild(overlay);
+        const messageNode = overlay.querySelector("#ctWaMessage");
+        messageNode.textContent = message;
+        const copyBtn = overlay.querySelector("#ctWaCopyBtn");
+        const close = () => { overlay.remove(); resolve(); };
+        overlay.querySelector(".ct-wa-close").addEventListener("click", close);
+        overlay.querySelector("#ctWaDone").addEventListener("click", close);
+        overlay.addEventListener("click", (event) => { if (event.target === overlay) close(); });
+        document.addEventListener("keydown", function escHandler(event) {
+            if (event.key === "Escape" && document.getElementById("ctWhatsappLinkModal") === overlay) {
+                document.removeEventListener("keydown", escHandler);
+                close();
+            }
+        });
+        copyBtn.addEventListener("click", async () => {
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(message);
+                } else {
+                    const textarea = document.createElement("textarea");
+                    textarea.value = message;
+                    textarea.setAttribute("readonly", "");
+                    textarea.style.position = "fixed";
+                    textarea.style.opacity = "0";
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    const copied = document.execCommand("copy");
+                    textarea.remove();
+                    if (!copied) throw new Error("copy-failed");
+                }
+                copyBtn.textContent = "✓ Copiado";
+                copyBtn.style.background = "#b8f0d8";
+                showToast("Mensagem copiada. Envie ao WhatsApp oficial do ControleS.", "success");
+            } catch (_) {
+                const range = document.createRange();
+                range.selectNodeContents(messageNode);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                copyBtn.textContent = "Selecione e copie";
+                showToast("Selecione a mensagem e copie manualmente.", "warning");
+            }
+        });
+        copyBtn.focus();
+    });
+}
+
