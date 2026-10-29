@@ -7841,3 +7841,49 @@ async function iniciarVinculacaoWhatsApp() {
         feedback.textContent = error.name === "AbortError" ? "O servidor demorou para responder. Tente novamente em instantes." : (error.message || "Falha na vinculação do WhatsApp.");
     } finally { ctLinkPending = false; }
 }
+
+/* =========================================================
+   CONTROLES — SINCRONIZAÇÃO FINAL DO ESTADO PREMIUM
+   Garante que cadeados inseridos depois do carregamento também
+   desapareçam para assinantes Premium, sem alterar o acesso grátis.
+========================================================= */
+(function controlesPremiumLockSyncFinal() {
+  function syncPremiumLocksFinal() {
+    let premium = false;
+    try {
+      premium = typeof isPremiumActive === "function" && isPremiumActive();
+    } catch (_) {}
+
+    document.body.classList.toggle("premium-plan", premium);
+    document.body.classList.toggle("free-plan", !premium);
+
+    document.querySelectorAll(
+      ".nav-item .nav-lock, .nav-lock, .premium-lock, [data-lock-icon], .lock-icon"
+    ).forEach(lock => {
+      const displayValue = premium ? "none" : "";
+      const visibilityValue = premium ? "hidden" : "";
+      if (lock.hidden !== premium) lock.hidden = premium;
+      if (lock.style.display !== displayValue) lock.style.display = displayValue;
+      if (lock.style.visibility !== visibilityValue) lock.style.visibility = visibilityValue;
+      if (premium && lock.getAttribute("aria-hidden") !== "true") lock.setAttribute("aria-hidden", "true");
+      else if (!premium && lock.hasAttribute("aria-hidden")) lock.removeAttribute("aria-hidden");
+    });
+
+    document.querySelectorAll(".nav-item, [data-premium-locked]").forEach(item => {
+      if (!premium) return;
+      item.classList.remove("premium-locked");
+      item.removeAttribute("data-premium-locked");
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", syncPremiumLocksFinal, { once: true });
+  } else {
+    syncPremiumLocksFinal();
+  }
+
+  // Alguns componentes são recriados ao trocar de tela; reaplica só a visibilidade.
+  const observer = new MutationObserver(() => syncPremiumLocksFinal());
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  window.addEventListener("pageshow", syncPremiumLocksFinal);
+})();
