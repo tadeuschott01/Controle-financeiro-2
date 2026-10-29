@@ -13563,3 +13563,16 @@ html[data-controles-theme="light"] .wa-icon-btn svg{stroke:#0f8f62}
   .wa-code{font-size:28px}
   .wa-field-row strong{font-size:17px}
 }
+
+/* =========================================================
+   CONTROLES — SEM CADEADOS PARA PREMIUM
+   ========================================================= */
+html body.premium-plan .nav-lock,
+html body.premium-plan .premium-diamond,
+html body.premium-plan .category-premium-lock,
+html body.premium-plan .ct-whatsapp-lock,
+html body.premium-plan .premium-lock,
+html body.premium-plan [data-premium-lock-icon]{display:none!important;visibility:hidden!important}
+html body.premium-plan .premium-home-shortcut{padding-right:12px!important}
+html body.premium-plan .nav-item.premium-locked,
+html body.premium-plan .premium-locked{opacity:1!important}
