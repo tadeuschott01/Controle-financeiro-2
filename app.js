@@ -7743,7 +7743,7 @@ document.addEventListener("click", function controlesNavigationFallback(event){
    O servidor valida o JWT. Não colocar service_role ou segredos aqui.
    ========================================================= */
 // >>> TROQUE pelo número oficial do ControleS (somente dígitos, com DDI+DDD). Ex.: "5511999998888"
-const WHATSAPP_OFFICIAL_NUMBER = "55XXXXXXXXXXX";
+const WHATSAPP_OFFICIAL_NUMBER = "5522992116812";
 const WHATSAPP_API = "https://controles-whatsapp.onrender.com";
 let waTimerId = null;
 let waCurrent = { code: "", message: "", number: "" };
