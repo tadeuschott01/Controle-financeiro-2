@@ -6592,3 +6592,146 @@ html body:not(.premium-plan) #appView #dashboardSection #addCategoryBtn .premium
   font-size: 16px !important;
   line-height: 1 !important;
 }
+
+/* =========================================================
+   CONTROLES — RELATÓRIOS (layout do mockup)
+   Carregar DEPOIS do app.css. Só afeta #reportsSection.
+   A bolha do WhatsApp e o menu inferior NÃO são alterados.
+   ========================================================= */
+html body #appView #reportsSection{
+  --rp-text:#f4fffa; --rp-muted:#a3c2b6; --rp-green:#35e8a4; --rp-red:#ff5f86; --rp-blue:#3ba2ff;
+  --rp-line:rgba(86,226,172,.20);
+  --rp-card:linear-gradient(150deg,rgba(14,78,60,.78),rgba(7,48,38,.9));
+  color:var(--rp-text)!important; max-width:620px!important; margin:0 auto!important;
+  padding-top:6px!important; font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+html body #appView #reportsSection .rp-page{display:flex;flex-direction:column;gap:14px;padding-bottom:12px}
+html body #appView #reportsSection #normalReportContent:not([hidden]){display:flex!important;flex-direction:column!important;gap:14px!important}
+html body #appView #reportsSection #normalReportContent>*{margin:0!important}
+html body #appView #reportsSection #normalReportContent[hidden]{display:none!important}
+html body #appView #reportsSection [hidden]{display:none!important}
+html body #appView #reportsSection svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- cabeçalho ---------- */
+html body #appView #reportsSection .rp-head{display:flex;align-items:center;gap:14px;margin:2px 0 4px}
+html body #appView #reportsSection .rp-home{flex:0 0 auto;width:34px;height:34px;padding:0;border:0;background:none!important;color:#fff!important;display:grid;place-items:center;cursor:pointer;box-shadow:none!important}
+html body #appView #reportsSection .rp-home svg{width:30px;height:30px;stroke-width:2.2}
+html body #appView #reportsSection .rp-head h2{margin:0!important;font:800 29px/1.05 Inter,system-ui,sans-serif!important;letter-spacing:-.04em!important;color:#fff!important}
+html body #appView #reportsSection .rp-head p{margin:3px 0 0!important;font:500 12.5px/1.3 Inter,system-ui,sans-serif!important;color:var(--rp-muted)!important;max-width:none!important}
+
+/* ---------- cartões base ---------- */
+html body #appView #reportsSection .rp-card{
+  background:var(--rp-card)!important;border:1px solid var(--rp-line)!important;border-radius:22px!important;
+  padding:18px 16px!important;box-shadow:0 14px 34px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.05)!important;color:#fff!important;
+}
+html body #appView #reportsSection .rp-card h3{margin:0!important;font:700 18px/1.2 Inter,system-ui,sans-serif!important;letter-spacing:-.02em!important;color:#fff!important}
+html body #appView #reportsSection .rp-card p{margin:3px 0 0!important;font:500 13px/1.35 Inter,system-ui,sans-serif!important;color:var(--rp-muted)!important}
+html body #appView #reportsSection .rp-card-head{display:flex;align-items:center;gap:14px}
+
+/* ---------- ícones ---------- */
+html body #appView #reportsSection .rp-ico{flex:0 0 auto;width:48px;height:48px;border-radius:15px;display:grid;place-items:center;color:#c9ffe9;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 6px 14px rgba(0,0,0,.2)}
+html body #appView #reportsSection .rp-ico svg{width:26px;height:26px}
+html body #appView #reportsSection .rp-ico-green{background:linear-gradient(145deg,#12a874,#0a6e50)}
+html body #appView #reportsSection .rp-ico-red{background:linear-gradient(145deg,#a8374f,#6c2434);color:#ffd2dc}
+html body #appView #reportsSection .rp-ico-blue{background:linear-gradient(145deg,#1b72c9,#124b86);color:#cfe8ff}
+
+/* ---------- período ---------- */
+html body #appView #reportsSection .rp-period-top{display:flex;align-items:center;gap:14px;padding-bottom:12px;border-bottom:1px solid rgba(120,230,190,.18)}
+html body #appView #reportsSection .rp-period-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:12px}
+html body #appView #reportsSection .rp-period-bottom>span{font:600 15px/1 Inter,system-ui,sans-serif;color:#d6efe5}
+html body #appView #reportsSection .rp-select{position:relative;display:flex;align-items:center;margin:0}
+html body #appView #reportsSection .rp-select select{
+  -webkit-appearance:none;appearance:none;height:44px;min-width:178px;padding:0 38px 0 44px!important;border-radius:16px!important;
+  border:1.5px solid rgba(150,235,200,.4)!important;background:rgba(10,60,47,.85)!important;color:#fff!important;
+  font:700 15px/1 Inter,system-ui,sans-serif!important;cursor:pointer;outline:none;box-shadow:none!important;
+}
+html body #appView #reportsSection .rp-select select option{background:#0d3d30!important;color:#fff!important}
+html body #appView #reportsSection .rp-select-cal{position:absolute;left:12px;width:24px;height:24px;color:#4be8ab;pointer-events:none}
+html body #appView #reportsSection .rp-select-arrow{position:absolute;right:12px;width:20px;height:20px;color:#fff;pointer-events:none;stroke-width:2.6}
+
+/* ---------- KPIs ---------- */
+html body #appView #reportsSection .rp-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+html body #appView #reportsSection .rp-kpi{
+  position:relative;min-width:0;padding:13px 8px 12px!important;border-radius:20px;border:1.5px solid;
+  display:flex;flex-direction:column;align-items:flex-start;overflow:hidden;
+  box-shadow:0 12px 26px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.07);
+}
+html body #appView #reportsSection .rp-kpi .rp-ico{width:44px;height:44px;border-radius:14px;margin-bottom:12px}
+html body #appView #reportsSection .rp-kpi .rp-ico svg{width:24px;height:24px}
+html body #appView #reportsSection .rp-kpi-green{background:linear-gradient(150deg,rgba(15,124,88,.85),rgba(6,66,50,.95));border-color:rgba(53,232,164,.55)}
+html body #appView #reportsSection .rp-kpi-red{background:linear-gradient(150deg,rgba(94,38,48,.92),rgba(52,24,30,.96));border-color:rgba(255,95,134,.5)}
+html body #appView #reportsSection .rp-kpi-blue{background:linear-gradient(150deg,rgba(18,82,138,.85),rgba(9,48,82,.95));border-color:rgba(59,162,255,.5)}
+html body #appView #reportsSection .rp-kpi-label{font:600 14px/1.1 Inter,system-ui,sans-serif;color:#e6f6ef}
+html body #appView #reportsSection .rp-kpi-value{display:block;max-width:100%;white-space:nowrap;margin:5px 0 7px;font:800 19px/1.1 Inter,system-ui,sans-serif;letter-spacing:-.035em}
+html body #appView #reportsSection .rp-kpi-green .rp-kpi-value{color:#3df0ad!important}
+html body #appView #reportsSection .rp-kpi-red .rp-kpi-value{color:#ff5f86!important}
+html body #appView #reportsSection .rp-kpi-blue .rp-kpi-value{color:#4fb0ff!important}
+html body #appView #reportsSection .rp-trend{display:inline-flex;align-items:center;gap:5px;font:700 14px/1 Inter,system-ui,sans-serif;margin-bottom:6px}
+html body #appView #reportsSection .rp-trend i{font-style:normal;font-size:17px;font-weight:800}
+html body #appView #reportsSection .rp-trend b{font-weight:700}
+html body #appView #reportsSection .rp-trend.is-good{color:#35e8a4}
+html body #appView #reportsSection .rp-trend.is-bad{color:#ff6b8d}
+html body #appView #reportsSection .rp-trend.is-flat{color:#b9cfc6}
+html body #appView #reportsSection .rp-trend.is-down i{display:inline-block;transform:scaleY(-1)}
+html body #appView #reportsSection .rp-kpi small{font:500 9.5px/1.2 Inter,system-ui,sans-serif;letter-spacing:-.01em;color:#c3d9d0}
+
+/* ---------- categoria ---------- */
+html body #appView #reportsSection .rp-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin:10px 0 8px;min-height:20px}
+html body #appView #reportsSection .rp-legend span{display:inline-flex;align-items:center;gap:8px;font:500 14px/1 Inter,system-ui,sans-serif;color:#e4f4ec}
+html body #appView #reportsSection .rp-legend i{width:15px;height:15px;border-radius:50%;display:inline-block}
+html body #appView #reportsSection .rp-donut{position:relative;height:215px;max-height:none!important;display:flex;justify-content:center;align-items:center;padding:0;background:transparent!important}
+html body #appView #reportsSection .rp-donut canvas{max-height:215px!important;max-width:100%}
+html body #appView #reportsSection .rp-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;margin:0!important}
+
+/* ---------- linhas (resumo / comparação) ---------- */
+html body #appView #reportsSection .rp-rows{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+html body #appView #reportsSection .rp-row{display:flex;align-items:center;gap:14px;min-height:54px;padding:0 16px;border-radius:999px;border:1.5px solid}
+html body #appView #reportsSection .rp-row i{flex:0 0 auto;width:22px;height:22px;border-radius:50%}
+html body #appView #reportsSection .rp-row span{flex:1;font:600 16px/1 Inter,system-ui,sans-serif;color:#f2fffa}
+html body #appView #reportsSection .rp-row strong{font:800 17px/1 Inter,system-ui,sans-serif;letter-spacing:-.02em;white-space:nowrap}
+html body #appView #reportsSection .rp-row svg{flex:0 0 auto;width:20px;height:20px;stroke-width:2.6}
+html body #appView #reportsSection .rp-row-green{background:linear-gradient(90deg,rgba(14,110,80,.72),rgba(8,70,54,.8));border-color:rgba(53,232,164,.45)}
+html body #appView #reportsSection .rp-row-red{background:linear-gradient(90deg,rgba(100,40,52,.85),rgba(58,28,36,.9));border-color:rgba(255,95,134,.4)}
+html body #appView #reportsSection .rp-row-blue{background:linear-gradient(90deg,rgba(16,84,140,.8),rgba(10,52,88,.88));border-color:rgba(59,162,255,.45)}
+html body #appView #reportsSection .rp-row-green i{background:#35e8a4}
+html body #appView #reportsSection .rp-row-red i{background:#ff5f86}
+html body #appView #reportsSection .rp-row-blue i{background:#3ba2ff}
+html body #appView #reportsSection .rp-row-green strong,html body #appView #reportsSection .rp-row-green svg{color:#3df0ad!important}
+html body #appView #reportsSection .rp-row-red strong,html body #appView #reportsSection .rp-row-red svg{color:#ff5f86!important}
+html body #appView #reportsSection .rp-row-blue strong,html body #appView #reportsSection .rp-row-blue svg{color:#4fb0ff!important}
+html body #appView #reportsSection .rp-compare .rp-row strong{font-size:15px}
+
+/* ---------- análise ---------- */
+html body #appView #reportsSection .rp-analysis-text{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+html body #appView #reportsSection .rp-analysis-text p{margin:0!important;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font:500 14px/1.5 Inter,system-ui,sans-serif!important;color:#e4f4ec!important}
+
+/* ---------- tema claro ---------- */
+html[data-controles-theme="light"] body #appView #reportsSection,
+html[data-controles-theme="light"] #appView #reportsSection{
+  --rp-text:#0d2c23;--rp-muted:#5c7a6f;--rp-line:rgba(18,120,88,.18);--rp-card:linear-gradient(150deg,#ffffff,#eef8f3);color:#0d2c23!important}
+html[data-controles-theme="light"] #appView #reportsSection .rp-head h2,
+html[data-controles-theme="light"] #appView #reportsSection .rp-card h3,
+html[data-controles-theme="light"] #appView #reportsSection .rp-home{color:#0d2c23!important}
+html[data-controles-theme="light"] #appView #reportsSection .rp-card,
+html[data-controles-theme="light"] #appView #reportsSection .rp-card p{color:#0d2c23!important}
+html[data-controles-theme="light"] #appView #reportsSection .rp-card p,
+html[data-controles-theme="light"] #appView #reportsSection .rp-head p{color:#5c7a6f!important}
+html[data-controles-theme="light"] #appView #reportsSection .rp-select select{background:#fff!important;color:#0d2c23!important;border-color:#bfe3d3!important}
+html[data-controles-theme="light"] #appView #reportsSection .rp-select-arrow{color:#0d2c23}
+html[data-controles-theme="light"] #appView #reportsSection .rp-period-bottom>span,
+html[data-controles-theme="light"] #appView #reportsSection .rp-legend span,
+html[data-controles-theme="light"] #appView #reportsSection .rp-row span,
+html[data-controles-theme="light"] #appView #reportsSection .rp-kpi-label{color:#0d2c23!important}
+html[data-controles-theme="light"] #appView #reportsSection .rp-kpi small{color:#5c7a6f}
+html[data-controles-theme="light"] #appView #reportsSection .rp-kpi-green{background:linear-gradient(150deg,#e3f8ee,#cdf0e0)}
+html[data-controles-theme="light"] #appView #reportsSection .rp-kpi-red{background:linear-gradient(150deg,#fde8ed,#f9d3dc)}
+html[data-controles-theme="light"] #appView #reportsSection .rp-kpi-blue{background:linear-gradient(150deg,#e1f0fe,#c9e2fb)}
+html[data-controles-theme="light"] #appView #reportsSection .rp-row-green{background:#e3f8ee}
+html[data-controles-theme="light"] #appView #reportsSection .rp-row-red{background:#fde8ed}
+html[data-controles-theme="light"] #appView #reportsSection .rp-row-blue{background:#e1f0fe}
+html[data-controles-theme="light"] #appView #reportsSection .rp-analysis-text p{background:#f1f8f5;border-color:#d6eae0;color:#1a3d32!important}
+
+@media(max-width:360px){
+  html body #appView #reportsSection .rp-kpi-value{font-size:17px}
+  html body #appView #reportsSection .rp-select select{min-width:150px}
+}
