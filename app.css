@@ -6611,3 +6611,87 @@ html body:not(.premium-plan) #appView #dashboardSection #addCategoryBtn .premium
 .ct-wa-link-feedback { color:#547463; font-size:12px; line-height:1.5; min-height:34px; margin:12px 0; }
 .ct-wa-link-secondary { width:100%; padding:12px; border:1px solid #d8e8dd; border-radius:12px; background:white; color:#0c7549; font-weight:700; font-size:12px; }
 .ct-wa-link-footnote { font-size:10px; line-height:1.5; color:#89998f; margin:15px 0 0; }
+
+/* =========================================================
+   CONTROLES — RELATÓRIOS MAIS CLAROS + PREMIUM SEM CADEADO
+   Ajuste visual complementar, sem substituir o tema existente.
+========================================================= */
+body.premium-plan .nav-lock,
+body.premium-plan .premium-lock,
+body.premium-plan [data-lock-icon],
+body.premium-plan .lock-icon,
+body.premium-plan .fa-lock,
+body.premium-plan [aria-label*="bloqueado" i] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Relatórios: hierarquia, leitura e cartões responsivos */
+#reportsSection,
+#reports,
+.content-section[id*="report"],
+#pageContent [data-page="relatorios"],
+#pageContent [data-section="reports"] {
+  color: var(--text-color, #eaf8f4);
+}
+
+#reportsSection .panel,
+#reports .panel,
+.content-section[id*="report"] .panel,
+#reportsSection .report-card,
+#reports .report-card,
+.content-section[id*="report"] .report-card,
+#reportsSection .comparison-item,
+#reports .comparison-item {
+  border-radius: 20px;
+}
+
+#reportsSection .summary-grid,
+#reports .summary-grid,
+.content-section[id*="report"] .summary-grid,
+#reportsSection .report-summary,
+#reports .report-summary,
+.content-section[id*="report"] .report-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+#reportsSection .comparison-item,
+#reports .comparison-item,
+.content-section[id*="report"] .comparison-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid rgba(70, 220, 180, .28);
+  background: linear-gradient(135deg, rgba(11, 103, 82, .34), rgba(3, 42, 39, .5));
+  color: var(--text-color, #eaf8f4);
+}
+
+#reportsSection .comparison-item strong,
+#reports .comparison-item strong,
+.content-section[id*="report"] .comparison-item strong {
+  font-size: 1.08rem;
+  font-weight: 750;
+}
+
+#reportsSection .report-period,
+#reports .report-period,
+.content-section[id*="report"] .report-period {
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid rgba(70, 220, 180, .3);
+  background: rgba(8, 87, 72, .28);
+}
+
+@media (max-width: 700px) {
+  #reportsSection .summary-grid,
+  #reports .summary-grid,
+  .content-section[id*="report"] .summary-grid,
+  #reportsSection .report-summary,
+  #reports .report-summary,
+  .content-section[id*="report"] .report-summary {
+    grid-template-columns: 1fr;
+  }
+}
