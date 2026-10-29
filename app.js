@@ -7769,3 +7769,233 @@ async function iniciarVinculacaoWhatsApp() {
         showToast(error.message || "Falha na vinculação do WhatsApp.", "error");
     }
 }
+
+/* =========================================================
+   CONTROLES — RELATÓRIOS (lógica do novo layout)
+   Carregar DEPOIS do app.js. Não toca na bolha do WhatsApp.
+   ========================================================= */
+(function () {
+  "use strict";
+
+  var COLORS = ["#0a8bff", "#ff4d6d", "#ffa229", "#35e8a4", "#a66bff", "#2dd4e6", "#ffd23f", "#ff7ab6", "#8ab4a8", "#6c8cff"];
+
+  function byId(id) { return document.getElementById(id); }
+  function money(v) { return typeof formatCurrency === "function" ? formatCurrency(v) : "R$ " + Number(v || 0).toFixed(2).replace(".", ","); }
+  function esc(s) { return typeof escapeHTML === "function" ? escapeHTML(s) : String(s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]; }); }
+
+  /* ---------- datas ---------- */
+  function parseISO(s) { return new Date(s + "T00:00:00"); }
+  function toISO(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function addDays(s, n) { var d = parseISO(s); d.setDate(d.getDate() + n); return toISO(d); }
+
+  function previousPeriod(period) {
+    if (!period || !period.start || !period.end) return null;
+    var days = Math.round((parseISO(period.end) - parseISO(period.start)) / 86400000) + 1;
+    var end = addDays(period.start, -1);
+    return { start: addDays(end, -(days - 1)), end: end };
+  }
+
+  /* ---------- tendência vs período anterior ---------- */
+  function setTrend(id, current, previous) {
+    var el = byId(id); if (!el) return;
+    var icon = el.querySelector("i"), txt = el.querySelector("b");
+    var good = el.getAttribute("data-good"); // "up" = subir é bom
+    el.classList.remove("is-good", "is-bad", "is-flat", "is-down");
+    if (previous === null || previous === undefined) { icon.textContent = "–"; txt.textContent = "sem base"; el.classList.add("is-flat"); return; }
+    var pct;
+    if (previous === 0) pct = current === 0 ? 0 : (current > 0 ? 100 : -100);
+    else pct = ((current - previous) / Math.abs(previous)) * 100;
+    var rounded = Math.round(pct);
+    if (rounded === 0) { icon.textContent = "→"; txt.textContent = "0%"; el.classList.add("is-flat"); return; }
+    var up = rounded > 0;
+    icon.textContent = "↗";
+    txt.textContent = (up ? "+" : "") + rounded + "%";
+    if (!up) el.classList.add("is-down");
+    el.classList.add((up === (good === "up")) ? "is-good" : "is-bad");
+  }
+
+  function updateTrends(period, summary) {
+    var prev = previousPeriod(period);
+    var ps = prev && typeof calculatePeriodSummary === "function" ? calculatePeriodSummary(prev) : null;
+    setTrend("rpTrendIncome", summary.income, ps ? ps.income : null);
+    setTrend("rpTrendExpense", summary.expense, ps ? ps.expense : null);
+    setTrend("rpTrendBalance", summary.balance, ps ? ps.balance : null);
+  }
+
+  /* ---------- ajusta o tamanho do valor para caber no cartão ---------- */
+  function fitValues() {
+    var els = document.querySelectorAll("#reportsSection .rp-kpi-value");
+    if (!els.length) return;
+    var size = 19;
+    els.forEach(function (el) { el.style.fontSize = ""; });
+    els.forEach(function (el) {
+      var s = parseFloat(getComputedStyle(el).fontSize) || 19, guard = 0;
+      while (el.scrollWidth > el.clientWidth + 1 && s > 11 && guard++ < 40) { s -= 0.5; el.style.fontSize = s + "px"; }
+      size = Math.min(size, s);
+    });
+    els.forEach(function (el) { el.style.fontSize = size + "px"; });
+  }
+
+  /* ---------- gráfico por categoria ---------- */
+  var labelPlugin = {
+    id: "rpPercentLabels",
+    afterDatasetsDraw: function (chart) {
+      var ds = chart.data.datasets[0]; if (!ds) return;
+      var total = ds.data.reduce(function (a, b) { return a + b; }, 0); if (!total) return;
+      var ctx = chart.ctx, meta = chart.getDatasetMeta(0);
+      ctx.save();
+      ctx.font = "700 15px Inter, system-ui, sans-serif";
+      ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.shadowColor = "rgba(0,0,0,.25)"; ctx.shadowBlur = 3;
+      meta.data.forEach(function (arc, i) {
+        var pct = Math.round((ds.data[i] / total) * 100);
+        if (pct < 4) return;
+        var p = arc.tooltipPosition();
+        ctx.fillText(pct + "%", p.x, p.y);
+      });
+      ctx.restore();
+    }
+  };
+
+  function renderChart(period) {
+    var canvas = byId("categoryChart"), legend = byId("rpLegend"), empty = byId("rpChartEmpty");
+    if (!canvas || typeof Chart === "undefined") return;
+    try { if (typeof categoryChart !== "undefined" && categoryChart) { categoryChart.destroy(); categoryChart = null; } } catch (e) {}
+    var old = Chart.getChart ? Chart.getChart(canvas) : null; if (old) old.destroy();
+
+    var totals = {};
+    (Array.isArray(transactions) ? transactions : []).forEach(function (t) {
+      var type = normalizeTransactionType(t.type || t.tipo || t.transaction_type);
+      if (type !== "expense") return;
+      if (period && !transactionIsInPeriod(t, period)) return;
+      var amount = getTransactionAmount(t);
+      if (!Number.isFinite(amount) || amount <= 0) return;
+      var cat = getTransactionCategory(t) || "Outros";
+      totals[cat] = (totals[cat] || 0) + amount;
+    });
+    var entries = Object.keys(totals).map(function (k) { return [k, totals[k]]; }).sort(function (a, b) { return b[1] - a[1]; });
+
+    if (!entries.length) {
+      if (legend) legend.innerHTML = "";
+      canvas.style.visibility = "hidden"; if (empty) empty.hidden = false; return;
+    }
+    canvas.style.visibility = ""; if (empty) empty.hidden = true;
+
+    var colors = entries.map(function (_, i) { return COLORS[i % COLORS.length]; });
+    if (legend) legend.innerHTML = entries.map(function (e, i) { return '<span><i style="background:' + colors[i] + '"></i>' + esc(e[0]) + "</span>"; }).join("");
+
+    var chart = new Chart(canvas.getContext("2d"), {
+      type: "doughnut",
+      data: { labels: entries.map(function (e) { return e[0]; }), datasets: [{ data: entries.map(function (e) { return e[1]; }), backgroundColor: colors, borderColor: "#ffffff", borderWidth: 2, hoverOffset: 4 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: "46%", layout: { padding: 4 },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (c) { return " " + c.label + ": " + money(c.parsed); } } } }
+      },
+      plugins: [labelPlugin]
+    });
+    try { categoryChart = chart; } catch (e) {}
+  }
+
+  /* ---------- comparação com mês anterior ---------- */
+  function pctText(cur, prev) {
+    if (!prev) return cur ? "novo" : "0%";
+    var p = Math.round(((cur - prev) / Math.abs(prev)) * 100);
+    return (p > 0 ? "+" : "") + p + "%";
+  }
+
+  function renderComparison() {
+    var now = new Date();
+    var cur = getMonthlyTotals(now.getFullYear(), now.getMonth());
+    var pm = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    var prev = getMonthlyTotals(pm.getFullYear(), pm.getMonth());
+    var curBal = cur.income - cur.expense, prevBal = prev.income - prev.expense;
+    function put(id, c, p) { var el = byId(id); if (el) el.textContent = pctText(c, p) + " · " + money(c); }
+    put("comparisonIncome", cur.income, prev.income);
+    put("comparisonExpense", cur.expense, prev.expense);
+    put("comparisonBalance", curBal, prevBal);
+    return { cur: cur, prev: prev, curBal: curBal, prevBal: prevBal };
+  }
+
+  /* ---------- análise automática ---------- */
+  function renderAnalysis(period, summary, cmp) {
+    var box = byId("automaticReportAnalysis"); if (!box) return;
+    var msgs = [];
+    if (!summary.income && !summary.expense) {
+      box.innerHTML = "<p>Adicione lançamentos para gerar sua análise financeira.</p>"; return;
+    }
+    if (summary.balance > 0) msgs.push("Você fechou o período com saldo positivo de " + money(summary.balance) + ".");
+    else if (summary.balance < 0) msgs.push("Atenção: suas despesas superaram as receitas em " + money(Math.abs(summary.balance)) + ".");
+    else msgs.push("Receitas e despesas ficaram empatadas no período.");
+    if (summary.income > 0) {
+      var rate = Math.round((summary.expense / summary.income) * 100);
+      msgs.push("Suas despesas representam " + rate + "% das receitas.");
+    }
+    var totals = {};
+    (transactions || []).forEach(function (t) {
+      if (normalizeTransactionType(t.type || t.tipo || t.transaction_type) !== "expense") return;
+      if (period && !transactionIsInPeriod(t, period)) return;
+      var a = getTransactionAmount(t); if (!(a > 0)) return;
+      var c = getTransactionCategory(t) || "Outros"; totals[c] = (totals[c] || 0) + a;
+    });
+    var top = Object.keys(totals).sort(function (a, b) { return totals[b] - totals[a]; })[0];
+    if (top && summary.expense > 0) msgs.push("Maior gasto: " + top + " (" + Math.round((totals[top] / summary.expense) * 100) + "% das despesas).");
+    if (cmp && cmp.prev.expense > 0) {
+      var diff = Math.round(((cmp.cur.expense - cmp.prev.expense) / cmp.prev.expense) * 100);
+      if (diff > 0) msgs.push("Este mês você gastou " + diff + "% a mais que no mês anterior.");
+      else if (diff < 0) msgs.push("Este mês você gastou " + Math.abs(diff) + "% a menos que no mês anterior.");
+    }
+    box.innerHTML = msgs.map(function (m) { return "<p>" + esc(m) + "</p>"; }).join("");
+  }
+
+  /* ---------- seletor de período sincronizado ---------- */
+  function syncSelect() {
+    var rp = byId("rpPeriodSelect"), main = byId("dashboardPeriod");
+    if (rp && main && rp.value !== main.value) rp.value = main.value;
+  }
+
+  function bindSelect() {
+    var rp = byId("rpPeriodSelect"), main = byId("dashboardPeriod");
+    if (!rp || rp.dataset.bound) return;
+    rp.dataset.bound = "1";
+    rp.addEventListener("change", function () {
+      if (main) {
+        main.value = rp.value;
+        main.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      try { if (typeof updateDashboard === "function") updateDashboard(); } catch (e) {}
+      renderReports();
+    });
+    if (main && !main.dataset.rpBound) {
+      main.dataset.rpBound = "1";
+      main.addEventListener("change", function () { syncSelect(); });
+    }
+  }
+
+  /* ---------- renderReports novo ---------- */
+  var original = typeof renderReports === "function" ? renderReports : null;
+
+  window.renderReports = renderReports = function () {
+    try { if (typeof applyPremiumAccess === "function") applyPremiumAccess(); } catch (e) {}
+    bindSelect(); syncSelect();
+
+    var period = typeof getSelectedPeriod === "function" ? getSelectedPeriod() : null;
+    var summary = period ? calculatePeriodSummary(period) : getTotals();
+    if (summary.balance === undefined) summary.balance = summary.income - summary.expense;
+
+    var label = byId("reportPeriodText"); if (label && period) label.textContent = period.label;
+
+    [["reportIncomeCard", "reportIncome", summary.income], ["reportExpenseCard", "reportExpense", summary.expense], ["reportBalanceCard", "reportBalance", summary.balance]]
+      .forEach(function (r) { var v = money(r[2]); [r[0], r[1]].forEach(function (id) { var el = byId(id); if (el) el.textContent = v; }); });
+
+    try { updateTrends(period, summary); } catch (e) { console.warn("rp trends", e); }
+    try { renderChart(period); } catch (e) { console.warn("rp chart", e); }
+    var cmp = null;
+    try { cmp = renderComparison(); } catch (e) { console.warn("rp compare", e); }
+    try { renderAnalysis(period, summary, cmp); } catch (e) { console.warn("rp analysis", e); }
+    fitValues();
+  };
+
+  window.addEventListener("resize", fitValues);
+  document.addEventListener("DOMContentLoaded", function () { bindSelect(); syncSelect(); });
+  window.__rpOriginalRenderReports = original;
+})();
