@@ -6592,3 +6592,101 @@ html body:not(.premium-plan) #appView #dashboardSection #addCategoryBtn .premium
   font-size: 16px !important;
   line-height: 1 !important;
 }
+/* CONTROLES — JANELA DE VINCULAÇÃO WHATSAPP */
+.ct-wa-modal-open { overflow: hidden; }
+.ct-wa-link-overlay[hidden] { display: none !important; }
+.ct-wa-link-overlay { position:fixed; inset:0; z-index:999999; background:rgba(2,19,13,.72); display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(7px); }
+.ct-wa-link-dialog { position:relative; width:min(100%,420px); max-height:90dvh; overflow:auto; background:#fff; color:#153d2d; border-radius:26px; padding:32px 24px 24px; box-shadow:0 28px 80px rgba(0,0,0,.32); text-align:center; font-family:Inter,system-ui,sans-serif; }
+.ct-wa-link-close { position:absolute; right:15px; top:12px; width:35px; height:35px; border:0; border-radius:50%; background:#edf5ef; color:#335f49; font-size:26px; line-height:1; }
+.ct-wa-link-icon { display:grid; place-items:center; margin:0 auto 12px; width:60px; height:60px; border-radius:19px; background:#dff5e7; color:#0b8553; font-size:34px; }
+.ct-wa-link-kicker { font-size:10px; font-weight:800; letter-spacing:1.7px; color:#128257; margin-bottom:9px; }
+.ct-wa-link-dialog h2 { color:#103c29; font-size:22px; line-height:1.2; margin:0 0 10px; font-weight:800; }
+.ct-wa-link-desc { font-size:13px; line-height:1.65; color:#64766c; margin:0 0 21px; }
+.ct-wa-link-code-box { padding:19px 12px; background:#f0f8f3; border:1px solid #d7e9dd; border-radius:17px; display:flex; flex-direction:column; gap:8px; margin-bottom:17px; }
+.ct-wa-link-code-box span { font-size:10px; font-weight:800; letter-spacing:1px; color:#658373; }
+.ct-wa-link-code-box strong { font-size:34px; letter-spacing:5px; color:#0c5638; font-variant-numeric:tabular-nums; }
+.ct-wa-link-code-box small { font-size:11px; color:#698575; }
+.ct-wa-link-primary { width:100%; padding:15px; border:0; border-radius:13px; color:white; background:#0c8755; font-size:13px; font-weight:750; }
+.ct-wa-link-primary:disabled { opacity:.55; cursor:wait; }
+.ct-wa-link-feedback { color:#547463; font-size:12px; line-height:1.5; min-height:34px; margin:12px 0; }
+.ct-wa-link-secondary { width:100%; padding:12px; border:1px solid #d8e8dd; border-radius:12px; background:white; color:#0c7549; font-weight:700; font-size:12px; }
+.ct-wa-link-footnote { font-size:10px; line-height:1.5; color:#89998f; margin:15px 0 0; }
+
+
+
+/* =========================================================
+   CONTROLES — RELATÓRIOS EM VERDE INTERMEDIÁRIO
+   Ajuste visual solicitado: entre verde claro e verde escuro.
+   ========================================================= */
+html body #appView #reportsSection {
+  background: linear-gradient(155deg, #176b55 0%, #125743 52%, #104b3d 100%) !important;
+  color: #f4fff9 !important;
+}
+html body #appView #reportsSection .report-period-filter,
+html body #appView #reportsSection .reports-grid > .panel,
+html body #appView #reportsSection .report-values,
+html body #appView #reportsSection .report-cards > .report-card,
+html body #appView #reportsSection .panel,
+html body #appView #reportsSection .report-panel,
+html body #appView #reportsSection .chart-panel {
+  background: linear-gradient(145deg, #26765e 0%, #1d654f 100%) !important;
+  border: 1px solid rgba(196, 245, 220, .22) !important;
+  color: #f4fff9 !important;
+  box-shadow: 0 14px 32px rgba(2, 31, 22, .16) !important;
+}
+html body #appView #reportsSection .report-card {
+  background: linear-gradient(145deg, #eafff4, #d8f5e7) !important;
+  border-color: #b7e7d0 !important;
+  color: #123d2e !important;
+}
+html body #appView #reportsSection .report-card:nth-child(2) {
+  background: linear-gradient(145deg, #fff0ef, #ffe1df) !important;
+  border-color: #f0c6c2 !important;
+}
+html body #appView #reportsSection .report-card:nth-child(3) {
+  background: linear-gradient(145deg, #fff8e7, #ffefc9) !important;
+  border-color: #ead9a8 !important;
+}
+html body #appView #reportsSection .report-card span,
+html body #appView #reportsSection .report-card small { color: #55766a !important; }
+html body #appView #reportsSection .report-card strong { color: #123d2e !important; }
+html body #appView #reportsSection .report-card:first-child strong,
+html body #appView #reportsSection .report-card.income strong { color: #07875f !important; }
+html body #appView #reportsSection .report-card.expense strong,
+html body #appView #reportsSection .report-card:nth-child(2) strong { color: #c94f4f !important; }
+html body #appView #reportsSection .report-card.balance strong,
+html body #appView #reportsSection .report-card:nth-child(3) strong { color: #946610 !important; }
+html body #appView #reportsSection .report-line,
+html body #appView #reportsSection .report-analysis,
+html body #appView #reportsSection #automaticReportAnalysis.report-analysis,
+html body #appView #reportsSection #automaticReportAnalysis.report-analysis p {
+  background: linear-gradient(145deg, #124b3b, #0e4033) !important;
+  border-color: rgba(174, 239, 207, .22) !important;
+  color: #eafff3 !important;
+}
+html body #appView #reportsSection .report-line span,
+html body #appView #reportsSection .panel p,
+html body #appView #reportsSection .period-filter p,
+html body #appView #reportsSection .report-period-filter p { color: #d0f0df !important; }
+html body #appView #reportsSection .report-line strong,
+html body #appView #reportsSection .panel h2,
+html body #appView #reportsSection .panel h3,
+html body #appView #reportsSection .panel-header h3,
+html body #appView #reportsSection .report-period-filter h3 { color: #f6fff9 !important; }
+html body #appView #reportsSection input,
+html body #appView #reportsSection select {
+  color: #f6fff9 !important;
+  background: #174b3b !important;
+  border-color: rgba(190, 242, 215, .28) !important;
+}
+html body #appView #reportsSection select option { color: #fff; background: #174b3b; }
+
+/* Usuários Premium: ocultar apenas os cadeados visuais; a autorização do app permanece. */
+body.premium-plan .premium-diamond,
+body.premium-plan .nav-lock,
+body.premium-plan .category-premium-lock,
+body.premium-plan .ct-whatsapp-lock,
+body.premium-plan [data-premium-lock-icon] {
+  display: none !important;
+  visibility: hidden !important;
+}
