@@ -842,6 +842,7 @@ async function enterApp() {
         closeMobileMenu();
 
         showAppView();
+        if (typeof warmUpWhatsAppServer === "function") warmUpWhatsAppServer();
 
         await loadProfile();
 
@@ -7738,37 +7739,145 @@ document.addEventListener("click", function controlesNavigationFallback(event){
 })();
 
 /* =========================================================
-   CONTROLES — VINCULAÇÃO WHATSAPP (TESTE AUTORIZADO)
-   O servidor valida o JWT e o WHATSAPP_TEST_USER_ID.
-   Não colocar service_role ou segredos neste arquivo.
+   CONTROLES — VINCULAÇÃO WHATSAPP (rápida, com número visível)
+   O servidor valida o JWT. Não colocar service_role ou segredos aqui.
    ========================================================= */
+// >>> TROQUE pelo número oficial do ControleS (somente dígitos, com DDI+DDD). Ex.: "5511999998888"
+const WHATSAPP_OFFICIAL_NUMBER = "55XXXXXXXXXXX";
+const WHATSAPP_API = "https://controles-whatsapp.onrender.com";
+let waTimerId = null;
+let waCurrent = { code: "", message: "", number: "" };
+
+function formatWaNumber(raw) {
+    const d = String(raw || "").replace(/\D/g, "");
+    if (d.length === 13) return `+${d.slice(0, 2)} (${d.slice(2, 4)}) ${d.slice(4, 9)}-${d.slice(9)}`;
+    if (d.length === 12) return `+${d.slice(0, 2)} (${d.slice(2, 4)}) ${d.slice(4, 8)}-${d.slice(8)}`;
+    return d ? `+${d}` : "—";
+}
+
+function waNumberIsValid(raw) {
+    const d = String(raw || "").replace(/\D/g, "");
+    return d.length >= 12 && d.length <= 13;
+}
+
+// Acorda o servidor gratuito do Render (cold start) assim que o app abre.
+function warmUpWhatsAppServer() {
+    try { fetch(`${WHATSAPP_API}/`, { mode: "no-cors", cache: "no-store" }).catch(() => {}); } catch (_) {}
+}
+
+function setWaStep(active) {
+    document.querySelectorAll("#waLinkCard .wa-step").forEach(li => {
+        const n = Number(li.dataset.step);
+        li.classList.toggle("is-done", n < active);
+        li.classList.toggle("is-active", n === active);
+    });
+}
+
+function setWaStatus(text, kind) {
+    const status = $("whatsappIntegrationStatus");
+    if (status) {
+        status.className = `smart-status status-${kind || "pending"}`;
+        status.innerHTML = `<span></span> ${text}`;
+    }
+}
+
+function startWaCountdown(seconds) {
+    clearInterval(waTimerId);
+    const el = $("waLinkTimer");
+    let left = seconds;
+    const tick = () => {
+        if (!el) return;
+        if (left <= 0) {
+            clearInterval(waTimerId);
+            el.textContent = "Código expirado — gere um novo.";
+            el.classList.add("is-expired");
+            return;
+        }
+        el.classList.remove("is-expired");
+        const m = String(Math.floor(left / 60)).padStart(2, "0");
+        const s = String(left % 60).padStart(2, "0");
+        el.textContent = `Expira em ${m}:${s}`;
+        left--;
+    };
+    tick();
+    waTimerId = setInterval(tick, 1000);
+}
+
 async function iniciarVinculacaoWhatsApp() {
     if (!supabaseClient || !currentUser) {
         showToast("Entre na sua conta ControleS primeiro.", "warning");
         return;
     }
+    const btn = $("whatsappPrimaryBtn");
+    const statusText = $("whatsappStatusText");
+    const original = btn ? btn.textContent : "";
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60000);
+
+    if (btn) { btn.disabled = true; btn.classList.add("is-loading"); btn.textContent = "Gerando código…"; }
+    if (statusText) statusText.textContent = "Conectando ao servidor… na primeira vez pode levar alguns segundos.";
+
     try {
         const { data, error } = await supabaseClient.auth.getSession();
         if (error || !data?.session?.access_token) throw new Error("Faça login novamente.");
-        const response = await fetch("https://controles-whatsapp.onrender.com/whatsapp/link-code", {
+
+        const response = await fetch(`${WHATSAPP_API}/whatsapp/link-code`, {
             method: "POST",
-            headers: { "Authorization": `Bearer ${data.session.access_token}` }
+            headers: { "Authorization": `Bearer ${data.session.access_token}` },
+            signal: controller.signal
         });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.detail || "Não foi possível gerar o código.");
-        const message = result.message || `VINCULAR ${result.code}`;
-        // O código expira em 10 minutos. O usuário envia do próprio número.
-        const copied = window.confirm(`Envie esta mensagem ao WhatsApp oficial do ControleS em até 10 minutos:\n\n${message}\n\nOK: copiar mensagem. Cancelar: fechar.`);
-        if (copied) {
-            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(message);
-            else window.prompt("Copie a mensagem e envie ao WhatsApp ControleS:", message);
-            showToast("Código preparado. Envie ao WhatsApp ControleS.", "success");
-        }
+
+        const code = result.code || String(result.message || "").replace(/\D/g, "");
+        const message = result.message || `VINCULAR ${code}`;
+        const number = String(result.whatsapp_number || result.number || result.phone || WHATSAPP_OFFICIAL_NUMBER).replace(/\D/g, "");
+        waCurrent = { code, message, number };
+
+        $("waLinkNumber").textContent = waNumberIsValid(number) ? formatWaNumber(number) : "Número não configurado";
+        $("waLinkCode").textContent = code || "—";
+        $("waLinkResult").hidden = false;
+        startWaCountdown(600);
+        setWaStep(2);
+        setWaStatus("Código gerado", "pending");
+        if (statusText) statusText.textContent = "Envie a mensagem ao número oficial em até 10 minutos.";
+        if (btn) btn.textContent = "Gerar novo código";
+        showToast("Código gerado! Envie ao WhatsApp do ControleS.", "success");
     } catch (error) {
         console.error("Erro ao vincular WhatsApp:", error);
-        showToast(error.message || "Falha na vinculação do WhatsApp.", "error");
+        const msg = error.name === "AbortError"
+            ? "O servidor demorou para responder. Tente novamente em instantes."
+            : (error.message || "Falha na vinculação do WhatsApp.");
+        if (statusText) statusText.textContent = msg;
+        if (btn) btn.textContent = original;
+        showToast(msg, "error");
+    } finally {
+        clearTimeout(timeout);
+        if (btn) { btn.disabled = false; btn.classList.remove("is-loading"); if (btn.textContent === "Gerando código…") btn.textContent = original; }
     }
 }
+
+(function bindWhatsAppLinkButtons() {
+    async function copy(text, okMsg) {
+        try {
+            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+            else window.prompt("Copie:", text);
+            showToast(okMsg, "success");
+        } catch (_) { window.prompt("Copie:", text); }
+    }
+    document.addEventListener("click", event => {
+        if (event.target.closest?.("#waOpenBtn")) {
+            if (!waNumberIsValid(waCurrent.number)) { showToast("Configure o número oficial do WhatsApp no app.js.", "warning"); return; }
+            window.open(`https://wa.me/${waCurrent.number}?text=${encodeURIComponent(waCurrent.message)}`, "_blank", "noopener");
+            setWaStep(3);
+        } else if (event.target.closest?.("#waCopyBtn")) {
+            copy(waCurrent.message, "Mensagem copiada.");
+        } else if (event.target.closest?.("#waCopyNumberBtn")) {
+            copy(waCurrent.number ? `+${waCurrent.number}` : "", "Número copiado.");
+        }
+    });
+    document.addEventListener("DOMContentLoaded", () => { setWaStep(1); warmUpWhatsAppServer(); });
+})();
 
 /* =========================================================
    CONTROLES — RELATÓRIOS (lógica do novo layout)
