@@ -36,6 +36,11 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Aumentar o número da versão
+        run: |
+          sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/" android/app/build.gradle
+          grep -n "versionCode" android/app/build.gradle
+
       - name: Gerar APK de teste
         run: |
           cd android
@@ -47,3 +52,33 @@ jobs:
         with:
           name: controles-apk-teste
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Restaurar a chave de assinatura
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | tr -d '\r\n ' | base64 -d > "$RUNNER_TEMP/controles-release.jks"
+          keytool -list -keystore "$RUNNER_TEMP/controles-release.jks" -storepass "$KEYSTORE_PASSWORD"
+
+      - name: Gerar o AAB de release
+        run: |
+          cd android
+          ./gradlew bundleRelease
+
+      - name: Assinar o AAB
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore "$RUNNER_TEMP/controles-release.jks" \
+            -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
+            android/app/build/outputs/bundle/release/app-release.aab "$KEY_ALIAS"
+
+      - name: Guardar o AAB assinado
+        uses: actions/upload-artifact@v4
+        with:
+          name: controles-aab-assinado
+          path: android/app/build/outputs/bundle/release/app-release.aab
