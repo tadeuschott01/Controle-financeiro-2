@@ -8123,3 +8123,27 @@ async function iniciarVinculacaoWhatsApp() {
   document.addEventListener("DOMContentLoaded", function () { bindSelect(); syncSelect(); });
   window.__rpOriginalRenderReports = original;
 })();
+/* =========================================================
+   CONTROLES — REMOVE OS CADEADOS QUANDO O USUÁRIO É PREMIUM
+   ========================================================= */
+(function controlesHideLocksForPremium(){
+  const SELECTOR = ".nav-lock, .premium-diamond, .category-premium-lock, .ct-whatsapp-lock, .premium-lock";
+  function sync(){
+    let premium = false;
+    try { premium = typeof isPremiumActive === "function" && isPremiumActive(); } catch (_) {}
+    document.body.classList.toggle("premium-plan", premium);
+    document.body.classList.toggle("free-plan", !premium);
+    document.querySelectorAll(SELECTOR).forEach(el => {
+      el.hidden = premium;
+      el.style.display = premium ? "none" : "";
+    });
+    if (premium) {
+      document.querySelectorAll(".premium-locked").forEach(el => el.classList.remove("premium-locked"));
+      document.querySelectorAll('[data-premium-locked="true"]').forEach(el => el.removeAttribute("data-premium-locked"));
+    }
+  }
+  document.addEventListener("DOMContentLoaded", sync);
+  window.addEventListener("load", sync);
+  document.addEventListener("click", () => setTimeout(sync, 60));
+  setInterval(sync, 1500);
+})();
