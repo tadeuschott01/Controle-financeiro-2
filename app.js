@@ -7873,8 +7873,17 @@ async function iniciarVinculacaoWhatsApp() {
                 ? `https://wa.me/${waCurrent.number}?text=${text}`
                 : `https://api.whatsapp.com/send?text=${text}`;
             if (!hasNumber) showToast("Escolha o contato ControleS no WhatsApp e envie a mensagem.", "warning");
-            const win = window.open(url, "_blank", "noopener");
-            if (!win) window.location.href = url; // pop-up bloqueado: abre na mesma aba
+            const isMobile = /Android|iPhone|iPad|iPod|Mobile|wv/i.test(navigator.userAgent);
+            if (isMobile) {
+                // Celular / app: navega direto, o sistema abre o WhatsApp já com o número e a mensagem
+                window.location.href = hasNumber
+                    ? `whatsapp://send?phone=${waCurrent.number}&text=${text}`
+                    : url;
+                setTimeout(() => { if (!document.hidden) window.location.href = url; }, 1200);
+            } else {
+                const win = window.open(url, "_blank", "noopener");
+                if (!win) window.location.href = url;
+            }
             setWaStep(3);
         } else if (event.target.closest?.("#waCopyBtn")) {
             copy(waCurrent.message, "Mensagem copiada.");
