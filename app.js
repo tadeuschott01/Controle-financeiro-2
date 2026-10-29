@@ -604,6 +604,7 @@ async function handleRegister(event) {
             email,
             password,
             options: {
+                emailRedirectTo: `${window.location.origin}${window.location.pathname}?email_confirmed=1`,
                 data: {
                     name
                 }
@@ -628,12 +629,8 @@ async function handleRegister(event) {
             if (data.session) {
                 await enterApp();
             } else {
-                showToast(
-                    "Verifique seu e-mail para confirmar o cadastro.",
-                    "info"
-                );
-
                 showLoginView();
+                if (typeof showEmailStatusScreen === "function") showEmailStatusScreen("pending", email);
 
                 const loginEmailField =
                     $("loginEmail");
@@ -8146,4 +8143,113 @@ async function iniciarVinculacaoWhatsApp() {
   window.addEventListener("load", sync);
   document.addEventListener("click", () => setTimeout(sync, 60));
   setInterval(sync, 1500);
+})();
+
+
+/* =========================================================
+   CONTROLES — TELA DE CONFIRMAÇÃO DE E-MAIL
+   pending = explica que precisa confirmar (e olhar o spam)
+   confirmed = aparece quando a pessoa clica no link do e-mail
+   expired = link inválido/expirado
+   ========================================================= */
+const _esInitialUrl = { hash: window.location.hash || "", search: window.location.search || "" };
+let _esEmail = "";
+let _esCooldown = null;
+
+function showEmailStatusScreen(state, email) {
+    const overlay = document.getElementById("emailStatusOverlay");
+    if (!overlay) return;
+    const card = overlay.querySelector(".es-card");
+    const g = id => document.getElementById(id);
+    if (email) _esEmail = email;
+    card.dataset.state = state;
+
+    const copy = {
+        pending: {
+            kicker: "ÚLTIMO PASSO", title: "Confirme seu e-mail",
+            text: "Enviamos um link de confirmação para",
+            primary: "Já confirmei, ir para o login",
+            hint: "O e-mail pode levar alguns minutos para chegar."
+        },
+        confirmed: {
+            kicker: "TUDO CERTO", title: "E-mail confirmado!",
+            text: "Sua conta ControleS está ativa. Agora é só entrar e começar a controlar suas finanças.",
+            primary: "Entrar no ControleS",
+            hint: "Você já pode fechar a aba do e-mail."
+        },
+        expired: {
+            kicker: "LINK EXPIRADO", title: "Não foi possível confirmar",
+            text: "O link é inválido ou já expirou. Peça um novo e-mail de confirmação.",
+            primary: "Ir para o login",
+            hint: "Se o e-mail já estava confirmado, é só entrar normalmente."
+        }
+    }[state];
+
+    g("esKicker").textContent = copy.kicker;
+    g("esTitle").textContent = copy.title;
+    g("esText").textContent = copy.text;
+    g("esPrimary").textContent = copy.primary;
+    g("esHint").textContent = copy.hint;
+    g("esEmail").textContent = state === "pending" ? _esEmail : "";
+    g("esEmail").hidden = state !== "pending";
+    g("esSteps").hidden = state !== "pending";
+    g("esResend").hidden = state === "confirmed";
+    overlay.hidden = false;
+    document.body.classList.add("es-open");
+}
+
+function hideEmailStatusScreen() {
+    const overlay = document.getElementById("emailStatusOverlay");
+    if (overlay) overlay.hidden = true;
+    document.body.classList.remove("es-open");
+}
+
+(function bindEmailStatusScreen() {
+    document.addEventListener("click", async event => {
+        if (event.target.closest?.("#esPrimary")) {
+            hideEmailStatusScreen();
+            if (!currentUser && typeof showLoginView === "function") showLoginView();
+        }
+        const resend = event.target.closest?.("#esResend");
+        if (!resend) return;
+        let email = _esEmail;
+        if (!email) {
+            const field = document.getElementById("loginEmail");
+            email = field ? field.value.trim() : "";
+        }
+        if (!email) { showToast("Digite seu e-mail no login e tente de novo.", "warning"); hideEmailStatusScreen(); return; }
+        if (!supabaseClient) return;
+        resend.disabled = true;
+        try {
+            const { error } = await supabaseClient.auth.resend({
+                type: "signup", email,
+                options: { emailRedirectTo: `${window.location.origin}${window.location.pathname}?email_confirmed=1` }
+            });
+            if (error) throw error;
+            showToast("E-mail reenviado! Confira também o spam.", "success");
+            let left = 60;
+            clearInterval(_esCooldown);
+            _esCooldown = setInterval(() => {
+                left--;
+                resend.textContent = left > 0 ? `Reenviar em ${left}s` : "Reenviar e-mail de confirmação";
+                if (left <= 0) { clearInterval(_esCooldown); resend.disabled = false; }
+            }, 1000);
+            resend.textContent = "Reenviar em 60s";
+        } catch (e) {
+            console.error(e);
+            resend.disabled = false;
+            showToast(e.message || "Não foi possível reenviar agora. Tente em instantes.", "error");
+        }
+    });
+
+    // Chegou pelo link do e-mail?
+    const hash = _esInitialUrl.hash, search = _esInitialUrl.search;
+    const isError = /error=|error_code=|error_description=/i.test(hash + "&" + search);
+    const isConfirmed = /type=(signup|email)/i.test(hash) || /email_confirmed=1/.test(search);
+    if (isError || isConfirmed) {
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => showEmailStatusScreen(isError ? "expired" : "confirmed"), 200);
+            try { history.replaceState(null, "", window.location.pathname); } catch (_) {}
+        });
+    }
 })();
